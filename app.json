@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "ABC-List",
+    "description": "ABC-Listen nach Fr. Vera F. Birkenbihl",
     "slug": "abc_list",
     "privacy": "public",
     "sdkVersion": "33.0.0",
@@ -24,7 +25,11 @@
       "**/*"
     ],
     "ios": {
+      "bundleIdentifier": "com.mdriemel.abclist",
       "supportsTablet": true
+    },
+    "android": {
+      "package": "com.mdriemel.abclist"
     }
   }
 }
