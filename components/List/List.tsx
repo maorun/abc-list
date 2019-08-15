@@ -36,16 +36,19 @@ export class List extends Component {
     const margin: StyleProp<ViewStyle> = { margin: 5 };
     return (
       <View style={{ marginBottom: 60 }}>
-        <Overlay isVisible={this.state.isVisible} width="auto" height="auto">
+        <Overlay isVisible={this.state.isVisible}
+                 height={'auto'}
+                 onRequestClose={() => this.setState({ isVisible: false })}
+                 onBackdropPress={() => this.setState({ isVisible: false })}>
           <View>
-            <Text>Neue Liste:</Text>
+            <Text style={{ textAlign: 'center' }}>Neue Liste:</Text>
             <Input containerStyle={margin} onChangeText={(text) => this.setState({ newItem: text })}/>
             <Button title="Speichern" containerStyle={margin} onPress={() => this.createNewItem()}/>
             <Button title="Abbrechen" containerStyle={margin} onPress={() => this.setState({ isVisible: false })}/>
           </View>
         </Overlay>
         <Button title="Neue ABC-Liste" containerStyle={margin} onPress={() => this.setState({ isVisible: true })}/>
-        <Text>Bisherige ABC-Listen</Text>
+        <Text style={{ textAlign: 'center' }}>Bisherige ABC-Listen</Text>
         <ScrollView>
           <FlatList keyExtractor={((item) => item)} data={this.state.data} refreshing={true} renderItem={({ item }) =>
             <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'stretch',margin: 5}} >
