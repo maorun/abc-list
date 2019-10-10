@@ -30,6 +30,7 @@
     },
     "android": {
       "package": "com.mdriemel.abclist"
-    }
+    },
+    "githubUrl": "https://github.com/maorun/abc-list"
   }
 }
