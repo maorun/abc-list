@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { View, ScrollView, AsyncStorage, FlatList, Text, StyleProp, ViewStyle } from 'react-native';
-import { Button, Overlay, Input } from 'react-native-elements';
+import { View, ScrollView, AsyncStorage, FlatList, Text} from 'react-native';
+import { Button} from 'react-native-elements';
 import { NavigationScreenProp } from 'react-navigation';
 import { ListItem } from './ListItem';
+import { NewStringItem } from '../NewStringItem';
 
 export class List extends Component {
   public props: {
@@ -22,9 +23,7 @@ export class List extends Component {
     data     : [],
   };
 
-  public constructor(props) {
-    super(props);
-
+  public componentDidMount(): void {
     AsyncStorage.getItem(List.cacheKey).then((data: string) => {
       if (data) {
         this.setState({ data: JSON.parse(data) });
@@ -33,27 +32,15 @@ export class List extends Component {
   }
 
   public render(): React.ReactElement<any, string | React.JSXElementConstructor<any>> | string | number | {} | React.ReactNodeArray | React.ReactPortal | boolean | null | undefined {
-    const margin: StyleProp<ViewStyle> = { margin: 5 };
     return (
       <View style={{ marginBottom: 60 }}>
-        <Overlay isVisible={this.state.isVisible}
-                 height={'auto'}
-                 onRequestClose={() => this.setState({ isVisible: false })}
-                 onBackdropPress={() => this.setState({ isVisible: false })}>
-          <View>
-            <Text style={{ textAlign: 'center' }}>Neue Liste:</Text>
-            <Input containerStyle={margin} onChangeText={(text) => this.setState({ newItem: text })}/>
-            <Button title="Speichern" containerStyle={margin} onPress={() => this.createNewItem()}/>
-            <Button title="Abbrechen" containerStyle={margin} onPress={() => this.setState({ isVisible: false })}/>
-          </View>
-        </Overlay>
-        <Button title="Neue ABC-Liste" containerStyle={margin} onPress={() => this.setState({ isVisible: true })}/>
+        <NewStringItem title={'Neue ABC-Liste'} onSave={(item) => this.createNewItem(item.text)}/>
         <Text style={{ textAlign: 'center' }}>Bisherige ABC-Listen</Text>
         <ScrollView>
           <FlatList keyExtractor={((item) => item)} data={this.state.data} refreshing={true} renderItem={({ item }) =>
-            <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'stretch',margin: 5}} >
-              <Button title={item} containerStyle={{width: '85%', marginRight: 5}} onPress={() => this.showAbcList(item)}/>
-              <Button title="X" containerStyle={{width: '10%'}} onPress={() => this.deleteItem(item)} />
+            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'stretch', margin: 5 }}>
+              <Button title={item} containerStyle={{ width: '85%', marginRight: 5 }} onPress={() => this.showAbcList(item)}/>
+              <Button title="X" containerStyle={{ width: '10%' }} onPress={() => this.deleteItem(item)}/>
             </View>
           }/>
         </ScrollView>
@@ -62,31 +49,32 @@ export class List extends Component {
   }
 
   private deleteItem(item) {
-    const items  = this.state.data.map((i) => i);
+    const items = this.state.data.map((i) => i);
     items.splice(items.indexOf(item), 1);
 
     this.setState({ isVisible: this.state.isVisible, newItem: '', data: items });
     AsyncStorage.setItem(List.cacheKey, JSON.stringify(items)).then(() => {
-      AsyncStorage.removeItem(ListItem.cacheKey + item).then(() => { });
+      AsyncStorage.removeItem(ListItem.cacheKey + item).then(() => {
+      });
     });
 
   }
 
   private showAbcList(data: string) {
-    const { navigation } = this.props;
+    const { navigation }      = this.props;
     navigation.state.listItem = data;
     navigation.navigate('ListItem', { item: data });
   }
 
-  private createNewItem() {
-    const newItem = this.state.newItem;
-    const data    = this.state.data.map((i) => i);
+  private createNewItem(newItem) {
+    const data = this.state.data.map((i) => i);
     if (data.indexOf(newItem) === -1) {
       data.push(newItem);
     }
     this.setState({ isVisible: false, newItem: '', data: data });
 
-    AsyncStorage.setItem(List.cacheKey, JSON.stringify(data)).then(() => { });
+    AsyncStorage.setItem(List.cacheKey, JSON.stringify(data)).then(() => {
+    });
 
     this.showAbcList(newItem);
   }

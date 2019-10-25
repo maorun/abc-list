@@ -18,9 +18,7 @@ export class Letter extends Component {
     words: [],
   };
 
-  public constructor(props) {
-    super(props);
-
+  public componentDidMount(): void {
     AsyncStorage.getItem(this.getCacheKey()).then((data: string) => {
       if (data) {
         this.setState({ words: JSON.parse(data) });
