@@ -15,7 +15,7 @@
     "test": "npx npm run build"
   },
   "dependencies": {
-    "expo": "^33.0.0",
+    "expo": "^35.0.0",
     "expo-random": "^7.0.0",
     "react": "16.11.0",
     "react-dom": "^16.11.0",
