@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 import { View, Text, StyleProp, ViewStyle } from 'react-native';
 import { Input, Button, Overlay } from 'react-native-elements';
 import { getRandomBytesAsync } from 'expo-random';

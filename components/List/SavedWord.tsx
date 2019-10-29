@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 import { Button, Overlay, Text } from 'react-native-elements';
 import { View } from 'react-native';
 
