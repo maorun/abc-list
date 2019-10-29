@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 import { NavigationScreenProp } from "react-navigation";
 import { View, TouchableOpacity } from 'react-native';
 import { Image } from 'react-native-elements';

@@ -1,5 +1,7 @@
-import React from 'react';
-import { createStackNavigator, createAppContainer, createDrawerNavigator, NavigationScreenProp } from 'react-navigation';
+import * as React from 'react';
+import { createAppContainer, NavigationScreenProp } from 'react-navigation';
+import { createDrawerNavigator } from 'react-navigation-drawer';
+import { createStackNavigator } from 'react-navigation-stack';
 import { NavigationDrawerStructure } from './components/NavigationDrawerStructure';
 import { List } from './components/List/List';
 import { ListItem } from './components/List/ListItem';

@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 import { View, Text, ScrollView, AsyncStorage, StyleProp, ViewStyle } from 'react-native';
 import { NewStringItem, NewItemWithSaveKey } from '../NewStringItem';
 import { NavigationScreenProp } from 'react-navigation';

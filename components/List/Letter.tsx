@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+import * as React from 'react';
+import { Component } from 'react';
 import { Button, Overlay, Input } from 'react-native-elements';
 import { View, AsyncStorage } from 'react-native';
 import { SavedWord } from './SavedWord';

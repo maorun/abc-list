@@ -1,5 +1,6 @@
-import React, { Component } from 'react';
-import { AsyncStorage, ScrollView, FlatList, View } from 'react-native';
+import * as React from 'react';
+import { Component } from 'react';
+import { ScrollView, FlatList, View } from 'react-native';
 import { NavigationScreenProp } from "react-navigation";
 import { Letter } from './Letter';
 
