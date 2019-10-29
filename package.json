@@ -29,7 +29,7 @@
     "react-navigation": "^4.0.0",
     "react-navigation-drawer": "^2.1.0",
     "react-navigation-header-buttons": "^2.3.1",
-    "react-navigation-stack": "^2.0.0"
+    "react-navigation-stack": "^1.10.3"
   },
   "devDependencies": {
     "@types/react": "^16.9.2",
