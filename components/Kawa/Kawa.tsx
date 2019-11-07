@@ -38,7 +38,7 @@ export class Kawa extends Component {
           this.setState({ itemToDelete: null }, () => {
             this.deleteKawa(kawa);
           });
-        }} onAbort={() => this.setState({ itemToDelete: '' })}/>
+        }} onAbort={() => this.setState({ itemToDelete: null })}/>
 
         <ScrollView>
           {
