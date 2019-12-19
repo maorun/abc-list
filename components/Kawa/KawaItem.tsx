@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Component } from 'react';
-import { View } from 'react-native';
+import { ScrollView } from 'react-native';
 import { NavigationScreenProp } from 'react-navigation';
 import { KawaLetter } from './KawaLetter';
 import { NewItemWithSaveKey } from '../NewStringItem';
@@ -17,7 +17,7 @@ export class KawaItem extends Component {
       letters.push(word.text.charAt(i));
     }
     return (
-      <View>
+      <ScrollView>
         {
           letters.map((letter, index) => {
             return (
@@ -25,7 +25,7 @@ export class KawaItem extends Component {
             );
           })
         }
-      </View>
+      </ScrollView>
     );
   }
 }
