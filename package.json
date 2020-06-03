@@ -31,7 +31,7 @@
     "react-navigation-stack": "^2.0.12"
   },
   "devDependencies": {
-    "@types/react": "16.9.17",
+    "@types/react": "16.9.35",
     "@types/react-native": "^0.60.26",
     "babel-preset-expo": "^5.1.1",
     "ts-lint": "^4.5.1",
