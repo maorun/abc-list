@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "@types/react": "16.9.35",
-    "@types/react-native": "^0.60.26",
+    "@types/react-native": "^0.62.12",
     "babel-preset-expo": "^8.2.1",
     "ts-lint": "^4.5.1",
     "typescript": "^3.4.5"
