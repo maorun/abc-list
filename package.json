@@ -21,8 +21,8 @@
     "react-dom": "^16.11.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-35.0.0.tar.gz",
     "react-native-elements": "^2.0.1",
-    "react-native-navigation": "^4.0.9",
-    "react-native-gesture-handler": "~1.5.3",
+    "react-native-navigation": "^6.7.1",
+    "react-native-gesture-handler": "~1.6.1",
     "react-native-reanimated": "^1.1.0",
     "react-native-web": "^0.12.0",
     "react-navigation": "^4.3.9",
@@ -31,9 +31,9 @@
     "react-navigation-stack": "^2.0.12"
   },
   "devDependencies": {
-    "@types/react": "16.9.17",
-    "@types/react-native": "^0.62.12",
-    "babel-preset-expo": "^5.1.1",
+    "@types/react": "16.9.35",
+    "@types/react-native": "^0.60.26",
+    "babel-preset-expo": "^8.2.1",
     "ts-lint": "^4.5.1",
     "typescript": "^3.4.5"
   },
