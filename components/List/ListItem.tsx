@@ -15,7 +15,7 @@ export class ListItem extends Component {
 
   public getCacheKey(): string {
     const { navigation } = this.props;
-    return ListItem.cacheKey + navigation.getParam('item');
+    return ListItem.cacheKey + 'asdf';// navigation.getParam('item');
   }
 
   public render() {

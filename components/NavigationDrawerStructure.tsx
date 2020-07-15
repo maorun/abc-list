@@ -12,7 +12,7 @@ export class NavigationDrawerStructure extends Component {
   //Structure for the navigatin Drawer
   toggleDrawer = () => {
     //Props to open/close the drawer
-    this.props.navigationProps.toggleDrawer();
+    // this.props.navigationProps.toggleDrawer();
   };
 
   render() {

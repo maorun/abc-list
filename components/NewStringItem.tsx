@@ -29,7 +29,7 @@ export class NewStringItem extends Component {
     return (
       <View>
         <Overlay isVisible={this.state.isVisible}
-                 height={'auto'}
+                 // height={'auto'}
                  onRequestClose={() => this.abort()}
                  onBackdropPress={() => this.abort()}>
           <View>
@@ -50,7 +50,7 @@ export class NewStringItem extends Component {
 
   private onSave() {
     getRandomBytesAsync(10).then((random) => {
-      this.props.onSave ? this.props.onSave({ key: random.toString(), text: this.state.newItem }) : null;
+      // this.props.onSave ? this.props.onSave({ key: random.toString(), text: this.state.newItem }) : null;
       this.abort();
     });
   }

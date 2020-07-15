@@ -22,7 +22,7 @@ export class SavedWord extends Component {
       <View style={marginTopStyle}>
         <Button title={this.props.text} onPress={() => this.toggle()}/>
         <Overlay isVisible={this.state.showDelete}
-                 height={'auto'}
+                 // height={'auto'}
                  onRequestClose={() => this.toggle()}
                  onBackdropPress={() => this.toggle()}>
           <View>

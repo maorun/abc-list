@@ -32,7 +32,7 @@ export class Letter extends Component {
       <View>
         <Button style={{width: 50}} title={this.props.letter.toUpperCase()} onPress={() => this.toggle()}/>
         <Overlay isVisible={this.state.createItem}
-                 height={'auto'}
+                 // height={'auto'}
                  onRequestClose={() => this.toggle()}
                  onBackdropPress={() => this.toggle()} >
           <View>

@@ -11,7 +11,11 @@ export class KawaItem extends Component {
   };
 
   public render() {
-    const word: NewItemWithSaveKey = this.props.navigation.getParam('item') as any;
+    //const word: NewItemWithSaveKey = this.props.navigation.getParam('item') as any;
+    const word: NewItemWithSaveKey = {
+      key: 'asd',
+      text: 'FooBar',
+    };
     const letters: string[]        = [];
     for (let i = 0; i < word.text.length; i++) {
       letters.push(word.text.charAt(i));
