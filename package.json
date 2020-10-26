@@ -19,7 +19,7 @@
     "@react-navigation/drawer": "^5.8.5",
     "@react-navigation/stack": "^5.7.0",
     "expo": "^39.0.3",
-    "expo-random": "^8.1.0",
+    "expo-random": "^9.0.0",
     "react": "16.14.0",
     "react-dom": "^16.11.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-35.0.0.tar.gz",
