@@ -1,26 +1,13 @@
 {
-  "compileOnSave": true,
-  "exclude": [
-    "out-tsc"
-  ],
   "compilerOptions": {
-    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
     "jsx": "react-native",
-    "sourceMap": true,
-    "sourceRoot": ".",
-    "outDir": "./out-tsc",
-    "declaration": false,
-    "module": "commonjs",
+    "lib": ["dom", "esnext"],
+    "esModuleInterop": true,
     "moduleResolution": "node",
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "target": "es5",
-    "typeRoots": [
-      "node_modules/@types"
-    ],
-    "lib": [
-      "es2017"
-//      "dom"
-    ]
+    "noEmit": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "strict": true
   }
 }

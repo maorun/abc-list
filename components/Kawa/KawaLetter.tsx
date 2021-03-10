@@ -1,13 +1,14 @@
 import * as React from 'react';
-import { Component } from 'react';
-import { View, Text, AsyncStorage } from 'react-native';
-import { Input } from 'react-native-elements';
+import {Component} from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {View, Text} from 'react-native';
+import {Input} from 'react-native-elements';
 
 export class KawaLetter extends Component {
-  public props: {
+  public props!: {
     letter: string;
     index: string;
-    onChangeText?: (text) => void;
+    onChangeText?: (text: string) => void;
   };
 
   public state: {
@@ -17,9 +18,11 @@ export class KawaLetter extends Component {
   };
 
   public componentDidMount(): void {
-    AsyncStorage.getItem('KawaItem_' + this.props.letter + '_' + this.props.index).then((data) => {
+    AsyncStorage.getItem(
+      'KawaItem_' + this.props.letter + '_' + this.props.index,
+    ).then((data) => {
       if (data) {
-        this.setState({ text: JSON.parse(data).text });
+        this.setState({text: JSON.parse(data).text});
       }
     });
   }
@@ -28,19 +31,26 @@ export class KawaLetter extends Component {
     return (
       <View>
         <Text>{this.props.letter.toUpperCase()}</Text>
-        <Input onChangeText={(text) => this.onChangeText(text)}>{this.state.text}</Input>
+        <Input
+          defaultValue={this.state.text}
+          onChangeText={(text: string) => this.onChangeText(text)}
+        />
       </View>
-
     );
   }
 
-  protected onChangeText(text) {
+  protected onChangeText(text: string) {
     this.saveLetter(text).then(() => {
-      this.props.onChangeText ? this.props.onChangeText(text) : null;
+      if (this.props.onChangeText) {
+        this.props.onChangeText(text);
+      }
     });
   }
 
   protected saveLetter(text: string) {
-    return AsyncStorage.setItem('KawaItem_' + this.props.letter + '_' + this.props.index, JSON.stringify({ text })).then();
+    return AsyncStorage.setItem(
+      'KawaItem_' + this.props.letter + '_' + this.props.index,
+      JSON.stringify({text}),
+    ).then();
   }
 }
