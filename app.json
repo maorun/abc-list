@@ -1,16 +1,8 @@
 {
   "expo": {
-    "name": "ABC-List",
-    "description": "ABC-Listen nach Fr. Vera F. Birkenbihl",
-    "slug": "abc_list",
-    "privacy": "public",
-    "sdkVersion": "35.0.0",
-    "platforms": [
-      "ios",
-      "android",
-      "web"
-    ],
-    "version": "1.0.2",
+    "name": "ohjeah",
+    "slug": "ohjeah",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -25,12 +17,16 @@
       "**/*"
     ],
     "ios": {
-      "bundleIdentifier": "com.mdriemel.abclist",
       "supportsTablet": true
     },
     "android": {
-      "package": "com.mdriemel.abclist"
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      }
     },
-    "githubUrl": "https://github.com/maorun/abc-list"
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
   }
 }
