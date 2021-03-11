@@ -12,13 +12,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - uses: expo/expo-github-action@3.0.0
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 15.x
+      - uses: expo/expo-github-action@v5
+        with:
+          expo-token: ${{ secrets.EXPO_TOKEN }}
 
       - run: npm install
       - run: npm run build --if-present
 
-      - name: login
-        run: expo login -u ${{ secrets.EXPO_USER }} -p ${{ secrets.EXPO_PASS }}
-
-      - name: publish
-        run: expo publish
+      - run: expo publish
