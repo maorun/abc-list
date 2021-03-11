@@ -1,0 +1,20 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Publish in Expo
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: login
+        run: expo login -u ${{ secrets.EXPO_USER }} -p ${{ secrets.EXPO_PASS }}
+
+      - name: publish
+        run: expo publish
