@@ -7,6 +7,7 @@ import {List} from './components/List/List';
 import {ListItem} from './components/List/ListItem';
 import {Kawa} from './components/Kawa/Kawa';
 import {KawaItem} from './components/Kawa/KawaItem';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const abcList = createBottomTabNavigator();
 const list = createStackNavigator();
@@ -38,9 +39,18 @@ export default class StartPoint extends Component {
   public render() {
     return (
       <NavigationContainer>
-        <abcList.Navigator initialRouteName="kawa">
-          <abcList.Screen name={'list'} component={ListNavigation} />
-          <abcList.Screen name={'kawa'} component={KawaNavigation} />
+        <abcList.Navigator initialRouteName="list">
+          <abcList.Screen name={'list'} component={ListNavigation} options={{
+            tabBarLabel: 'List',
+            tabBarIcon: ({ color, size }) => (
+              <MaterialCommunityIcons name="alphabetical-variant" color={color} size={size} />
+            ),
+          }}/>
+          <abcList.Screen name={'kawa'} component={KawaNavigation}  options={{
+            tabBarIcon: ({ color, size }) => (
+              <MaterialCommunityIcons name="ballot" color={color} size={size} />
+            ),
+          }}/>
         </abcList.Navigator>
         <StatusBar style="auto" />
       </NavigationContainer>

@@ -169,7 +169,7 @@ exports[`<StartPoint /> should match Snapshot 1`] = `
                           }
                         }
                       >
-                        Kawa
+                        ABC-Listen
                       </Text>
                     </View>
                   </View>
@@ -336,7 +336,13 @@ exports[`<StartPoint /> should match Snapshot 1`] = `
                               }
                             }
                           >
-                            <View>
+                            <View
+                              style={
+                                Object {
+                                  "marginBottom": 60,
+                                }
+                              }
+                            >
                               <View>
                                 <Modal
                                   hardwareAccelerated={false}
@@ -462,7 +468,7 @@ exports[`<StartPoint /> should match Snapshot 1`] = `
                                             }
                                           }
                                         >
-                                          neues Kawa
+                                          Neue ABC-Liste
                                           :
                                         </Text>
                                         <View
@@ -724,7 +730,7 @@ exports[`<StartPoint /> should match Snapshot 1`] = `
                                           }
                                         }
                                       >
-                                        neues Kawa
+                                        Neue ABC-Liste
                                       </Text>
                                     </View>
                                   </View>
@@ -737,279 +743,38 @@ exports[`<StartPoint /> should match Snapshot 1`] = `
                                   }
                                 }
                               >
-                                Bisherige Kawas
+                                Bisherige ABC-Listen
                               </Text>
-                              <Modal
-                                hardwareAccelerated={false}
-                                onRequestClose={[Function]}
-                                theme={
-                                  Object {
-                                    "colors": Object {
-                                      "black": "#242424",
-                                      "disabled": "hsl(208, 8%, 90%)",
-                                      "divider": "#bcbbc1",
-                                      "error": "#ff190c",
-                                      "grey0": "#393e42",
-                                      "grey1": "#43484d",
-                                      "grey2": "#5e6977",
-                                      "grey3": "#86939e",
-                                      "grey4": "#bdc6cf",
-                                      "grey5": "#e1e8ee",
-                                      "greyOutline": "#bbb",
-                                      "platform": Object {
-                                        "android": Object {
-                                          "error": "#f44336",
-                                          "grey": "rgba(0, 0, 0, 0.54)",
-                                          "primary": "#2196f3",
-                                          "searchBg": "#dcdce1",
-                                          "secondary": "#9C27B0",
-                                          "success": "#4caf50",
-                                          "warning": "#ffeb3b",
-                                        },
-                                        "default": Object {
-                                          "error": "#ff3b30",
-                                          "grey": "#7d7d7d",
-                                          "primary": "#007aff",
-                                          "searchBg": "#dcdce1",
-                                          "secondary": "#5856d6",
-                                          "success": "#4cd964",
-                                          "warning": "#ffcc00",
-                                        },
-                                        "ios": Object {
-                                          "error": "#ff3b30",
-                                          "grey": "#7d7d7d",
-                                          "primary": "#007aff",
-                                          "searchBg": "#dcdce1",
-                                          "secondary": "#5856d6",
-                                          "success": "#4cd964",
-                                          "warning": "#ffcc00",
-                                        },
-                                        "web": Object {
-                                          "error": "#ff190c",
-                                          "grey": "#393e42",
-                                          "primary": "#2089dc",
-                                          "searchBg": "#303337",
-                                          "secondary": "#ca71eb",
-                                          "success": "#52c41a",
-                                          "warning": "#faad14",
-                                        },
-                                      },
-                                      "primary": "#2089dc",
-                                      "searchBg": "#303337",
-                                      "secondary": "#ca71eb",
-                                      "success": "#52c41a",
-                                      "warning": "#faad14",
-                                      "white": "#ffffff",
-                                    },
-                                  }
-                                }
-                                transparent={true}
-                                visible={true}
-                              >
-                                <View
-                                  accessible={true}
-                                  focusable={true}
-                                  onClick={[Function]}
-                                  onResponderGrant={[Function]}
-                                  onResponderMove={[Function]}
-                                  onResponderRelease={[Function]}
-                                  onResponderTerminate={[Function]}
-                                  onResponderTerminationRequest={[Function]}
-                                  onStartShouldSetResponder={[Function]}
-                                  style={
-                                    Object {
-                                      "alignItems": "center",
-                                      "backgroundColor": "rgba(0, 0, 0, .4)",
-                                      "height": "100%",
-                                      "justifyContent": "center",
-                                      "left": 0,
-                                      "position": "absolute",
-                                      "top": 0,
-                                      "width": "100%",
-                                    }
-                                  }
-                                  testID="RNE__Overlay__backdrop"
-                                />
-                                <View
-                                  pointerEvents="box-none"
-                                  style={
-                                    Object {
-                                      "alignItems": "center",
-                                      "flex": 1,
-                                      "justifyContent": "center",
-                                    }
-                                  }
-                                >
-                                  <View
-                                    style={
-                                      Object {
-                                        "backgroundColor": "white",
-                                        "borderRadius": 3,
-                                        "padding": 10,
-                                        "shadowColor": "rgba(0, 0, 0, .3)",
-                                        "shadowOffset": Object {
-                                          "height": 1,
-                                          "width": 0,
-                                        },
-                                        "shadowRadius": 4,
-                                      }
-                                    }
-                                  >
-                                    <View>
-                                      <Text
-                                        style={
-                                          Object {
-                                            "color": "#242424",
-                                            "textAlign": "center",
-                                          }
-                                        }
-                                      >
-                                        Wirklich löschen?
-                                      </Text>
-                                      <View
-                                        style={
-                                          Array [
-                                            Object {
-                                              "borderRadius": 3,
-                                              "overflow": "hidden",
-                                            },
-                                            Object {
-                                              "borderRadius": 3,
-                                            },
-                                            Object {
-                                              "marginTop": 5,
-                                            },
-                                            false,
-                                          ]
-                                        }
-                                      >
-                                        <View
-                                          accessibilityRole="button"
-                                          accessibilityState={
-                                            Object {
-                                              "busy": false,
-                                              "disabled": false,
-                                            }
-                                          }
-                                          accessible={true}
-                                          focusable={true}
-                                          onClick={[Function]}
-                                          onResponderGrant={[Function]}
-                                          onResponderMove={[Function]}
-                                          onResponderRelease={[Function]}
-                                          onResponderTerminate={[Function]}
-                                          onResponderTerminationRequest={[Function]}
-                                          onStartShouldSetResponder={[Function]}
-                                          style={
-                                            Object {
-                                              "opacity": 1,
-                                            }
-                                          }
-                                        >
-                                          <View
-                                            style={
-                                              Object {
-                                                "alignItems": "center",
-                                                "backgroundColor": "#2089dc",
-                                                "borderColor": "#2089dc",
-                                                "borderRadius": 3,
-                                                "borderWidth": 0,
-                                                "flexDirection": "row",
-                                                "justifyContent": "center",
-                                                "padding": 8,
-                                              }
-                                            }
-                                          >
-                                            <Text
-                                              style={
-                                                Object {
-                                                  "color": "white",
-                                                  "fontSize": 18,
-                                                  "paddingVertical": 1,
-                                                  "textAlign": "center",
-                                                }
-                                              }
-                                            >
-                                              ja
-                                            </Text>
-                                          </View>
-                                        </View>
-                                      </View>
-                                      <View
-                                        style={
-                                          Array [
-                                            Object {
-                                              "borderRadius": 3,
-                                              "overflow": "hidden",
-                                            },
-                                            Object {
-                                              "borderRadius": 3,
-                                            },
-                                            Object {
-                                              "marginTop": 5,
-                                            },
-                                            false,
-                                          ]
-                                        }
-                                      >
-                                        <View
-                                          accessibilityRole="button"
-                                          accessibilityState={
-                                            Object {
-                                              "busy": false,
-                                              "disabled": false,
-                                            }
-                                          }
-                                          accessible={true}
-                                          focusable={true}
-                                          onClick={[Function]}
-                                          onResponderGrant={[Function]}
-                                          onResponderMove={[Function]}
-                                          onResponderRelease={[Function]}
-                                          onResponderTerminate={[Function]}
-                                          onResponderTerminationRequest={[Function]}
-                                          onStartShouldSetResponder={[Function]}
-                                          style={
-                                            Object {
-                                              "opacity": 1,
-                                            }
-                                          }
-                                        >
-                                          <View
-                                            style={
-                                              Object {
-                                                "alignItems": "center",
-                                                "backgroundColor": "#2089dc",
-                                                "borderColor": "#2089dc",
-                                                "borderRadius": 3,
-                                                "borderWidth": 0,
-                                                "flexDirection": "row",
-                                                "justifyContent": "center",
-                                                "padding": 8,
-                                              }
-                                            }
-                                          >
-                                            <Text
-                                              style={
-                                                Object {
-                                                  "color": "white",
-                                                  "fontSize": 18,
-                                                  "paddingVertical": 1,
-                                                  "textAlign": "center",
-                                                }
-                                              }
-                                            >
-                                              nein
-                                            </Text>
-                                          </View>
-                                        </View>
-                                      </View>
-                                    </View>
-                                  </View>
-                                </View>
-                              </Modal>
                               <RCTScrollView>
-                                <View />
+                                <View>
+                                  <RCTScrollView
+                                    data={Array []}
+                                    disableVirtualization={false}
+                                    getItem={[Function]}
+                                    getItemCount={[Function]}
+                                    horizontal={false}
+                                    initialNumToRender={10}
+                                    keyExtractor={[Function]}
+                                    maxToRenderPerBatch={10}
+                                    onContentSizeChange={[Function]}
+                                    onEndReachedThreshold={2}
+                                    onLayout={[Function]}
+                                    onMomentumScrollEnd={[Function]}
+                                    onScroll={[Function]}
+                                    onScrollBeginDrag={[Function]}
+                                    onScrollEndDrag={[Function]}
+                                    refreshing={true}
+                                    removeClippedSubviews={false}
+                                    renderItem={[Function]}
+                                    scrollEventThrottle={50}
+                                    stickyHeaderIndices={Array []}
+                                    updateCellsBatchingPeriod={50}
+                                    viewabilityConfigCallbackPairs={Array []}
+                                    windowSize={21}
+                                  >
+                                    <View />
+                                  </RCTScrollView>
+                                </View>
                               </RCTScrollView>
                             </View>
                           </View>
@@ -1058,62 +823,7 @@ exports[`<StartPoint /> should match Snapshot 1`] = `
       }
     >
       <View
-        accessibilityLabel="list, tab, 1 of 2"
-        accessibilityRole="button"
-        accessibilityState={
-          Object {
-            "selected": false,
-          }
-        }
-        accessible={true}
-        focusable={true}
-        onClick={[Function]}
-        onResponderGrant={[Function]}
-        onResponderMove={[Function]}
-        onResponderRelease={[Function]}
-        onResponderTerminate={[Function]}
-        onResponderTerminationRequest={[Function]}
-        onStartShouldSetResponder={[Function]}
-        style={
-          Array [
-            Object {
-              "alignItems": "center",
-              "flex": 1,
-            },
-            Object {
-              "backgroundColor": "transparent",
-            },
-            Object {
-              "flexDirection": "column",
-              "justifyContent": "flex-end",
-            },
-            undefined,
-          ]
-        }
-      >
-        <Text
-          numberOfLines={1}
-          style={
-            Array [
-              Object {
-                "backgroundColor": "transparent",
-                "textAlign": "center",
-              },
-              Object {
-                "color": "#8E8E8F",
-              },
-              Object {
-                "fontSize": 10,
-              },
-              undefined,
-            ]
-          }
-        >
-          list
-        </Text>
-      </View>
-      <View
-        accessibilityLabel="kawa, tab, 2 of 2"
+        accessibilityLabel="List, tab, 1 of 2"
         accessibilityRole="button"
         accessibilityState={
           Object {
@@ -1146,6 +856,95 @@ exports[`<StartPoint /> should match Snapshot 1`] = `
           ]
         }
       >
+        <View
+          style={
+            Array [
+              Object {
+                "flex": 1,
+              },
+              undefined,
+            ]
+          }
+        >
+          <View
+            style={
+              Array [
+                Object {
+                  "alignItems": "center",
+                  "alignSelf": "center",
+                  "height": "100%",
+                  "justifyContent": "center",
+                  "minWidth": 25,
+                  "position": "absolute",
+                  "width": "100%",
+                },
+                Object {
+                  "opacity": 1,
+                },
+              ]
+            }
+          >
+            <Text
+              allowFontScaling={false}
+              style={
+                Array [
+                  Object {
+                    "color": "rgb(0, 122, 255)",
+                    "fontSize": 25,
+                  },
+                  undefined,
+                  Object {
+                    "fontFamily": "Material Design Icons",
+                    "fontStyle": "normal",
+                    "fontWeight": "normal",
+                  },
+                  Object {},
+                ]
+              }
+            >
+              󱀍
+            </Text>
+          </View>
+          <View
+            style={
+              Array [
+                Object {
+                  "alignItems": "center",
+                  "alignSelf": "center",
+                  "height": "100%",
+                  "justifyContent": "center",
+                  "minWidth": 25,
+                  "position": "absolute",
+                  "width": "100%",
+                },
+                Object {
+                  "opacity": 0,
+                },
+              ]
+            }
+          >
+            <Text
+              allowFontScaling={false}
+              style={
+                Array [
+                  Object {
+                    "color": "#8E8E8F",
+                    "fontSize": 25,
+                  },
+                  undefined,
+                  Object {
+                    "fontFamily": "Material Design Icons",
+                    "fontStyle": "normal",
+                    "fontWeight": "normal",
+                  },
+                  Object {},
+                ]
+              }
+            >
+              󱀍
+            </Text>
+          </View>
+        </View>
         <Text
           numberOfLines={1}
           style={
@@ -1156,6 +955,150 @@ exports[`<StartPoint /> should match Snapshot 1`] = `
               },
               Object {
                 "color": "rgb(0, 122, 255)",
+              },
+              Object {
+                "fontSize": 10,
+              },
+              undefined,
+            ]
+          }
+        >
+          List
+        </Text>
+      </View>
+      <View
+        accessibilityLabel="kawa, tab, 2 of 2"
+        accessibilityRole="button"
+        accessibilityState={
+          Object {
+            "selected": false,
+          }
+        }
+        accessible={true}
+        focusable={true}
+        onClick={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          Array [
+            Object {
+              "alignItems": "center",
+              "flex": 1,
+            },
+            Object {
+              "backgroundColor": "transparent",
+            },
+            Object {
+              "flexDirection": "column",
+              "justifyContent": "flex-end",
+            },
+            undefined,
+          ]
+        }
+      >
+        <View
+          style={
+            Array [
+              Object {
+                "flex": 1,
+              },
+              undefined,
+            ]
+          }
+        >
+          <View
+            style={
+              Array [
+                Object {
+                  "alignItems": "center",
+                  "alignSelf": "center",
+                  "height": "100%",
+                  "justifyContent": "center",
+                  "minWidth": 25,
+                  "position": "absolute",
+                  "width": "100%",
+                },
+                Object {
+                  "opacity": 0,
+                },
+              ]
+            }
+          >
+            <Text
+              allowFontScaling={false}
+              style={
+                Array [
+                  Object {
+                    "color": "rgb(0, 122, 255)",
+                    "fontSize": 25,
+                  },
+                  undefined,
+                  Object {
+                    "fontFamily": "Material Design Icons",
+                    "fontStyle": "normal",
+                    "fontWeight": "normal",
+                  },
+                  Object {},
+                ]
+              }
+            >
+              󰧉
+            </Text>
+          </View>
+          <View
+            style={
+              Array [
+                Object {
+                  "alignItems": "center",
+                  "alignSelf": "center",
+                  "height": "100%",
+                  "justifyContent": "center",
+                  "minWidth": 25,
+                  "position": "absolute",
+                  "width": "100%",
+                },
+                Object {
+                  "opacity": 1,
+                },
+              ]
+            }
+          >
+            <Text
+              allowFontScaling={false}
+              style={
+                Array [
+                  Object {
+                    "color": "#8E8E8F",
+                    "fontSize": 25,
+                  },
+                  undefined,
+                  Object {
+                    "fontFamily": "Material Design Icons",
+                    "fontStyle": "normal",
+                    "fontWeight": "normal",
+                  },
+                  Object {},
+                ]
+              }
+            >
+              󰧉
+            </Text>
+          </View>
+        </View>
+        <Text
+          numberOfLines={1}
+          style={
+            Array [
+              Object {
+                "backgroundColor": "transparent",
+                "textAlign": "center",
+              },
+              Object {
+                "color": "#8E8E8F",
               },
               Object {
                 "fontSize": 10,

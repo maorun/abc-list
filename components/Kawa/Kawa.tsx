@@ -39,7 +39,7 @@ export class Kawa extends Component {
         <Text style={{textAlign: 'center'}}>{'Bisherige Kawas'}</Text>
 
         <DeleteConfirm
-          isVisible={this.state.itemToDelete !== null}
+          isVisible={this.state.itemToDelete !== undefined}
           itemToDelete={this.state.itemToDelete}
           onDelete={(kawa) => {
             this.setState({itemToDelete: null}, () => {

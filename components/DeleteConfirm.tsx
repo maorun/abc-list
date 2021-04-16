@@ -15,7 +15,7 @@ export class DeleteConfirm<T> extends Component {
     const marginTopStyle = {marginTop: 5};
     return (
       <Overlay
-        isVisible={this.props.isVisible}
+        isVisible={!!this.props.isVisible}
         // height={'auto'}
         onRequestClose={() => this.abort()}
         onBackdropPress={() => this.abort()}>
