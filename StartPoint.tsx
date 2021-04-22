@@ -40,17 +40,33 @@ export default class StartPoint extends Component {
     return (
       <NavigationContainer>
         <abcList.Navigator initialRouteName="list">
-          <abcList.Screen name={'list'} component={ListNavigation} options={{
-            tabBarLabel: 'List',
-            tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons name="alphabetical-variant" color={color} size={size} />
-            ),
-          }}/>
-          <abcList.Screen name={'kawa'} component={KawaNavigation}  options={{
-            tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons name="ballot" color={color} size={size} />
-            ),
-          }}/>
+          <abcList.Screen
+            name={'list'}
+            component={ListNavigation}
+            options={{
+              tabBarLabel: 'List',
+              tabBarIcon: ({color, size}) => (
+                <MaterialCommunityIcons
+                  name="alphabetical-variant"
+                  color={color}
+                  size={size}
+                />
+              ),
+            }}
+          />
+          <abcList.Screen
+            name={'kawa'}
+            component={KawaNavigation}
+            options={{
+              tabBarIcon: ({color, size}) => (
+                <MaterialCommunityIcons
+                  name="ballot"
+                  color={color}
+                  size={size}
+                />
+              ),
+            }}
+          />
         </abcList.Navigator>
         <StatusBar style="auto" />
       </NavigationContainer>
