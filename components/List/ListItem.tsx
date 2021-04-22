@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {Component} from 'react';
-import {ScrollView, FlatList, View} from 'react-native';
+import {FlatList, View} from 'react-native';
 import {Letter} from './Letter';
 import {StackNavigationProp} from '@react-navigation/stack';
 
@@ -39,17 +39,15 @@ export class ListItem extends Component {
     }
 
     return (
-      <ScrollView>
-        <FlatList
-          keyExtractor={(item) => item.char}
-          data={abcList}
-          renderItem={({item}) => (
-            <View key={item.char} style={{marginBottom: 10}}>
-              <Letter letter={item.char} cacheKey={this.getCacheKey()} />
-            </View>
-          )}
-        />
-      </ScrollView>
+      <FlatList
+        keyExtractor={(item) => item.char}
+        data={abcList}
+        renderItem={({item}) => (
+          <View key={item.char} style={{marginBottom: 10}}>
+            <Letter letter={item.char} cacheKey={this.getCacheKey()} />
+          </View>
+        )}
+      />
     );
   }
 }

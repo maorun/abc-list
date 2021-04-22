@@ -52,6 +52,9 @@
   },
   "jest": {
     "testEnvironment": "jsdom",
+    "setupFiles": [
+      "./nativeAnimation.js"
+    ],
     "preset": "jest-expo",
     "globals": {
       "ts-jest": {

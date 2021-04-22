@@ -732,36 +732,32 @@ exports[`<StartPoint /> should match Snapshot 1`] = `
                             >
                               Bisherige ABC-Listen
                             </Text>
-                            <RCTScrollView>
-                              <View>
-                                <RCTScrollView
-                                  data={Array []}
-                                  disableVirtualization={false}
-                                  getItem={[Function]}
-                                  getItemCount={[Function]}
-                                  horizontal={false}
-                                  initialNumToRender={10}
-                                  keyExtractor={[Function]}
-                                  maxToRenderPerBatch={10}
-                                  onContentSizeChange={[Function]}
-                                  onEndReachedThreshold={2}
-                                  onLayout={[Function]}
-                                  onMomentumScrollEnd={[Function]}
-                                  onScroll={[Function]}
-                                  onScrollBeginDrag={[Function]}
-                                  onScrollEndDrag={[Function]}
-                                  refreshing={true}
-                                  removeClippedSubviews={false}
-                                  renderItem={[Function]}
-                                  scrollEventThrottle={50}
-                                  stickyHeaderIndices={Array []}
-                                  updateCellsBatchingPeriod={50}
-                                  viewabilityConfigCallbackPairs={Array []}
-                                  windowSize={21}
-                                >
-                                  <View />
-                                </RCTScrollView>
-                              </View>
+                            <RCTScrollView
+                              data={Array []}
+                              disableVirtualization={false}
+                              getItem={[Function]}
+                              getItemCount={[Function]}
+                              horizontal={false}
+                              initialNumToRender={10}
+                              keyExtractor={[Function]}
+                              maxToRenderPerBatch={10}
+                              onContentSizeChange={[Function]}
+                              onEndReachedThreshold={2}
+                              onLayout={[Function]}
+                              onMomentumScrollEnd={[Function]}
+                              onScroll={[Function]}
+                              onScrollBeginDrag={[Function]}
+                              onScrollEndDrag={[Function]}
+                              refreshing={true}
+                              removeClippedSubviews={false}
+                              renderItem={[Function]}
+                              scrollEventThrottle={50}
+                              stickyHeaderIndices={Array []}
+                              updateCellsBatchingPeriod={50}
+                              viewabilityConfigCallbackPairs={Array []}
+                              windowSize={21}
+                            >
+                              <View />
                             </RCTScrollView>
                           </View>
                         </View>
