@@ -42,7 +42,7 @@ export class Kawa extends Component {
           isVisible={this.state.itemToDelete !== undefined}
           itemToDelete={this.state.itemToDelete}
           onDelete={(kawa) => {
-            this.setState({itemToDelete: null}, () => {
+            this.setState({itemToDelete: undefined}, () => {
               if (kawa) {
                 this.deleteKawa(kawa);
               }
@@ -84,9 +84,8 @@ export class Kawa extends Component {
     this.saveState();
   }
 
-  private saveState() {
-    AsyncStorage.setItem('Kawas', JSON.stringify(this.state.kawas)).then(() => {
-      this.setState({kawas: this.state.kawas});
-    });
+  private async saveState() {
+    await AsyncStorage.setItem('Kawas', JSON.stringify(this.state.kawas));
+    this.setState({kawas: this.state.kawas});
   }
 }

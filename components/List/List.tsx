@@ -1,7 +1,7 @@
 import * as React from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Component} from 'react';
-import {View, ScrollView, FlatList, Text} from 'react-native';
+import {View, FlatList, Text} from 'react-native';
 import {Button} from 'react-native-elements';
 import {ListItem} from './ListItem';
 import {NewStringItem} from '../NewStringItem';
@@ -45,34 +45,32 @@ export class List extends Component {
           onSave={(item) => this.createNewItem(item.text)}
         />
         <Text style={{textAlign: 'center'}}>Bisherige ABC-Listen</Text>
-        <ScrollView>
-          <FlatList
-            keyExtractor={(item) => item}
-            data={this.state.data}
-            refreshing={true}
-            renderItem={({item}) => (
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  alignItems: 'stretch',
-                  margin: 5,
-                }}>
-                <Button
-                  title={item}
-                  containerStyle={{width: '85%', marginRight: 5}}
-                  onPress={() => this.showAbcList(item)}
-                />
-                <Button
-                  title="X"
-                  containerStyle={{width: '10%'}}
-                  onPress={() => this.deleteItem(item)}
-                />
-              </View>
-            )}
-          />
-        </ScrollView>
+        <FlatList
+          keyExtractor={(item) => item}
+          data={this.state.data}
+          refreshing={true}
+          renderItem={({item}) => (
+            <View
+              style={{
+                flex: 1,
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'stretch',
+                margin: 5,
+              }}>
+              <Button
+                title={item}
+                containerStyle={{width: '85%', marginRight: 5}}
+                onPress={() => this.showAbcList(item)}
+              />
+              <Button
+                title="X"
+                containerStyle={{width: '10%'}}
+                onPress={() => this.deleteItem(item)}
+              />
+            </View>
+          )}
+        />
       </View>
     );
   }
