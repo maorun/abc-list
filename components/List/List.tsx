@@ -6,6 +6,7 @@ import {Button} from 'react-native-elements';
 import {ListItem} from './ListItem';
 import {NewStringItem} from '../NewStringItem';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {Theme} from '../../themes/default';
 
 export class List extends Component {
   public props!: {
@@ -39,33 +40,26 @@ export class List extends Component {
 
   public render() {
     return (
-      <View style={{marginBottom: 60}}>
+      <View style={Theme.View}>
         <NewStringItem
           title={'Neue ABC-Liste'}
           onSave={(item) => this.createNewItem(item.text)}
         />
-        <Text style={{textAlign: 'center'}}>Bisherige ABC-Listen</Text>
+        <Text style={Theme.HeaderText}>Bisherige ABC-Listen</Text>
         <FlatList
           keyExtractor={(item) => item}
           data={this.state.data}
           refreshing={true}
           renderItem={({item}) => (
-            <View
-              style={{
-                flex: 1,
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'stretch',
-                margin: 5,
-              }}>
+            <View style={Theme.ListView}>
               <Button
                 title={item}
-                containerStyle={{width: '85%', marginRight: 5}}
+                containerStyle={Theme.ButtonShowAbc}
                 onPress={() => this.showAbcList(item)}
               />
               <Button
                 title="X"
-                containerStyle={{width: '10%'}}
+                containerStyle={Theme.ButtonDelete}
                 onPress={() => this.deleteItem(item)}
               />
             </View>

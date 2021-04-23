@@ -326,7 +326,7 @@ exports[`<StartPoint /> should match Snapshot 1`] = `
                           <View
                             style={
                               Object {
-                                "marginBottom": 60,
+                                "marginBottom": 70,
                               }
                             }
                           >

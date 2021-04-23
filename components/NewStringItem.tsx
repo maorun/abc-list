@@ -3,6 +3,7 @@ import {Component} from 'react';
 import {View, Text, StyleProp, ViewStyle} from 'react-native';
 import {Input, Button, Overlay} from 'react-native-elements';
 import {getRandomBytesAsync} from 'expo-random';
+import {Theme} from '../themes/default';
 
 export interface NewItemWithSaveKey {
   key: string;
@@ -33,7 +34,7 @@ export class NewStringItem extends Component {
           onRequestClose={() => this.abort()}
           onBackdropPress={() => this.abort()}>
           <View>
-            <Text style={{textAlign: 'center'}}>{this.props.title}:</Text>
+            <Text style={Theme.HeaderText}>{this.props.title}:</Text>
             <Input
               containerStyle={margin}
               onChangeText={(text: string) => this.setState({newItem: text})}

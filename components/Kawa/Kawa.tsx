@@ -1,11 +1,12 @@
 import * as React from 'react';
 import {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {View, Text, StyleProp, ViewStyle, ScrollView} from 'react-native';
+import {View, Text, ScrollView} from 'react-native';
 import {NewStringItem, NewItemWithSaveKey} from '../NewStringItem';
 import {Button} from 'react-native-elements';
 import {DeleteConfirm} from '../DeleteConfirm';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {Theme} from '../../themes/default';
 
 export class Kawa extends Component {
   public props!: {
@@ -29,14 +30,13 @@ export class Kawa extends Component {
   }
 
   public render() {
-    const margin: StyleProp<ViewStyle> = {margin: 5};
     return (
-      <View>
+      <View style={Theme.View}>
         <NewStringItem
           title={'neues Kawa'}
           onSave={(newKawa: NewItemWithSaveKey) => this.saveKawa(newKawa)}
         />
-        <Text style={{textAlign: 'center'}}>{'Bisherige Kawas'}</Text>
+        <Text style={Theme.HeaderText}>{'Bisherige Kawas'}</Text>
 
         <DeleteConfirm
           isVisible={this.state.itemToDelete !== undefined}
@@ -48,13 +48,13 @@ export class Kawa extends Component {
               }
             });
           }}
-          onAbort={() => this.setState({itemToDelete: null})}
+          onAbort={() => this.setState({itemToDelete: undefined})}
         />
 
         <ScrollView>
           {this.state.kawas.map((kawa: NewItemWithSaveKey, index: number) => (
             <Button
-              containerStyle={margin}
+              containerStyle={Theme.ElementMargin}
               key={index}
               title={kawa.text}
               onPress={() =>
