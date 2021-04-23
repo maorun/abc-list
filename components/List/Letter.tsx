@@ -4,6 +4,7 @@ import {Button, Overlay, Input} from 'react-native-elements';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {View} from 'react-native';
 import {SavedWord} from './SavedWord';
+import {Theme} from '../../themes/default';
 
 export class Letter extends Component {
   public props!: {
@@ -32,7 +33,6 @@ export class Letter extends Component {
     return (
       <View>
         <Button
-          style={{width: 50}}
           title={this.props.letter.toUpperCase()}
           onPress={() => this.toggle()}
         />
@@ -44,8 +44,7 @@ export class Letter extends Component {
           <View>
             <Input
               onChangeText={(text: string) => (this.newText = text)}
-              autoFocus={true}
-              style={{marginBottom: 5}}
+              style={Theme.ElementMargin}
             />
             <Button
               title={'Speichern'}
@@ -55,14 +54,7 @@ export class Letter extends Component {
             />
           </View>
         </Overlay>
-        <View
-          style={{
-            flex: 1,
-            flexDirection: 'row',
-            flexWrap: 'wrap',
-            marginTop: 5,
-            justifyContent: 'space-around',
-          }}>
+        <View style={Theme.LetterListView}>
           {this.state.words.map((text: string) => {
             return (
               <SavedWord

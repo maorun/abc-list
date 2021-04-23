@@ -1,7 +1,8 @@
 import * as React from 'react';
 import {Component} from 'react';
-import {Button, Overlay, Text} from 'react-native-elements';
+import {Button} from 'react-native-elements';
 import {View} from 'react-native';
+import {DeleteConfirm} from '../DeleteConfirm';
 
 export class SavedWord extends Component {
   public props!: {
@@ -20,25 +21,12 @@ export class SavedWord extends Component {
     return (
       <View style={marginTopStyle}>
         <Button title={this.props.text} onPress={() => this.toggle()} />
-        <Overlay
-          isVisible={this.state.showDelete}
-          // height={'auto'}
-          onRequestClose={() => this.toggle()}
-          onBackdropPress={() => this.toggle()}>
-          <View>
-            <Text style={{textAlign: 'center'}}>{'Wirklich löschen?'}</Text>
-            <Button
-              containerStyle={marginTopStyle}
-              title={'ja'}
-              onPress={() => this.delete()}
-            />
-            <Button
-              containerStyle={marginTopStyle}
-              title={'nein'}
-              onPress={() => this.toggle()}
-            />
-          </View>
-        </Overlay>
+        <DeleteConfirm
+          itemToDelete={this.props.text}
+          isVisible={this.state.showDelete !== false}
+          onAbort={() => this.toggle()}
+          onDelete={() => this.delete()}
+        />
       </View>
     );
   }

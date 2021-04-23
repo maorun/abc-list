@@ -3,6 +3,7 @@ import {Component} from 'react';
 import {FlatList, View} from 'react-native';
 import {Letter} from './Letter';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {Theme} from '../../themes/default';
 
 export class ListItem extends Component {
   public props!: {
@@ -43,7 +44,7 @@ export class ListItem extends Component {
         keyExtractor={(item) => item.char}
         data={abcList}
         renderItem={({item}) => (
-          <View key={item.char} style={{marginBottom: 10}}>
+          <View key={item.char} style={Theme.ElementMargin}>
             <Letter letter={item.char} cacheKey={this.getCacheKey()} />
           </View>
         )}
