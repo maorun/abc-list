@@ -19,7 +19,7 @@
     "@react-navigation/drawer": "5.12.5",
     "@react-navigation/native": "5.9.4",
     "@react-navigation/stack": "5.14.4",
-    "@types/jest": "26.0.22",
+    "@types/jest": "26.0.23",
     "expo": "41.0.1",
     "expo-random": "11.1.2",
     "expo-status-bar": "1.0.4",
