@@ -1,72 +1,26 @@
-# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
-
 name: Node.js CI
 
 on: [push]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [14.x, 15.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
-      with:
-        node-version: ${{ matrix.node-version }}
-    - uses: expo/expo-github-action@v5
-    - run: npm install
-    - run: npm run build --if-present
-    - run: npm test
-    - run: expo doctor
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-#  publish-in-rc:
-#    needs: [build]
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v2
-#      - uses: actions/setup-node@v2
-#        with:
-#          node-version: 15.x
-#      - uses: expo/expo-github-action@v5
-#        with:
-#          expo-token: ${{ secrets.EXPO_TOKEN }}
-#
-#      - run: npm install
-#      - run: npm run build --if-present
-#
-#      - run: expo publish --release-channel=pr-${{ github.event.number }}
-#
-#      - name: Find Comment
-#        uses: peter-evans/find-comment@v1
-#        id: fc
-#        with:
-#          issue-number: ${{ github.event.pull_request.number }}
-#          comment-author: 'github-actions[bot]'
-#          body-includes: App is ready
-#
-#      - name: Create comment
-#        if: steps.fc.outputs.comment-id == ''
-#        uses: peter-evans/create-or-update-comment@v1
-#        with:
-#          issue-number: ${{ github.event.pull_request.number }}
-#          body: |
-#            App is ready for review, you can [see it here](https://expo.io/@maomarco/abc_list?release-channel=pr-${{ github.event.number }}).
-#          reactions: rocket
-#
-#      - name: Update comment
-#        if: steps.fc.outputs.comment-id != ''
-#        uses: peter-evans/create-or-update-comment@v1
-#        with:
-#          comment-id: ${{ steps.fc.outputs.comment-id }}
-#          edit-mode: replace
-#          body: |
-#            App is ready for review, you can [see it here](https://expo.io/@maomarco/abc_list?release-channel=pr-${{ github.event.number }}).
-#          reactions: rocket
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build application
+        run: npm run build
