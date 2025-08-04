@@ -11,11 +11,6 @@ Für weitere Informationen bitte https://www.birkenbihl.com/ besuchen.
 
 ## Projektinformationen
 
-Momentan nur mit [Expo](https://expo.io/) startbar. Kann aber problemlos in die jeweiligen Stores überführt werden (
-bedingt Interesse und Wirtschaftlichkeit).
-
-Project-URL: https://expo.io/@maomarco/projects/abc_list
-
 ## Lernen, jetzt aber richtig
 
 Hast du schon mal was gelernt und wenig später weißt du nichts mehr?
