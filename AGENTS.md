@@ -64,7 +64,7 @@ npm run coverage
 
 ## 4. Coding Style
 
-This project uses **Prettier** and **ESLint** to enforce a consistent code style. Configuration files (`.prettierrc.cjs`, `.eslintrc.cjs`) are included in the repository.
+This project uses **Prettier** and **ESLint** to enforce a consistent code style. Configuration files for Prettier and ESLint are included in the repository.
 
 Please ensure your code adheres to these styles. It's recommended to integrate Prettier and ESLint into your editor to format code automatically on save.
 
