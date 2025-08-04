@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { DeleteConfirm } from '../DeleteConfirm';
+import React, {useState} from 'react';
+import {DeleteConfirm} from '../DeleteConfirm';
 
 interface SavedWordProps {
   text: string;
   onDelete?: () => void;
 }
 
-export function SavedWord({ text, onDelete }: SavedWordProps) {
+export function SavedWord({text, onDelete}: SavedWordProps) {
   const [showDelete, setShowDelete] = useState(false);
 
   const handleDelete = () => {
@@ -18,12 +18,11 @@ export function SavedWord({ text, onDelete }: SavedWordProps) {
 
   return (
     <div className="my-1">
-      <div
-        className="p-2 border rounded cursor-pointer hover:bg-gray-100"
-        onClick={() => setShowDelete(true)}
-      >
+      <button
+        className="p-2 border rounded cursor-pointer hover:bg-gray-100 w-full text-left"
+        onClick={() => setShowDelete(true)}>
         {text}
-      </div>
+      </button>
       <DeleteConfirm
         itemToDelete={text}
         isVisible={showDelete}
