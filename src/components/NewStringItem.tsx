@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 
 export interface NewItemWithSaveKey {
   key: string;
@@ -11,7 +11,7 @@ interface NewStringItemProps {
   onAbort?: () => void;
 }
 
-export function NewStringItem({ title, onSave, onAbort }: NewStringItemProps) {
+export function NewStringItem({title, onSave, onAbort}: NewStringItemProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [newItem, setNewItem] = useState('');
 
@@ -25,14 +25,16 @@ export function NewStringItem({ title, onSave, onAbort }: NewStringItemProps) {
 
   const handleSave = () => {
     if (onSave && newItem) {
-      onSave({ key: crypto.randomUUID(), text: newItem });
+      onSave({key: crypto.randomUUID(), text: newItem});
     }
     handleAbort();
   };
 
   return (
     <div className="my-4 text-center">
-      <button onClick={() => setIsVisible(true)} className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+      <button
+        onClick={() => setIsVisible(true)}
+        className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
         {title}
       </button>
       {isVisible && (
@@ -47,10 +49,14 @@ export function NewStringItem({ title, onSave, onAbort }: NewStringItemProps) {
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-4"
             />
             <div className="flex justify-end space-x-2">
-              <button onClick={handleSave} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+              <button
+                onClick={handleSave}
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                 Speichern
               </button>
-              <button onClick={handleAbort} className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+              <button
+                onClick={handleAbort}
+                className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
                 Abbrechen
               </button>
             </div>

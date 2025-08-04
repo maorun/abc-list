@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 
 interface KawaLetterProps {
   letter: string;
@@ -6,7 +6,7 @@ interface KawaLetterProps {
   onChangeText?: (text: string) => void;
 }
 
-export function KawaLetter({ letter, index, onChangeText }: KawaLetterProps) {
+export function KawaLetter({letter, index, onChangeText}: KawaLetterProps) {
   const [text, setText] = useState('');
 
   const getStorageKey = () => `KawaItem_${letter}_${index}`;
@@ -20,7 +20,7 @@ export function KawaLetter({ letter, index, onChangeText }: KawaLetterProps) {
 
   const handleTextChange = (newText: string) => {
     setText(newText);
-    localStorage.setItem(getStorageKey(), JSON.stringify({ text: newText }));
+    localStorage.setItem(getStorageKey(), JSON.stringify({text: newText}));
     if (onChangeText) {
       onChangeText(newText);
     }
