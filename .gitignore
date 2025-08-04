@@ -58,6 +58,4 @@ buck-out/
 /ios/Pods/
 
 
-.expo
-.expo-shared
 package-lock.json
