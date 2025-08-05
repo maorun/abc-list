@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {SavedWord} from './SavedWord';
 
 interface LetterProps {
@@ -11,18 +11,24 @@ export function Letter({cacheKey, letter}: LetterProps) {
   const [words, setWords] = useState<string[]>([]);
   const [newWord, setNewWord] = useState('');
 
-  const getStorageKey = () => `${cacheKey}:${letter}`;
+  const getStorageKey = useCallback(
+    () => `${cacheKey}:${letter}`,
+    [cacheKey, letter],
+  );
 
   useEffect(() => {
     const storedWords = localStorage.getItem(getStorageKey());
     if (storedWords) {
       setWords(JSON.parse(storedWords));
     }
-  }, [cacheKey, letter]);
+  }, [getStorageKey]);
 
-  const updateStorage = (newWords: string[]) => {
-    localStorage.setItem(getStorageKey(), JSON.stringify(newWords));
-  };
+  const updateStorage = useCallback(
+    (newWords: string[]) => {
+      localStorage.setItem(getStorageKey(), JSON.stringify(newWords));
+    },
+    [getStorageKey],
+  );
 
   const handleAddWord = () => {
     if (newWord && !words.includes(newWord)) {
