@@ -1,6 +1,6 @@
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/2e63aead16244183ac8e54ab82a46487)](https://app.codacy.com/gh/maorun/abc-list?utm_source=github.com&utm_medium=referral&utm_content=maorun/abc-list&utm_campaign=Badge_Grade_Settings)
-[![CI Testing](https://github.com/maorun/abc-list/actions/workflows/test.yml/badge.svg)](https://github.com/maorun/abc-list/actions/workflows/test.yml)
+[![CI](https://github.com/maorun/abc-list/actions/workflows/ci.yml/badge.svg)](https://github.com/maorun/abc-list/actions/workflows/ci.yml)
 
 # Lernen, aber gehirn-gerecht
 
