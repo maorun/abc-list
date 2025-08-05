@@ -32,12 +32,14 @@ export function DeleteConfirm<T>({
         <div className="flex justify-center space-x-4">
           <button
             onClick={handleDelete}
-            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+          >
             Ja
           </button>
           <button
             onClick={onAbort}
-            className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+            className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+          >
             Nein
           </button>
         </div>

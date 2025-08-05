@@ -60,7 +60,8 @@ export function Kawa() {
             onContextMenu={(e) => {
               e.preventDefault();
               setItemToDelete(kawa);
-            }}>
+            }}
+          >
             {kawa.text}
           </button>
         ))}

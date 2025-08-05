@@ -26,10 +26,14 @@ export function KawaLetter({letter, index, onChangeText}: KawaLetterProps) {
     }
   };
 
+  const inputId = `kawa-letter-input-${index}`;
   return (
     <div className="flex items-center space-x-4 w-full md:w-1/2">
-      <label className="text-2xl font-bold w-8">{letter.toUpperCase()}</label>
+      <label htmlFor={inputId} className="text-2xl font-bold w-8">
+        {letter.toUpperCase()}
+      </label>
       <input
+        id={inputId}
         type="text"
         value={text}
         onChange={(e) => handleTextChange(e.target.value)}

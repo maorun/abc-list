@@ -34,7 +34,8 @@ export function NewStringItem({title, onSave, onAbort}: NewStringItemProps) {
     <div className="my-4 text-center">
       <button
         onClick={() => setIsVisible(true)}
-        className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+        className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+      >
         {title}
       </button>
       {isVisible && (
@@ -51,12 +52,14 @@ export function NewStringItem({title, onSave, onAbort}: NewStringItemProps) {
             <div className="flex justify-end space-x-2">
               <button
                 onClick={handleSave}
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              >
                 Speichern
               </button>
               <button
                 onClick={handleAbort}
-                className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+              >
                 Abbrechen
               </button>
             </div>

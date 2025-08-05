@@ -33,7 +33,8 @@ function App() {
                         isActive
                           ? `${navLinkClasses} ${activeNavLinkClasses}`
                           : navLinkClasses
-                      }>
+                      }
+                    >
                       Listen
                     </NavLink>
                     <NavLink
@@ -42,7 +43,8 @@ function App() {
                         isActive
                           ? `${navLinkClasses} ${activeNavLinkClasses}`
                           : navLinkClasses
-                      }>
+                      }
+                    >
                       Kawas
                     </NavLink>
                   </div>

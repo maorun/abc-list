@@ -44,7 +44,8 @@ export function Letter({cacheKey, letter}: LetterProps) {
     <div className="flex flex-col items-center">
       <button
         className="w-16 h-16 text-2xl font-bold rounded-full bg-gray-200 hover:bg-gray-300"
-        onClick={() => setIsModalOpen(true)}>
+        onClick={() => setIsModalOpen(true)}
+      >
         {letter.toUpperCase()}
       </button>
       <div className="mt-2 flex flex-col gap-1">
@@ -73,12 +74,14 @@ export function Letter({cacheKey, letter}: LetterProps) {
             <div className="flex justify-end space-x-2">
               <button
                 onClick={handleAddWord}
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              >
                 Speichern
               </button>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+              >
                 Abbrechen
               </button>
             </div>
