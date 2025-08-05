@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {DeleteConfirm} from '../DeleteConfirm';
+import React, {useState} from "react";
+import {DeleteConfirm} from "../DeleteConfirm";
 
 interface SavedWordProps {
   text: string;

@@ -1,5 +1,5 @@
-import React, {useState, useEffect, useCallback} from 'react';
-import {SavedWord} from './SavedWord';
+import React, {useState, useEffect, useCallback} from "react";
+import {SavedWord} from "./SavedWord";
 
 interface LetterProps {
   cacheKey: string;
@@ -9,7 +9,7 @@ interface LetterProps {
 export function Letter({cacheKey, letter}: LetterProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [words, setWords] = useState<string[]>([]);
-  const [newWord, setNewWord] = useState('');
+  const [newWord, setNewWord] = useState("");
 
   const getStorageKey = useCallback(
     () => `${cacheKey}:${letter}`,
@@ -36,7 +36,7 @@ export function Letter({cacheKey, letter}: LetterProps) {
       setWords(newWords);
       updateStorage(newWords);
     }
-    setNewWord('');
+    setNewWord("");
     setIsModalOpen(false);
   };
 

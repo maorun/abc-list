@@ -1,6 +1,6 @@
-import {render, screen, fireEvent} from '@testing-library/react';
-import {describe, it, expect, beforeEach} from 'vitest';
-import {Letter} from './Letter';
+import {render, screen, fireEvent} from "@testing-library/react";
+import {describe, it, expect, beforeEach} from "vitest";
+import {Letter} from "./Letter";
 
 // Mock localStorage
 const localStorageMock = (() => {
@@ -19,101 +19,101 @@ const localStorageMock = (() => {
   };
 })();
 
-Object.defineProperty(window, 'localStorage', {
+Object.defineProperty(window, "localStorage", {
   value: localStorageMock,
 });
 
-describe('Letter', () => {
-  const cacheKey = 'testList';
-  const letter = 'a';
+describe("Letter", () => {
+  const cacheKey = "testList";
+  const letter = "a";
 
   beforeEach(() => {
     localStorage.clear();
   });
 
-  it('renders a button with the capitalized letter', () => {
+  it("renders a button with the capitalized letter", () => {
     render(<Letter cacheKey={cacheKey} letter={letter} />);
-    expect(screen.getByRole('button', {name: 'A'})).toBeInTheDocument();
+    expect(screen.getByRole("button", {name: "A"})).toBeInTheDocument();
   });
 
-  it('loads and displays words from localStorage on initial render', () => {
+  it("loads and displays words from localStorage on initial render", () => {
     localStorage.setItem(
       `${cacheKey}:${letter}`,
-      JSON.stringify(['Apple', 'Ant']),
+      JSON.stringify(["Apple", "Ant"]),
     );
     render(<Letter cacheKey={cacheKey} letter={letter} />);
-    expect(screen.getByText('Apple')).toBeInTheDocument();
-    expect(screen.getByText('Ant')).toBeInTheDocument();
+    expect(screen.getByText("Apple")).toBeInTheDocument();
+    expect(screen.getByText("Ant")).toBeInTheDocument();
   });
 
-  it('opens a modal when the letter button is clicked', () => {
+  it("opens a modal when the letter button is clicked", () => {
     render(<Letter cacheKey={cacheKey} letter={letter} />);
-    fireEvent.click(screen.getByRole('button', {name: 'A'}));
+    fireEvent.click(screen.getByRole("button", {name: "A"}));
     expect(
-      screen.getByRole('heading', {name: 'Neues Wort für "A"'}),
+      screen.getByRole("heading", {name: 'Neues Wort für "A"'}),
     ).toBeInTheDocument();
   });
 
-  it('adds a new word, saves to localStorage, and closes modal', () => {
+  it("adds a new word, saves to localStorage, and closes modal", () => {
     render(<Letter cacheKey={cacheKey} letter={letter} />);
-    fireEvent.click(screen.getByRole('button', {name: 'A'}));
+    fireEvent.click(screen.getByRole("button", {name: "A"}));
 
-    const input = screen.getByPlaceholderText('Wort eingeben...');
-    fireEvent.change(input, {target: {value: 'Airplane'}});
-    fireEvent.click(screen.getByRole('button', {name: 'Speichern'}));
+    const input = screen.getByPlaceholderText("Wort eingeben...");
+    fireEvent.change(input, {target: {value: "Airplane"}});
+    fireEvent.click(screen.getByRole("button", {name: "Speichern"}));
 
-    expect(screen.getByText('Airplane')).toBeInTheDocument();
+    expect(screen.getByText("Airplane")).toBeInTheDocument();
     expect(localStorage.getItem(`${cacheKey}:${letter}`)).toBe(
-      JSON.stringify(['Airplane']),
+      JSON.stringify(["Airplane"]),
     );
     expect(
-      screen.queryByRole('heading', {name: 'Neues Wort für "A"'}),
+      screen.queryByRole("heading", {name: 'Neues Wort für "A"'}),
     ).not.toBeInTheDocument();
   });
 
-  it('does not add a duplicate word', () => {
-    localStorage.setItem(`${cacheKey}:${letter}`, JSON.stringify(['Apple']));
+  it("does not add a duplicate word", () => {
+    localStorage.setItem(`${cacheKey}:${letter}`, JSON.stringify(["Apple"]));
     render(<Letter cacheKey={cacheKey} letter={letter} />);
-    fireEvent.click(screen.getByRole('button', {name: 'A'}));
+    fireEvent.click(screen.getByRole("button", {name: "A"}));
 
-    const input = screen.getByPlaceholderText('Wort eingeben...');
-    fireEvent.change(input, {target: {value: 'Apple'}});
-    fireEvent.click(screen.getByRole('button', {name: 'Speichern'}));
+    const input = screen.getByPlaceholderText("Wort eingeben...");
+    fireEvent.change(input, {target: {value: "Apple"}});
+    fireEvent.click(screen.getByRole("button", {name: "Speichern"}));
 
-    expect(screen.getAllByText('Apple')).toHaveLength(1);
+    expect(screen.getAllByText("Apple")).toHaveLength(1);
     expect(localStorage.getItem(`${cacheKey}:${letter}`)).toBe(
-      JSON.stringify(['Apple']),
+      JSON.stringify(["Apple"]),
     );
   });
 
-  it('deletes a word and updates localStorage', () => {
+  it("deletes a word and updates localStorage", () => {
     localStorage.setItem(
       `${cacheKey}:${letter}`,
-      JSON.stringify(['Apple', 'Ant']),
+      JSON.stringify(["Apple", "Ant"]),
     );
     render(<Letter cacheKey={cacheKey} letter={letter} />);
 
     // Find the button associated with the word 'Apple' to delete it.
     // The SavedWord component renders the text as a button.
-    const appleWordButton = screen.getByRole('button', {name: 'Apple'});
+    const appleWordButton = screen.getByRole("button", {name: "Apple"});
     fireEvent.click(appleWordButton); // This opens the delete confirmation
 
-    const confirmDeleteButton = screen.getByRole('button', {name: 'Ja'});
+    const confirmDeleteButton = screen.getByRole("button", {name: "Ja"});
     fireEvent.click(confirmDeleteButton);
 
-    expect(screen.queryByText('Apple')).not.toBeInTheDocument();
-    expect(screen.getByText('Ant')).toBeInTheDocument();
+    expect(screen.queryByText("Apple")).not.toBeInTheDocument();
+    expect(screen.getByText("Ant")).toBeInTheDocument();
     expect(localStorage.getItem(`${cacheKey}:${letter}`)).toBe(
-      JSON.stringify(['Ant']),
+      JSON.stringify(["Ant"]),
     );
   });
 
   it('closes the modal when "Abbrechen" is clicked', () => {
     render(<Letter cacheKey={cacheKey} letter={letter} />);
-    fireEvent.click(screen.getByRole('button', {name: 'A'}));
-    fireEvent.click(screen.getByRole('button', {name: 'Abbrechen'}));
+    fireEvent.click(screen.getByRole("button", {name: "A"}));
+    fireEvent.click(screen.getByRole("button", {name: "Abbrechen"}));
     expect(
-      screen.queryByRole('heading', {name: 'Neues Wort für "A"'}),
+      screen.queryByRole("heading", {name: 'Neues Wort für "A"'}),
     ).not.toBeInTheDocument();
   });
 });

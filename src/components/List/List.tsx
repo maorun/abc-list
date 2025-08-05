@@ -1,8 +1,8 @@
-import React, {useState, useEffect} from 'react';
-import {useNavigate} from 'react-router-dom';
-import {NewStringItem} from '../NewStringItem';
+import React, {useState, useEffect} from "react";
+import {useNavigate} from "react-router-dom";
+import {NewStringItem} from "../NewStringItem";
 
-export const cacheKey = 'abcLists';
+export const cacheKey = "abcLists";
 
 export function List() {
   const [data, setData] = useState<string[]>([]);
@@ -23,7 +23,7 @@ export function List() {
     const newData = data.filter((item) => item !== itemToDelete);
     setData(newData);
     updateStorage(newData);
-    localStorage.removeItem('abcList-' + itemToDelete);
+    localStorage.removeItem("abcList-" + itemToDelete);
   };
 
   const showAbcList = (item: string) => {
@@ -42,7 +42,7 @@ export function List() {
   return (
     <div className="p-4">
       <NewStringItem
-        title={'Neue ABC-Liste'}
+        title={"Neue ABC-Liste"}
         onSave={(item) => createNewItem(item.text)}
       />
       <h2 className="text-2xl font-bold text-center my-4">
