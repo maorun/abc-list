@@ -66,6 +66,18 @@ npm run coverage
 
 This project uses **Prettier** and **ESLint** to enforce a consistent code style. Configuration files for Prettier and ESLint are included in the repository.
 
+To check for linting errors, run:
+
+```bash
+npm run lint
+```
+
+To automatically fix formatting and linting issues, run:
+
+```bash
+npm run format
+```
+
 Please ensure your code adheres to these styles. It's recommended to integrate Prettier and ESLint into your editor to format code automatically on save.
 
 ## 5. Commit Messages
