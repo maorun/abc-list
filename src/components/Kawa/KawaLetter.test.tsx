@@ -47,12 +47,16 @@ describe('KawaLetter', () => {
     const input = screen.getByRole<HTMLInputElement>('textbox');
     fireEvent.change(input, {target: {value: 'Airplane'}});
     expect(input.value).toBe('Airplane');
-    expect(localStorage.getItem(storageKey)).toBe(JSON.stringify({text: 'Airplane'}));
+    expect(localStorage.getItem(storageKey)).toBe(
+      JSON.stringify({text: 'Airplane'}),
+    );
   });
 
   it('calls onChangeText callback when text changes', () => {
     const onChangeText = vi.fn();
-    render(<KawaLetter letter={letter} index={index} onChangeText={onChangeText} />);
+    render(
+      <KawaLetter letter={letter} index={index} onChangeText={onChangeText} />,
+    );
     const input = screen.getByRole('textbox');
     fireEvent.change(input, {target: {value: 'Ant'}});
     expect(onChangeText).toHaveBeenCalledWith('Ant');

@@ -20,7 +20,8 @@ export function SavedWord({text, onDelete}: SavedWordProps) {
     <div className="my-1">
       <button
         className="p-2 border rounded cursor-pointer hover:bg-gray-100 w-full text-left"
-        onClick={() => setShowDelete(true)}>
+        onClick={() => setShowDelete(true)}
+      >
         {text}
       </button>
       <DeleteConfirm

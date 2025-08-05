@@ -38,18 +38,28 @@ describe('KawaItem', () => {
   it('displays a "not found" message if no item is in location state', () => {
     mockedUseLocation.mockReturnValue({...locationMock, state: null});
     render(<KawaItem />, {wrapper: MemoryRouter});
-    expect(screen.getByText('Kawa nicht gefunden. Bitte gehe zurück zur Übersicht.')).toBeInTheDocument();
+    expect(
+      screen.getByText('Kawa nicht gefunden. Bitte gehe zurück zur Übersicht.'),
+    ).toBeInTheDocument();
   });
 
   it('renders title and sets document title when item is provided', () => {
-    mockedUseLocation.mockReturnValue({...locationMock, state: {item: testKawa}});
+    mockedUseLocation.mockReturnValue({
+      ...locationMock,
+      state: {item: testKawa},
+    });
     render(<KawaItem />, {wrapper: MemoryRouter});
-    expect(screen.getByRole('heading', {name: `Kawa für "${testKawa.text}"`})).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', {name: `Kawa für "${testKawa.text}"`}),
+    ).toBeInTheDocument();
     expect(document.title).toBe(`Kawa für ${testKawa.text}`);
   });
 
   it('renders a KawaLetter component for each letter', () => {
-    mockedUseLocation.mockReturnValue({...locationMock, state: {item: testKawa}});
+    mockedUseLocation.mockReturnValue({
+      ...locationMock,
+      state: {item: testKawa},
+    });
     render(<KawaItem />, {wrapper: MemoryRouter});
     const letterComponents = screen.getAllByTestId('kawa-letter');
     expect(letterComponents).toHaveLength(4); // "Test" has 4 letters

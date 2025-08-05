@@ -53,12 +53,14 @@ export function List() {
           <li key={item} className="flex items-center justify-center space-x-2">
             <button
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-4/5"
-              onClick={() => showAbcList(item)}>
+              onClick={() => showAbcList(item)}
+            >
               {item}
             </button>
             <button
               className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded w-1/5"
-              onClick={() => deleteItem(item)}>
+              onClick={() => deleteItem(item)}
+            >
               X
             </button>
           </li>

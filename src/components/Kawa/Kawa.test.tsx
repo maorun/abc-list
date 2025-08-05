@@ -55,8 +55,12 @@ describe('Kawa', () => {
     fireEvent.change(input, {target: {value: 'Neues Kawa Item'}});
     fireEvent.click(screen.getByRole('button', {name: 'Speichern'}));
 
-    expect(screen.getByRole('button', {name: 'Neues Kawa Item'})).toBeInTheDocument();
-    const stored = JSON.parse(localStorage.getItem(storageKey) || '[]') as NewItemWithSaveKey[];
+    expect(
+      screen.getByRole('button', {name: 'Neues Kawa Item'}),
+    ).toBeInTheDocument();
+    const stored = JSON.parse(
+      localStorage.getItem(storageKey) || '[]',
+    ) as NewItemWithSaveKey[];
     expect(stored).toHaveLength(1);
     expect(stored[0].text).toBe('Neues Kawa Item');
     expect(mockedNavigate).toHaveBeenCalledWith(`/kawa/${stored[0].key}`, {
@@ -70,7 +74,9 @@ describe('Kawa', () => {
     render(<Kawa />, {wrapper: MemoryRouter});
 
     fireEvent.click(screen.getByRole('button', {name: 'Kawa 1'}));
-    expect(mockedNavigate).toHaveBeenCalledWith('/kawa/1', {state: {item: testKawas[0]}});
+    expect(mockedNavigate).toHaveBeenCalledWith('/kawa/1', {
+      state: {item: testKawas[0]},
+    });
   });
 
   it('opens delete confirmation on right-click', () => {
@@ -90,7 +96,9 @@ describe('Kawa', () => {
     fireEvent.contextMenu(screen.getByRole('button', {name: 'Kawa 1'}));
     fireEvent.click(screen.getByRole('button', {name: 'Ja'}));
 
-    expect(screen.queryByRole('button', {name: 'Kawa 1'})).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', {name: 'Kawa 1'}),
+    ).not.toBeInTheDocument();
     expect(localStorage.getItem(storageKey)).toBe('[]');
     expect(screen.queryByText('Wirklich löschen?')).not.toBeInTheDocument();
   });

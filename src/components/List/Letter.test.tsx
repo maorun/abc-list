@@ -1,5 +1,5 @@
 import {render, screen, fireEvent} from '@testing-library/react';
-import {describe, it, expect, vi, beforeEach} from 'vitest';
+import {describe, it, expect, beforeEach} from 'vitest';
 import {Letter} from './Letter';
 
 // Mock localStorage
@@ -37,7 +37,10 @@ describe('Letter', () => {
   });
 
   it('loads and displays words from localStorage on initial render', () => {
-    localStorage.setItem(`${cacheKey}:${letter}`, JSON.stringify(['Apple', 'Ant']));
+    localStorage.setItem(
+      `${cacheKey}:${letter}`,
+      JSON.stringify(['Apple', 'Ant']),
+    );
     render(<Letter cacheKey={cacheKey} letter={letter} />);
     expect(screen.getByText('Apple')).toBeInTheDocument();
     expect(screen.getByText('Ant')).toBeInTheDocument();
@@ -46,7 +49,9 @@ describe('Letter', () => {
   it('opens a modal when the letter button is clicked', () => {
     render(<Letter cacheKey={cacheKey} letter={letter} />);
     fireEvent.click(screen.getByRole('button', {name: 'A'}));
-    expect(screen.getByRole('heading', {name: 'Neues Wort für "A"'})).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', {name: 'Neues Wort für "A"'}),
+    ).toBeInTheDocument();
   });
 
   it('adds a new word, saves to localStorage, and closes modal', () => {
@@ -58,8 +63,12 @@ describe('Letter', () => {
     fireEvent.click(screen.getByRole('button', {name: 'Speichern'}));
 
     expect(screen.getByText('Airplane')).toBeInTheDocument();
-    expect(localStorage.getItem(`${cacheKey}:${letter}`)).toBe(JSON.stringify(['Airplane']));
-    expect(screen.queryByRole('heading', {name: 'Neues Wort für "A"'})).not.toBeInTheDocument();
+    expect(localStorage.getItem(`${cacheKey}:${letter}`)).toBe(
+      JSON.stringify(['Airplane']),
+    );
+    expect(
+      screen.queryByRole('heading', {name: 'Neues Wort für "A"'}),
+    ).not.toBeInTheDocument();
   });
 
   it('does not add a duplicate word', () => {
@@ -72,11 +81,16 @@ describe('Letter', () => {
     fireEvent.click(screen.getByRole('button', {name: 'Speichern'}));
 
     expect(screen.getAllByText('Apple')).toHaveLength(1);
-    expect(localStorage.getItem(`${cacheKey}:${letter}`)).toBe(JSON.stringify(['Apple']));
+    expect(localStorage.getItem(`${cacheKey}:${letter}`)).toBe(
+      JSON.stringify(['Apple']),
+    );
   });
 
   it('deletes a word and updates localStorage', () => {
-    localStorage.setItem(`${cacheKey}:${letter}`, JSON.stringify(['Apple', 'Ant']));
+    localStorage.setItem(
+      `${cacheKey}:${letter}`,
+      JSON.stringify(['Apple', 'Ant']),
+    );
     render(<Letter cacheKey={cacheKey} letter={letter} />);
 
     // Find the button associated with the word 'Apple' to delete it.
@@ -89,13 +103,17 @@ describe('Letter', () => {
 
     expect(screen.queryByText('Apple')).not.toBeInTheDocument();
     expect(screen.getByText('Ant')).toBeInTheDocument();
-    expect(localStorage.getItem(`${cacheKey}:${letter}`)).toBe(JSON.stringify(['Ant']));
+    expect(localStorage.getItem(`${cacheKey}:${letter}`)).toBe(
+      JSON.stringify(['Ant']),
+    );
   });
 
   it('closes the modal when "Abbrechen" is clicked', () => {
     render(<Letter cacheKey={cacheKey} letter={letter} />);
     fireEvent.click(screen.getByRole('button', {name: 'A'}));
     fireEvent.click(screen.getByRole('button', {name: 'Abbrechen'}));
-    expect(screen.queryByRole('heading', {name: 'Neues Wort für "A"'})).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', {name: 'Neues Wort für "A"'}),
+    ).not.toBeInTheDocument();
   });
 });
