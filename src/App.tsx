@@ -1,19 +1,19 @@
-import React from 'react';
+import React from "react";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   NavLink,
-} from 'react-router-dom';
-import {List} from './components/List/List';
-import {ListItem} from './components/List/ListItem';
-import {Kawa} from './components/Kawa/Kawa';
-import {KawaItem} from './components/Kawa/KawaItem';
+} from "react-router-dom";
+import {List} from "./components/List/List";
+import {ListItem} from "./components/List/ListItem";
+import {Kawa} from "./components/Kawa/Kawa";
+import {KawaItem} from "./components/Kawa/KawaItem";
 
 function App() {
   const navLinkClasses =
-    'text-white hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium';
-  const activeNavLinkClasses = 'bg-blue-900';
+    "text-white hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium";
+  const activeNavLinkClasses = "bg-blue-900";
 
   return (
     <Router>

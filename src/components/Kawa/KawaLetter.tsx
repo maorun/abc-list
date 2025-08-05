@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useState, useEffect, useCallback} from "react";
 
 interface KawaLetterProps {
   letter: string;
@@ -7,7 +7,7 @@ interface KawaLetterProps {
 }
 
 export function KawaLetter({letter, index, onChangeText}: KawaLetterProps) {
-  const [text, setText] = useState('');
+  const [text, setText] = useState("");
 
   const getStorageKey = useCallback(
     () => `KawaItem_${letter}_${index}`,

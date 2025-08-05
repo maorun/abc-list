@@ -1,11 +1,11 @@
-import {render, screen, fireEvent} from '@testing-library/react';
-import {describe, it, expect, vi} from 'vitest';
-import {DeleteConfirm} from './DeleteConfirm';
+import {render, screen, fireEvent} from "@testing-library/react";
+import {describe, it, expect, vi} from "vitest";
+import {DeleteConfirm} from "./DeleteConfirm";
 
-describe('DeleteConfirm', () => {
-  const itemToDelete = {id: 1, name: 'Test Item'};
+describe("DeleteConfirm", () => {
+  const itemToDelete = {id: 1, name: "Test Item"};
 
-  it('should not be visible when isVisible is false', () => {
+  it("should not be visible when isVisible is false", () => {
     render(
       <DeleteConfirm
         itemToDelete={itemToDelete}
@@ -13,10 +13,10 @@ describe('DeleteConfirm', () => {
         isVisible={false}
       />,
     );
-    expect(screen.queryByText('Wirklich löschen?')).not.toBeInTheDocument();
+    expect(screen.queryByText("Wirklich löschen?")).not.toBeInTheDocument();
   });
 
-  it('should be visible when isVisible is true', () => {
+  it("should be visible when isVisible is true", () => {
     render(
       <DeleteConfirm
         itemToDelete={itemToDelete}
@@ -24,9 +24,9 @@ describe('DeleteConfirm', () => {
         isVisible={true}
       />,
     );
-    expect(screen.getByText('Wirklich löschen?')).toBeInTheDocument();
-    expect(screen.getByRole('button', {name: 'Ja'})).toBeInTheDocument();
-    expect(screen.getByRole('button', {name: 'Nein'})).toBeInTheDocument();
+    expect(screen.getByText("Wirklich löschen?")).toBeInTheDocument();
+    expect(screen.getByRole("button", {name: "Ja"})).toBeInTheDocument();
+    expect(screen.getByRole("button", {name: "Nein"})).toBeInTheDocument();
   });
 
   it('should call onDelete when "Ja" is clicked', () => {
@@ -42,7 +42,7 @@ describe('DeleteConfirm', () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole('button', {name: 'Ja'}));
+    fireEvent.click(screen.getByRole("button", {name: "Ja"}));
     expect(onDelete).toHaveBeenCalledWith(itemToDelete);
     expect(onAbort).not.toHaveBeenCalled();
   });
@@ -60,7 +60,7 @@ describe('DeleteConfirm', () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole('button', {name: 'Nein'}));
+    fireEvent.click(screen.getByRole("button", {name: "Nein"}));
     expect(onAbort).toHaveBeenCalled();
     expect(onDelete).not.toHaveBeenCalled();
   });
@@ -76,7 +76,7 @@ describe('DeleteConfirm', () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole('button', {name: 'Ja'}));
+    fireEvent.click(screen.getByRole("button", {name: "Ja"}));
     expect(onAbort).toHaveBeenCalled();
   });
 });

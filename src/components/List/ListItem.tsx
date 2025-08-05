@@ -1,6 +1,6 @@
-import React, {useEffect} from 'react';
-import {useParams} from 'react-router-dom';
-import {Letter} from './Letter';
+import React, {useEffect} from "react";
+import {useParams} from "react-router-dom";
+import {Letter} from "./Letter";
 
 export function ListItem() {
   const {item} = useParams<{item: string}>();
@@ -12,7 +12,7 @@ export function ListItem() {
   }, [item]);
 
   const getCacheKey = (): string => {
-    return 'abcList-' + item;
+    return "abcList-" + item;
   };
 
   const alphabet = Array.from({length: 26}, (_, i) =>

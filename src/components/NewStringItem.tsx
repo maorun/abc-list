@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState} from "react";
 
 export interface NewItemWithSaveKey {
   key: string;
@@ -13,11 +13,11 @@ interface NewStringItemProps {
 
 export function NewStringItem({title, onSave, onAbort}: NewStringItemProps) {
   const [isVisible, setIsVisible] = useState(false);
-  const [newItem, setNewItem] = useState('');
+  const [newItem, setNewItem] = useState("");
 
   const handleAbort = () => {
     setIsVisible(false);
-    setNewItem('');
+    setNewItem("");
     if (onAbort) {
       onAbort();
     }

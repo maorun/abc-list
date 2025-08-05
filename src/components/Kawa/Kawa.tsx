@@ -1,9 +1,9 @@
-import React, {useState, useEffect} from 'react';
-import {useNavigate} from 'react-router-dom';
-import {NewStringItem, NewItemWithSaveKey} from '../NewStringItem';
-import {DeleteConfirm} from '../DeleteConfirm';
+import React, {useState, useEffect} from "react";
+import {useNavigate} from "react-router-dom";
+import {NewStringItem, NewItemWithSaveKey} from "../NewStringItem";
+import {DeleteConfirm} from "../DeleteConfirm";
 
-const KAWA_STORAGE_KEY = 'Kawas';
+const KAWA_STORAGE_KEY = "Kawas";
 
 export function Kawa() {
   const [kawas, setKawas] = useState<NewItemWithSaveKey[]>([]);
@@ -41,7 +41,7 @@ export function Kawa() {
 
   return (
     <div className="p-4">
-      <NewStringItem title={'Neues Kawa'} onSave={saveKawa} />
+      <NewStringItem title={"Neues Kawa"} onSave={saveKawa} />
       <h2 className="text-2xl font-bold text-center my-4">Bisherige Kawas</h2>
 
       <DeleteConfirm

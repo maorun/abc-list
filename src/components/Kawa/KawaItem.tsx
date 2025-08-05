@@ -1,7 +1,7 @@
-import React, {useEffect} from 'react';
-import {useLocation} from 'react-router-dom';
-import {KawaLetter} from './KawaLetter';
-import {NewItemWithSaveKey} from '../NewStringItem';
+import React, {useEffect} from "react";
+import {useLocation} from "react-router-dom";
+import {KawaLetter} from "./KawaLetter";
+import {NewItemWithSaveKey} from "../NewStringItem";
 
 export function KawaItem() {
   const location = useLocation();
@@ -23,7 +23,7 @@ export function KawaItem() {
     );
   }
 
-  const letters = item.text.split('');
+  const letters = item.text.split("");
 
   return (
     <div className="p-4">
