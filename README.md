@@ -128,6 +128,41 @@ noch nicht implementiert (auch schwierig auf dem Handy umzusetzen).
 - **G**rafisch
 - **A**ssoziativ
 
+## Entwicklung (Development)
+
+Dieses Projekt wurde mit React, TypeScript und Vite erstellt.
+
+### Voraussetzungen
+
+- Node.js
+- npm
+
+### Installation
+
+Um die Abhängigkeiten zu installieren, führe folgenden Befehl aus:
+
+```bash
+npm install
+```
+
+### Lokaler Entwicklungsserver
+
+Um den lokalen Entwicklungsserver zu starten, führe folgenden Befehl aus:
+
+```bash
+npm run dev
+```
+
+Der Server ist unter `http://localhost:5173` erreichbar.
+
+### Tests
+
+Um die Tests auszuführen, verwende folgenden Befehl:
+
+```bash
+npm run test
+```
+
 ## Copyright
 
 Die vorgestellten Themen wurden nicht von mir erfunden, sondern von der
