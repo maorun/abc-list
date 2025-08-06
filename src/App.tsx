@@ -5,6 +5,7 @@ import {
   Route,
   NavLink,
 } from "react-router-dom";
+import {Toaster} from "sonner";
 import {List} from "./components/List/List";
 import {ListItem} from "./components/List/ListItem";
 import {Kawa} from "./components/Kawa/Kawa";
@@ -87,6 +88,7 @@ function App() {
             <Route path="/kaga/:key" element={<KagaItem />} />
           </Routes>
         </main>
+        <Toaster />
       </div>
     </Router>
   );

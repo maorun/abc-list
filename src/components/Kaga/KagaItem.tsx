@@ -1,6 +1,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import {useLocation} from "react-router-dom";
 import {NewItemWithSaveKey} from "../NewStringItem";
+import {usePrompt} from "@/components/ui/prompt-dialog";
 
 interface DrawingData {
   paths: Array<{
@@ -30,6 +31,7 @@ export function KagaItem() {
     texts: [],
   });
   const [currentPath, setCurrentPath] = useState<{x: number; y: number}[]>([]);
+  const {prompt, PromptComponent} = usePrompt();
 
   useEffect(() => {
     if (item) {
@@ -102,14 +104,18 @@ export function KagaItem() {
     };
   };
 
-  const startDrawing = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const startDrawing = async (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (tool === "pen") {
       setIsDrawing(true);
       const pos = getMousePos(e);
       setCurrentPath([pos]);
     } else if (tool === "text") {
       const pos = getMousePos(e);
-      const text = prompt("Text eingeben:");
+      const text = await prompt(
+        "Text eingeben:",
+        "Geben Sie den Text ein, der an dieser Position hinzugefügt werden soll:",
+        "Text hier eingeben...",
+      );
       if (text) {
         const newText = {
           x: pos.x,
@@ -269,6 +275,7 @@ export function KagaItem() {
         <br />
         Vergiss nicht zu speichern!
       </p>
+      <PromptComponent />
     </div>
   );
 }
