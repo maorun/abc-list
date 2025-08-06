@@ -122,7 +122,7 @@ Da im Gegenzug zu ABC-Listen ein KaWa enger gefasst ist, muss man mehr überlege
 ### KaGa
 
 - **K**reativ
-- **A**analograffiti
+- **A**naloggraffiti
 - **G**rafisch
 - **A**ssoziativ
 
