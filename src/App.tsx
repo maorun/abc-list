@@ -13,6 +13,8 @@ import {KawaItem} from "./components/Kawa/KawaItem";
 import {Kaga} from "./components/Kaga/Kaga";
 import {KagaItem} from "./components/Kaga/KagaItem";
 import {LinkLists} from "./components/LinkLists/LinkLists";
+import {StadtLandFluss} from "./components/StadtLandFluss/StadtLandFluss";
+import {StadtLandFlussGame} from "./components/StadtLandFluss/StadtLandFlussGame";
 
 function App() {
   const navLinkClasses =
@@ -71,6 +73,16 @@ function App() {
                     >
                       KaGa
                     </NavLink>
+                    <NavLink
+                      to="/slf"
+                      className={({isActive}) =>
+                        isActive
+                          ? `${navLinkClasses} ${activeNavLinkClasses}`
+                          : navLinkClasses
+                      }
+                    >
+                      Stadt-Land-Fluss
+                    </NavLink>
                   </div>
                 </div>
               </div>
@@ -86,6 +98,8 @@ function App() {
             <Route path="/kawa/:key" element={<KawaItem />} />
             <Route path="/kaga" element={<Kaga />} />
             <Route path="/kaga/:key" element={<KagaItem />} />
+            <Route path="/slf" element={<StadtLandFluss />} />
+            <Route path="/slf/:game" element={<StadtLandFlussGame />} />
           </Routes>
         </main>
         <Toaster />

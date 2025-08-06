@@ -1,0 +1,410 @@
+import React, {useState, useEffect} from "react";
+import {useParams} from "react-router-dom";
+import {toast} from "sonner";
+
+// Default categories for Stadt-Land-Fluss
+const DEFAULT_CATEGORIES = [
+  "Stadt",
+  "Land",
+  "Fluss",
+  "Tier",
+  "Beruf",
+  "Name",
+  "Lebensmittel",
+  "Gegenstand",
+];
+
+// All letters except difficult ones
+const GAME_LETTERS = "ABCDEFGHIJKLMNOPRSTUVWZ".split("");
+
+interface GameData {
+  categories: string[];
+  currentLetter: string;
+  isGameActive: boolean;
+  timeLeft: number;
+  gameDuration: number;
+  answers: Record<string, string>;
+  rounds: Array<{
+    letter: string;
+    answers: Record<string, string>;
+    points: Record<string, number>;
+    totalPoints: number;
+    timeUsed: number;
+  }>;
+  totalScore: number;
+}
+
+export function StadtLandFlussGame() {
+  const {game} = useParams<{game: string}>();
+  const [gameData, setGameData] = useState<GameData>({
+    categories: DEFAULT_CATEGORIES,
+    currentLetter: "",
+    isGameActive: false,
+    timeLeft: 0,
+    gameDuration: 120, // 2 minutes default
+    answers: {},
+    rounds: [],
+    totalScore: 0,
+  });
+  const [editingCategories, setEditingCategories] = useState(false);
+  const [newCategory, setNewCategory] = useState("");
+  const [timerInterval, setTimerInterval] = useState<NodeJS.Timeout | null>(
+    null,
+  );
+
+  useEffect(() => {
+    if (game) {
+      document.title = `Stadt-Land-Fluss: ${game}`;
+      loadGameData();
+    }
+  }, [game]);
+
+  useEffect(() => {
+    if (gameData.isGameActive && gameData.timeLeft > 0) {
+      const interval = setInterval(() => {
+        setGameData((prev) => ({
+          ...prev,
+          timeLeft: Math.max(0, prev.timeLeft - 1),
+        }));
+      }, 1000);
+      setTimerInterval(interval);
+      return () => clearInterval(interval);
+    } else if (gameData.isGameActive && gameData.timeLeft === 0) {
+      endRound();
+    }
+  }, [gameData.isGameActive, gameData.timeLeft]);
+
+  const getCacheKey = (): string => {
+    return "slf-" + game;
+  };
+
+  const loadGameData = () => {
+    const storedData = localStorage.getItem(getCacheKey());
+    if (storedData) {
+      const parsed = JSON.parse(storedData);
+      setGameData((prev) => ({...prev, ...parsed}));
+    }
+  };
+
+  const saveGameData = (data: GameData) => {
+    localStorage.setItem(getCacheKey(), JSON.stringify(data));
+  };
+
+  const generateRandomLetter = (): string => {
+    return GAME_LETTERS[Math.floor(Math.random() * GAME_LETTERS.length)];
+  };
+
+  const startNewRound = () => {
+    const letter = generateRandomLetter();
+    const newGameData = {
+      ...gameData,
+      currentLetter: letter,
+      isGameActive: true,
+      timeLeft: gameData.gameDuration,
+      answers: gameData.categories.reduce(
+        (acc, cat) => ({...acc, [cat]: ""}),
+        {},
+      ),
+    };
+    setGameData(newGameData);
+    saveGameData(newGameData);
+    toast.success(`Neue Runde gestartet! Buchstabe: ${letter}`);
+  };
+
+  const endRound = () => {
+    if (timerInterval) clearInterval(timerInterval);
+
+    const timeUsed = gameData.gameDuration - gameData.timeLeft;
+    const points = calculatePoints(gameData.answers, timeUsed);
+    const totalPoints = Object.values(points).reduce((sum, p) => sum + p, 0);
+
+    const newRound = {
+      letter: gameData.currentLetter,
+      answers: {...gameData.answers},
+      points,
+      totalPoints,
+      timeUsed,
+    };
+
+    const newGameData = {
+      ...gameData,
+      isGameActive: false,
+      rounds: [...gameData.rounds, newRound],
+      totalScore: gameData.totalScore + totalPoints,
+      currentLetter: "",
+      timeLeft: 0,
+    };
+
+    setGameData(newGameData);
+    saveGameData(newGameData);
+    toast.success(`Runde beendet! Punkte: ${totalPoints}`);
+  };
+
+  const calculatePoints = (
+    answers: Record<string, string>,
+    timeUsed: number,
+  ): Record<string, number> => {
+    const points: Record<string, number> = {};
+    const speedBonus = Math.max(
+      0,
+      (gameData.gameDuration - timeUsed) / gameData.gameDuration,
+    );
+
+    Object.entries(answers).forEach(([category, answer]) => {
+      let categoryPoints = 0;
+
+      if (
+        answer.trim() &&
+        answer.toUpperCase().startsWith(gameData.currentLetter)
+      ) {
+        categoryPoints = 10; // Base points for valid answer
+        categoryPoints += Math.floor(speedBonus * 5); // Speed bonus (0-5 points)
+
+        // Creativity bonus for longer words
+        if (answer.length > 6) {
+          categoryPoints += 2;
+        }
+      }
+
+      points[category] = categoryPoints;
+    });
+
+    return points;
+  };
+
+  const updateAnswer = (category: string, value: string) => {
+    const newAnswers = {...gameData.answers, [category]: value};
+    const newGameData = {...gameData, answers: newAnswers};
+    setGameData(newGameData);
+    saveGameData(newGameData);
+  };
+
+  const addCategory = () => {
+    if (
+      newCategory.trim() &&
+      !gameData.categories.includes(newCategory.trim())
+    ) {
+      const newCategories = [...gameData.categories, newCategory.trim()];
+      const newGameData = {...gameData, categories: newCategories};
+      setGameData(newGameData);
+      saveGameData(newGameData);
+      setNewCategory("");
+    }
+  };
+
+  const removeCategory = (category: string) => {
+    if (gameData.categories.length > 1) {
+      const newCategories = gameData.categories.filter((c) => c !== category);
+      const newGameData = {...gameData, categories: newCategories};
+      setGameData(newGameData);
+      saveGameData(newGameData);
+    }
+  };
+
+  const resetGame = () => {
+    const newGameData = {
+      ...gameData,
+      rounds: [],
+      totalScore: 0,
+      isGameActive: false,
+      currentLetter: "",
+      timeLeft: 0,
+      answers: {},
+    };
+    setGameData(newGameData);
+    saveGameData(newGameData);
+    toast.success("Spiel zurückgesetzt!");
+  };
+
+  const formatTime = (seconds: number): string => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
+  };
+
+  return (
+    <div className="p-4 max-w-4xl mx-auto">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">Stadt-Land-Fluss: {game}</h1>
+        <div className="text-xl font-bold text-blue-600">
+          Gesamtpunkte: {gameData.totalScore}
+        </div>
+      </div>
+
+      {/* Game Controls */}
+      <div className="bg-gray-100 p-4 rounded-lg mb-6">
+        <div className="flex flex-wrap gap-4 items-center justify-between">
+          <div className="flex gap-2 items-center">
+            <label htmlFor="game-duration" className="font-medium">
+              Spielzeit:
+            </label>
+            <select
+              id="game-duration"
+              value={gameData.gameDuration}
+              onChange={(e) =>
+                setGameData((prev) => ({
+                  ...prev,
+                  gameDuration: parseInt(e.target.value),
+                }))
+              }
+              disabled={gameData.isGameActive}
+              className="px-2 py-1 border rounded"
+            >
+              <option value={60}>1 Minute</option>
+              <option value={120}>2 Minuten</option>
+              <option value={180}>3 Minuten</option>
+              <option value={300}>5 Minuten</option>
+            </select>
+          </div>
+
+          <div className="flex gap-2">
+            <button
+              onClick={startNewRound}
+              disabled={gameData.isGameActive}
+              className="bg-green-500 hover:bg-green-700 disabled:bg-gray-400 text-white font-bold py-2 px-4 rounded"
+            >
+              {gameData.rounds.length === 0 ? "Spiel starten" : "Neue Runde"}
+            </button>
+
+            {gameData.isGameActive && (
+              <button
+                onClick={endRound}
+                className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded"
+              >
+                Runde beenden
+              </button>
+            )}
+
+            <button
+              onClick={resetGame}
+              disabled={gameData.isGameActive}
+              className="bg-red-500 hover:bg-red-700 disabled:bg-gray-400 text-white font-bold py-2 px-4 rounded"
+            >
+              Spiel zurücksetzen
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Current Round */}
+      {gameData.isGameActive && (
+        <div className="bg-blue-50 p-6 rounded-lg mb-6">
+          <div className="text-center mb-4">
+            <div className="text-4xl font-bold text-blue-600 mb-2">
+              Buchstabe: {gameData.currentLetter}
+            </div>
+            <div className="text-2xl font-bold text-red-600">
+              Zeit: {formatTime(gameData.timeLeft)}
+            </div>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {gameData.categories.map((category) => (
+              <div key={category} className="bg-white p-3 rounded">
+                <label className="block font-medium mb-1">{category}:</label>
+                <input
+                  type="text"
+                  value={gameData.answers[category] || ""}
+                  onChange={(e) => updateAnswer(category, e.target.value)}
+                  className="w-full px-2 py-1 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder={`${category} mit ${gameData.currentLetter}...`}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Categories Configuration */}
+      <div className="bg-gray-50 p-4 rounded-lg mb-6">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-bold">Kategorien</h3>
+          <button
+            onClick={() => setEditingCategories(!editingCategories)}
+            disabled={gameData.isGameActive}
+            className="bg-blue-500 hover:bg-blue-700 disabled:bg-gray-400 text-white font-bold py-1 px-3 rounded text-sm"
+          >
+            {editingCategories ? "Fertig" : "Bearbeiten"}
+          </button>
+        </div>
+
+        <div className="flex flex-wrap gap-2 mb-4">
+          {gameData.categories.map((category) => (
+            <span
+              key={category}
+              className="inline-flex items-center bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"
+            >
+              {category}
+              {editingCategories && (
+                <button
+                  onClick={() => removeCategory(category)}
+                  className="ml-2 text-red-500 hover:text-red-700"
+                >
+                  ×
+                </button>
+              )}
+            </span>
+          ))}
+        </div>
+
+        {editingCategories && (
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={newCategory}
+              onChange={(e) => setNewCategory(e.target.value)}
+              onKeyPress={(e) => e.key === "Enter" && addCategory()}
+              placeholder="Neue Kategorie..."
+              className="flex-1 px-2 py-1 border rounded"
+            />
+            <button
+              onClick={addCategory}
+              className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded"
+            >
+              Hinzufügen
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Game History */}
+      {gameData.rounds.length > 0 && (
+        <div className="bg-white p-4 rounded-lg border">
+          <h3 className="text-lg font-bold mb-4">Spielverlauf</h3>
+          <div className="space-y-4">
+            {gameData.rounds.map((round, index) => (
+              <div key={index} className="border-l-4 border-blue-500 pl-4">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="font-bold">
+                    Runde {index + 1} - Buchstabe: {round.letter}
+                  </span>
+                  <span className="text-blue-600 font-bold">
+                    {round.totalPoints} Punkte
+                  </span>
+                </div>
+                <div className="text-sm text-gray-600 mb-2">
+                  Zeit benötigt: {formatTime(round.timeUsed)}
+                </div>
+                <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-3 text-sm">
+                  {Object.entries(round.answers).map(([category, answer]) => (
+                    <div key={category} className="flex justify-between">
+                      <span>{category}:</span>
+                      <span className="font-medium">
+                        {answer || "-"}
+                        {answer && (
+                          <span className="text-blue-600 ml-1">
+                            ({round.points[category]} P)
+                          </span>
+                        )}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
