@@ -22,7 +22,7 @@ export function Letter({cacheKey, letter}: LetterProps) {
       const parsed = JSON.parse(storedData);
       // Handle both old string[] format and new WordWithExplanation[] format
       if (Array.isArray(parsed) && parsed.length > 0) {
-        if (typeof parsed[0] === "string") {
+        if (parsed.every(item => typeof item === "string")) {
           // Convert old format to new format
           const converted = parsed.map((word: string) => ({
             text: word,
