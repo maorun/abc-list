@@ -74,7 +74,9 @@ export function List() {
       <ul className="space-y-2">
         {data
           .slice()
-          .sort((a, b) => (isReversed ? b.localeCompare(a) : a.localeCompare(b)))
+          .sort((a, b) =>
+            isReversed ? b.localeCompare(a) : a.localeCompare(b),
+          )
           .map((item) => (
             <li
               key={item}
@@ -82,18 +84,18 @@ export function List() {
             >
               <button
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-4/5"
-              onClick={() => showAbcList(item)}
-            >
-              {item}
-            </button>
-            <button
-              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded w-1/5"
-              onClick={() => deleteItem(item)}
-            >
-              X
-            </button>
-          </li>
-        ))}
+                onClick={() => showAbcList(item)}
+              >
+                {item}
+              </button>
+              <button
+                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded w-1/5"
+                onClick={() => deleteItem(item)}
+              >
+                X
+              </button>
+            </li>
+          ))}
       </ul>
     </div>
   );
