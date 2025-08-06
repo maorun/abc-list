@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useCallback} from "react";
-import {SavedWord} from "./SavedWord";
+import {SavedWord, WordWithExplanation} from "./SavedWord";
 
 interface LetterProps {
   cacheKey: string;
@@ -8,7 +8,7 @@ interface LetterProps {
 
 export function Letter({cacheKey, letter}: LetterProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [words, setWords] = useState<string[]>([]);
+  const [words, setWords] = useState<WordWithExplanation[]>([]);
   const [newWord, setNewWord] = useState("");
 
   const getStorageKey = useCallback(
@@ -17,22 +17,44 @@ export function Letter({cacheKey, letter}: LetterProps) {
   );
 
   useEffect(() => {
-    const storedWords = localStorage.getItem(getStorageKey());
-    if (storedWords) {
-      setWords(JSON.parse(storedWords));
+    const storedData = localStorage.getItem(getStorageKey());
+    if (storedData) {
+      const parsed = JSON.parse(storedData);
+      // Handle both old string[] format and new WordWithExplanation[] format
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        if (parsed.every((item) => typeof item === "string")) {
+          // Convert old format to new format
+          const converted = parsed.map((word: string) => ({
+            text: word,
+            explanation: "",
+            version: 1,
+            imported: false,
+          }));
+          setWords(converted);
+          localStorage.setItem(getStorageKey(), JSON.stringify(converted));
+        } else {
+          setWords(parsed);
+        }
+      }
     }
   }, [getStorageKey]);
 
   const updateStorage = useCallback(
-    (newWords: string[]) => {
+    (newWords: WordWithExplanation[]) => {
       localStorage.setItem(getStorageKey(), JSON.stringify(newWords));
     },
     [getStorageKey],
   );
 
   const handleAddWord = () => {
-    if (newWord && !words.includes(newWord)) {
-      const newWords = [...words, newWord];
+    if (newWord && !words.some((w) => w.text === newWord)) {
+      const newWordObj: WordWithExplanation = {
+        text: newWord,
+        explanation: "",
+        version: 1,
+        imported: false,
+      };
+      const newWords = [...words, newWordObj];
       setWords(newWords);
       updateStorage(newWords);
     }
@@ -41,7 +63,17 @@ export function Letter({cacheKey, letter}: LetterProps) {
   };
 
   const handleDeleteWord = (wordToDelete: string) => {
-    const newWords = words.filter((word) => word !== wordToDelete);
+    const newWords = words.filter((word) => word.text !== wordToDelete);
+    setWords(newWords);
+    updateStorage(newWords);
+  };
+
+  const handleExplanationChange = (wordText: string, explanation: string) => {
+    const newWords = words.map((word) =>
+      word.text === wordText
+        ? {...word, explanation, version: (word.version || 1) + 1}
+        : word,
+    );
     setWords(newWords);
     updateStorage(newWords);
   };
@@ -57,9 +89,14 @@ export function Letter({cacheKey, letter}: LetterProps) {
       <div className="mt-2 flex flex-col gap-1">
         {words.map((word) => (
           <SavedWord
-            key={word}
-            text={word}
-            onDelete={() => handleDeleteWord(word)}
+            key={word.text}
+            text={word.text}
+            explanation={word.explanation}
+            imported={word.imported}
+            onDelete={() => handleDeleteWord(word.text)}
+            onExplanationChange={(explanation) =>
+              handleExplanationChange(word.text, explanation)
+            }
           />
         ))}
       </div>
