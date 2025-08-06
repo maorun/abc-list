@@ -34,13 +34,13 @@ export function LinkLists() {
         const parsed = JSON.parse(storedData);
         // Handle both old string[] format and new WordWithExplanation[] format
         if (Array.isArray(parsed) && parsed.length > 0) {
-          if (typeof parsed[0] === 'string') {
+          if (typeof parsed[0] === "string") {
             // Convert old format to new format
             words[letter] = parsed.map((word: string) => ({
               text: word,
               explanation: "",
               version: 1,
-              imported: false
+              imported: false,
             }));
           } else {
             words[letter] = parsed;
@@ -158,18 +158,20 @@ export function LinkLists() {
                                 <span
                                   key={index}
                                   className={`px-2 py-1 rounded text-xs border ${
-                                    wordObj.imported 
-                                      ? 'bg-blue-100 border-blue-300' 
-                                      : 'bg-white border-gray-300'
+                                    wordObj.imported
+                                      ? "bg-blue-100 border-blue-300"
+                                      : "bg-white border-gray-300"
                                   } ${
-                                    wordObj.explanation 
-                                      ? 'border-l-2 border-l-green-400' 
-                                      : ''
+                                    wordObj.explanation
+                                      ? "border-l-2 border-l-green-400"
+                                      : ""
                                   }`}
                                   title={
-                                    wordObj.explanation 
-                                      ? `${wordObj.imported ? '📥 Importiert' : ''} 💬 ${wordObj.explanation}` 
-                                      : wordObj.imported ? '📥 Importiert' : ''
+                                    wordObj.explanation
+                                      ? `${wordObj.imported ? "📥 Importiert" : ""} 💬 ${wordObj.explanation}`
+                                      : wordObj.imported
+                                        ? "📥 Importiert"
+                                        : ""
                                   }
                                 >
                                   {wordObj.text}

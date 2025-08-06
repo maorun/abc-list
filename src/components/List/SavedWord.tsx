@@ -16,7 +16,13 @@ interface SavedWordProps {
   onExplanationChange?: (explanation: string) => void;
 }
 
-export function SavedWord({text, explanation, imported, onDelete, onExplanationChange}: SavedWordProps) {
+export function SavedWord({
+  text,
+  explanation,
+  imported,
+  onDelete,
+  onExplanationChange,
+}: SavedWordProps) {
   const [showDelete, setShowDelete] = useState(false);
   const [showExplanation, setShowExplanation] = useState(false);
   const [editingExplanation, setEditingExplanation] = useState(false);
@@ -46,25 +52,35 @@ export function SavedWord({text, explanation, imported, onDelete, onExplanationC
       <div className="relative">
         <button
           className={`p-2 border rounded cursor-pointer hover:bg-gray-100 w-full text-left ${
-            imported ? 'border-blue-300 bg-blue-50' : ''
-          } ${explanation ? 'border-l-4 border-l-green-400' : ''}`}
+            imported ? "border-blue-300 bg-blue-50" : ""
+          } ${explanation ? "border-l-4 border-l-green-400" : ""}`}
           onClick={() => setShowDelete(true)}
           onContextMenu={handleRightClick}
-          title={imported ? "Importierter Begriff" : explanation ? "Hat Erklärung - Rechtsklick zum Anzeigen" : "Rechtsklick für Erklärung"}
+          title={
+            imported
+              ? "Importierter Begriff"
+              : explanation
+                ? "Hat Erklärung - Rechtsklick zum Anzeigen"
+                : "Rechtsklick für Erklärung"
+          }
         >
           <div className="flex items-center justify-between">
             <span>{text}</span>
             <div className="flex gap-1">
               {imported && <span className="text-blue-600 text-xs">📥</span>}
-              {explanation && <span className="text-green-600 text-xs">💬</span>}
+              {explanation && (
+                <span className="text-green-600 text-xs">💬</span>
+              )}
             </div>
           </div>
         </button>
-        
+
         {showExplanation && (
           <div className="absolute z-10 mt-1 p-3 bg-white border rounded-lg shadow-lg w-full min-w-64">
             <div className="flex justify-between items-center mb-2">
-              <h4 className="font-semibold text-sm">Erklärung für "{text}"</h4>
+              <h4 className="font-semibold text-sm">
+                Erklärung für &ldquo;{text}&rdquo;
+              </h4>
               <button
                 onClick={() => setShowExplanation(false)}
                 className="text-gray-400 hover:text-gray-600"
@@ -72,7 +88,7 @@ export function SavedWord({text, explanation, imported, onDelete, onExplanationC
                 ✕
               </button>
             </div>
-            
+
             {editingExplanation ? (
               <div>
                 <textarea
@@ -116,7 +132,7 @@ export function SavedWord({text, explanation, imported, onDelete, onExplanationC
           </div>
         )}
       </div>
-      
+
       <DeleteConfirm
         itemToDelete={text}
         isVisible={showDelete}

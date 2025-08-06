@@ -36,7 +36,7 @@ export function ListItem() {
       name: item || "Unbekannt",
       version: 1,
       exportDate: new Date().toISOString(),
-      words: {}
+      words: {},
     };
 
     alphabet.forEach((letter) => {
@@ -46,12 +46,12 @@ export function ListItem() {
         const parsed = JSON.parse(storedData);
         // Ensure we have the new format
         if (Array.isArray(parsed) && parsed.length > 0) {
-          if (typeof parsed[0] === 'string') {
+          if (typeof parsed[0] === "string") {
             exportData.words[letter] = parsed.map((word: string) => ({
               text: word,
               explanation: "",
               version: 1,
-              imported: false
+              imported: false,
             }));
           } else {
             exportData.words[letter] = parsed;
@@ -72,30 +72,35 @@ export function ListItem() {
   const importList = () => {
     try {
       const parsedData: ExportedList = JSON.parse(importData);
-      
+
       if (!parsedData.name || !parsedData.words) {
-        alert("Ungültige Datei-Struktur. Bitte überprüfen Sie das JSON-Format.");
+        alert(
+          "Ungültige Datei-Struktur. Bitte überprüfen Sie das JSON-Format.",
+        );
         return;
       }
 
       // Show import preview and require explanations for imported terms
       setShowImportModal(false);
       showImportPreview(parsedData);
-      
-    } catch (error) {
-      alert("Fehler beim Lesen der Datei. Bitte überprüfen Sie das JSON-Format.");
+    } catch {
+      alert(
+        "Fehler beim Lesen der Datei. Bitte überprüfen Sie das JSON-Format.",
+      );
     }
   };
 
   const showImportPreview = (data: ExportedList) => {
-    const newTerms: Array<{letter: string, word: WordWithExplanation}> = [];
-    
+    const newTerms: Array<{letter: string; word: WordWithExplanation}> = [];
+
     alphabet.forEach((letter) => {
       const existingStorageKey = `${getCacheKey()}:${letter}`;
       const existingData = localStorage.getItem(existingStorageKey);
       const existingWords = existingData ? JSON.parse(existingData) : [];
-      const existingTexts = existingWords.map((w: WordWithExplanation) => w.text);
-      
+      const existingTexts = existingWords.map(
+        (w: WordWithExplanation) => w.text,
+      );
+
       if (data.words[letter]) {
         data.words[letter].forEach((word) => {
           if (!existingTexts.includes(word.text)) {
@@ -104,8 +109,8 @@ export function ListItem() {
               word: {
                 ...word,
                 imported: true,
-                explanation: "" // Reset explanation to require new one
-              }
+                explanation: "", // Reset explanation to require new one
+              },
             });
           }
         });
@@ -121,7 +126,9 @@ export function ListItem() {
     showImportWizard(newTerms);
   };
 
-  const showImportWizard = (terms: Array<{letter: string, word: WordWithExplanation}>) => {
+  const showImportWizard = (
+    terms: Array<{letter: string; word: WordWithExplanation}>,
+  ) => {
     if (terms.length === 0) {
       alert("Import abgeschlossen!");
       return;
@@ -129,11 +136,11 @@ export function ListItem() {
 
     const currentTerm = terms[0];
     const remainingTerms = terms.slice(1);
-    
+
     const explanation = prompt(
       `Erklären Sie den Begriff "${currentTerm.word.text}" (${currentTerm.letter.toUpperCase()}):\n\n` +
-      `Hinweis: Sie müssen jeden importierten Begriff erklären können.\n` +
-      `Verbleibende Begriffe: ${terms.length}`
+        `Hinweis: Sie müssen jeden importierten Begriff erklären können.\n` +
+        `Verbleibende Begriffe: ${terms.length}`,
     );
 
     if (explanation === null) {
@@ -151,14 +158,14 @@ export function ListItem() {
     const storageKey = `${getCacheKey()}:${currentTerm.letter}`;
     const existingData = localStorage.getItem(storageKey);
     const existingWords = existingData ? JSON.parse(existingData) : [];
-    
+
     const newWord: WordWithExplanation = {
       ...currentTerm.word,
       explanation: explanation.trim(),
       imported: true,
-      version: 1
+      version: 1,
     };
-    
+
     const updatedWords = [...existingWords, newWord];
     localStorage.setItem(storageKey, JSON.stringify(updatedWords));
 
@@ -173,11 +180,11 @@ export function ListItem() {
   };
 
   const downloadAsFile = () => {
-    const blob = new Blob([exportedData], { type: 'application/json' });
+    const blob = new Blob([exportedData], {type: "application/json"});
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = `abc-liste-${item}-${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `abc-liste-${item}-${new Date().toISOString().split("T")[0]}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -187,9 +194,7 @@ export function ListItem() {
   return (
     <div className="p-4">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-3xl font-bold">
-          ABC-Liste für {item}
-        </h1>
+        <h1 className="text-3xl font-bold">ABC-Liste für {item}</h1>
         <div className="flex gap-2">
           <button
             onClick={exportList}
@@ -207,7 +212,7 @@ export function ListItem() {
           </button>
         </div>
       </div>
-      
+
       <div className="flex flex-row flex-wrap justify-around gap-4">
         {alphabet.map((char) => (
           <div key={char} className="m-2">
@@ -229,17 +234,18 @@ export function ListItem() {
                 ✕
               </button>
             </div>
-            
+
             <p className="text-sm text-gray-600 mb-4">
-              Kopieren Sie die folgenden Daten oder laden Sie sie als Datei herunter, um Ihre ABC-Liste zu teilen:
+              Kopieren Sie die folgenden Daten oder laden Sie sie als Datei
+              herunter, um Ihre ABC-Liste zu teilen:
             </p>
-            
+
             <textarea
               value={exportedData}
               readOnly
               className="w-full h-32 p-2 border rounded text-xs font-mono"
             />
-            
+
             <div className="flex gap-2 mt-4">
               <button
                 onClick={copyToClipboard}
@@ -277,27 +283,30 @@ export function ListItem() {
                 ✕
               </button>
             </div>
-            
+
             <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded">
-              <h3 className="font-semibold text-yellow-800 mb-2">⚠️ Wichtiger Hinweis</h3>
+              <h3 className="font-semibold text-yellow-800 mb-2">
+                ⚠️ Wichtiger Hinweis
+              </h3>
               <p className="text-sm text-yellow-700">
-                Beim Import werden Sie aufgefordert, jeden neuen Begriff zu erklären. 
-                Dies entspricht dem ABC Kumulativ-Ansatz von Vera F. Birkenbihl - 
-                Sie müssen jeden übernommenen Begriff verstehen und erklären können.
+                Beim Import werden Sie aufgefordert, jeden neuen Begriff zu
+                erklären. Dies entspricht dem ABC Kumulativ-Ansatz von Vera F.
+                Birkenbihl - Sie müssen jeden übernommenen Begriff verstehen und
+                erklären können.
               </p>
             </div>
-            
+
             <p className="text-sm text-gray-600 mb-4">
               Fügen Sie hier die JSON-Daten einer exportierten ABC-Liste ein:
             </p>
-            
+
             <textarea
               value={importData}
               onChange={(e) => setImportData(e.target.value)}
               placeholder="JSON-Daten hier einfügen..."
               className="w-full h-32 p-2 border rounded text-xs font-mono"
             />
-            
+
             <div className="flex gap-2 mt-4">
               <button
                 onClick={importList}

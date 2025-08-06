@@ -22,13 +22,13 @@ export function Letter({cacheKey, letter}: LetterProps) {
       const parsed = JSON.parse(storedData);
       // Handle both old string[] format and new WordWithExplanation[] format
       if (Array.isArray(parsed) && parsed.length > 0) {
-        if (typeof parsed[0] === 'string') {
+        if (typeof parsed[0] === "string") {
           // Convert old format to new format
           const converted = parsed.map((word: string) => ({
             text: word,
             explanation: "",
             version: 1,
-            imported: false
+            imported: false,
           }));
           setWords(converted);
           localStorage.setItem(getStorageKey(), JSON.stringify(converted));
@@ -47,12 +47,12 @@ export function Letter({cacheKey, letter}: LetterProps) {
   );
 
   const handleAddWord = () => {
-    if (newWord && !words.some(w => w.text === newWord)) {
+    if (newWord && !words.some((w) => w.text === newWord)) {
       const newWordObj: WordWithExplanation = {
         text: newWord,
         explanation: "",
         version: 1,
-        imported: false
+        imported: false,
       };
       const newWords = [...words, newWordObj];
       setWords(newWords);
@@ -69,10 +69,10 @@ export function Letter({cacheKey, letter}: LetterProps) {
   };
 
   const handleExplanationChange = (wordText: string, explanation: string) => {
-    const newWords = words.map(word => 
-      word.text === wordText 
-        ? { ...word, explanation, version: (word.version || 1) + 1 }
-        : word
+    const newWords = words.map((word) =>
+      word.text === wordText
+        ? {...word, explanation, version: (word.version || 1) + 1}
+        : word,
     );
     setWords(newWords);
     updateStorage(newWords);
@@ -94,7 +94,9 @@ export function Letter({cacheKey, letter}: LetterProps) {
             explanation={word.explanation}
             imported={word.imported}
             onDelete={() => handleDeleteWord(word.text)}
-            onExplanationChange={(explanation) => handleExplanationChange(word.text, explanation)}
+            onExplanationChange={(explanation) =>
+              handleExplanationChange(word.text, explanation)
+            }
           />
         ))}
       </div>
