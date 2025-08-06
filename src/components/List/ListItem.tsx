@@ -1,5 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
+import {toast} from "sonner";
+import {usePrompt} from "@/components/ui/prompt-dialog";
 import {Letter} from "./Letter";
 import {WordWithExplanation} from "./SavedWord";
 
@@ -16,6 +18,7 @@ export function ListItem() {
   const [showImportModal, setShowImportModal] = useState(false);
   const [importData, setImportData] = useState("");
   const [exportedData, setExportedData] = useState("");
+  const {prompt, PromptComponent} = usePrompt();
 
   useEffect(() => {
     if (item) {
@@ -74,7 +77,7 @@ export function ListItem() {
       const parsedData: ExportedList = JSON.parse(importData);
 
       if (!parsedData.name || !parsedData.words) {
-        alert(
+        toast.error(
           "Ungültige Datei-Struktur. Bitte überprüfen Sie das JSON-Format.",
         );
         return;
@@ -84,7 +87,7 @@ export function ListItem() {
       setShowImportModal(false);
       showImportPreview(parsedData);
     } catch {
-      alert(
+      toast.error(
         "Fehler beim Lesen der Datei. Bitte überprüfen Sie das JSON-Format.",
       );
     }
@@ -118,7 +121,7 @@ export function ListItem() {
     });
 
     if (newTerms.length === 0) {
-      alert("Keine neuen Begriffe zum Importieren gefunden.");
+      toast.info("Keine neuen Begriffe zum Importieren gefunden.");
       return;
     }
 
@@ -126,21 +129,21 @@ export function ListItem() {
     showImportWizard(newTerms);
   };
 
-  const showImportWizard = (
+  const showImportWizard = async (
     terms: Array<{letter: string; word: WordWithExplanation}>,
   ) => {
     if (terms.length === 0) {
-      alert("Import abgeschlossen!");
+      toast.success("Import abgeschlossen!");
       return;
     }
 
     const currentTerm = terms[0];
     const remainingTerms = terms.slice(1);
 
-    const explanation = prompt(
-      `Erklären Sie den Begriff "${currentTerm.word.text}" (${currentTerm.letter.toUpperCase()}):\n\n` +
-        `Hinweis: Sie müssen jeden importierten Begriff erklären können.\n` +
-        `Verbleibende Begriffe: ${terms.length}`,
+    const explanation = await prompt(
+      `Begriff erklären: "${currentTerm.word.text}"`,
+      `Erklären Sie den Begriff "${currentTerm.word.text}" (${currentTerm.letter.toUpperCase()})\n\nHinweis: Sie müssen jeden importierten Begriff erklären können.\nVerbleibende Begriffe: ${terms.length}`,
+      "Ihre Erklärung hier eingeben...",
     );
 
     if (explanation === null) {
@@ -149,7 +152,9 @@ export function ListItem() {
     }
 
     if (explanation.trim() === "") {
-      alert("Eine Erklärung ist erforderlich. Bitte versuchen Sie es erneut.");
+      toast.error(
+        "Eine Erklärung ist erforderlich. Bitte versuchen Sie es erneut.",
+      );
       showImportWizard(terms);
       return;
     }
@@ -177,10 +182,10 @@ export function ListItem() {
     navigator.clipboard
       .writeText(exportedData)
       .then(() => {
-        alert("Export-Daten in die Zwischenablage kopiert!");
+        toast.success("Export-Daten in die Zwischenablage kopiert!");
       })
       .catch(() => {
-        alert(
+        toast.error(
           "Fehler beim Kopieren in die Zwischenablage. Bitte prüfen Sie die Berechtigungen oder versuchen Sie es erneut.",
         );
       });
@@ -332,6 +337,7 @@ export function ListItem() {
           </div>
         </div>
       )}
+      <PromptComponent />
     </div>
   );
 }
