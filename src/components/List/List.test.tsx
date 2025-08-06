@@ -85,4 +85,67 @@ describe("List", () => {
     expect(localStorage.getItem(cacheKey)).toBe(JSON.stringify(["Neue Liste"]));
     expect(mockedNavigate).toHaveBeenCalledWith("/list/Neue Liste");
   });
+
+  it("should add, delete, and add another item", async () => {
+    render(<List />, {wrapper: MemoryRouter});
+
+    // Add first item
+    fireEvent.click(screen.getByRole("button", {name: "Neue ABC-Liste"}));
+    fireEvent.change(screen.getByPlaceholderText("Enter text..."), {
+      target: {value: "First Item"},
+    });
+    fireEvent.click(screen.getByRole("button", {name: "Speichern"}));
+    expect(await screen.findByText("First Item")).toBeInTheDocument();
+
+    // Delete the item
+    const deleteButton = screen.getAllByRole("button", {name: "X"})[0];
+    fireEvent.click(deleteButton);
+    expect(screen.queryByText("First Item")).not.toBeInTheDocument();
+
+    // Add second item
+    fireEvent.click(screen.getByRole("button", {name: "Neue ABC-Liste"}));
+    fireEvent.change(screen.getByPlaceholderText("Enter text..."), {
+      target: {value: "Second Item"},
+    });
+    fireEvent.click(screen.getByRole("button", {name: "Speichern"}));
+    expect(await screen.findByText("Second Item")).toBeInTheDocument();
+  });
+
+  it("should clear all items when clear button is clicked", () => {
+    const testData = ["Item 1", "Item 2"];
+    localStorage.setItem(cacheKey, JSON.stringify(testData));
+    render(<List />, {wrapper: MemoryRouter});
+
+    expect(screen.getByText("Item 1")).toBeInTheDocument();
+    expect(screen.getByText("Item 2")).toBeInTheDocument();
+
+    const clearButton = screen.getByRole("button", {name: "Alle löschen"});
+    fireEvent.click(clearButton);
+
+    expect(screen.queryByText("Item 1")).not.toBeInTheDocument();
+    expect(screen.queryByText("Item 2")).not.toBeInTheDocument();
+    expect(localStorage.getItem(cacheKey)).toBe(JSON.stringify([]));
+  });
+
+  it("should reverse the order of items when reverse button is clicked", () => {
+    const testData = ["A", "B", "C"];
+    localStorage.setItem(cacheKey, JSON.stringify(testData));
+    render(<List />, {wrapper: MemoryRouter});
+
+    const listItems = screen.getAllByRole("listitem");
+    // The buttons inside the list items are what we can assert on
+    expect(listItems[0].querySelector("button")).toHaveTextContent("A");
+    expect(listItems[1].querySelector("button")).toHaveTextContent("B");
+    expect(listItems[2].querySelector("button")).toHaveTextContent("C");
+
+    const reverseButton = screen.getByRole("button", {
+      name: "Sortierung umkehren",
+    });
+    fireEvent.click(reverseButton);
+
+    const reversedListItems = screen.getAllByRole("listitem");
+    expect(reversedListItems[0].querySelector("button")).toHaveTextContent("C");
+    expect(reversedListItems[1].querySelector("button")).toHaveTextContent("B");
+    expect(reversedListItems[2].querySelector("button")).toHaveTextContent("A");
+  });
 });
