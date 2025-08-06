@@ -39,7 +39,10 @@ describe("Letter", () => {
   it("loads and displays words from localStorage on initial render", () => {
     localStorage.setItem(
       `${cacheKey}:${letter}`,
-      JSON.stringify(["Apple", "Ant"]),
+      JSON.stringify([
+        {text: "Apple", explanation: "", version: 1, imported: false},
+        {text: "Ant", explanation: "", version: 1, imported: false}
+      ]),
     );
     render(<Letter cacheKey={cacheKey} letter={letter} />);
     expect(screen.getByText("Apple")).toBeInTheDocument();
@@ -64,7 +67,7 @@ describe("Letter", () => {
 
     expect(screen.getByText("Airplane")).toBeInTheDocument();
     expect(localStorage.getItem(`${cacheKey}:${letter}`)).toBe(
-      JSON.stringify(["Airplane"]),
+      JSON.stringify([{text: "Airplane", explanation: "", version: 1, imported: false}]),
     );
     expect(
       screen.queryByRole("heading", {name: 'Neues Wort für "A"'}),
@@ -82,14 +85,17 @@ describe("Letter", () => {
 
     expect(screen.getAllByText("Apple")).toHaveLength(1);
     expect(localStorage.getItem(`${cacheKey}:${letter}`)).toBe(
-      JSON.stringify(["Apple"]),
+      JSON.stringify([{text: "Apple", explanation: "", version: 1, imported: false}]),
     );
   });
 
   it("deletes a word and updates localStorage", () => {
     localStorage.setItem(
       `${cacheKey}:${letter}`,
-      JSON.stringify(["Apple", "Ant"]),
+      JSON.stringify([
+        {text: "Apple", explanation: "", version: 1, imported: false},
+        {text: "Ant", explanation: "", version: 1, imported: false}
+      ]),
     );
     render(<Letter cacheKey={cacheKey} letter={letter} />);
 
@@ -104,7 +110,7 @@ describe("Letter", () => {
     expect(screen.queryByText("Apple")).not.toBeInTheDocument();
     expect(screen.getByText("Ant")).toBeInTheDocument();
     expect(localStorage.getItem(`${cacheKey}:${letter}`)).toBe(
-      JSON.stringify(["Ant"]),
+      JSON.stringify([{text: "Ant", explanation: "", version: 1, imported: false}]),
     );
   });
 

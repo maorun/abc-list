@@ -1,9 +1,10 @@
 import React, {useState, useEffect} from "react";
 import {cacheKey} from "../List/List";
+import {WordWithExplanation} from "../List/SavedWord";
 
 interface LinkedListData {
   name: string;
-  words: Record<string, string[]>;
+  words: Record<string, WordWithExplanation[]>;
 }
 
 export function LinkLists() {
@@ -24,12 +25,32 @@ export function LinkLists() {
   }, []);
 
   const loadListData = (listName: string): LinkedListData => {
-    const words: Record<string, string[]> = {};
+    const words: Record<string, WordWithExplanation[]> = {};
 
     alphabet.forEach((letter) => {
       const storageKey = `abcList-${listName}:${letter}`;
-      const storedWords = localStorage.getItem(storageKey);
-      words[letter] = storedWords ? JSON.parse(storedWords) : [];
+      const storedData = localStorage.getItem(storageKey);
+      if (storedData) {
+        const parsed = JSON.parse(storedData);
+        // Handle both old string[] format and new WordWithExplanation[] format
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          if (typeof parsed[0] === 'string') {
+            // Convert old format to new format
+            words[letter] = parsed.map((word: string) => ({
+              text: word,
+              explanation: "",
+              version: 1,
+              imported: false
+            }));
+          } else {
+            words[letter] = parsed;
+          }
+        } else {
+          words[letter] = [];
+        }
+      } else {
+        words[letter] = [];
+      }
     });
 
     return {
@@ -133,12 +154,27 @@ export function LinkLists() {
                         <div className="flex-1 min-h-[32px] flex items-center">
                           {listData.words[letter].length > 0 ? (
                             <div className="flex flex-wrap gap-1">
-                              {listData.words[letter].map((word, index) => (
+                              {listData.words[letter].map((wordObj, index) => (
                                 <span
                                   key={index}
-                                  className="bg-white px-2 py-1 rounded text-xs border"
+                                  className={`px-2 py-1 rounded text-xs border ${
+                                    wordObj.imported 
+                                      ? 'bg-blue-100 border-blue-300' 
+                                      : 'bg-white border-gray-300'
+                                  } ${
+                                    wordObj.explanation 
+                                      ? 'border-l-2 border-l-green-400' 
+                                      : ''
+                                  }`}
+                                  title={
+                                    wordObj.explanation 
+                                      ? `${wordObj.imported ? '📥 Importiert' : ''} 💬 ${wordObj.explanation}` 
+                                      : wordObj.imported ? '📥 Importiert' : ''
+                                  }
                                 >
-                                  {word}
+                                  {wordObj.text}
+                                  {wordObj.imported && " 📥"}
+                                  {wordObj.explanation && " 💬"}
                                 </span>
                               ))}
                             </div>
