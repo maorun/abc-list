@@ -9,6 +9,8 @@ import {List} from "./components/List/List";
 import {ListItem} from "./components/List/ListItem";
 import {Kawa} from "./components/Kawa/Kawa";
 import {KawaItem} from "./components/Kawa/KawaItem";
+import {Kaga} from "./components/Kaga/Kaga";
+import {KagaItem} from "./components/Kaga/KagaItem";
 
 function App() {
   const navLinkClasses =
@@ -47,6 +49,16 @@ function App() {
                     >
                       Kawas
                     </NavLink>
+                    <NavLink
+                      to="/kaga"
+                      className={({isActive}) =>
+                        isActive
+                          ? `${navLinkClasses} ${activeNavLinkClasses}`
+                          : navLinkClasses
+                      }
+                    >
+                      KaGa
+                    </NavLink>
                   </div>
                 </div>
               </div>
@@ -59,6 +71,8 @@ function App() {
             <Route path="/list/:item" element={<ListItem />} />
             <Route path="/kawa" element={<Kawa />} />
             <Route path="/kawa/:key" element={<KawaItem />} />
+            <Route path="/kaga" element={<Kaga />} />
+            <Route path="/kaga/:key" element={<KagaItem />} />
           </Routes>
         </main>
       </div>
