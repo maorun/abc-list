@@ -1,4 +1,4 @@
-# Agent Instructions for `abc-list-web` Repository
+# Agent Instructions for `abc-list` Repository
 
 Welcome, agent! This document provides instructions and guidelines for working on this repository. Please read it carefully before making any changes.
 
