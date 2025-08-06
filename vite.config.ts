@@ -6,7 +6,7 @@ import tailwindcss from '@tailwindcss/vite';
 // https://vitejs.dev/config/
 export default defineConfig({
   // The base path is set for GitHub Pages deployment.
-  base: '/abc-list-web/',
+  base: '/',
   plugins: [react(), tailwindcss()],
   test: {
     globals: true,
