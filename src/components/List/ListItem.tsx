@@ -83,7 +83,7 @@ export function ListItem() {
       // Show import preview and require explanations for imported terms
       setShowImportModal(false);
       showImportPreview(parsedData);
-    } catch {
+    } catch (error) {
       alert(
         "Fehler beim Lesen der Datei. Bitte überprüfen Sie das JSON-Format.",
       );
