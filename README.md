@@ -121,12 +121,28 @@ Da im Gegenzug zu ABC-Listen ein KaWa enger gefasst ist, muss man mehr überlege
 
 ### KaGa
 
-noch nicht implementiert (auch schwierig auf dem Handy umzusetzen).
-
 - **K**reativ
-- **A**analograffiti
+- **A**naloggraffiti
 - **G**rafisch
 - **A**ssoziativ
+
+Das KaGa ist eine Weiterentwicklung des KaWa und der ABC-Liste. Es geht darum, zu einem Thema eine grafische Assoziationslandkarte zu erstellen. Anstatt nur Wörter zu verwenden, können Sie hier zeichnen, kritzeln und Text hinzufügen, um Ihre Gedanken visuell zu organisieren.
+
+Nachdem Sie ein Thema für Ihr KaGa erstellt haben, öffnet sich eine digitale Leinwand. Hier können Sie Ihrer Kreativität freien Lauf lassen.
+
+**Werkzeuge:**
+- **Stift:** Zum freien Zeichnen und Skizzieren.
+- **Text:** Zum Hinzufügen von Notizen und Beschriftungen.
+- **Farbauswahl:** Um verschiedene Farben für Stift und Text zu wählen.
+- **Größenanpassung:** Um die Strichstärke des Stifts anzupassen.
+- **Speichern:** Sichert den aktuellen Stand Ihrer Leinwand.
+- **Löschen:** Setzt die Leinwand komplett zurück.
+
+z.B. Thema: Sonne
+
+Man könnte ein Bild von einer Sonne in die Mitte malen. Davon ausgehend könnten Linien zu anderen Zeichnungen oder Wörtern führen, wie "Wärme", "Licht", "Energie", "Sommer", eine gezeichnete Blume, die zur Sonne wächst, oder ein Sonnenbrand-Emoji.
+
+Das Ziel ist es, die Beziehungen zwischen verschiedenen Konzepten visuell darzustellen und so ein tieferes Verständnis für das Thema zu entwickeln.
 
 ## Entwicklung (Development)
 
