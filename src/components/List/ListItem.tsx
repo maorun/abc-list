@@ -176,6 +176,8 @@ export function ListItem() {
   const copyToClipboard = () => {
     navigator.clipboard.writeText(exportedData).then(() => {
       alert("Export-Daten in die Zwischenablage kopiert!");
+    }).catch((err) => {
+      alert("Fehler beim Kopieren in die Zwischenablage. Bitte prüfen Sie die Berechtigungen oder versuchen Sie es erneut.");
     });
   };
 
