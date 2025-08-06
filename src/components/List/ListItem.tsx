@@ -83,7 +83,7 @@ export function ListItem() {
       // Show import preview and require explanations for imported terms
       setShowImportModal(false);
       showImportPreview(parsedData);
-    } catch (error) {
+    } catch {
       alert(
         "Fehler beim Lesen der Datei. Bitte überprüfen Sie das JSON-Format.",
       );
@@ -174,11 +174,16 @@ export function ListItem() {
   };
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(exportedData).then(() => {
-      alert("Export-Daten in die Zwischenablage kopiert!");
-    }).catch((err) => {
-      alert("Fehler beim Kopieren in die Zwischenablage. Bitte prüfen Sie die Berechtigungen oder versuchen Sie es erneut.");
-    });
+    navigator.clipboard
+      .writeText(exportedData)
+      .then(() => {
+        alert("Export-Daten in die Zwischenablage kopiert!");
+      })
+      .catch(() => {
+        alert(
+          "Fehler beim Kopieren in die Zwischenablage. Bitte prüfen Sie die Berechtigungen oder versuchen Sie es erneut.",
+        );
+      });
   };
 
   const downloadAsFile = () => {
