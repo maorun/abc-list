@@ -176,6 +176,10 @@ ABC-List is a React/TypeScript/Vite web application implementing Vera F. Birkenb
 - Focus on user interactions and component behavior
 - Always add tests for new features and bug fixes
 
+### Updating documentations
+- Always update AGENTS.MD and .github/copilot-instructions.md on new or changed features
+
+
 ## Troubleshooting
 
 ### Common Issues
