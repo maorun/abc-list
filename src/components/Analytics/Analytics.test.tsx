@@ -1,5 +1,4 @@
 import {render, screen} from "@testing-library/react";
-import {vi} from "vitest";
 import {Analytics} from "./Analytics";
 
 // Mock recharts to avoid canvas issues in tests
@@ -22,8 +21,12 @@ vi.mock("recharts", () => ({
   PolarAngleAxis: () => <div>PolarAngleAxis</div>,
   PolarRadiusAxis: () => <div>PolarRadiusAxis</div>,
   Radar: () => <div>Radar</div>,
-  ResponsiveContainer: ({children}: any) => <div data-testid="responsive-container">{children}</div>,
+  ResponsiveContainer: ({children}: {children: React.ReactNode}) => (
+    <div data-testid="responsive-container">{children}</div>
+  ),
 }));
+
+import {vi} from "vitest";
 
 // Mock useAnalyticsData hook
 vi.mock("./useAnalyticsData", () => ({
@@ -41,7 +44,10 @@ vi.mock("./useAnalyticsData", () => ({
     totalWords: 2,
     totalLists: 2,
     averageWordsPerList: 1,
-    mostActiveLetters: [{letter: "A", count: 1}, {letter: "B", count: 1}],
+    mostActiveLetters: [
+      {letter: "A", count: 1},
+      {letter: "B", count: 1},
+    ],
     learningStreak: 1,
     lastActivityDate: new Date(),
     knowledgeAreas: [
@@ -71,8 +77,8 @@ describe("Analytics", () => {
     render(<Analytics />);
     expect(
       screen.getByText(
-        'Verfolgen Sie Ihren Lernfortschritt mit dem "Ball-im-Tor-Effekt"'
-      )
+        'Verfolgen Sie Ihren Lernfortschritt mit dem "Ball-im-Tor-Effekt"',
+      ),
     ).toBeInTheDocument();
   });
 

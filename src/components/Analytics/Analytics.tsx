@@ -7,12 +7,12 @@ import {StrengthsWeaknessesAnalysis} from "./StrengthsWeaknessesAnalysis";
 import {MilestoneTracking} from "./MilestoneTracking";
 import {useAnalyticsData} from "./useAnalyticsData";
 
-type TabType = 
-  | "overview" 
-  | "knowledge-areas" 
-  | "progress" 
-  | "comparison" 
-  | "analysis" 
+type TabType =
+  | "overview"
+  | "knowledge-areas"
+  | "progress"
+  | "comparison"
+  | "analysis"
   | "milestones";
 
 export function Analytics() {
@@ -58,7 +58,7 @@ export function Analytics() {
           Lernanalyse Dashboard
         </h1>
         <p className="text-center text-gray-600">
-          Verfolgen Sie Ihren Lernfortschritt mit dem "Ball-im-Tor-Effekt"
+          Verfolgen Sie Ihren Lernfortschritt mit dem &quot;Ball-im-Tor-Effekt&quot;
         </p>
       </div>
 

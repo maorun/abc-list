@@ -1,5 +1,14 @@
 import React, {useState} from "react";
-import {LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, AreaChart, Area} from "recharts";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  AreaChart,
+  Area,
+} from "recharts";
 import {AnalyticsData} from "./useAnalyticsData";
 
 interface ProgressGraphsProps {
@@ -7,7 +16,9 @@ interface ProgressGraphsProps {
 }
 
 export function ProgressGraphs({data}: ProgressGraphsProps) {
-  const [timeRange, setTimeRange] = useState<"week" | "month" | "year">("month");
+  const [timeRange, setTimeRange] = useState<"week" | "month" | "year">(
+    "month",
+  );
 
   // Generate mock progress data since we don't have timestamps
   // In a real implementation, you would track creation/modification dates
@@ -19,18 +30,25 @@ export function ProgressGraphs({data}: ProgressGraphsProps) {
     for (let i = points - 1; i >= 0; i--) {
       const date = new Date(now);
       date.setDate(date.getDate() - i);
-      
+
       // Simulate progress based on existing data
       const totalLists = Math.floor((data.totalLists * (points - i)) / points);
       const totalWords = Math.floor((data.totalWords * (points - i)) / points);
-      
+
       progressData.push({
-        date: date.toISOString().split('T')[0],
-        dateLabel: timeRange === "week" 
-          ? date.toLocaleDateString('de-DE', {weekday: 'short'})
-          : timeRange === "month"
-          ? date.toLocaleDateString('de-DE', {day: '2-digit', month: '2-digit'})
-          : date.toLocaleDateString('de-DE', {month: 'short', year: '2-digit'}),
+        date: date.toISOString().split("T")[0],
+        dateLabel:
+          timeRange === "week"
+            ? date.toLocaleDateString("de-DE", {weekday: "short"})
+            : timeRange === "month"
+              ? date.toLocaleDateString("de-DE", {
+                  day: "2-digit",
+                  month: "2-digit",
+                })
+              : date.toLocaleDateString("de-DE", {
+                  month: "short",
+                  year: "2-digit",
+                }),
         lists: totalLists,
         words: totalWords,
         efficiency: totalLists > 0 ? totalWords / totalLists : 0,
@@ -51,7 +69,7 @@ export function ProgressGraphs({data}: ProgressGraphsProps) {
       color: "bg-blue-500",
     },
     {
-      title: "Listen pro Monat", 
+      title: "Listen pro Monat",
       current: data.totalLists,
       target: Math.max(5, Math.ceil(data.totalLists * 1.2)),
       unit: "Listen",
@@ -102,7 +120,7 @@ export function ProgressGraphs({data}: ProgressGraphsProps) {
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="dateLabel" />
             <YAxis />
-            <Tooltip 
+            <Tooltip
               labelFormatter={(label, payload) => {
                 if (payload && payload[0]) {
                   return `Datum: ${payload[0].payload?.date}`;
@@ -110,11 +128,11 @@ export function ProgressGraphs({data}: ProgressGraphsProps) {
                 return label;
               }}
             />
-            <Area 
-              type="monotone" 
-              dataKey="words" 
-              stroke="#8884d8" 
-              fill="#8884d8" 
+            <Area
+              type="monotone"
+              dataKey="words"
+              stroke="#8884d8"
+              fill="#8884d8"
               fillOpacity={0.3}
             />
           </AreaChart>
@@ -127,7 +145,7 @@ export function ProgressGraphs({data}: ProgressGraphsProps) {
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="dateLabel" />
             <YAxis />
-            <Tooltip 
+            <Tooltip
               labelFormatter={(label, payload) => {
                 if (payload && payload[0]) {
                   return `Datum: ${payload[0].payload?.date}`;
@@ -135,10 +153,10 @@ export function ProgressGraphs({data}: ProgressGraphsProps) {
                 return label;
               }}
             />
-            <Line 
-              type="monotone" 
-              dataKey="lists" 
-              stroke="#82ca9d" 
+            <Line
+              type="monotone"
+              dataKey="lists"
+              stroke="#82ca9d"
               strokeWidth={3}
               dot={{r: 4}}
             />
@@ -153,19 +171,22 @@ export function ProgressGraphs({data}: ProgressGraphsProps) {
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="dateLabel" />
           <YAxis />
-          <Tooltip 
+          <Tooltip
             labelFormatter={(label, payload) => {
               if (payload && payload[0]) {
                 return `Datum: ${payload[0].payload?.date}`;
               }
               return label;
             }}
-            formatter={(value: any) => [`${Number(value).toFixed(1)} Wörter/Liste`, "Effizienz"]}
+            formatter={(value: any) => [
+              `${Number(value).toFixed(1)} Wörter/Liste`,
+              "Effizienz",
+            ]}
           />
-          <Line 
-            type="monotone" 
-            dataKey="efficiency" 
-            stroke="#ff7300" 
+          <Line
+            type="monotone"
+            dataKey="efficiency"
+            stroke="#ff7300"
             strokeWidth={3}
             dot={{r: 4}}
           />
@@ -185,8 +206,11 @@ export function ProgressGraphs({data}: ProgressGraphsProps) {
                 <div className="flex justify-between items-center">
                   <span className="font-medium">{goal.title}</span>
                   <span className="text-sm text-gray-600">
-                    {goal.current.toFixed(goal.unit === "Wörter/Liste" ? 1 : 0)} / {goal.target} {goal.unit}
-                    {isCompleted && <span className="ml-2 text-green-600">✅</span>}
+                    {goal.current.toFixed(goal.unit === "Wörter/Liste" ? 1 : 0)}{" "}
+                    / {goal.target} {goal.unit}
+                    {isCompleted && (
+                      <span className="ml-2 text-green-600">✅</span>
+                    )}
                   </span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-3">
@@ -200,7 +224,9 @@ export function ProgressGraphs({data}: ProgressGraphsProps) {
                 <div className="text-sm text-gray-600">
                   {progress.toFixed(1)}% erreicht
                   {isCompleted && (
-                    <span className="ml-2 text-green-600 font-medium">Ziel erreicht! 🎉</span>
+                    <span className="ml-2 text-green-600 font-medium">
+                      Ziel erreicht! 🎉
+                    </span>
                   )}
                 </div>
               </div>
@@ -215,17 +241,32 @@ export function ProgressGraphs({data}: ProgressGraphsProps) {
         <div className="space-y-2">
           {data.totalWords > 0 && (
             <p>
-              🎯 Sie haben in den letzten {timeRange === "week" ? "7 Tagen" : timeRange === "month" ? "30 Tagen" : "365 Tagen"} großartige Fortschritte gemacht!
+              🎯 Sie haben in den letzten{" "}
+              {timeRange === "week"
+                ? "7 Tagen"
+                : timeRange === "month"
+                  ? "30 Tagen"
+                  : "365 Tagen"}{" "}
+              großartige Fortschritte gemacht!
             </p>
           )}
           {data.averageWordsPerList > 10 && (
-            <p>⚡ Ihre Lerneffizienz ist mit {data.averageWordsPerList.toFixed(1)} Wörtern pro Liste excellent!</p>
+            <p>
+              ⚡ Ihre Lerneffizienz ist mit{" "}
+              {data.averageWordsPerList.toFixed(1)} Wörtern pro Liste excellent!
+            </p>
           )}
           {data.learningStreak > 0 && (
-            <p>🔥 Halten Sie Ihren Lernstreak aufrecht - Konsistenz ist der Schlüssel zum Erfolg!</p>
+            <p>
+              🔥 Halten Sie Ihren Lernstreak aufrecht - Konsistenz ist der
+              Schlüssel zum Erfolg!
+            </p>
           )}
           {data.totalWords === 0 && (
-            <p>🌟 Starten Sie heute Ihre Lernreise! Jedes große Ziel beginnt mit dem ersten Schritt.</p>
+            <p>
+              🌟 Starten Sie heute Ihre Lernreise! Jedes große Ziel beginnt mit
+              dem ersten Schritt.
+            </p>
           )}
         </div>
       </div>

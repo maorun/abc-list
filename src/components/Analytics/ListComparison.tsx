@@ -1,5 +1,13 @@
 import React, {useState} from "react";
-import {BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer} from "recharts";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 import {AnalyticsData} from "./useAnalyticsData";
 
 interface ListComparisonProps {
@@ -13,11 +21,11 @@ export function ListComparison({data}: ListComparisonProps) {
   // Find lists with similar topics (simple keyword matching)
   const findSimilarLists = (topic: string) => {
     if (!topic) return [];
-    
-    const keywords = topic.toLowerCase().split(' ');
-    return data.abcLists.filter(list => {
+
+    const keywords = topic.toLowerCase().split(" ");
+    return data.abcLists.filter((list) => {
       const listName = list.name.toLowerCase();
-      return keywords.some(keyword => listName.includes(keyword));
+      return keywords.some((keyword) => listName.includes(keyword));
     });
   };
 
@@ -30,13 +38,19 @@ export function ListComparison({data}: ListComparisonProps) {
 
   const comparisonLists = getComparisonData();
 
-  const chartData = comparisonLists.map(list => {
-    const totalWords = Object.values(list.words).reduce((sum, words) => sum + words.length, 0);
-    const filledLetters = Object.values(list.words).filter(words => words.length > 0).length;
+  const chartData = comparisonLists.map((list) => {
+    const totalWords = Object.values(list.words).reduce(
+      (sum, words) => sum + words.length,
+      0,
+    );
+    const filledLetters = Object.values(list.words).filter(
+      (words) => words.length > 0,
+    ).length;
     const completionRate = (filledLetters / 26) * 100;
-    
+
     return {
-      name: list.name.length > 15 ? list.name.substring(0, 15) + '...' : list.name,
+      name:
+        list.name.length > 15 ? list.name.substring(0, 15) + "..." : list.name,
       fullName: list.name,
       words: totalWords,
       completion: completionRate,
@@ -47,12 +61,12 @@ export function ListComparison({data}: ListComparisonProps) {
   // Group lists by topic similarity
   const getTopicGroups = () => {
     const groups: Record<string, typeof data.abcLists> = {};
-    
-    data.abcLists.forEach(list => {
+
+    data.abcLists.forEach((list) => {
       // Simple topic extraction - first word or full name if short
-      const topic = list.name.split(' ')[0] || list.name;
+      const topic = list.name.split(" ")[0] || list.name;
       const normalizedTopic = topic.toLowerCase();
-      
+
       if (!groups[normalizedTopic]) {
         groups[normalizedTopic] = [];
       }
@@ -60,16 +74,14 @@ export function ListComparison({data}: ListComparisonProps) {
     });
 
     // Only return groups with more than one list
-    return Object.entries(groups).filter(([_, lists]) => lists.length > 1);
+    return Object.entries(groups).filter(([, lists]) => lists.length > 1);
   };
 
   const topicGroups = getTopicGroups();
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-center mb-6">
-        Listen Vergleich
-      </h2>
+      <h2 className="text-2xl font-bold text-center mb-6">Listen Vergleich</h2>
 
       {/* Comparison Mode Selection */}
       <div className="flex justify-center space-x-4 mb-6">
@@ -117,7 +129,8 @@ export function ListComparison({data}: ListComparisonProps) {
           {selectedTopic && (
             <div className="mt-4 p-3 bg-blue-50 rounded-lg">
               <p className="text-blue-800">
-                Vergleiche {findSimilarLists(selectedTopic).length} Listen zum Thema "{selectedTopic}"
+                Vergleiche {findSimilarLists(selectedTopic).length} Listen zum
+                Thema "{selectedTopic}"
               </p>
             </div>
           )}
@@ -132,16 +145,17 @@ export function ListComparison({data}: ListComparisonProps) {
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis 
-                  dataKey="name" 
+                <XAxis
+                  dataKey="name"
                   angle={-45}
                   textAnchor="end"
                   height={80}
                 />
                 <YAxis />
-                <Tooltip 
+                <Tooltip
                   formatter={(value, name) => {
-                    if (name === "words") return [`${value} Wörter`, "Wortanzahl"];
+                    if (name === "words")
+                      return [`${value} Wörter`, "Wortanzahl"];
                     return [value, name];
                   }}
                   labelFormatter={(label, payload) => {
@@ -156,19 +170,24 @@ export function ListComparison({data}: ListComparisonProps) {
 
           {/* Completion Rate Comparison */}
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold mb-4">Vollständigkeit Vergleich</h3>
+            <h3 className="text-lg font-semibold mb-4">
+              Vollständigkeit Vergleich
+            </h3>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis 
-                  dataKey="name" 
+                <XAxis
+                  dataKey="name"
                   angle={-45}
                   textAnchor="end"
                   height={80}
                 />
                 <YAxis domain={[0, 100]} />
-                <Tooltip 
-                  formatter={(value) => [`${Number(value).toFixed(1)}%`, "Vollständigkeit"]}
+                <Tooltip
+                  formatter={(value) => [
+                    `${Number(value).toFixed(1)}%`,
+                    "Vollständigkeit",
+                  ]}
                   labelFormatter={(label, payload) => {
                     const item = payload?.[0]?.payload;
                     return item ? item.fullName : label;
@@ -181,7 +200,9 @@ export function ListComparison({data}: ListComparisonProps) {
 
           {/* Detailed Comparison Table */}
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold mb-4">Detaillierter Vergleich</h3>
+            <h3 className="text-lg font-semibold mb-4">
+              Detaillierter Vergleich
+            </h3>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
@@ -198,12 +219,25 @@ export function ListComparison({data}: ListComparisonProps) {
                   {chartData
                     .sort((a, b) => b.words - a.words)
                     .map((list, index) => {
-                      const avgWordsPerLetter = list.letters > 0 ? list.words / list.letters : 0;
+                      const avgWordsPerLetter =
+                        list.letters > 0 ? list.words / list.letters : 0;
                       const getRating = () => {
-                        if (list.completion >= 80 && list.words >= 20) return {text: "Ausgezeichnet", color: "text-green-600"};
-                        if (list.completion >= 60 && list.words >= 15) return {text: "Gut", color: "text-blue-600"};
-                        if (list.completion >= 40 && list.words >= 10) return {text: "Befriedigend", color: "text-yellow-600"};
-                        return {text: "Verbesserungsbedarf", color: "text-red-600"};
+                        if (list.completion >= 80 && list.words >= 20)
+                          return {
+                            text: "Ausgezeichnet",
+                            color: "text-green-600",
+                          };
+                        if (list.completion >= 60 && list.words >= 15)
+                          return {text: "Gut", color: "text-blue-600"};
+                        if (list.completion >= 40 && list.words >= 10)
+                          return {
+                            text: "Befriedigend",
+                            color: "text-yellow-600",
+                          };
+                        return {
+                          text: "Verbesserungsbedarf",
+                          color: "text-red-600",
+                        };
                       };
                       const rating = getRating();
 
@@ -212,9 +246,15 @@ export function ListComparison({data}: ListComparisonProps) {
                           <td className="p-2 font-medium">{list.fullName}</td>
                           <td className="text-center p-2">{list.words}</td>
                           <td className="text-center p-2">{list.letters}/26</td>
-                          <td className="text-center p-2">{list.completion.toFixed(1)}%</td>
-                          <td className="text-center p-2">{avgWordsPerLetter.toFixed(1)}</td>
-                          <td className={`text-center p-2 font-medium ${rating.color}`}>
+                          <td className="text-center p-2">
+                            {list.completion.toFixed(1)}%
+                          </td>
+                          <td className="text-center p-2">
+                            {avgWordsPerLetter.toFixed(1)}
+                          </td>
+                          <td
+                            className={`text-center p-2 font-medium ${rating.color}`}
+                          >
                             {rating.text}
                           </td>
                         </tr>
@@ -234,15 +274,23 @@ export function ListComparison({data}: ListComparisonProps) {
               {chartData.length > 1 && (
                 <>
                   <p>
-                    🏆 Beste Liste: <strong>{chartData.sort((a, b) => b.words - a.words)[0]?.fullName}</strong> 
-                    mit {chartData.sort((a, b) => b.words - a.words)[0]?.words} Wörtern
+                    🏆 Beste Liste:{" "}
+                    <strong>
+                      {chartData.sort((a, b) => b.words - a.words)[0]?.fullName}
+                    </strong>
+                    mit {chartData.sort((a, b) => b.words - a.words)[0]?.words}{" "}
+                    Wörtern
                   </p>
                   <p>
-                    📈 Ausbaubedarf: <strong>{chartData.sort((a, b) => a.words - b.words)[0]?.fullName}</strong> 
+                    📈 Ausbaubedarf:{" "}
+                    <strong>
+                      {chartData.sort((a, b) => a.words - b.words)[0]?.fullName}
+                    </strong>
                     - versuchen Sie mehr Wörter zu finden!
                   </p>
                   <p>
-                    🎯 Tipp: Orientieren Sie sich an Ihrer besten Liste und übertragen Sie erfolgreiche Strategien auf andere Themen.
+                    🎯 Tipp: Orientieren Sie sich an Ihrer besten Liste und
+                    übertragen Sie erfolgreiche Strategien auf andere Themen.
                   </p>
                 </>
               )}
@@ -253,9 +301,14 @@ export function ListComparison({data}: ListComparisonProps) {
         <div className="text-center text-gray-500 py-12">
           <p className="text-lg mb-4">Keine Listen zum Vergleichen verfügbar</p>
           {comparisonMode === "topic" ? (
-            <p>Wählen Sie ein Thema aus oder erstellen Sie Listen zu ähnlichen Themen!</p>
+            <p>
+              Wählen Sie ein Thema aus oder erstellen Sie Listen zu ähnlichen
+              Themen!
+            </p>
           ) : (
-            <p>Erstellen Sie mindestens zwei ABC-Listen, um sie zu vergleichen!</p>
+            <p>
+              Erstellen Sie mindestens zwei ABC-Listen, um sie zu vergleichen!
+            </p>
           )}
         </div>
       )}

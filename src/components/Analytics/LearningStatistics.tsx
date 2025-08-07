@@ -1,5 +1,15 @@
 import React from "react";
-import {BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell} from "recharts";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  PieChart,
+  Pie,
+  Cell,
+} from "recharts";
 import {AnalyticsData} from "./useAnalyticsData";
 
 interface LearningStatisticsProps {
@@ -7,7 +17,7 @@ interface LearningStatisticsProps {
 }
 
 export function LearningStatistics({data}: LearningStatisticsProps) {
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
+  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
 
   const overviewStats = [
     {
@@ -42,8 +52,12 @@ export function LearningStatistics({data}: LearningStatisticsProps) {
     {name: "ABC-Listen", value: data.abcLists.length, color: COLORS[0]},
     {name: "KaWa", value: data.kawas.length, color: COLORS[1]},
     {name: "KaGa", value: data.kagas.length, color: COLORS[2]},
-    {name: "Stadt-Land-Fluss", value: data.stadtLandFlussGames.length, color: COLORS[3]},
-  ].filter(item => item.value > 0);
+    {
+      name: "Stadt-Land-Fluss",
+      value: data.stadtLandFlussGames.length,
+      color: COLORS[3],
+    },
+  ].filter((item) => item.value > 0);
 
   return (
     <div className="space-y-6">
@@ -60,9 +74,7 @@ export function LearningStatistics({data}: LearningStatisticsProps) {
                 <p className="text-sm font-medium text-gray-600">
                   {stat.title}
                 </p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {stat.value}
-                </p>
+                <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
               </div>
               <div className={`p-3 rounded-full ${stat.color}`}>
                 <span className="text-xl">{stat.icon}</span>
@@ -76,9 +88,7 @@ export function LearningStatistics({data}: LearningStatisticsProps) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Most Active Letters */}
         <div className="bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-lg font-semibold mb-4">
-            Aktivste Buchstaben
-          </h3>
+          <h3 className="text-lg font-semibold mb-4">Aktivste Buchstaben</h3>
           {letterData.length > 0 ? (
             <BarChart width={400} height={300} data={letterData}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -131,8 +141,9 @@ export function LearningStatistics({data}: LearningStatisticsProps) {
         <div className="text-gray-600">
           {data.lastActivityDate ? (
             <p>
-              Letzte Aktivität: {data.lastActivityDate.toLocaleDateString('de-DE')} um{' '}
-              {data.lastActivityDate.toLocaleTimeString('de-DE')}
+              Letzte Aktivität:{" "}
+              {data.lastActivityDate.toLocaleDateString("de-DE")} um{" "}
+              {data.lastActivityDate.toLocaleTimeString("de-DE")}
             </p>
           ) : (
             <p>Noch keine Lernaktivitäten erfasst</p>
@@ -147,13 +158,18 @@ export function LearningStatistics({data}: LearningStatisticsProps) {
         </h3>
         <div className="space-y-2">
           {data.totalWords > 0 && (
-            <p>✅ Großartig! Sie haben bereits {data.totalWords} Wörter gelernt!</p>
+            <p>
+              ✅ Großartig! Sie haben bereits {data.totalWords} Wörter gelernt!
+            </p>
           )}
           {data.learningStreak > 0 && (
             <p>🔥 Fantastisch! {data.learningStreak} Tage Lernstreak!</p>
           )}
           {data.totalLists > 5 && (
-            <p>🏆 Beeindruckend! {data.totalLists} verschiedene Themenbereiche erforscht!</p>
+            <p>
+              🏆 Beeindruckend! {data.totalLists} verschiedene Themenbereiche
+              erforscht!
+            </p>
           )}
           {data.totalWords === 0 && (
             <p>🌟 Beginnen Sie Ihre Lernreise mit Ihrer ersten ABC-Liste!</p>

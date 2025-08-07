@@ -2,7 +2,10 @@ import {useState, useEffect} from "react";
 
 export interface ABCListData {
   name: string;
-  words: Record<string, Array<{word: string; explanation?: string; timestamp?: number}>>;
+  words: Record<
+    string,
+    Array<{word: string; explanation?: string; timestamp?: number}>
+  >;
   createdAt?: number;
   lastModified?: number;
 }
@@ -68,23 +71,33 @@ export function useAnalyticsData(): AnalyticsData {
   const loadAnalyticsData = () => {
     // Load ABC Lists
     const abcListsData = loadABCLists();
-    
+
     // Load Kawas
     const kawasData = loadKawas();
-    
+
     // Load Kagas
     const kagasData = loadKagas();
-    
+
     // Load Stadt-Land-Fluss games
     const slfData = loadStadtLandFlussGames();
 
     // Calculate analytics
     const totalWords = calculateTotalWords(abcListsData);
-    const totalLists = abcListsData.length + kawasData.length + kagasData.length;
+    const totalLists =
+      abcListsData.length + kawasData.length + kagasData.length;
     const averageWordsPerList = totalLists > 0 ? totalWords / totalLists : 0;
     const mostActiveLetters = calculateMostActiveLetters(abcListsData);
-    const knowledgeAreas = identifyKnowledgeAreas(abcListsData, kawasData, kagasData);
-    const lastActivityDate = getLastActivityDate(abcListsData, kawasData, kagasData, slfData);
+    const knowledgeAreas = identifyKnowledgeAreas(
+      abcListsData,
+      kawasData,
+      kagasData,
+    );
+    const lastActivityDate = getLastActivityDate(
+      abcListsData,
+      kawasData,
+      kagasData,
+      slfData,
+    );
     const learningStreak = calculateLearningStreak(lastActivityDate);
 
     setAnalyticsData({
@@ -112,7 +125,7 @@ export function useAnalyticsData(): AnalyticsData {
     } catch {
       return [];
     }
-    return listNames.map(name => {
+    return listNames.map((name) => {
       const listData: ABCListData = {
         name,
         words: {},
@@ -124,7 +137,7 @@ export function useAnalyticsData(): AnalyticsData {
         const letter = String.fromCharCode(97 + i);
         const storageKey = `abcList-${name}:${letter}`;
         const letterData = localStorage.getItem(storageKey);
-        
+
         if (letterData) {
           try {
             const parsed = JSON.parse(letterData);
@@ -163,7 +176,7 @@ export function useAnalyticsData(): AnalyticsData {
 
     try {
       const gameNames: string[] = JSON.parse(gamesJson);
-      return gameNames.map(name => ({
+      return gameNames.map((name) => ({
         name,
         createdAt: Date.now(), // fallback
         games: [], // Would need to load individual game data
@@ -175,17 +188,22 @@ export function useAnalyticsData(): AnalyticsData {
 
   const calculateTotalWords = (abcLists: ABCListData[]): number => {
     return abcLists.reduce((total, list) => {
-      const wordsInList = Object.values(list.words).reduce((listTotal, letterWords) => {
-        return listTotal + letterWords.length;
-      }, 0);
+      const wordsInList = Object.values(list.words).reduce(
+        (listTotal, letterWords) => {
+          return listTotal + letterWords.length;
+        },
+        0,
+      );
       return total + wordsInList;
     }, 0);
   };
 
-  const calculateMostActiveLetters = (abcLists: ABCListData[]): Array<{letter: string; count: number}> => {
+  const calculateMostActiveLetters = (
+    abcLists: ABCListData[],
+  ): Array<{letter: string; count: number}> => {
     const letterCounts: Record<string, number> = {};
 
-    abcLists.forEach(list => {
+    abcLists.forEach((list) => {
       Object.entries(list.words).forEach(([letter, words]) => {
         letterCounts[letter] = (letterCounts[letter] || 0) + words.length;
       });
@@ -198,17 +216,20 @@ export function useAnalyticsData(): AnalyticsData {
   };
 
   const identifyKnowledgeAreas = (
-    abcLists: ABCListData[], 
-    kawas: KawaData[], 
-    kagas: KagaData[]
+    abcLists: ABCListData[],
+    kawas: KawaData[],
+    kagas: KagaData[],
   ): Array<{area: string; count: number; strength: number}> => {
     const areas: Record<string, {count: number; totalWords: number}> = {};
 
     // Analyze ABC list topics
-    abcLists.forEach(list => {
+    abcLists.forEach((list) => {
       const area = list.name;
-      const wordCount = Object.values(list.words).reduce((sum, words) => sum + words.length, 0);
-      
+      const wordCount = Object.values(list.words).reduce(
+        (sum, words) => sum + words.length,
+        0,
+      );
+
       if (!areas[area]) {
         areas[area] = {count: 0, totalWords: 0};
       }
@@ -217,7 +238,7 @@ export function useAnalyticsData(): AnalyticsData {
     });
 
     // Add Kawas and Kagas as areas
-    kawas.forEach(kawa => {
+    kawas.forEach((kawa) => {
       const area = `KaWa: ${kawa.text}`;
       if (!areas[area]) {
         areas[area] = {count: 0, totalWords: 0};
@@ -225,7 +246,7 @@ export function useAnalyticsData(): AnalyticsData {
       areas[area].count++;
     });
 
-    kagas.forEach(kaga => {
+    kagas.forEach((kaga) => {
       const area = `KaGa: ${kaga.text}`;
       if (!areas[area]) {
         areas[area] = {count: 0, totalWords: 0};
@@ -243,17 +264,17 @@ export function useAnalyticsData(): AnalyticsData {
   };
 
   const getLastActivityDate = (
-    abcLists: ABCListData[], 
-    kawas: KawaData[], 
-    kagas: KagaData[], 
-    slfGames: StadtLandFlussData[]
+    abcLists: ABCListData[],
+    kawas: KawaData[],
+    kagas: KagaData[],
+    slfGames: StadtLandFlussData[],
   ): Date | null => {
     const dates = [
-      ...abcLists.map(list => list.lastModified || list.createdAt || 0),
-      ...kawas.map(kawa => kawa.createdAt || 0),
-      ...kagas.map(kaga => kaga.createdAt || 0),
-      ...slfGames.map(game => game.createdAt || 0),
-    ].filter(date => date > 0);
+      ...abcLists.map((list) => list.lastModified || list.createdAt || 0),
+      ...kawas.map((kawa) => kawa.createdAt || 0),
+      ...kagas.map((kaga) => kaga.createdAt || 0),
+      ...slfGames.map((game) => game.createdAt || 0),
+    ].filter((date) => date > 0);
 
     if (dates.length === 0) return null;
     return new Date(Math.max(...dates));
@@ -261,11 +282,11 @@ export function useAnalyticsData(): AnalyticsData {
 
   const calculateLearningStreak = (lastActivityDate: Date | null): number => {
     if (!lastActivityDate) return 0;
-    
+
     const today = new Date();
     const diffTime = today.getTime() - lastActivityDate.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+
     // Simple streak calculation - could be enhanced with more sophisticated logic
     return diffDays <= 1 ? 1 : 0;
   };

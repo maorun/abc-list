@@ -5,8 +5,13 @@ interface KnowledgeAreasVisualizationProps {
   data: AnalyticsData;
 }
 
-export function KnowledgeAreasVisualization({data}: KnowledgeAreasVisualizationProps) {
-  const maxStrength = Math.max(...data.knowledgeAreas.map(area => area.strength), 1);
+export function KnowledgeAreasVisualization({
+  data,
+}: KnowledgeAreasVisualizationProps) {
+  const maxStrength = Math.max(
+    ...data.knowledgeAreas.map((area) => area.strength),
+    1,
+  );
 
   const getNodeSize = (strength: number) => {
     const baseSize = 60;
@@ -40,7 +45,10 @@ export function KnowledgeAreasVisualization({data}: KnowledgeAreasVisualizationP
 
       <div className="text-center text-gray-600 mb-6">
         <p>Größe der Knoten entspricht der Wissensstärke in diesem Bereich</p>
-        <p>Farben zeigen das relative Niveau: Grün = Stark, Rot = Verbesserungsbedarf</p>
+        <p>
+          Farben zeigen das relative Niveau: Grün = Stark, Rot =
+          Verbesserungsbedarf
+        </p>
       </div>
 
       {data.knowledgeAreas.length > 0 ? (
@@ -51,7 +59,11 @@ export function KnowledgeAreasVisualization({data}: KnowledgeAreasVisualizationP
               {/* Central node */}
               <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
                 <div className="w-20 h-20 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
-                  <span className="text-xs text-center">Lern-<br/>zentrum</span>
+                  <span className="text-xs text-center">
+                    Lern-
+                    <br />
+                    zentrum
+                  </span>
                 </div>
               </div>
 
@@ -68,8 +80,8 @@ export function KnowledgeAreasVisualization({data}: KnowledgeAreasVisualizationP
                     key={area.area}
                     className="absolute"
                     style={{
-                      left: '50%',
-                      top: '50%',
+                      left: "50%",
+                      top: "50%",
                       transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
                     }}
                   >
@@ -104,10 +116,12 @@ export function KnowledgeAreasVisualization({data}: KnowledgeAreasVisualizationP
                     >
                       <div className="text-center p-2">
                         <div className="font-bold truncate max-w-full">
-                          {area.area.length > 10 ? area.area.substring(0, 10) + '...' : area.area}
+                          {area.area.length > 10
+                            ? area.area.substring(0, 10) + "..."
+                            : area.area}
                         </div>
                         <div className="text-xs mt-1">
-                          {area.count} {area.count === 1 ? 'Liste' : 'Listen'}
+                          {area.count} {area.count === 1 ? "Liste" : "Listen"}
                         </div>
                       </div>
                     </div>
@@ -119,24 +133,33 @@ export function KnowledgeAreasVisualization({data}: KnowledgeAreasVisualizationP
 
           {/* Knowledge areas list */}
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold mb-4">Detaillierte Wissensgebiete</h3>
+            <h3 className="text-lg font-semibold mb-4">
+              Detaillierte Wissensgebiete
+            </h3>
             <div className="space-y-3">
               {data.knowledgeAreas.map((area, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div
+                  key={index}
+                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                >
                   <div className="flex-1">
                     <h4 className="font-medium text-gray-900">{area.area}</h4>
                     <p className="text-sm text-gray-600">
-                      {area.count} {area.count === 1 ? 'Liste' : 'Listen'} • 
-                      Stärke: {area.strength.toFixed(1)} • 
+                      {area.count} {area.count === 1 ? "Liste" : "Listen"} •
+                      Stärke: {area.strength.toFixed(1)} •
                       {getStrengthLabel(area.strength)}
                     </p>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <div className={`w-4 h-4 rounded-full ${getNodeColor(area.strength)}`}></div>
+                    <div
+                      className={`w-4 h-4 rounded-full ${getNodeColor(area.strength)}`}
+                    ></div>
                     <div className="w-32 bg-gray-200 rounded-full h-2">
                       <div
                         className={`h-2 rounded-full ${getNodeColor(area.strength)}`}
-                        style={{width: `${(area.strength / maxStrength) * 100}%`}}
+                        style={{
+                          width: `${(area.strength / maxStrength) * 100}%`,
+                        }}
                       ></div>
                     </div>
                   </div>
@@ -154,15 +177,23 @@ export function KnowledgeAreasVisualization({data}: KnowledgeAreasVisualizationP
               {data.knowledgeAreas.length > 0 && (
                 <>
                   <p>
-                    🎯 Fokussieren Sie sich auf <strong>{data.knowledgeAreas[data.knowledgeAreas.length - 1]?.area}</strong> 
+                    🎯 Fokussieren Sie sich auf{" "}
+                    <strong>
+                      {
+                        data.knowledgeAreas[data.knowledgeAreas.length - 1]
+                          ?.area
+                      }
+                    </strong>
                     - hier gibt es noch Verbesserungspotential!
                   </p>
                   <p>
-                    🏆 Vertiefen Sie Ihr Wissen in <strong>{data.knowledgeAreas[0]?.area}</strong> 
-                    - das ist bereits Ihre Stärke!
+                    🏆 Vertiefen Sie Ihr Wissen in{" "}
+                    <strong>{data.knowledgeAreas[0]?.area}</strong>- das ist
+                    bereits Ihre Stärke!
                   </p>
                   <p>
-                    📈 Versuchen Sie, in schwächeren Bereichen mehr Wörter pro Buchstabe zu finden.
+                    📈 Versuchen Sie, in schwächeren Bereichen mehr Wörter pro
+                    Buchstabe zu finden.
                   </p>
                 </>
               )}
@@ -172,7 +203,10 @@ export function KnowledgeAreasVisualization({data}: KnowledgeAreasVisualizationP
       ) : (
         <div className="text-center text-gray-500 py-12">
           <p className="text-lg mb-4">Noch keine Wissensbereiche verfügbar</p>
-          <p>Erstellen Sie Ihre erste ABC-Liste, um Ihre Wissensbereiche zu visualisieren!</p>
+          <p>
+            Erstellen Sie Ihre erste ABC-Liste, um Ihre Wissensbereiche zu
+            visualisieren!
+          </p>
         </div>
       )}
     </div>
