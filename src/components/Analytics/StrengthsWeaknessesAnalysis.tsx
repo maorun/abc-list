@@ -341,7 +341,18 @@ export function StrengthsWeaknessesAnalysis({
                   if (score < 3) return "#22c55e"; // green
                   return "#059669"; // dark green
                 }}
-              />
+                fill="#8884d8"
+              >
+                {letterDifficulty.map((entry, index) => {
+                  const score = entry?.score || 0;
+                  let color = "#059669"; // default: dark green
+                  if (score < 0.5) color = "#ef4444"; // red
+                  else if (score < 1) color = "#f97316"; // orange
+                  else if (score < 2) color = "#eab308"; // yellow
+                  else if (score < 3) color = "#22c55e"; // green
+                  return <Cell key={`cell-${index}`} fill={color} />;
+                })}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
