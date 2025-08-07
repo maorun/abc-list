@@ -130,7 +130,7 @@ export function ListComparison({data}: ListComparisonProps) {
             <div className="mt-4 p-3 bg-blue-50 rounded-lg">
               <p className="text-blue-800">
                 Vergleiche {findSimilarLists(selectedTopic).length} Listen zum
-                Thema "{selectedTopic}"
+                Thema &quot;{selectedTopic}&quot;
               </p>
             </div>
           )}

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useCallback} from "react";
 import {CheckCircle, Target, Plus, Trash2} from "lucide-react";
 import {AnalyticsData} from "./useAnalyticsData";
 import {
@@ -40,13 +40,13 @@ export function MilestoneTracking({data}: MilestoneTrackingProps) {
 
   useEffect(() => {
     loadMilestones();
-  }, []);
+  }, [loadMilestones]);
 
   useEffect(() => {
     updateMilestoneProgress();
-  }, [data.totalWords, data.totalLists, data.abcLists.length]);
+  }, [updateMilestoneProgress]);
 
-  const loadMilestones = () => {
+  const loadMilestones = useCallback(() => {
     const stored = localStorage.getItem("learningMilestones");
     if (stored) {
       try {
@@ -58,9 +58,9 @@ export function MilestoneTracking({data}: MilestoneTrackingProps) {
     } else {
       initializeDefaultMilestones();
     }
-  };
+  }, [initializeDefaultMilestones]);
 
-  const initializeDefaultMilestones = () => {
+  const initializeDefaultMilestones = useCallback(() => {
     const defaultMilestones: Milestone[] = [
       {
         id: "first-list",
@@ -110,9 +110,9 @@ export function MilestoneTracking({data}: MilestoneTrackingProps) {
 
     setMilestones(defaultMilestones);
     saveMilestones(defaultMilestones);
-  };
+  }, []);
 
-  const updateMilestoneProgress = () => {
+  const updateMilestoneProgress = useCallback(() => {
     if (milestones.length === 0) return;
 
     const updatedMilestones = milestones.map((milestone) => {
@@ -153,7 +153,7 @@ export function MilestoneTracking({data}: MilestoneTrackingProps) {
       setMilestones(updatedMilestones);
       saveMilestones(updatedMilestones);
     }
-  };
+  }, [milestones, data.totalWords, data.totalLists, data.abcLists]);
 
   const saveMilestones = (milestonesToSave: Milestone[]) => {
     localStorage.setItem(

@@ -66,6 +66,7 @@ export function useAnalyticsData(): AnalyticsData {
 
   useEffect(() => {
     loadAnalyticsData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadAnalyticsData = () => {

@@ -12,6 +12,7 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  Cell,
 } from "recharts";
 import {AnalyticsData} from "./useAnalyticsData";
 
@@ -262,7 +263,7 @@ export function StrengthsWeaknessesAnalysis({
               🏆 Stärkste Buchstaben
             </h4>
             <div className="space-y-2">
-              {strongestLetters.map(([letter, stats], index) => (
+              {strongestLetters.map(([letter, stats]) => (
                 <div
                   key={letter}
                   className="flex items-center justify-between bg-green-50 p-2 rounded"
@@ -287,7 +288,7 @@ export function StrengthsWeaknessesAnalysis({
               🎯 Schwierigste Buchstaben
             </h4>
             <div className="space-y-2">
-              {weakestLetters.map(([letter, stats], index) => (
+              {weakestLetters.map(([letter, stats]) => (
                 <div
                   key={letter}
                   className="flex items-center justify-between bg-red-50 p-2 rounded"
@@ -331,18 +332,7 @@ export function StrengthsWeaknessesAnalysis({
                     : letter;
                 }}
               />
-              <Bar
-                dataKey="score"
-                fill={(entry) => {
-                  const score = entry?.score || 0;
-                  if (score < 0.5) return "#ef4444"; // red
-                  if (score < 1) return "#f97316"; // orange
-                  if (score < 2) return "#eab308"; // yellow
-                  if (score < 3) return "#22c55e"; // green
-                  return "#059669"; // dark green
-                }}
-                fill="#8884d8"
-              >
+              <Bar dataKey="score">
                 {letterDifficulty.map((entry, index) => {
                   const score = entry?.score || 0;
                   let color = "#059669"; // default: dark green
