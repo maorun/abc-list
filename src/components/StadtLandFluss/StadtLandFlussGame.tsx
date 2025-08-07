@@ -48,7 +48,7 @@ export function StadtLandFlussGame() {
   });
   const [editingCategories, setEditingCategories] = useState(false);
   const [newCategory, setNewCategory] = useState("");
-  const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const timerIntervalRef = useRef<number | null>(null);
   const endRoundCalledRef = useRef(false);
 
   const loadGameData = useCallback(() => {
@@ -78,12 +78,19 @@ export function StadtLandFlussGame() {
     gameDuration: number,
   ): Record<string, number> => {
     const points: Record<string, number> = {};
-    const speedBonus = Math.max(0, (gameDuration - timeUsed) / gameDuration);
+    const speedBonus =
+      gameDuration > 0
+        ? Math.max(0, (gameDuration - timeUsed) / gameDuration)
+        : 0;
 
     Object.entries(answers).forEach(([category, answer]) => {
       let categoryPoints = 0;
 
-      if (answer.trim() && answer.toUpperCase().startsWith(currentLetter)) {
+      if (
+        answer.trim() &&
+        currentLetter &&
+        answer.toUpperCase().startsWith(currentLetter)
+      ) {
         categoryPoints = 10; // Base points for valid answer
         categoryPoints += Math.floor(speedBonus * 5); // Speed bonus (0-5 points)
 
