@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useCallback, useRef} from "react";
 import {useParams} from "react-router-dom";
 import {toast} from "sonner";
 
@@ -48,16 +48,98 @@ export function StadtLandFlussGame() {
   });
   const [editingCategories, setEditingCategories] = useState(false);
   const [newCategory, setNewCategory] = useState("");
-  const [timerInterval, setTimerInterval] = useState<NodeJS.Timeout | null>(
-    null,
+  const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const loadGameData = useCallback(() => {
+    const cacheKey = "slf-" + game;
+    const storedData = localStorage.getItem(cacheKey);
+    if (storedData) {
+      const parsed = JSON.parse(storedData);
+      setGameData((prev) => ({...prev, ...parsed}));
+    }
+  }, [game]);
+
+  const saveGameData = useCallback(
+    (data: GameData) => {
+      localStorage.setItem("slf-" + game, JSON.stringify(data));
+    },
+    [game],
   );
+
+  const generateRandomLetter = (): string => {
+    return GAME_LETTERS[Math.floor(Math.random() * GAME_LETTERS.length)];
+  };
+
+  const calculatePoints = (
+    answers: Record<string, string>,
+    timeUsed: number,
+    currentLetter: string,
+    gameDuration: number,
+  ): Record<string, number> => {
+    const points: Record<string, number> = {};
+    const speedBonus = Math.max(0, (gameDuration - timeUsed) / gameDuration);
+
+    Object.entries(answers).forEach(([category, answer]) => {
+      let categoryPoints = 0;
+
+      if (answer.trim() && answer.toUpperCase().startsWith(currentLetter)) {
+        categoryPoints = 10; // Base points for valid answer
+        categoryPoints += Math.floor(speedBonus * 5); // Speed bonus (0-5 points)
+
+        // Creativity bonus for longer words
+        if (answer.length > 6) {
+          categoryPoints += 2;
+        }
+      }
+
+      points[category] = categoryPoints;
+    });
+
+    return points;
+  };
+
+  const endRound = useCallback(() => {
+    if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+
+    setGameData((currentGameData) => {
+      const timeUsed = currentGameData.gameDuration - currentGameData.timeLeft;
+      const points = calculatePoints(
+        currentGameData.answers,
+        timeUsed,
+        currentGameData.currentLetter,
+        currentGameData.gameDuration,
+      );
+      const totalPoints = Object.values(points).reduce((sum, p) => sum + p, 0);
+
+      const newRound = {
+        letter: currentGameData.currentLetter,
+        answers: {...currentGameData.answers},
+        points,
+        totalPoints,
+        timeUsed,
+      };
+
+      const newGameData = {
+        ...currentGameData,
+        isGameActive: false,
+        rounds: [...currentGameData.rounds, newRound],
+        totalScore: currentGameData.totalScore + totalPoints,
+        currentLetter: "",
+        timeLeft: 0,
+      };
+
+      saveGameData(newGameData);
+      toast.success(`Runde beendet! Punkte: ${totalPoints}`);
+      return newGameData;
+    });
+  }, [saveGameData]);
 
   useEffect(() => {
     if (game) {
       document.title = `Stadt-Land-Fluss: ${game}`;
       loadGameData();
     }
-  }, [game]);
+  }, [game, loadGameData]);
 
   useEffect(() => {
     if (gameData.isGameActive && gameData.timeLeft > 0) {
@@ -67,32 +149,12 @@ export function StadtLandFlussGame() {
           timeLeft: Math.max(0, prev.timeLeft - 1),
         }));
       }, 1000);
-      setTimerInterval(interval);
+      timerIntervalRef.current = interval;
       return () => clearInterval(interval);
     } else if (gameData.isGameActive && gameData.timeLeft === 0) {
       endRound();
     }
-  }, [gameData.isGameActive, gameData.timeLeft]);
-
-  const getCacheKey = (): string => {
-    return "slf-" + game;
-  };
-
-  const loadGameData = () => {
-    const storedData = localStorage.getItem(getCacheKey());
-    if (storedData) {
-      const parsed = JSON.parse(storedData);
-      setGameData((prev) => ({...prev, ...parsed}));
-    }
-  };
-
-  const saveGameData = (data: GameData) => {
-    localStorage.setItem(getCacheKey(), JSON.stringify(data));
-  };
-
-  const generateRandomLetter = (): string => {
-    return GAME_LETTERS[Math.floor(Math.random() * GAME_LETTERS.length)];
-  };
+  }, [gameData.isGameActive, gameData.timeLeft, endRound]);
 
   const startNewRound = () => {
     const letter = generateRandomLetter();
@@ -109,67 +171,6 @@ export function StadtLandFlussGame() {
     setGameData(newGameData);
     saveGameData(newGameData);
     toast.success(`Neue Runde gestartet! Buchstabe: ${letter}`);
-  };
-
-  const endRound = () => {
-    if (timerInterval) clearInterval(timerInterval);
-
-    const timeUsed = gameData.gameDuration - gameData.timeLeft;
-    const points = calculatePoints(gameData.answers, timeUsed);
-    const totalPoints = Object.values(points).reduce((sum, p) => sum + p, 0);
-
-    const newRound = {
-      letter: gameData.currentLetter,
-      answers: {...gameData.answers},
-      points,
-      totalPoints,
-      timeUsed,
-    };
-
-    const newGameData = {
-      ...gameData,
-      isGameActive: false,
-      rounds: [...gameData.rounds, newRound],
-      totalScore: gameData.totalScore + totalPoints,
-      currentLetter: "",
-      timeLeft: 0,
-    };
-
-    setGameData(newGameData);
-    saveGameData(newGameData);
-    toast.success(`Runde beendet! Punkte: ${totalPoints}`);
-  };
-
-  const calculatePoints = (
-    answers: Record<string, string>,
-    timeUsed: number,
-  ): Record<string, number> => {
-    const points: Record<string, number> = {};
-    const speedBonus = Math.max(
-      0,
-      (gameData.gameDuration - timeUsed) / gameData.gameDuration,
-    );
-
-    Object.entries(answers).forEach(([category, answer]) => {
-      let categoryPoints = 0;
-
-      if (
-        answer.trim() &&
-        answer.toUpperCase().startsWith(gameData.currentLetter)
-      ) {
-        categoryPoints = 10; // Base points for valid answer
-        categoryPoints += Math.floor(speedBonus * 5); // Speed bonus (0-5 points)
-
-        // Creativity bonus for longer words
-        if (answer.length > 6) {
-          categoryPoints += 2;
-        }
-      }
-
-      points[category] = categoryPoints;
-    });
-
-    return points;
   };
 
   const updateAnswer = (category: string, value: string) => {
