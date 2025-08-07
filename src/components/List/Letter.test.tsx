@@ -33,7 +33,9 @@ describe("Letter", () => {
 
   it("renders a button with the capitalized letter", () => {
     render(<Letter cacheKey={cacheKey} letter={letter} />);
-    expect(screen.getByRole("button", {name: "A"})).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", {name: "Wort für Buchstabe A hinzufügen"}),
+    ).toBeInTheDocument();
   });
 
   it("loads and displays words from localStorage on initial render", () => {
@@ -51,7 +53,9 @@ describe("Letter", () => {
 
   it("opens a modal when the letter button is clicked", () => {
     render(<Letter cacheKey={cacheKey} letter={letter} />);
-    fireEvent.click(screen.getByRole("button", {name: "A"}));
+    fireEvent.click(
+      screen.getByRole("button", {name: "Wort für Buchstabe A hinzufügen"}),
+    );
     expect(
       screen.getByRole("heading", {name: 'Neues Wort für "A"'}),
     ).toBeInTheDocument();
@@ -59,11 +63,13 @@ describe("Letter", () => {
 
   it("adds a new word, saves to localStorage, and closes modal", () => {
     render(<Letter cacheKey={cacheKey} letter={letter} />);
-    fireEvent.click(screen.getByRole("button", {name: "A"}));
+    fireEvent.click(
+      screen.getByRole("button", {name: "Wort für Buchstabe A hinzufügen"}),
+    );
 
     const input = screen.getByPlaceholderText("Wort eingeben...");
     fireEvent.change(input, {target: {value: "Airplane"}});
-    fireEvent.click(screen.getByRole("button", {name: "Speichern"}));
+    fireEvent.click(screen.getByRole("button", {name: "Wort speichern"}));
 
     expect(screen.getByText("Airplane")).toBeInTheDocument();
     expect(localStorage.getItem(`${cacheKey}:${letter}`)).toBe(
@@ -79,11 +85,13 @@ describe("Letter", () => {
   it("does not add a duplicate word", () => {
     localStorage.setItem(`${cacheKey}:${letter}`, JSON.stringify(["Apple"]));
     render(<Letter cacheKey={cacheKey} letter={letter} />);
-    fireEvent.click(screen.getByRole("button", {name: "A"}));
+    fireEvent.click(
+      screen.getByRole("button", {name: "Wort für Buchstabe A hinzufügen"}),
+    );
 
     const input = screen.getByPlaceholderText("Wort eingeben...");
     fireEvent.change(input, {target: {value: "Apple"}});
-    fireEvent.click(screen.getByRole("button", {name: "Speichern"}));
+    fireEvent.click(screen.getByRole("button", {name: "Wort speichern"}));
 
     expect(screen.getAllByText("Apple")).toHaveLength(1);
     expect(localStorage.getItem(`${cacheKey}:${letter}`)).toBe(
@@ -122,8 +130,10 @@ describe("Letter", () => {
 
   it('closes the modal when "Abbrechen" is clicked', () => {
     render(<Letter cacheKey={cacheKey} letter={letter} />);
-    fireEvent.click(screen.getByRole("button", {name: "A"}));
-    fireEvent.click(screen.getByRole("button", {name: "Abbrechen"}));
+    fireEvent.click(
+      screen.getByRole("button", {name: "Wort für Buchstabe A hinzufügen"}),
+    );
+    fireEvent.click(screen.getByRole("button", {name: "Dialog schließen"}));
     expect(
       screen.queryByRole("heading", {name: 'Neues Wort für "A"'}),
     ).not.toBeInTheDocument();

@@ -4,6 +4,14 @@ import {toast} from "sonner";
 import {usePrompt} from "@/components/ui/prompt-dialog";
 import {Letter} from "./Letter";
 import {WordWithExplanation} from "./SavedWord";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 interface ExportedList {
   name: string;
@@ -210,15 +218,17 @@ export function ListItem() {
         <div className="flex gap-2">
           <button
             onClick={exportList}
-            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded flex items-center gap-1"
+            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
             title="Liste exportieren und teilen"
+            aria-label="ABC-Liste als JSON exportieren"
           >
             📤 Exportieren
           </button>
           <button
             onClick={() => setShowImportModal(true)}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center gap-1"
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             title="Begriffe aus anderer Liste importieren"
+            aria-label="Begriffe aus exportierter ABC-Liste importieren"
           >
             📥 Importieren
           </button>
@@ -234,69 +244,64 @@ export function ListItem() {
       </div>
 
       {/* Export Modal */}
-      {showExportModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-96 overflow-y-auto">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold">Liste exportieren</h2>
-              <button
-                onClick={() => setShowExportModal(false)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                ✕
-              </button>
-            </div>
+      <Dialog open={showExportModal} onOpenChange={setShowExportModal}>
+        <DialogContent className="sm:max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Liste exportieren</DialogTitle>
+            <DialogDescription>
+              Kopieren Sie die JSON-Daten oder laden Sie sie als Datei herunter,
+              um Ihre ABC-Liste zu teilen.
+            </DialogDescription>
+          </DialogHeader>
 
-            <p className="text-sm text-gray-600 mb-4">
-              Kopieren Sie die folgenden Daten oder laden Sie sie als Datei
-              herunter, um Ihre ABC-Liste zu teilen:
-            </p>
-
+          <div className="space-y-4">
             <textarea
               value={exportedData}
               readOnly
-              className="w-full h-32 p-2 border rounded text-xs font-mono"
+              className="w-full h-32 p-2 border rounded text-xs font-mono resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+              aria-label="Export-Daten"
             />
-
-            <div className="flex gap-2 mt-4">
-              <button
-                onClick={copyToClipboard}
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              >
-                📋 Kopieren
-              </button>
-              <button
-                onClick={downloadAsFile}
-                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-              >
-                💾 Download
-              </button>
-              <button
-                onClick={() => setShowExportModal(false)}
-                className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
-              >
-                Schließen
-              </button>
-            </div>
           </div>
-        </div>
-      )}
+
+          <DialogFooter className="flex gap-2">
+            <button
+              onClick={copyToClipboard}
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              aria-label="Export-Daten in Zwischenablage kopieren"
+            >
+              📋 Kopieren
+            </button>
+            <button
+              onClick={downloadAsFile}
+              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+              aria-label="Export-Daten als Datei herunterladen"
+            >
+              💾 Download
+            </button>
+            <button
+              onClick={() => setShowExportModal(false)}
+              className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+              aria-label="Export-Dialog schließen"
+            >
+              Schließen
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Import Modal */}
-      {showImportModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-xl max-w-2xl w-full mx-4">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold">Begriffe importieren</h2>
-              <button
-                onClick={() => setShowImportModal(false)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                ✕
-              </button>
-            </div>
+      <Dialog open={showImportModal} onOpenChange={setShowImportModal}>
+        <DialogContent className="sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Begriffe importieren</DialogTitle>
+            <DialogDescription>
+              Fügen Sie JSON-Daten einer exportierten ABC-Liste ein. Sie werden
+              aufgefordert, jeden neuen Begriff zu erklären.
+            </DialogDescription>
+          </DialogHeader>
 
-            <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded">
+          <div className="space-y-4">
+            <div className="p-4 bg-yellow-50 border border-yellow-200 rounded">
               <h3 className="font-semibold text-yellow-800 mb-2">
                 ⚠️ Wichtiger Hinweis
               </h3>
@@ -308,35 +313,43 @@ export function ListItem() {
               </p>
             </div>
 
-            <p className="text-sm text-gray-600 mb-4">
-              Fügen Sie hier die JSON-Daten einer exportierten ABC-Liste ein:
-            </p>
-
-            <textarea
-              value={importData}
-              onChange={(e) => setImportData(e.target.value)}
-              placeholder="JSON-Daten hier einfügen..."
-              className="w-full h-32 p-2 border rounded text-xs font-mono"
-            />
-
-            <div className="flex gap-2 mt-4">
-              <button
-                onClick={importList}
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                disabled={!importData.trim()}
+            <div>
+              <label
+                htmlFor="import-data"
+                className="block text-sm font-medium text-gray-700 mb-2"
               >
-                📥 Importieren
-              </button>
-              <button
-                onClick={() => setShowImportModal(false)}
-                className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
-              >
-                Abbrechen
-              </button>
+                JSON-Daten einer exportierten ABC-Liste:
+              </label>
+              <textarea
+                id="import-data"
+                value={importData}
+                onChange={(e) => setImportData(e.target.value)}
+                placeholder="JSON-Daten hier einfügen..."
+                className="w-full h-32 p-2 border rounded text-xs font-mono resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                aria-label="Import-Daten eingeben"
+              />
             </div>
           </div>
-        </div>
-      )}
+
+          <DialogFooter className="flex gap-2">
+            <button
+              onClick={importList}
+              disabled={!importData.trim()}
+              className="bg-blue-500 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              aria-label="Import starten"
+            >
+              📥 Importieren
+            </button>
+            <button
+              onClick={() => setShowImportModal(false)}
+              className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+              aria-label="Import-Dialog schließen"
+            >
+              Abbrechen
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       <PromptComponent />
     </div>
   );
