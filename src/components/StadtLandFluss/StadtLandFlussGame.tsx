@@ -49,6 +49,7 @@ export function StadtLandFlussGame() {
   const [editingCategories, setEditingCategories] = useState(false);
   const [newCategory, setNewCategory] = useState("");
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const endRoundCalledRef = useRef(false);
 
   const loadGameData = useCallback(() => {
     const cacheKey = "slf-" + game;
@@ -142,19 +143,37 @@ export function StadtLandFlussGame() {
   }, [game, loadGameData]);
 
   useEffect(() => {
-    if (gameData.isGameActive && gameData.timeLeft > 0) {
+    if (gameData.isGameActive) {
       const interval = setInterval(() => {
-        setGameData((prev) => ({
-          ...prev,
-          timeLeft: Math.max(0, prev.timeLeft - 1),
-        }));
+        setGameData((prev) => {
+          if (prev.timeLeft <= 1) {
+            // Time is up, end the round
+            if (!endRoundCalledRef.current) {
+              endRoundCalledRef.current = true;
+              setTimeout(() => endRound(), 0);
+            }
+            return {
+              ...prev,
+              timeLeft: 0,
+            };
+          }
+          return {
+            ...prev,
+            timeLeft: prev.timeLeft - 1,
+          };
+        });
       }, 1000);
       timerIntervalRef.current = interval;
       return () => clearInterval(interval);
-    } else if (gameData.isGameActive && gameData.timeLeft === 0) {
-      endRound();
     }
-  }, [gameData.isGameActive, gameData.timeLeft, endRound]);
+  }, [gameData.isGameActive, endRound]);
+
+  // Reset endRoundCalled flag when game becomes inactive
+  useEffect(() => {
+    if (!gameData.isGameActive) {
+      endRoundCalledRef.current = false;
+    }
+  }, [gameData.isGameActive]);
 
   const startNewRound = () => {
     const letter = generateRandomLetter();
