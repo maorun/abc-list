@@ -1,6 +1,14 @@
 import React, {useState, useEffect} from "react";
 import {CheckCircle, Target, Plus, Trash2} from "lucide-react";
 import {AnalyticsData} from "./useAnalyticsData";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 interface Milestone {
   id: string;
@@ -183,6 +191,11 @@ export function MilestoneTracking({data}: MilestoneTrackingProps) {
     setShowAddModal(false);
   };
 
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    addMilestone();
+  };
+
   const deleteMilestone = (id: string) => {
     const updated = milestones.filter((m) => m.id !== id);
     setMilestones(updated);
@@ -246,7 +259,8 @@ export function MilestoneTracking({data}: MilestoneTrackingProps) {
       <div className="flex justify-center">
         <button
           onClick={() => setShowAddModal(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg flex items-center gap-2 transition-colors"
+          className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg flex items-center gap-2 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          aria-label="Neues Lernziel hinzufügen"
         >
           <Plus size={20} />
           Neues Lernziel hinzufügen
@@ -291,8 +305,9 @@ export function MilestoneTracking({data}: MilestoneTrackingProps) {
                     {milestone.id.startsWith("custom-") && (
                       <button
                         onClick={() => deleteMilestone(milestone.id)}
-                        className="text-red-500 hover:text-red-700 p-1"
+                        className="text-red-500 hover:text-red-700 p-1 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 rounded"
                         title="Löschen"
+                        aria-label={`Meilenstein ${milestone.title} löschen`}
                       >
                         <Trash2 size={16} />
                       </button>
@@ -354,124 +369,159 @@ export function MilestoneTracking({data}: MilestoneTrackingProps) {
       )}
 
       {/* Add Milestone Modal */}
-      {showAddModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
-            <h3 className="text-lg font-semibold mb-4">
-              Neues Lernziel hinzufügen
-            </h3>
+      <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Neues Lernziel hinzufügen</DialogTitle>
+            <DialogDescription>
+              Erstellen Sie ein neues Lernziel, um Ihren Fortschritt zu
+              verfolgen und motiviert zu bleiben.
+            </DialogDescription>
+          </DialogHeader>
 
-            <div className="space-y-4">
+          <form onSubmit={handleFormSubmit} className="space-y-4">
+            <div>
+              <label
+                htmlFor="milestone-title"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Titel
+              </label>
+              <input
+                id="milestone-title"
+                type="text"
+                value={newMilestone.title}
+                onChange={(e) =>
+                  setNewMilestone({...newMilestone, title: e.target.value})
+                }
+                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="z.B. 500 Wörter sammeln"
+                aria-label="Titel des Lernziels"
+                required
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="milestone-description"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Beschreibung
+              </label>
+              <textarea
+                id="milestone-description"
+                value={newMilestone.description}
+                onChange={(e) =>
+                  setNewMilestone({
+                    ...newMilestone,
+                    description: e.target.value,
+                  })
+                }
+                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                rows={3}
+                placeholder="Beschreiben Sie Ihr Lernziel..."
+                aria-label="Beschreibung des Lernziels"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Titel
+                <label
+                  htmlFor="milestone-target"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Zielwert
                 </label>
                 <input
-                  type="text"
-                  value={newMilestone.title}
-                  onChange={(e) =>
-                    setNewMilestone({...newMilestone, title: e.target.value})
-                  }
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="z.B. 500 Wörter sammeln"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Beschreibung
-                </label>
-                <textarea
-                  value={newMilestone.description}
+                  id="milestone-target"
+                  type="number"
+                  value={newMilestone.target}
                   onChange={(e) =>
                     setNewMilestone({
                       ...newMilestone,
-                      description: e.target.value,
+                      target: parseInt(e.target.value) || 0,
                     })
                   }
                   className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  rows={3}
-                  placeholder="Beschreiben Sie Ihr Lernziel..."
+                  min="1"
+                  aria-label="Zielwert"
+                  required
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Zielwert
-                  </label>
-                  <input
-                    type="number"
-                    value={newMilestone.target}
-                    onChange={(e) =>
-                      setNewMilestone({
-                        ...newMilestone,
-                        target: parseInt(e.target.value) || 0,
-                      })
-                    }
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    min="1"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Einheit
-                  </label>
-                  <select
-                    value={newMilestone.unit}
-                    onChange={(e) =>
-                      setNewMilestone({...newMilestone, unit: e.target.value})
-                    }
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="Wörter">Wörter</option>
-                    <option value="Listen">Listen</option>
-                    <option value="Buchstaben">Buchstaben</option>
-                    <option value="Tage">Tage</option>
-                  </select>
-                </div>
-              </div>
-
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Kategorie
+                <label
+                  htmlFor="milestone-unit"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Einheit
                 </label>
                 <select
-                  value={newMilestone.category}
+                  id="milestone-unit"
+                  value={newMilestone.unit}
                   onChange={(e) =>
-                    setNewMilestone({
-                      ...newMilestone,
-                      category: e.target.value as Milestone["category"],
-                    })
+                    setNewMilestone({...newMilestone, unit: e.target.value})
                   }
                   className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  aria-label="Einheit des Zielwerts"
                 >
-                  <option value="words">Wörter</option>
-                  <option value="lists">Listen</option>
-                  <option value="consistency">Konsistenz</option>
-                  <option value="custom">Benutzerdefiniert</option>
+                  <option value="Wörter">Wörter</option>
+                  <option value="Listen">Listen</option>
+                  <option value="Buchstaben">Buchstaben</option>
+                  <option value="Tage">Tage</option>
                 </select>
               </div>
             </div>
 
-            <div className="flex gap-3 mt-6">
+            <div>
+              <label
+                htmlFor="milestone-category"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Kategorie
+              </label>
+              <select
+                id="milestone-category"
+                value={newMilestone.category}
+                onChange={(e) =>
+                  setNewMilestone({
+                    ...newMilestone,
+                    category: e.target.value as Milestone["category"],
+                  })
+                }
+                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                aria-label="Kategorie des Lernziels"
+              >
+                <option value="words">Wörter</option>
+                <option value="lists">Listen</option>
+                <option value="consistency">Konsistenz</option>
+                <option value="custom">Benutzerdefiniert</option>
+              </select>
+            </div>
+
+            <DialogFooter className="flex gap-3 mt-6">
               <button
-                onClick={addMilestone}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                type="submit"
+                disabled={
+                  !newMilestone.title.trim() || newMilestone.target <= 0
+                }
+                className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium py-2 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                aria-label="Lernziel hinzufügen"
               >
                 Hinzufügen
               </button>
               <button
+                type="button"
                 onClick={() => setShowAddModal(false)}
-                className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors"
+                className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                aria-label="Dialog schließen"
               >
                 Abbrechen
               </button>
-            </div>
-          </div>
-        </div>
-      )}
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       {/* Motivation Section */}
       <div className="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-lg shadow-md p-6 text-white">

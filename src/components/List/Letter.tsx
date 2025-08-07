@@ -1,5 +1,13 @@
 import React, {useState, useEffect, useCallback} from "react";
 import {SavedWord, WordWithExplanation} from "./SavedWord";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 interface LetterProps {
   cacheKey: string;
@@ -57,9 +65,16 @@ export function Letter({cacheKey, letter}: LetterProps) {
       const newWords = [...words, newWordObj];
       setWords(newWords);
       updateStorage(newWords);
+      setNewWord("");
+      setIsModalOpen(false);
     }
-    setNewWord("");
-    setIsModalOpen(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && newWord.trim()) {
+      e.preventDefault();
+      handleAddWord();
+    }
   };
 
   const handleDeleteWord = (wordToDelete: string) => {
@@ -81,8 +96,9 @@ export function Letter({cacheKey, letter}: LetterProps) {
   return (
     <div className="flex flex-col items-center">
       <button
-        className="w-16 h-16 text-2xl font-bold rounded-full bg-gray-200 hover:bg-gray-300"
+        className="w-16 h-16 text-2xl font-bold rounded-full bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
         onClick={() => setIsModalOpen(true)}
+        aria-label={`Wort für Buchstabe ${letter.toUpperCase()} hinzufügen`}
       >
         {letter.toUpperCase()}
       </button>
@@ -101,36 +117,49 @@ export function Letter({cacheKey, letter}: LetterProps) {
         ))}
       </div>
 
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-lg shadow-xl">
-            <h2 className="text-xl font-bold mb-4">
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>
               Neues Wort für &quot;{letter.toUpperCase()}&quot;
-            </h2>
+            </DialogTitle>
+            <DialogDescription>
+              Geben Sie ein neues Wort ein, das mit dem Buchstaben{" "}
+              {letter.toUpperCase()} beginnt.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
             <input
               type="text"
               value={newWord}
               onChange={(e) => setNewWord(e.target.value)}
+              onKeyDown={handleKeyDown}
               placeholder="Wort eingeben..."
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-4"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              aria-label="Neues Wort eingeben"
             />
-            <div className="flex justify-end space-x-2">
-              <button
-                onClick={handleAddWord}
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              >
-                Speichern
-              </button>
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
-              >
-                Abbrechen
-              </button>
-            </div>
           </div>
-        </div>
-      )}
+
+          <DialogFooter className="flex justify-end space-x-2">
+            <button
+              onClick={handleAddWord}
+              disabled={!newWord.trim()}
+              className="bg-blue-500 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              aria-label="Wort speichern"
+            >
+              Speichern
+            </button>
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+              aria-label="Dialog schließen"
+            >
+              Abbrechen
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
