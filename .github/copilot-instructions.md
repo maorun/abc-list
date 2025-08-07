@@ -1,6 +1,6 @@
 # ABC-List Learning Application
 
-ABC-List is a React/TypeScript/Vite web application implementing Vera F. Birkenbihl's learning methodology with ABC-Lists, KaWa (word associations), and KaGa (graphical associations). This application helps users create learning materials using brain-compatible learning techniques.
+ABC-List is a React/TypeScript/Vite web application implementing Vera F. Birkenbihl's learning methodology with ABC-Lists, KaWa (word associations), KaGa (graphical associations), and Stadt-Land-Fluss (quick knowledge retrieval game). This application helps users create learning materials using brain-compatible learning techniques.
 
 **ALWAYS reference these instructions first and fallback to search or bash commands only when you encounter unexpected information that does not match the info here.**
 
@@ -34,7 +34,7 @@ ABC-List is a React/TypeScript/Vite web application implementing Vera F. Birkenb
    npm run test
    ```
    - Takes approximately 8 seconds. NEVER CANCEL. Set timeout to 30+ seconds.
-   - Runs 63 tests across 13 test files using Vitest
+   - Runs 78 tests across 15 test files using Vitest
    - All tests should pass - uses React Testing Library and Jest DOM
 
 4. **Run test coverage:**
@@ -105,6 +105,25 @@ ABC-List is a React/TypeScript/Vite web application implementing Vera F. Birkenb
 - Verify proper URL routing between sections
 - Check page titles update correctly
 
+### 6. Stadt-Land-Fluss Game
+- Navigate to "Stadt-Land-Fluss" tab
+- Click "Neues Stadt-Land-Fluss Spiel" button
+- Enter a game name (e.g., "Demo Spiel")
+- Save the game
+- Test game configuration:
+  - Change timer duration (1, 2, 3, or 5 minutes)
+  - Edit categories using "Bearbeiten" button
+  - Add or remove categories as needed
+- Start a game round and verify:
+  - Random letter is generated
+  - Timer counts down correctly
+  - Input fields accept answers
+  - Round ends automatically when timer reaches 0
+  - Manual round ending with "Runde beenden" button
+  - Score calculation works (base points + speed bonus + creativity bonus)
+- Test game history and round tracking
+- Verify game data persistence in localStorage
+
 ## CI/CD Requirements
 
 **Always run these commands before committing to ensure CI passes:**
@@ -133,6 +152,7 @@ ABC-List is a React/TypeScript/Vite web application implementing Vera F. Birkenb
     /Kawa             # KaWa (word associations) components
     /List             # ABC-List components
     /LinkLists        # List linking functionality
+    /StadtLandFluss   # Stadt-Land-Fluss game components
   /test               # Test setup and utilities
   /themes             # Theme configuration
   App.tsx             # Main application component
@@ -191,7 +211,7 @@ ABC-List is a React/TypeScript/Vite web application implementing Vera F. Birkenb
 ### Performance Notes
 - npm install: ~3 minutes (due to many dependencies)
 - Build time: ~2-3 seconds (very fast with Vite)
-- Test execution: ~8 seconds (63 tests)
+- Test execution: ~8 seconds (78 tests)
 - Dev server startup: ~1 second
 
 **Remember: NEVER CANCEL long-running commands. Always wait for completion and set appropriate timeouts (5+ minutes for installs, 60+ seconds for builds and tests).**
