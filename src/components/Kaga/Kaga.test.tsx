@@ -141,7 +141,7 @@ describe("Kaga", () => {
     fireEvent.contextMenu(screen.getByText("Delete Me KaGa"));
 
     // Check that delete confirmation is shown
-    expect(screen.getByText("Wirklich löschen?")).toBeInTheDocument();
+    expect(screen.getByText("Löschen bestätigen")).toBeInTheDocument();
   });
 
   it("deletes KaGa and removes canvas data when confirmed", () => {

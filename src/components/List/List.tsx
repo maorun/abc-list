@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from "react";
 import {useNavigate} from "react-router-dom";
 import {NewStringItem} from "../NewStringItem";
+import {Button} from "../ui/button";
 
 export const cacheKey = "abcLists";
 
@@ -55,18 +56,12 @@ export function List() {
           title={"Neue ABC-Liste"}
           onSave={(item) => createNewItem(item.text)}
         />
-        <button
-          className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-          onClick={clearAll}
-        >
+        <Button variant="destructive" onClick={clearAll}>
           Alle löschen
-        </button>
-        <button
-          className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
-          onClick={() => setIsReversed(!isReversed)}
-        >
+        </Button>
+        <Button variant="secondary" onClick={() => setIsReversed(!isReversed)}>
           Sortierung umkehren
-        </button>
+        </Button>
       </div>
       <h2 className="text-2xl font-bold text-center my-4">
         Bisherige ABC-Listen
@@ -82,18 +77,20 @@ export function List() {
               key={item}
               className="flex items-center justify-center space-x-2"
             >
-              <button
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-4/5"
+              <Button
+                variant="default"
+                className="w-4/5"
                 onClick={() => showAbcList(item)}
               >
                 {item}
-              </button>
-              <button
-                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded w-1/5"
+              </Button>
+              <Button
+                variant="destructive"
+                className="w-1/5"
                 onClick={() => deleteItem(item)}
               >
                 X
-              </button>
+              </Button>
             </li>
           ))}
       </ul>

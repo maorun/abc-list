@@ -13,7 +13,7 @@ describe("DeleteConfirm", () => {
         isVisible={false}
       />,
     );
-    expect(screen.queryByText("Wirklich löschen?")).not.toBeInTheDocument();
+    expect(screen.queryByText("Löschen bestätigen")).not.toBeInTheDocument();
   });
 
   it("should be visible when isVisible is true", () => {
@@ -24,7 +24,7 @@ describe("DeleteConfirm", () => {
         isVisible={true}
       />,
     );
-    expect(screen.getByText("Wirklich löschen?")).toBeInTheDocument();
+    expect(screen.getByText("Löschen bestätigen")).toBeInTheDocument();
     expect(screen.getByRole("button", {name: "Ja"})).toBeInTheDocument();
     expect(screen.getByRole("button", {name: "Nein"})).toBeInTheDocument();
   });

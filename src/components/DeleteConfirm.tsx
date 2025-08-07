@@ -1,4 +1,13 @@
 import React from "react";
+import {Button} from "./ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/dialog";
 
 interface DeleteConfirmProps<T> {
   itemToDelete: T;
@@ -13,10 +22,6 @@ export function DeleteConfirm<T>({
   onAbort,
   isVisible,
 }: DeleteConfirmProps<T>) {
-  if (!isVisible) {
-    return null;
-  }
-
   const handleDelete = () => {
     if (onDelete) {
       onDelete(itemToDelete);
@@ -26,24 +31,24 @@ export function DeleteConfirm<T>({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-      <div className="bg-white p-6 rounded-lg shadow-xl text-center">
-        <h2 className="text-xl font-bold mb-4">Wirklich löschen?</h2>
-        <div className="flex justify-center space-x-4">
-          <button
-            onClick={handleDelete}
-            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-          >
-            Ja
-          </button>
-          <button
-            onClick={onAbort}
-            className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
-          >
+    <Dialog open={isVisible} onOpenChange={(open) => !open && onAbort()}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Löschen bestätigen</DialogTitle>
+          <DialogDescription>
+            Möchten Sie dieses Element wirklich löschen? Diese Aktion kann nicht
+            rückgängig gemacht werden.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button variant="outline" onClick={onAbort}>
             Nein
-          </button>
-        </div>
-      </div>
-    </div>
+          </Button>
+          <Button variant="destructive" onClick={handleDelete}>
+            Ja
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
