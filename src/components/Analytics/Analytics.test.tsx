@@ -35,10 +35,10 @@ vi.mock("./useAnalyticsData", () => ({
       {
         name: "Test Liste 1",
         words: {a: [{word: "Apfel"}], b: [{word: "Banane"}]},
-        createdAt: Date.now(),
+        createdAt: 1704067200000, // January 1, 2024
       },
     ],
-    kawas: [{key: "test1", text: "Test KaWa", createdAt: Date.now()}],
+    kawas: [{key: "test1", text: "Test KaWa", createdAt: 1704067200000}],
     kagas: [],
     stadtLandFlussGames: [],
     totalWords: 2,

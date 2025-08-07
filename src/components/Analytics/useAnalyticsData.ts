@@ -21,7 +21,7 @@ export interface KagaData {
   key: string;
   text: string;
   createdAt?: number;
-  drawingData?: any;
+  drawingData?: Record<string, unknown>;
 }
 
 export interface StadtLandFlussData {
@@ -129,7 +129,8 @@ export function useAnalyticsData(): AnalyticsData {
       const listData: ABCListData = {
         name,
         words: {},
-        createdAt: Date.now(), // fallback since we don't have creation dates
+        // Don't set a misleading creation date - leave undefined if not available
+        createdAt: undefined,
       };
 
       // Load words for each letter
@@ -178,7 +179,8 @@ export function useAnalyticsData(): AnalyticsData {
       const gameNames: string[] = JSON.parse(gamesJson);
       return gameNames.map((name) => ({
         name,
-        createdAt: Date.now(), // fallback
+        // Don't set a misleading creation date - leave undefined if not available
+        createdAt: undefined,
         games: [], // Would need to load individual game data
       }));
     } catch {

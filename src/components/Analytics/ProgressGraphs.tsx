@@ -178,7 +178,7 @@ export function ProgressGraphs({data}: ProgressGraphsProps) {
               }
               return label;
             }}
-            formatter={(value: any) => [
+            formatter={(value: number) => [
               `${Number(value).toFixed(1)} Wörter/Liste`,
               "Effizienz",
             ]}

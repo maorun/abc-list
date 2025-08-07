@@ -58,7 +58,8 @@ export function Analytics() {
           Lernanalyse Dashboard
         </h1>
         <p className="text-center text-gray-600">
-          Verfolgen Sie Ihren Lernfortschritt mit dem &quot;Ball-im-Tor-Effekt&quot;
+          Verfolgen Sie Ihren Lernfortschritt mit dem
+          &quot;Ball-im-Tor-Effekt&quot;
         </p>
       </div>
 

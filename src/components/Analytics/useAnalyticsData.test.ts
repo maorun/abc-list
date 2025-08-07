@@ -1,5 +1,4 @@
 import {renderHook} from "@testing-library/react";
-import {vi} from "vitest";
 import {useAnalyticsData} from "./useAnalyticsData";
 
 describe("useAnalyticsData", () => {
@@ -41,11 +40,12 @@ describe("useAnalyticsData", () => {
   });
 
   it("loads Kawas from localStorage", () => {
+    const testTimestamp = 1704067200000; // January 1, 2024
     localStorage.setItem(
       "Kawas",
       JSON.stringify([
-        {key: "test1", text: "TEST", createdAt: Date.now()},
-        {key: "test2", text: "DEMO", createdAt: Date.now()},
+        {key: "test1", text: "TEST", createdAt: testTimestamp},
+        {key: "test2", text: "DEMO", createdAt: testTimestamp + 1000},
       ]),
     );
 
