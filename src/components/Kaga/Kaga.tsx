@@ -2,6 +2,7 @@ import React, {useState, useEffect} from "react";
 import {useNavigate} from "react-router-dom";
 import {NewStringItem, NewItemWithSaveKey} from "../NewStringItem";
 import {DeleteConfirm} from "../DeleteConfirm";
+import {Button} from "../ui/button";
 
 const KAGA_STORAGE_KEY = "Kagas";
 
@@ -55,9 +56,10 @@ export function Kaga() {
 
       <div className="space-y-2">
         {kagas.map((kaga) => (
-          <button
+          <Button
             key={kaga.key}
-            className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            variant="default"
+            className="w-full"
             onClick={() => navigate(`/kaga/${kaga.key}`, {state: {item: kaga}})}
             onContextMenu={(e) => {
               e.preventDefault();
@@ -65,7 +67,7 @@ export function Kaga() {
             }}
           >
             {kaga.text}
-          </button>
+          </Button>
         ))}
       </div>
       <p className="text-center text-gray-500 mt-4">

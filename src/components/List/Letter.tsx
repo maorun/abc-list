@@ -8,6 +8,8 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {Button} from "../ui/button";
+import {Input} from "../ui/input";
 
 interface LetterProps {
   cacheKey: string;
@@ -95,13 +97,15 @@ export function Letter({cacheKey, letter}: LetterProps) {
 
   return (
     <div className="flex flex-col items-center">
-      <button
-        className="w-16 h-16 text-2xl font-bold rounded-full bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+      <Button
+        variant="secondary"
+        size="icon"
+        className="w-16 h-16 text-2xl font-bold rounded-full"
         onClick={() => setIsModalOpen(true)}
         aria-label={`Wort für Buchstabe ${letter.toUpperCase()} hinzufügen`}
       >
         {letter.toUpperCase()}
-      </button>
+      </Button>
       <div className="mt-2 flex flex-col gap-1">
         {words.map((word) => (
           <SavedWord
@@ -130,33 +134,31 @@ export function Letter({cacheKey, letter}: LetterProps) {
           </DialogHeader>
 
           <div className="space-y-4">
-            <input
+            <Input
               type="text"
               value={newWord}
               onChange={(e) => setNewWord(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Wort eingeben..."
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               aria-label="Neues Wort eingeben"
             />
           </div>
 
           <DialogFooter className="flex justify-end space-x-2">
-            <button
+            <Button
               onClick={handleAddWord}
               disabled={!newWord.trim()}
-              className="bg-blue-500 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               aria-label="Wort speichern"
             >
               Speichern
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => setIsModalOpen(false)}
-              className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+              variant="outline"
               aria-label="Dialog schließen"
             >
               Abbrechen
-            </button>
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

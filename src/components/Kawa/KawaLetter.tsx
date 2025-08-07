@@ -1,4 +1,5 @@
 import React, {useState, useEffect, useCallback} from "react";
+import {Input} from "../ui/input";
 
 interface KawaLetterProps {
   letter: string;
@@ -35,12 +36,12 @@ export function KawaLetter({letter, index, onChangeText}: KawaLetterProps) {
       <label htmlFor={inputId} className="text-2xl font-bold w-8">
         {letter.toUpperCase()}
       </label>
-      <input
+      <Input
         id={inputId}
         type="text"
         value={text}
         onChange={(e) => handleTextChange(e.target.value)}
-        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        className="w-full"
       />
     </div>
   );

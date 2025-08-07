@@ -2,6 +2,7 @@ import React, {useState, useEffect} from "react";
 import {useNavigate} from "react-router-dom";
 import {NewStringItem, NewItemWithSaveKey} from "../NewStringItem";
 import {DeleteConfirm} from "../DeleteConfirm";
+import {Button} from "../ui/button";
 
 const KAWA_STORAGE_KEY = "Kawas";
 
@@ -53,9 +54,10 @@ export function Kawa() {
 
       <div className="space-y-2">
         {kawas.map((kawa) => (
-          <button
+          <Button
             key={kawa.key}
-            className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            variant="default"
+            className="w-full"
             onClick={() => navigate(`/kawa/${kawa.key}`, {state: {item: kawa}})}
             onContextMenu={(e) => {
               e.preventDefault();
@@ -63,7 +65,7 @@ export function Kawa() {
             }}
           >
             {kawa.text}
-          </button>
+          </Button>
         ))}
       </div>
       <p className="text-center text-gray-500 mt-4">
