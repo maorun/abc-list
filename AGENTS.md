@@ -6,6 +6,12 @@ Welcome, agent! This document provides instructions and guidelines for working o
 
 This is a web application built with **React**, **TypeScript**, and **Vite**. It uses **Tailwind CSS** for styling and **Vitest** for testing.
 
+ABC-List implements Vera F. Birkenbihl's learning methodology with multiple learning modes:
+- **ABC-Lists**: Create association lists for any topic using letters A-Z
+- **KaWa (Word Associations)**: Build associations for each letter of a specific word
+- **KaGa (Graphical Associations)**: Visual learning with drawing tools and graphical elements
+- **Stadt-Land-Fluss**: Quick knowledge retrieval game training with customizable categories and timer-based rounds
+
 The main application logic is in the `src` directory. Components are located in `src/components`.
 
 ## 2. Development Workflow
@@ -60,7 +66,7 @@ To run tests and view coverage:
 npm run coverage
 ```
 
-**Important:** Before submitting any changes, you **must** ensure all existing tests pass. For new features, you should add corresponding tests. For bug fixes, you should add a test that reproduces the bug and verifies the fix.
+**Important:** Before submitting any changes, you **must** ensure all existing tests pass. The project currently has 78 tests covering all components including ABC-Lists, KaWa, KaGa, Stadt-Land-Fluss, and UI utilities. For new features, you should add corresponding tests. For bug fixes, you should add a test that reproduces the bug and verifies the fix.
 
 ## 4. Coding Style
 
