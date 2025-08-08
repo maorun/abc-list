@@ -69,7 +69,20 @@ export function SavedWord({
               : "cursor-default"
           } ${filled ? "text-yellow-500" : "text-gray-300"}`}
           onClick={interactive ? () => handleRatingClick(i) : undefined}
+          onKeyDown={
+            interactive
+              ? (e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    handleRatingClick(i);
+                  }
+                }
+              : undefined
+          }
+          role={interactive ? "button" : undefined}
+          tabIndex={interactive ? 0 : undefined}
           title={interactive ? `Bewertung: ${i}/5` : undefined}
+          aria-label={interactive ? `${i} von 5 Sternen bewerten` : undefined}
         >
           ★
         </span>,
@@ -118,8 +131,18 @@ export function SavedWord({
                   e.stopPropagation();
                   setShowRating(!showRating);
                 }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setShowRating(!showRating);
+                  }
+                }}
+                role="button"
+                tabIndex={0}
                 className="text-xs text-blue-600 hover:text-blue-800 cursor-pointer"
                 title="Bewertung ändern"
+                aria-label="Bewertung ändern"
               >
                 📊
               </span>
@@ -146,9 +169,7 @@ export function SavedWord({
                 Wie gut verstehen Sie diesen Begriff? (1 = gar nicht, 5 = sehr
                 gut)
               </p>
-              <div className="flex gap-1">
-                {renderStars(undefined, true)}
-              </div>
+              <div className="flex gap-1">{renderStars(undefined, true)}</div>
             </div>
 
             {rating && (

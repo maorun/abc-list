@@ -10,7 +10,11 @@ interface SokratesData {
 
 interface SokratesReviewProps {
   reviewTerms: SokratesData[];
-  onTermUpdate: (listName: string, letter: string, word: WordWithExplanation) => void;
+  onTermUpdate: (
+    listName: string,
+    letter: string,
+    word: WordWithExplanation,
+  ) => void;
   onFinish: () => void;
 }
 
@@ -25,7 +29,9 @@ export function SokratesReview({
   if (reviewTerms.length === 0) {
     return (
       <div className="text-center py-8">
-        <h2 className="text-2xl font-bold mb-4">🎉 Keine Begriffe zur Wiederholung!</h2>
+        <h2 className="text-2xl font-bold mb-4">
+          🎉 Keine Begriffe zur Wiederholung!
+        </h2>
         <p className="text-gray-600 mb-4">
           Alle Ihre Begriffe sind gut bewertet oder kürzlich überprüft worden.
         </p>
@@ -45,7 +51,7 @@ export function SokratesReview({
     onFinish();
     return null;
   }
-  
+
   const progress = ((currentIndex + 1) / reviewTerms.length) * 100;
 
   const handleRating = (rating: number) => {
@@ -120,15 +126,17 @@ export function SokratesReview({
       <div className="bg-white p-8 rounded-lg shadow-lg border">
         <div className="text-center mb-6">
           <div className="text-sm text-gray-500 mb-2">
-            {currentTerm.listName} - Buchstabe {currentTerm.letter.toUpperCase()}
+            {currentTerm.listName} - Buchstabe{" "}
+            {currentTerm.letter.toUpperCase()}
           </div>
           <h3 className="text-3xl font-bold text-gray-800 mb-4">
             {currentTerm.word.text}
           </h3>
-          
+
           {currentTerm.word.rating && (
             <div className="text-sm text-gray-600 mb-4">
-              Bisherige Bewertung: {"★".repeat(currentTerm.word.rating)}{"☆".repeat(5 - currentTerm.word.rating)}
+              Bisherige Bewertung: {"★".repeat(currentTerm.word.rating)}
+              {"☆".repeat(5 - currentTerm.word.rating)}
             </div>
           )}
         </div>
@@ -144,9 +152,7 @@ export function SokratesReview({
         </div>
 
         {/* Rating Stars */}
-        <div className="flex justify-center gap-2 mb-6">
-          {renderStars()}
-        </div>
+        <div className="flex justify-center gap-2 mb-6">{renderStars()}</div>
 
         {/* Explanation Toggle */}
         {currentTerm.word.explanation && (
@@ -158,7 +164,7 @@ export function SokratesReview({
             >
               {showExplanation ? "Erklärung ausblenden" : "Erklärung anzeigen"}
             </Button>
-            
+
             {showExplanation && (
               <div className="mt-4 p-4 bg-gray-50 rounded border">
                 <h4 className="font-semibold mb-2">Ihre Erklärung:</h4>
@@ -181,10 +187,15 @@ export function SokratesReview({
 
       {/* Help Text */}
       <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-        <h4 className="font-semibold text-blue-800 mb-2">💡 Sokrates-Check Tipps</h4>
+        <h4 className="font-semibold text-blue-800 mb-2">
+          💡 Sokrates-Check Tipps
+        </h4>
         <ul className="text-sm text-blue-700 space-y-1">
           <li>• Seien Sie ehrlich bei der Bewertung Ihres Verständnisses</li>
-          <li>• Niedrig bewertete Begriffe werden häufiger zur Wiederholung vorgeschlagen</li>
+          <li>
+            • Niedrig bewertete Begriffe werden häufiger zur Wiederholung
+            vorgeschlagen
+          </li>
           <li>• Nutzen Sie die Erklärung, um Ihr Verständnis zu überprüfen</li>
           <li>• Begriffe mit 4-5 Sternen gelten als gut beherrscht</li>
         </ul>

@@ -23,7 +23,9 @@ describe("SokratesCheck", () => {
   it("should render the main title and description", () => {
     render(<SokratesCheck />);
     expect(screen.getByText("Sokrates-Check")).toBeInTheDocument();
-    expect(screen.getByText("💡 Was ist der Sokrates-Check?")).toBeInTheDocument();
+    expect(
+      screen.getByText("💡 Was ist der Sokrates-Check?"),
+    ).toBeInTheDocument();
     expect(
       screen.getByText(/Der Sokrates-Check ist ein wichtiges Birkenbihl-Tool/),
     ).toBeInTheDocument();
@@ -31,8 +33,12 @@ describe("SokratesCheck", () => {
 
   it("should show dashboard and review buttons", () => {
     render(<SokratesCheck />);
-    expect(screen.getByRole("button", {name: /📊 Dashboard/})).toBeInTheDocument();
-    expect(screen.getByRole("button", {name: /📚 Überprüfen/})).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", {name: /📊 Dashboard/}),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", {name: /📚 Überprüfen/}),
+    ).toBeInTheDocument();
   });
 
   it("should load terms from localStorage when available", () => {
@@ -56,17 +62,19 @@ describe("SokratesCheck", () => {
     });
 
     render(<SokratesCheck />);
-    
+
     // Check that localStorage was called correctly
     expect(localStorageMock.getItem).toHaveBeenCalledWith("abcLists");
-    expect(localStorageMock.getItem).toHaveBeenCalledWith("abcList-Test List:a");
+    expect(localStorageMock.getItem).toHaveBeenCalledWith(
+      "abcList-Test List:a",
+    );
   });
 
   it("should handle empty localStorage gracefully", () => {
     localStorageMock.getItem.mockReturnValue(null);
-    
+
     render(<SokratesCheck />);
-    
+
     // Should still render without errors
     expect(screen.getByText("Sokrates-Check")).toBeInTheDocument();
   });

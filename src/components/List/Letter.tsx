@@ -128,9 +128,7 @@ export function Letter({cacheKey, letter}: LetterProps) {
             onExplanationChange={(explanation) =>
               handleExplanationChange(word.text, explanation)
             }
-            onRatingChange={(rating) =>
-              handleRatingChange(word.text, rating)
-            }
+            onRatingChange={(rating) => handleRatingChange(word.text, rating)}
           />
         ))}
       </div>

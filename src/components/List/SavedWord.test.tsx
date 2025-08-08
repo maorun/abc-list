@@ -7,7 +7,9 @@ describe("SavedWord", () => {
 
   it("should render a button with the provided text", () => {
     render(<SavedWord text={text} />);
-    expect(screen.getByRole("button", {name: `${text} 📊`})).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", {name: `${text} 📊`}),
+    ).toBeInTheDocument();
   });
 
   it("should show delete confirmation on click", () => {

@@ -9,9 +9,6 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  PieChart,
-  Pie,
-  Cell,
   ResponsiveContainer,
 } from "recharts";
 
@@ -19,6 +16,18 @@ interface SokratesData {
   listName: string;
   letter: string;
   word: WordWithExplanation;
+}
+
+interface ListAccumulator {
+  listName: string;
+  totalTerms: number;
+  ratedTerms: number;
+  totalRating: number;
+}
+
+interface ListPerformance extends ListAccumulator {
+  averageRating: number;
+  completionRate: number;
 }
 
 interface SokratesDashboardProps {
@@ -44,8 +53,8 @@ export function SokratesDashboard({
   }));
 
   // Performance by list
-  const listPerformance = allTerms
-    .reduce((acc: any[], term) => {
+  const listPerformance: ListPerformance[] = allTerms
+    .reduce((acc: ListAccumulator[], term) => {
       const existingList = acc.find((item) => item.listName === term.listName);
       if (existingList) {
         existingList.totalTerms++;
@@ -63,14 +72,14 @@ export function SokratesDashboard({
       }
       return acc;
     }, [])
-    .map((list: any) => ({
-      ...list,
-      averageRating: list.ratedTerms > 0 ? list.totalRating / list.ratedTerms : 0,
-      completionRate: (list.ratedTerms / list.totalTerms) * 100,
-    }));
-
-  // Colors for pie chart
-  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
+    .map(
+      (list: ListAccumulator): ListPerformance => ({
+        ...list,
+        averageRating:
+          list.ratedTerms > 0 ? list.totalRating / list.ratedTerms : 0,
+        completionRate: (list.ratedTerms / list.totalTerms) * 100,
+      }),
+    );
 
   // Recommendations
   const getRecommendations = () => {
@@ -79,12 +88,6 @@ export function SokratesDashboard({
     if (unratedTerms > 0) {
       recommendations.push(
         `📝 Sie haben noch ${unratedTerms} unbewertete Begriffe. Bewerten Sie diese, um Ihren Fortschritt zu verfolgen.`,
-      );
-    }
-
-    if (reviewTerms.length > 0) {
-      recommendations.push(
-        `🔄 ${reviewTerms.length} Begriffe benötigen eine Wiederholung. Nutzen Sie die Überprüfungsfunktion.`,
       );
     }
 
@@ -110,13 +113,16 @@ export function SokratesDashboard({
   };
 
   const recommendations = getRecommendations();
+  const hasReviewTerms = reviewTerms.length > 0;
 
   return (
     <div className="space-y-6">
       {/* Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white p-4 rounded-lg shadow border">
-          <h3 className="text-lg font-semibold text-gray-800">Gesamt Begriffe</h3>
+          <h3 className="text-lg font-semibold text-gray-800">
+            Gesamt Begriffe
+          </h3>
           <p className="text-3xl font-bold text-blue-600">{totalTerms}</p>
         </div>
         <div className="bg-white p-4 rounded-lg shadow border">
@@ -127,7 +133,9 @@ export function SokratesDashboard({
           <h3 className="text-lg font-semibold text-gray-800">
             Zur Wiederholung
           </h3>
-          <p className="text-3xl font-bold text-orange-600">{reviewTerms.length}</p>
+          <p className="text-3xl font-bold text-orange-600">
+            {reviewTerms.length}
+          </p>
         </div>
       </div>
 
@@ -169,14 +177,28 @@ export function SokratesDashboard({
         <h3 className="text-lg font-semibold mb-4">
           🎯 Empfehlungen für weitere Lernaktivitäten
         </h3>
-        {recommendations.length > 0 ? (
-          <ul className="space-y-2">
-            {recommendations.map((recommendation, index) => (
-              <li key={index} className="flex items-start gap-2">
-                <span className="text-sm text-gray-700">{recommendation}</span>
-              </li>
-            ))}
-          </ul>
+        {recommendations.length > 0 || hasReviewTerms ? (
+          <div>
+            {recommendations.length > 0 && (
+              <ul className="space-y-2">
+                {recommendations.map((recommendation, index) => (
+                  <li key={index} className="flex items-start gap-2">
+                    <span className="text-sm text-gray-700">
+                      {recommendation}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {hasReviewTerms && (
+              <div className={recommendations.length > 0 ? "mt-4" : ""}>
+                <p className="text-sm text-gray-700 mb-2">
+                  🔄 {reviewTerms.length} Begriffe benötigen eine Wiederholung.
+                  Nutzen Sie die Überprüfungsfunktion.
+                </p>
+              </div>
+            )}
+          </div>
         ) : (
           <p className="text-gray-600">
             🎉 Ausgezeichnet! Sie haben alle Begriffe bewertet und benötigen
@@ -184,9 +206,12 @@ export function SokratesDashboard({
           </p>
         )}
 
-        {reviewTerms.length > 0 && (
+        {hasReviewTerms && (
           <div className="mt-4">
-            <Button onClick={onSwitchToReview} className="bg-blue-600 hover:bg-blue-700">
+            <Button
+              onClick={onSwitchToReview}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
               Jetzt Begriffe überprüfen
             </Button>
           </div>
@@ -194,7 +219,7 @@ export function SokratesDashboard({
       </div>
 
       {/* Terms Need Review List */}
-      {reviewTerms.length > 0 && (
+      {hasReviewTerms && (
         <div className="bg-white p-4 rounded-lg shadow border">
           <h3 className="text-lg font-semibold mb-4">
             📋 Begriffe zur Wiederholung ({reviewTerms.length})
@@ -219,7 +244,9 @@ export function SokratesDashboard({
                         {"☆".repeat(5 - term.word.rating)}
                       </span>
                     ) : (
-                      <span className="text-sm text-gray-500">Nicht bewertet</span>
+                      <span className="text-sm text-gray-500">
+                        Nicht bewertet
+                      </span>
                     )}
                   </div>
                 </div>

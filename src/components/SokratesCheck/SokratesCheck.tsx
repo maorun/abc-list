@@ -57,23 +57,28 @@ export function SokratesCheck() {
       // 1. No rating yet
       // 2. Rating is 1-3 (poor understanding)
       // 3. Haven't been reviewed in the last 7 days and rating <= 4
-      
+
       if (!term.word.rating) return true;
       if (term.word.rating <= 3) return true;
-      
+
       if (term.word.rating <= 4 && term.word.lastReviewed) {
         const lastReviewDate = new Date(term.word.lastReviewed);
-        const daysDiff = (Date.now() - lastReviewDate.getTime()) / (1000 * 60 * 60 * 24);
+        const daysDiff =
+          (Date.now() - lastReviewDate.getTime()) / (1000 * 60 * 60 * 24);
         return daysDiff >= 7;
       }
-      
+
       return false;
     });
 
     setReviewTerms(needsReview);
   };
 
-  const handleTermUpdate = (listName: string, letter: string, updatedWord: WordWithExplanation) => {
+  const handleTermUpdate = (
+    listName: string,
+    letter: string,
+    updatedWord: WordWithExplanation,
+  ) => {
     // Update localStorage
     const storageKey = `abcList-${listName}:${letter}`;
     const storedData = localStorage.getItem(storageKey);
@@ -116,14 +121,15 @@ export function SokratesCheck() {
         </h2>
         <p className="text-sm text-blue-700">
           Der Sokrates-Check ist ein wichtiges Birkenbihl-Tool zur
-          Selbstüberprüfung. Bewerten Sie Ihr Verständnis der ABC-Listen-Begriffe
-          auf einer Skala von 1-5. Begriffe mit niedriger Bewertung werden zur
-          Wiederholung vorgeschlagen, um Ihren Lernfortschritt zu optimieren.
+          Selbstüberprüfung. Bewerten Sie Ihr Verständnis der
+          ABC-Listen-Begriffe auf einer Skala von 1-5. Begriffe mit niedriger
+          Bewertung werden zur Wiederholung vorgeschlagen, um Ihren
+          Lernfortschritt zu optimieren.
         </p>
       </div>
 
       {view === "dashboard" && (
-        <SokratesDashboard 
+        <SokratesDashboard
           allTerms={allTerms}
           reviewTerms={reviewTerms}
           onSwitchToReview={() => setView("review")}
