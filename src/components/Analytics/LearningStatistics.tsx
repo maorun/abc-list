@@ -10,7 +10,7 @@ import {
   Pie,
   Cell,
 } from "recharts";
-import {AnalyticsData} from "./useAnalyticsData";
+import {AnalyticsData} from "./analytics";
 
 interface LearningStatisticsProps {
   data: AnalyticsData;
