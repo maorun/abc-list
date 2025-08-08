@@ -3,7 +3,6 @@ import {useLocation} from "react-router-dom";
 import {NewItemWithSaveKey} from "../NewStringItem";
 import {usePrompt} from "@/components/ui/prompt-dialog";
 import {Button} from "../ui/button";
-import {Input} from "../ui/input";
 
 interface DrawingData {
   paths: Array<{
@@ -248,10 +247,7 @@ export function KagaItem() {
           Speichern
         </Button>
 
-        <Button
-          onClick={clearCanvas}
-          variant="destructive"
-        >
+        <Button onClick={clearCanvas} variant="destructive">
           Löschen
         </Button>
       </div>

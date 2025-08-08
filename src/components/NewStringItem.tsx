@@ -68,9 +68,7 @@ export function NewStringItem({title, onSave, onAbort}: NewStringItemProps) {
             <Button variant="outline" onClick={handleAbort}>
               Abbrechen
             </Button>
-            <Button onClick={handleSave}>
-              Speichern
-            </Button>
+            <Button onClick={handleSave}>Speichern</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

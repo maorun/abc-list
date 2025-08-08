@@ -22,7 +22,13 @@ import {Analytics} from "./components/Analytics/Analytics";
 function Navigation() {
   const location = useLocation();
 
-  const NavButton = ({to, children}: {to: string; children: React.ReactNode}) => (
+  const NavButton = ({
+    to,
+    children,
+  }: {
+    to: string;
+    children: React.ReactNode;
+  }) => (
     <NavLink to={to}>
       <Button
         variant={location.pathname === to ? "secondary" : "ghost"}
