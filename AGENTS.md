@@ -86,6 +86,19 @@ npm run format
 
 Please ensure your code adheres to these styles. It's recommended to integrate Prettier and ESLint into your editor to format code automatically on save.
 
+### 4.1. Code Quality Requirements
+
+- **STRICTLY FORBIDDEN: Never use ESLint disable comments** (e.g., `// eslint-disable-next-line`)
+  - Instead of disabling ESLint rules, fix the underlying issue by:
+    - Adding proper dependencies to useEffect hooks
+    - Using useCallback to stabilize function references 
+    - Moving pure functions outside components to avoid unnecessary re-creation
+    - Restructuring code to follow React best practices
+  - ESLint rules exist for good reasons and should not be suppressed
+- **Never use `any` type in TypeScript** - Always use proper type annotations
+- Use proper type annotations for function parameters and return values
+- Define interfaces for all data structures used in multiple components
+
 ## 5. Commit Messages
 
 Please follow the conventional commit format for your commit messages. This helps maintain a clear and understandable commit history.

@@ -1,0 +1,268 @@
+import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  vi,
+  type MockedFunction,
+} from "vitest";
+import type {Mock} from "vitest";
+import {render, screen, fireEvent, waitFor} from "@testing-library/react";
+import {BrowserRouter} from "react-router-dom";
+import {Basar} from "./Basar";
+import {BasarService} from "./BasarService";
+
+// Mock the BasarService
+vi.mock("./BasarService");
+
+interface MockBasarService {
+  getInstance: MockedFunction<() => MockBasarService>;
+  initializeSampleData: Mock;
+  getCurrentUser: Mock;
+  createUser: Mock;
+  getMarketplaceTerms: Mock;
+  buyTerm: Mock;
+  rateTerm: Mock;
+  addTermToMarketplace: Mock;
+  getUserRating: Mock;
+}
+
+const mockBasarService: MockBasarService = {
+  getInstance: vi.fn(),
+  initializeSampleData: vi.fn(),
+  getCurrentUser: vi.fn(),
+  createUser: vi.fn(),
+  getMarketplaceTerms: vi.fn(() => []),
+  buyTerm: vi.fn(),
+  rateTerm: vi.fn(),
+  addTermToMarketplace: vi.fn(),
+  getUserRating: vi.fn(),
+};
+
+mockBasarService.getInstance.mockReturnValue(mockBasarService);
+
+const renderBasar = () => {
+  return render(
+    <BrowserRouter>
+      <Basar />
+    </BrowserRouter>,
+  );
+};
+
+describe("Basar", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    // Setup default mock returns
+    (
+      BasarService.getInstance as MockedFunction<
+        typeof BasarService.getInstance
+      >
+    ).mockReturnValue(mockBasarService);
+  });
+
+  it("renders user setup dialog when no current user", () => {
+    mockBasarService.getCurrentUser.mockReturnValue(null);
+
+    renderBasar();
+
+    expect(
+      screen.getByText("🏪 Willkommen im ABC-Listen Basar!"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Erstellen Sie Ihr Händlerprofil, um am Wissensaustausch teilzunehmen.",
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("renders marketplace when user exists", () => {
+    const mockUser = {
+      id: "user1",
+      name: "Test User",
+      points: 100,
+      level: 1,
+      joinDate: "2024-01-01",
+      tradesCompleted: 0,
+      termsContributed: 0,
+      averageRating: 0,
+      achievements: [],
+      tradingHistory: [],
+    };
+
+    mockBasarService.getCurrentUser.mockReturnValue(mockUser);
+
+    renderBasar();
+
+    expect(screen.getByText("🏪 ABC-Listen Basar")).toBeInTheDocument();
+    expect(screen.getByText("Test User")).toBeInTheDocument();
+    expect(screen.getByText("💰 100 Punkte")).toBeInTheDocument();
+  });
+
+  it("creates user when setup form is submitted", async () => {
+    mockBasarService.getCurrentUser.mockReturnValue(null);
+    const newUser = {
+      id: "user1",
+      name: "New User",
+      points: 100,
+      level: 1,
+      joinDate: "2024-01-01",
+      tradesCompleted: 0,
+      termsContributed: 0,
+      averageRating: 0,
+      achievements: [],
+      tradingHistory: [],
+    };
+    mockBasarService.createUser.mockReturnValue(newUser);
+
+    renderBasar();
+
+    const nameInput = screen.getByPlaceholderText(
+      "Geben Sie Ihren Namen ein...",
+    );
+    const createButton = screen.getByText("🚀 Profil erstellen");
+
+    fireEvent.change(nameInput, {target: {value: "New User"}});
+    fireEvent.click(createButton);
+
+    await waitFor(() => {
+      expect(mockBasarService.createUser).toHaveBeenCalledWith("New User");
+    });
+  });
+
+  it("displays marketplace terms when available", () => {
+    const mockUser = {
+      id: "user1",
+      name: "Test User",
+      points: 100,
+      level: 1,
+      joinDate: "2024-01-01",
+      tradesCompleted: 0,
+      termsContributed: 0,
+      averageRating: 0,
+      achievements: [],
+      tradingHistory: [],
+    };
+
+    const mockTerms = [
+      {
+        id: "term1",
+        text: "Test Term",
+        explanation: "Test explanation",
+        letter: "t",
+        listName: "Test List",
+        sellerId: "seller1",
+        sellerName: "Seller",
+        price: 15,
+        quality: 4.5,
+        ratingCount: 2,
+        dateAdded: "2024-01-01",
+        version: 1,
+        imported: false,
+      },
+    ];
+
+    mockBasarService.getCurrentUser.mockReturnValue(mockUser);
+    mockBasarService.getMarketplaceTerms.mockReturnValue(mockTerms);
+
+    renderBasar();
+
+    expect(screen.getByText("Test Term")).toBeInTheDocument();
+    expect(screen.getByText('aus "Test List"')).toBeInTheDocument();
+  });
+
+  it("filters terms by search input", async () => {
+    const mockUser = {
+      id: "user1",
+      name: "Test User",
+      points: 100,
+      level: 1,
+      joinDate: "2024-01-01",
+      tradesCompleted: 0,
+      termsContributed: 0,
+      averageRating: 0,
+      achievements: [],
+      tradingHistory: [],
+    };
+
+    const mockTerms = [
+      {
+        id: "term1",
+        text: "Algorithm",
+        explanation: "Step by step instructions",
+        letter: "a",
+        listName: "Computer Science",
+        sellerId: "seller1",
+        sellerName: "Seller",
+        price: 15,
+        quality: 4.5,
+        ratingCount: 2,
+        dateAdded: "2024-01-01",
+        version: 1,
+        imported: false,
+      },
+      {
+        id: "term2",
+        text: "Biology",
+        explanation: "Study of life",
+        letter: "b",
+        listName: "Science",
+        sellerId: "seller1",
+        sellerName: "Seller",
+        price: 10,
+        quality: 4.0,
+        ratingCount: 1,
+        dateAdded: "2024-01-01",
+        version: 1,
+        imported: false,
+      },
+    ];
+
+    mockBasarService.getCurrentUser.mockReturnValue(mockUser);
+    mockBasarService.getMarketplaceTerms.mockReturnValue(mockTerms);
+
+    renderBasar();
+
+    // Both terms should be visible initially
+    expect(screen.getByText("Algorithm")).toBeInTheDocument();
+    expect(screen.getByText("Biology")).toBeInTheDocument();
+
+    // Filter by search term
+    const searchInput = screen.getByPlaceholderText(
+      "Begriff, Erklärung oder Liste...",
+    );
+    fireEvent.change(searchInput, {target: {value: "Algorithm"}});
+
+    await waitFor(() => {
+      expect(screen.getByText("Algorithm")).toBeInTheDocument();
+      expect(screen.queryByText("Biology")).not.toBeInTheDocument();
+    });
+  });
+
+  it("switches between marketplace and profile tabs", () => {
+    const mockUser = {
+      id: "user1",
+      name: "Test User",
+      points: 100,
+      level: 1,
+      joinDate: "2024-01-01",
+      tradesCompleted: 0,
+      termsContributed: 0,
+      averageRating: 0,
+      achievements: [],
+      tradingHistory: [],
+    };
+
+    mockBasarService.getCurrentUser.mockReturnValue(mockUser);
+
+    renderBasar();
+
+    // Should start on marketplace tab
+    expect(screen.getByText("🔍 Begriff suchen")).toBeInTheDocument();
+
+    // Switch to profile tab
+    const profileButton = screen.getByText("👤 Profil");
+    fireEvent.click(profileButton);
+
+    expect(screen.getByText("📊 Übersicht")).toBeInTheDocument();
+  });
+});
