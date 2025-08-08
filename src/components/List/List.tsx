@@ -162,36 +162,45 @@ export function List() {
   };
 
   return (
-    <div className="p-4">
-      <div className="flex justify-center items-center space-x-2">
-        <NewStringItem
-          title={"Neue ABC-Liste"}
-          onSave={(item) => createNewItem(item.text)}
-        />
-        <Button
-          variant="default"
-          onClick={createMultiColumnList}
-          className="bg-purple-500 hover:bg-purple-700"
+    <div className="space-y-4">
+      {/* Mobile-first button layout */}
+      <div className="flex flex-col sm:flex-row sm:justify-center sm:items-center gap-2 sm:gap-2">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-2 flex-1 sm:flex-none">
+          <NewStringItem
+            title={"Neue ABC-Liste"}
+            onSave={(item) => createNewItem(item.text)}
+          />
+          <Button
+            variant="default"
+            onClick={createMultiColumnList}
+            className="bg-purple-500 hover:bg-purple-700 text-sm"
+          >
+            📊 Mehrspaltige Liste
+          </Button>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-2 flex-1 sm:flex-none">
+          <Button
+            variant="secondary"
+            onClick={() => setShowBulkImportModal(true)}
+            className="bg-blue-500 hover:bg-blue-700 text-white text-sm"
+          >
+            📥 Bulk-Import
+          </Button>
+          <Button variant="destructive" onClick={clearAll} className="text-sm">
+            Alle löschen
+          </Button>
+        </div>
+        <Button 
+          variant="secondary" 
+          onClick={() => setIsReversed(!isReversed)}
+          className="text-sm sm:w-auto"
         >
-          📊 Mehrspaltige Liste
-        </Button>
-        <Button
-          variant="secondary"
-          onClick={() => setShowBulkImportModal(true)}
-          className="bg-blue-500 hover:bg-blue-700 text-white"
-        >
-          📥 Bulk-Import
-        </Button>
-        <Button variant="destructive" onClick={clearAll}>
-          Alle löschen
-        </Button>
-        <Button variant="secondary" onClick={() => setIsReversed(!isReversed)}>
           Sortierung umkehren
         </Button>
       </div>
 
-      <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded">
-        <h3 className="font-semibold text-blue-800 mb-2">
+      <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+        <h3 className="font-semibold text-blue-800 mb-3">
           💡 Zwei Arten von ABC-Listen
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-blue-700">
@@ -209,10 +218,10 @@ export function List() {
         </div>
       </div>
 
-      <h2 className="text-2xl font-bold text-center my-4">
+      <h2 className="text-xl sm:text-2xl font-bold text-center my-4 sm:my-6">
         Einfache ABC-Listen
       </h2>
-      <ul className="space-y-2">
+      <ul className="space-y-2 sm:space-y-3">
         {data
           .slice()
           .sort((a, b) =>
@@ -221,21 +230,21 @@ export function List() {
           .map((item) => (
             <li
               key={item}
-              className="flex items-center justify-center space-x-2"
+              className="flex items-stretch gap-2 sm:gap-3"
             >
               <Button
                 variant="default"
-                className="w-4/5"
+                className="flex-1 text-left justify-start py-3 px-4"
                 onClick={() => showAbcList(item)}
               >
                 {item}
               </Button>
               <Button
                 variant="destructive"
-                className="w-1/5"
+                className="w-12 sm:w-16 flex-shrink-0"
                 onClick={() => deleteItem(item)}
               >
-                X
+                ✕
               </Button>
             </li>
           ))}

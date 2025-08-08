@@ -79,12 +79,12 @@ describe("Kawa", () => {
     });
   });
 
-  it("opens delete confirmation on right-click", () => {
+  it("opens delete confirmation on delete button click", () => {
     const testKawas: NewItemWithSaveKey[] = [{key: "1", text: "Kawa 1"}];
     localStorage.setItem(storageKey, JSON.stringify(testKawas));
     render(<Kawa />, {wrapper: MemoryRouter});
 
-    fireEvent.contextMenu(screen.getByRole("button", {name: "Kawa 1"}));
+    fireEvent.click(screen.getByRole("button", {name: "✕"}));
     expect(screen.getByText("Löschen bestätigen")).toBeInTheDocument();
   });
 
@@ -93,7 +93,7 @@ describe("Kawa", () => {
     localStorage.setItem(storageKey, JSON.stringify(testKawas));
     render(<Kawa />, {wrapper: MemoryRouter});
 
-    fireEvent.contextMenu(screen.getByRole("button", {name: "Kawa 1"}));
+    fireEvent.click(screen.getByRole("button", {name: "✕"}));
     fireEvent.click(screen.getByRole("button", {name: "Ja"}));
 
     expect(
@@ -108,7 +108,7 @@ describe("Kawa", () => {
     localStorage.setItem(storageKey, JSON.stringify(testKawas));
     render(<Kawa />, {wrapper: MemoryRouter});
 
-    fireEvent.contextMenu(screen.getByRole("button", {name: "Kawa 1"}));
+    fireEvent.click(screen.getByRole("button", {name: "✕"}));
     fireEvent.click(screen.getByRole("button", {name: "Nein"}));
 
     expect(screen.getByRole("button", {name: "Kawa 1"})).toBeInTheDocument();

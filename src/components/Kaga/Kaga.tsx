@@ -43,9 +43,14 @@ export function Kaga() {
   };
 
   return (
-    <div className="p-4">
-      <NewStringItem title={"Neues KaGa"} onSave={saveKaga} />
-      <h2 className="text-2xl font-bold text-center my-4">Bisherige KaGas</h2>
+    <div className="space-y-4">
+      <div className="flex justify-center">
+        <NewStringItem title={"Neues KaGa"} onSave={saveKaga} />
+      </div>
+      
+      <h2 className="text-xl sm:text-2xl font-bold text-center my-4 sm:my-6">
+        Bisherige KaGas
+      </h2>
 
       <DeleteConfirm
         isVisible={itemToDelete !== undefined}
@@ -54,24 +59,29 @@ export function Kaga() {
         onAbort={() => setItemToDelete(undefined)}
       />
 
-      <div className="space-y-2">
+      <div className="space-y-2 sm:space-y-3">
         {kagas.map((kaga) => (
-          <Button
-            key={kaga.key}
-            variant="default"
-            className="w-full"
-            onClick={() => navigate(`/kaga/${kaga.key}`, {state: {item: kaga}})}
-            onContextMenu={(e) => {
-              e.preventDefault();
-              setItemToDelete(kaga);
-            }}
-          >
-            {kaga.text}
-          </Button>
+          <div key={kaga.key} className="flex items-stretch gap-2 sm:gap-3">
+            <Button
+              variant="default"
+              className="flex-1 text-left justify-start py-3 px-4"
+              onClick={() => navigate(`/kaga/${kaga.key}`, {state: {item: kaga}})}
+            >
+              {kaga.text}
+            </Button>
+            <Button
+              variant="destructive"
+              className="w-12 sm:w-16 flex-shrink-0"
+              onClick={() => setItemToDelete(kaga)}
+            >
+              ✕
+            </Button>
+          </div>
         ))}
       </div>
-      <p className="text-center text-gray-500 mt-4">
-        Tipp: Rechtsklick zum Löschen
+      
+      <p className="text-center text-gray-500 text-sm mt-4">
+        Tipp: ✕ Button zum Löschen verwenden
       </p>
     </div>
   );
