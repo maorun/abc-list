@@ -4,6 +4,7 @@ import {toast} from "sonner";
 import {usePrompt} from "@/components/ui/prompt-dialog";
 import {Letter} from "./Letter";
 import {WordWithExplanation} from "./SavedWord";
+import {ExportUtils, ExportedList} from "@/lib/exportUtils";
 import {
   Dialog,
   DialogContent,
@@ -13,19 +14,13 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 
-interface ExportedList {
-  name: string;
-  version: number;
-  exportDate: string;
-  words: Record<string, WordWithExplanation[]>;
-}
-
 export function ListItem() {
   const {item} = useParams<{item: string}>();
   const [showExportModal, setShowExportModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
   const [importData, setImportData] = useState("");
   const [exportedData, setExportedData] = useState("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const {prompt, PromptComponent} = usePrompt();
 
   useEffect(() => {
@@ -42,13 +37,8 @@ export function ListItem() {
     String.fromCharCode(97 + i),
   );
 
-  const exportList = () => {
-    const exportData: ExportedList = {
-      name: item || "Unbekannt",
-      version: 1,
-      exportDate: new Date().toISOString(),
-      words: {},
-    };
+  const getWordsData = (): Record<string, WordWithExplanation[]> => {
+    const words: Record<string, WordWithExplanation[]> = {};
 
     alphabet.forEach((letter) => {
       const storageKey = `${getCacheKey()}:${letter}`;
@@ -58,29 +48,58 @@ export function ListItem() {
         // Ensure we have the new format
         if (Array.isArray(parsed) && parsed.length > 0) {
           if (typeof parsed[0] === "string") {
-            exportData.words[letter] = parsed.map((word: string) => ({
+            words[letter] = parsed.map((word: string) => ({
               text: word,
               explanation: "",
               version: 1,
               imported: false,
             }));
           } else {
-            exportData.words[letter] = parsed;
+            words[letter] = parsed;
           }
         } else {
-          exportData.words[letter] = [];
+          words[letter] = [];
         }
       } else {
-        exportData.words[letter] = [];
+        words[letter] = [];
       }
     });
+
+    return words;
+  };
+
+  const exportAsJSON = () => {
+    const exportData: ExportedList = {
+      name: item || "Unbekannt",
+      version: 1,
+      exportDate: new Date().toISOString(),
+      words: getWordsData(),
+    };
 
     const jsonString = JSON.stringify(exportData, null, 2);
     setExportedData(jsonString);
     setShowExportModal(true);
   };
 
-  const importList = () => {
+  const exportAsPDF = () => {
+    const words = getWordsData();
+    ExportUtils.exportToPDF(item || "Unbekannt", words);
+    toast.success("PDF-Export erfolgreich heruntergeladen!");
+  };
+
+  const exportAsCSV = () => {
+    const words = getWordsData();
+    ExportUtils.exportToCSV(item || "Unbekannt", words);
+    toast.success("CSV-Export erfolgreich heruntergeladen!");
+  };
+
+  const exportAsMarkdown = () => {
+    const words = getWordsData();
+    ExportUtils.exportToMarkdown(item || "Unbekannt", words);
+    toast.success("Markdown-Export erfolgreich heruntergeladen!");
+  };
+
+  const importFromJSON = () => {
     try {
       const parsedData: ExportedList = JSON.parse(importData);
 
@@ -98,6 +117,47 @@ export function ListItem() {
       toast.error(
         "Fehler beim Lesen der Datei. Bitte überprüfen Sie das JSON-Format.",
       );
+    }
+  };
+
+  const importFromCSV = async () => {
+    if (!selectedFile) {
+      toast.error("Bitte wählen Sie eine CSV-Datei aus.");
+      return;
+    }
+
+    try {
+      const csvRows = await ExportUtils.parseCSVFile(selectedFile);
+      const listName = selectedFile.name.replace(/\.(csv|xlsx?)$/i, "");
+      const exportedList = ExportUtils.csvToExportedList(csvRows, listName);
+
+      setShowImportModal(false);
+      showImportPreview(exportedList);
+      setSelectedFile(null);
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Fehler beim Lesen der CSV-Datei",
+      );
+    }
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const fileExtension = file.name.split(".").pop()?.toLowerCase();
+      if (
+        fileExtension === "csv" ||
+        fileExtension === "xlsx" ||
+        fileExtension === "xls"
+      ) {
+        setSelectedFile(file);
+        setImportData(""); // Clear JSON data when file is selected
+      } else {
+        toast.error("Bitte wählen Sie eine CSV- oder Excel-Datei aus.");
+        event.target.value = "";
+      }
     }
   };
 
@@ -216,21 +276,47 @@ export function ListItem() {
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-3xl font-bold">ABC-Liste für {item}</h1>
         <div className="flex gap-2">
+          <div className="relative group">
+            <button
+              onClick={exportAsJSON}
+              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+              title="Als JSON exportieren"
+              aria-label="ABC-Liste als JSON exportieren"
+            >
+              📤 JSON
+            </button>
+          </div>
           <button
-            onClick={exportList}
-            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-            title="Liste exportieren und teilen"
-            aria-label="ABC-Liste als JSON exportieren"
+            onClick={exportAsPDF}
+            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+            title="Als PDF exportieren"
+            aria-label="ABC-Liste als PDF exportieren"
           >
-            📤 Exportieren
+            📄 PDF
+          </button>
+          <button
+            onClick={exportAsCSV}
+            className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
+            title="Als CSV exportieren"
+            aria-label="ABC-Liste als CSV exportieren"
+          >
+            📊 CSV
+          </button>
+          <button
+            onClick={exportAsMarkdown}
+            className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+            title="Als Markdown exportieren"
+            aria-label="ABC-Liste als Markdown exportieren"
+          >
+            📝 MD
           </button>
           <button
             onClick={() => setShowImportModal(true)}
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            title="Begriffe aus anderer Liste importieren"
-            aria-label="Begriffe aus exportierter ABC-Liste importieren"
+            title="Begriffe importieren"
+            aria-label="Begriffe aus verschiedenen Formaten importieren"
           >
-            📥 Importieren
+            📥 Import
           </button>
         </div>
       </div>
@@ -295,8 +381,8 @@ export function ListItem() {
           <DialogHeader>
             <DialogTitle>Begriffe importieren</DialogTitle>
             <DialogDescription>
-              Fügen Sie JSON-Daten einer exportierten ABC-Liste ein. Sie werden
-              aufgefordert, jeden neuen Begriff zu erklären.
+              Importieren Sie Begriffe aus JSON-Daten oder CSV/Excel-Dateien.
+              Sie werden aufgefordert, jeden neuen Begriff zu erklären.
             </DialogDescription>
           </DialogHeader>
 
@@ -313,17 +399,44 @@ export function ListItem() {
               </p>
             </div>
 
+            {/* File Upload Section */}
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+              <h4 className="font-medium text-gray-700 mb-2">
+                📁 Datei hochladen (CSV/Excel)
+              </h4>
+              <div className="space-y-2">
+                <input
+                  type="file"
+                  accept=".csv,.xlsx,.xls"
+                  onChange={handleFileChange}
+                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                />
+                {selectedFile && (
+                  <p className="text-sm text-green-600">
+                    ✓ Datei ausgewählt: {selectedFile.name}
+                  </p>
+                )}
+                <p className="text-xs text-gray-500">
+                  Unterstützte Formate: CSV, Excel (.xlsx, .xls)
+                  <br />
+                  Erwartete Spalten: Letter, Word, Explanation (optional)
+                </p>
+              </div>
+            </div>
+
+            {/* JSON Input Section */}
             <div>
-              <label
-                htmlFor="import-data"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                JSON-Daten einer exportierten ABC-Liste:
-              </label>
+              <h4 className="font-medium text-gray-700 mb-2">
+                📝 JSON-Daten einer exportierten ABC-Liste
+              </h4>
               <textarea
-                id="import-data"
                 value={importData}
-                onChange={(e) => setImportData(e.target.value)}
+                onChange={(e) => {
+                  setImportData(e.target.value);
+                  if (e.target.value.trim()) {
+                    setSelectedFile(null); // Clear file when JSON is entered
+                  }
+                }}
                 placeholder="JSON-Daten hier einfügen..."
                 className="w-full h-32 p-2 border rounded text-xs font-mono resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
                 aria-label="Import-Daten eingeben"
@@ -333,15 +446,19 @@ export function ListItem() {
 
           <DialogFooter className="flex gap-2">
             <button
-              onClick={importList}
-              disabled={!importData.trim()}
+              onClick={selectedFile ? importFromCSV : importFromJSON}
+              disabled={!selectedFile && !importData.trim()}
               className="bg-blue-500 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               aria-label="Import starten"
             >
-              📥 Importieren
+              📥 {selectedFile ? "CSV/Excel importieren" : "JSON importieren"}
             </button>
             <button
-              onClick={() => setShowImportModal(false)}
+              onClick={() => {
+                setShowImportModal(false);
+                setSelectedFile(null);
+                setImportData("");
+              }}
               className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
               aria-label="Import-Dialog schließen"
             >
