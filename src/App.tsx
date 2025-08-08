@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -7,7 +7,15 @@ import {
   useLocation,
 } from "react-router-dom";
 import {Toaster} from "sonner";
+import {Menu} from "lucide-react";
 import {Button} from "./components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "./components/ui/sheet";
 import {List} from "./components/List/List";
 import {ListItem} from "./components/List/ListItem";
 import {MultiColumnList} from "./components/List/MultiColumnList";
@@ -25,18 +33,32 @@ import {Basar} from "./components/Basar/Basar";
 
 function Navigation() {
   const location = useLocation();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const navigationItems = [
+    {to: "/", label: "Listen"},
+    {to: "/link", label: "Verknüpfen"},
+    {to: "/kawa", label: "Kawas"},
+    {to: "/kaga", label: "KaGa"},
+    {to: "/slf", label: "Stadt-Land-Fluss"},
+    {to: "/basar", label: "Basar"},
+    {to: "/sokrates", label: "Sokrates-Check"},
+    {to: "/analytics", label: "Analytics"},
+  ];
 
   const NavButton = ({
     to,
     children,
+    onClick,
   }: {
     to: string;
     children: React.ReactNode;
+    onClick?: () => void;
   }) => (
-    <NavLink to={to}>
+    <NavLink to={to} onClick={onClick}>
       <Button
         variant={location.pathname === to ? "secondary" : "ghost"}
-        className="text-white hover:text-slate-900"
+        className="w-full justify-start text-white hover:text-slate-900 sm:w-auto sm:justify-center"
       >
         {children}
       </Button>
@@ -45,23 +67,57 @@ function Navigation() {
 
   return (
     <nav className="bg-blue-800">
-      <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="relative flex h-16 items-center justify-between">
-          <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-            <div className="flex-shrink-0 items-center text-white font-bold">
+          {/* Mobile-first: Logo + Hamburger */}
+          <div className="flex items-center justify-between w-full sm:w-auto">
+            <div className="flex-shrink-0 text-white font-bold text-lg">
               ABC-Listen App
             </div>
-            <div className="hidden sm:ml-6 sm:block">
-              <div className="flex space-x-4">
-                <NavButton to="/">Listen</NavButton>
-                <NavButton to="/link">Verknüpfen</NavButton>
-                <NavButton to="/kawa">Kawas</NavButton>
-                <NavButton to="/kaga">KaGa</NavButton>
-                <NavButton to="/slf">Stadt-Land-Fluss</NavButton>
-                <NavButton to="/basar">Basar</NavButton>
-                <NavButton to="/sokrates">Sokrates-Check</NavButton>
-                <NavButton to="/analytics">Analytics</NavButton>
-              </div>
+            
+            {/* Mobile hamburger menu */}
+            <div className="sm:hidden">
+              <Sheet open={isOpen} onOpenChange={setIsOpen}>
+                <SheetTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-white hover:text-slate-900"
+                  >
+                    <Menu className="h-6 w-6" />
+                    <span className="sr-only">Navigation öffnen</span>
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-64 bg-blue-800 border-blue-700">
+                  <SheetHeader>
+                    <SheetTitle className="text-white text-left">
+                      Navigation
+                    </SheetTitle>
+                  </SheetHeader>
+                  <div className="flex flex-col space-y-2 mt-6">
+                    {navigationItems.map((item) => (
+                      <NavButton 
+                        key={item.to} 
+                        to={item.to} 
+                        onClick={() => setIsOpen(false)}
+                      >
+                        {item.label}
+                      </NavButton>
+                    ))}
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
+          </div>
+
+          {/* Desktop navigation */}
+          <div className="hidden sm:ml-6 sm:flex sm:items-center">
+            <div className="flex space-x-2">
+              {navigationItems.map((item) => (
+                <NavButton key={item.to} to={item.to}>
+                  {item.label}
+                </NavButton>
+              ))}
             </div>
           </div>
         </div>
@@ -73,25 +129,27 @@ function Navigation() {
 function App() {
   return (
     <Router>
-      <div>
+      <div className="min-h-screen bg-gray-50">
         <Navigation />
-        <main className="p-4">
-          <Routes>
-            <Route path="/" element={<List />} />
-            <Route path="/list/:item" element={<ListItem />} />
-            <Route path="/multi-list" element={<MultiColumnList />} />
-            <Route path="/multi-list/:item" element={<MultiColumnListItem />} />
-            <Route path="/link" element={<LinkLists />} />
-            <Route path="/kawa" element={<Kawa />} />
-            <Route path="/kawa/:key" element={<KawaItem />} />
-            <Route path="/kaga" element={<Kaga />} />
-            <Route path="/kaga/:key" element={<KagaItem />} />
-            <Route path="/slf" element={<StadtLandFluss />} />
-            <Route path="/slf/:game" element={<StadtLandFlussGame />} />
-            <Route path="/basar" element={<Basar />} />
-            <Route path="/sokrates" element={<SokratesCheck />} />
-            <Route path="/analytics" element={<Analytics />} />
-          </Routes>
+        <main className="p-4 sm:p-6 lg:p-8">
+          <div className="mx-auto max-w-7xl">
+            <Routes>
+              <Route path="/" element={<List />} />
+              <Route path="/list/:item" element={<ListItem />} />
+              <Route path="/multi-list" element={<MultiColumnList />} />
+              <Route path="/multi-list/:item" element={<MultiColumnListItem />} />
+              <Route path="/link" element={<LinkLists />} />
+              <Route path="/kawa" element={<Kawa />} />
+              <Route path="/kawa/:key" element={<KawaItem />} />
+              <Route path="/kaga" element={<Kaga />} />
+              <Route path="/kaga/:key" element={<KagaItem />} />
+              <Route path="/slf" element={<StadtLandFluss />} />
+              <Route path="/slf/:game" element={<StadtLandFlussGame />} />
+              <Route path="/basar" element={<Basar />} />
+              <Route path="/sokrates" element={<SokratesCheck />} />
+              <Route path="/analytics" element={<Analytics />} />
+            </Routes>
+          </div>
         </main>
         <Toaster />
       </div>
