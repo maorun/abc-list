@@ -176,10 +176,22 @@ ABC-List is a React/TypeScript/Vite web application implementing Vera F. Birkenb
 - Create components in appropriate subdirectory under `/src/components`
 - Include corresponding `.test.tsx` file with React Testing Library tests
 ### TypeScript Guidelines
-- **Never use `any` type** - Always use proper TypeScript types with specific interfaces
+- **STRICTLY FORBIDDEN: Never use `any` type** - This violates type safety and is explicitly prohibited
+- Always use proper TypeScript types with specific interfaces and type annotations
+- When working with complex data structures, define explicit interfaces (e.g., `ListAccumulator`, `ListPerformance`)
+- Use generic types `<T>` when appropriate for reusable components
+- Prefer `unknown` over `any` if you must work with uncertain types, then use type guards
+- Use union types (`string | number`) instead of `any` when multiple types are acceptable
+- Define return types explicitly for functions, especially complex ones
 - Component-specific styles use Tailwind utility classes
 - Follow existing naming conventions and TypeScript patterns
 - Update imports in parent components as needed
+
+### Code Quality Requirements
+- All TypeScript code must pass strict type checking without `any` types
+- Use proper type annotations for function parameters and return values
+- Define interfaces for all data structures, especially those used in multiple components
+- Avoid type assertions (`as`) unless absolutely necessary with proper justification
 
 ### Modifying Styles  
 - Uses Tailwind CSS 4 for styling

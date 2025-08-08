@@ -95,6 +95,16 @@ export function Letter({cacheKey, letter}: LetterProps) {
     updateStorage(newWords);
   };
 
+  const handleRatingChange = (wordText: string, rating: number) => {
+    const newWords = words.map((word) =>
+      word.text === wordText
+        ? {...word, rating, lastReviewed: new Date().toISOString()}
+        : word,
+    );
+    setWords(newWords);
+    updateStorage(newWords);
+  };
+
   return (
     <div className="flex flex-col items-center">
       <Button
@@ -113,10 +123,12 @@ export function Letter({cacheKey, letter}: LetterProps) {
             text={word.text}
             explanation={word.explanation}
             imported={word.imported}
+            rating={word.rating}
             onDelete={() => handleDeleteWord(word.text)}
             onExplanationChange={(explanation) =>
               handleExplanationChange(word.text, explanation)
             }
+            onRatingChange={(rating) => handleRatingChange(word.text, rating)}
           />
         ))}
       </div>
