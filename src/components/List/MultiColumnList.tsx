@@ -1,43 +1,59 @@
 import React, {useState, useEffect} from "react";
 import {useNavigate} from "react-router-dom";
-import {NewStringItem} from "../NewStringItem";
 import {Button} from "../ui/button";
+import {NewStringItem} from "../NewStringItem";
+import {MULTI_COLUMN_CACHE_KEY, MultiColumnListData} from "./types";
 
-export const cacheKey = "abcLists";
-
-export function List() {
+export function MultiColumnList() {
   const [data, setData] = useState<string[]>([]);
   const [isReversed, setIsReversed] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedData = localStorage.getItem(cacheKey);
+    const storedData = localStorage.getItem(MULTI_COLUMN_CACHE_KEY);
     if (storedData) {
       setData(JSON.parse(storedData));
     }
   }, []);
 
   const updateStorage = (newData: string[]) => {
-    localStorage.setItem(cacheKey, JSON.stringify(newData));
+    localStorage.setItem(MULTI_COLUMN_CACHE_KEY, JSON.stringify(newData));
   };
 
   const deleteItem = (itemToDelete: string) => {
     const newData = data.filter((item) => item !== itemToDelete);
     setData(newData);
     updateStorage(newData);
-    localStorage.removeItem("abcList-" + itemToDelete);
+
+    // Clean up all related storage for this multi-column list
+    const metaKey = `multiColumnMeta-${itemToDelete}`;
+    const metaData = localStorage.getItem(metaKey);
+    if (metaData) {
+      const listData: MultiColumnListData = JSON.parse(metaData);
+      // Remove all column data
+      const alphabet = Array.from({length: 26}, (_, i) =>
+        String.fromCharCode(97 + i),
+      );
+      listData.columns.forEach((column) => {
+        alphabet.forEach((letter) => {
+          const storageKey = `multiColumn-${itemToDelete}-${column.id}:${letter}`;
+          localStorage.removeItem(storageKey);
+        });
+      });
+      localStorage.removeItem(metaKey);
+    }
   };
 
   const clearAll = () => {
     data.forEach((item) => {
-      localStorage.removeItem("abcList-" + item);
+      deleteItem(item);
     });
     setData([]);
     updateStorage([]);
   };
 
-  const showAbcList = (item: string) => {
-    navigate(`/list/${item}`);
+  const showMultiColumnList = (item: string) => {
+    navigate(`/multi-list/${item}`);
   };
 
   const createNewItem = (newItem: string) => {
@@ -45,28 +61,17 @@ export function List() {
       const newData = [...data, newItem];
       setData(newData);
       updateStorage(newData);
-      showAbcList(newItem);
+      showMultiColumnList(newItem);
     }
-  };
-
-  const createMultiColumnList = () => {
-    navigate("/multi-list");
   };
 
   return (
     <div className="p-4">
       <div className="flex justify-center items-center space-x-2">
         <NewStringItem
-          title={"Neue ABC-Liste"}
+          title={"Neue Mehrspaltige ABC-Liste"}
           onSave={(item) => createNewItem(item.text)}
         />
-        <Button
-          variant="default"
-          onClick={createMultiColumnList}
-          className="bg-purple-500 hover:bg-purple-700"
-        >
-          📊 Mehrspaltige Liste
-        </Button>
         <Button variant="destructive" onClick={clearAll}>
           Alle löschen
         </Button>
@@ -74,29 +79,19 @@ export function List() {
           Sortierung umkehren
         </Button>
       </div>
-
+      <h2 className="text-2xl font-bold text-center my-4">
+        Mehrspaltige ABC-Listen
+      </h2>
       <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded">
         <h3 className="font-semibold text-blue-800 mb-2">
-          💡 Zwei Arten von ABC-Listen
+          ℹ️ Mehrspaltiges ABC-System
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-blue-700">
-          <div>
-            <h4 className="font-medium">🔤 Einfache ABC-Liste</h4>
-            <p>Eine Spalte für ein Thema - klassisches ABC-Listen Format</p>
-          </div>
-          <div>
-            <h4 className="font-medium">📊 Mehrspaltige ABC-Liste</h4>
-            <p>
-              Bis zu 5 Spalten für verschiedene Themen mit Zeitlimits und
-              Prognose
-            </p>
-          </div>
-        </div>
+        <p className="text-sm text-blue-700">
+          Nach Vera F. Birkenbihl können Sie verschiedene Themen in separaten
+          Spalten bearbeiten: Spalte 1: allgemeines Thema, Spalte 2: anderes
+          Thema, Spalte 3-5: Spezialgebiete mit Prognose-Funktion.
+        </p>
       </div>
-
-      <h2 className="text-2xl font-bold text-center my-4">
-        Einfache ABC-Listen
-      </h2>
       <ul className="space-y-2">
         {data
           .slice()
@@ -111,7 +106,7 @@ export function List() {
               <Button
                 variant="default"
                 className="w-4/5"
-                onClick={() => showAbcList(item)}
+                onClick={() => showMultiColumnList(item)}
               >
                 {item}
               </Button>

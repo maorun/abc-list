@@ -10,6 +10,8 @@ import {Toaster} from "sonner";
 import {Button} from "./components/ui/button";
 import {List} from "./components/List/List";
 import {ListItem} from "./components/List/ListItem";
+import {MultiColumnList} from "./components/List/MultiColumnList";
+import {MultiColumnListItem} from "./components/List/MultiColumnListItem";
 import {Kawa} from "./components/Kawa/Kawa";
 import {KawaItem} from "./components/Kawa/KawaItem";
 import {Kaga} from "./components/Kaga/Kaga";
@@ -75,6 +77,8 @@ function App() {
           <Routes>
             <Route path="/" element={<List />} />
             <Route path="/list/:item" element={<ListItem />} />
+            <Route path="/multi-list" element={<MultiColumnList />} />
+            <Route path="/multi-list/:item" element={<MultiColumnListItem />} />
             <Route path="/link" element={<LinkLists />} />
             <Route path="/kawa" element={<Kawa />} />
             <Route path="/kawa/:key" element={<KawaItem />} />
