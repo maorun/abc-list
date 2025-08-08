@@ -74,7 +74,7 @@ function Navigation() {
             <div className="flex-shrink-0 text-white font-bold text-lg">
               ABC-Listen App
             </div>
-            
+
             {/* Mobile hamburger menu */}
             <div className="sm:hidden">
               <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -88,7 +88,10 @@ function Navigation() {
                     <span className="sr-only">Navigation öffnen</span>
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="right" className="w-64 bg-blue-800 border-blue-700">
+                <SheetContent
+                  side="right"
+                  className="w-64 bg-blue-800 border-blue-700"
+                >
                   <SheetHeader>
                     <SheetTitle className="text-white text-left">
                       Navigation
@@ -96,9 +99,9 @@ function Navigation() {
                   </SheetHeader>
                   <div className="flex flex-col space-y-2 mt-6">
                     {navigationItems.map((item) => (
-                      <NavButton 
-                        key={item.to} 
-                        to={item.to} 
+                      <NavButton
+                        key={item.to}
+                        to={item.to}
                         onClick={() => setIsOpen(false)}
                       >
                         {item.label}
@@ -137,7 +140,10 @@ function App() {
               <Route path="/" element={<List />} />
               <Route path="/list/:item" element={<ListItem />} />
               <Route path="/multi-list" element={<MultiColumnList />} />
-              <Route path="/multi-list/:item" element={<MultiColumnListItem />} />
+              <Route
+                path="/multi-list/:item"
+                element={<MultiColumnListItem />}
+              />
               <Route path="/link" element={<LinkLists />} />
               <Route path="/kawa" element={<Kawa />} />
               <Route path="/kawa/:key" element={<KawaItem />} />

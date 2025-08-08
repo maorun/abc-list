@@ -190,8 +190,8 @@ export function List() {
             Alle löschen
           </Button>
         </div>
-        <Button 
-          variant="secondary" 
+        <Button
+          variant="secondary"
           onClick={() => setIsReversed(!isReversed)}
           className="text-sm sm:w-auto"
         >
@@ -228,10 +228,7 @@ export function List() {
             isReversed ? b.localeCompare(a) : a.localeCompare(b),
           )
           .map((item) => (
-            <li
-              key={item}
-              className="flex items-stretch gap-2 sm:gap-3"
-            >
+            <li key={item} className="flex items-stretch gap-2 sm:gap-3">
               <Button
                 variant="default"
                 className="flex-1 text-left justify-start py-3 px-4"

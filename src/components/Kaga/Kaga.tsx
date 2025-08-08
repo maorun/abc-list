@@ -47,7 +47,7 @@ export function Kaga() {
       <div className="flex justify-center">
         <NewStringItem title={"Neues KaGa"} onSave={saveKaga} />
       </div>
-      
+
       <h2 className="text-xl sm:text-2xl font-bold text-center my-4 sm:my-6">
         Bisherige KaGas
       </h2>
@@ -65,7 +65,9 @@ export function Kaga() {
             <Button
               variant="default"
               className="flex-1 text-left justify-start py-3 px-4"
-              onClick={() => navigate(`/kaga/${kaga.key}`, {state: {item: kaga}})}
+              onClick={() =>
+                navigate(`/kaga/${kaga.key}`, {state: {item: kaga}})
+              }
             >
               {kaga.text}
             </Button>
@@ -79,7 +81,7 @@ export function Kaga() {
           </div>
         ))}
       </div>
-      
+
       <p className="text-center text-gray-500 text-sm mt-4">
         Tipp: ✕ Button zum Löschen verwenden
       </p>

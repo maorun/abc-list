@@ -45,7 +45,7 @@ export function Kawa() {
       <div className="flex justify-center">
         <NewStringItem title={"Neues Kawa"} onSave={saveKawa} />
       </div>
-      
+
       <h2 className="text-xl sm:text-2xl font-bold text-center my-4 sm:my-6">
         Bisherige Kawas
       </h2>
@@ -63,7 +63,9 @@ export function Kawa() {
             <Button
               variant="default"
               className="flex-1 text-left justify-start py-3 px-4"
-              onClick={() => navigate(`/kawa/${kawa.key}`, {state: {item: kawa}})}
+              onClick={() =>
+                navigate(`/kawa/${kawa.key}`, {state: {item: kawa}})
+              }
             >
               {kawa.text}
             </Button>
@@ -77,7 +79,7 @@ export function Kawa() {
           </div>
         ))}
       </div>
-      
+
       <p className="text-center text-gray-500 text-sm mt-4">
         Tipp: ✕ Button zum Löschen verwenden
       </p>

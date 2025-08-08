@@ -58,15 +58,15 @@ export function StadtLandFluss() {
           onSave={(item) => createNewGame(item.text)}
         />
         <div className="flex gap-2">
-          <Button 
-            variant="destructive" 
+          <Button
+            variant="destructive"
             onClick={clearAll}
             className="text-sm flex-1 sm:flex-none"
           >
             Alle löschen
           </Button>
-          <Button 
-            variant="secondary" 
+          <Button
+            variant="secondary"
             onClick={() => setIsReversed(!isReversed)}
             className="text-sm flex-1 sm:flex-none"
           >
@@ -74,18 +74,18 @@ export function StadtLandFluss() {
           </Button>
         </div>
       </div>
-      
+
       <h2 className="text-xl sm:text-2xl font-bold text-center my-4 sm:my-6">
         Stadt-Land-Fluss Spiele
       </h2>
-      
+
       <div className="text-center mb-6 px-2">
         <p className="text-gray-600 text-sm sm:text-base leading-relaxed">
           Der &quot;Stadt-Land-Fluss-Effekt&quot; nach Vera F. Birkenbihl
           trainiert das schnelle Abrufen von Wissen aus dem Gedächtnis.
         </p>
       </div>
-      
+
       <ul className="space-y-2 sm:space-y-3">
         {games
           .slice()
@@ -93,10 +93,7 @@ export function StadtLandFluss() {
             isReversed ? b.localeCompare(a) : a.localeCompare(b),
           )
           .map((game) => (
-            <li
-              key={game}
-              className="flex items-stretch gap-2 sm:gap-3"
-            >
+            <li key={game} className="flex items-stretch gap-2 sm:gap-3">
               <Button
                 variant="default"
                 className="flex-1 text-left justify-start py-3 px-4"
