@@ -273,9 +273,9 @@ export function ListItem() {
 
   return (
     <div className="p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-3xl font-bold">ABC-Liste für {item}</h1>
-        <div className="flex gap-2">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4">
+        <h1 className="text-3xl font-bold mb-2 md:mb-0">ABC-Liste für {item}</h1>
+        <div className="flex gap-2 flex-wrap">
           <div className="relative group">
             <button
               onClick={exportAsJSON}
