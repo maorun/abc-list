@@ -9,6 +9,7 @@ ABC-List is a React/TypeScript/Vite web application implementing Vera F. Birkenb
 ### Prerequisites and Setup
 - Node.js version 20+ and npm are required
 - Repository uses React 19, TypeScript, Vite 7, and Tailwind CSS 4
+- **Mobile-First Design**: Application follows mobile-first responsive design principles
 
 ### Bootstrap, Build, and Test Repository
 **CRITICAL: All commands below have been validated to work. NEVER CANCEL any build or test command - set appropriate timeouts.**
@@ -220,6 +221,46 @@ ABC-List is a React/TypeScript/Vite web application implementing Vera F. Birkenb
 
 ### Updating documentations
 - Always update AGENTS.MD and .github/copilot-instructions.md on new or changed features
+
+## Mobile-First Design Principles
+
+### Design Philosophy
+- **Mobile-First Approach**: All components are designed for mobile devices first, then enhanced for larger screens
+- **Responsive Navigation**: Uses hamburger menu for mobile, horizontal navigation for desktop
+- **Touch-Friendly**: Adequate touch targets (minimum 44px) and spacing for mobile interaction
+
+### UI Components Guidelines
+- Use Tailwind responsive classes: `flex-col sm:flex-row` for mobile-first layouts
+- Stack buttons vertically on mobile, horizontally on desktop
+- Use `gap-2 sm:gap-3` for responsive spacing
+- Implement `text-sm sm:text-base` for responsive typography
+- Mobile buttons: `w-full` or `flex-1`, desktop: `w-auto`
+
+### Navigation Implementation
+- Mobile: shadcn Sheet component with hamburger menu (☰)
+- Desktop: Horizontal navigation bar
+- Auto-close mobile menu on navigation
+- ARIA labels for accessibility
+
+### Layout Patterns
+```jsx
+// Mobile-first button layout
+<div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+  <Button className="w-full sm:w-auto">Action</Button>
+</div>
+
+// Mobile-first list items with delete
+<div className="flex items-stretch gap-2 sm:gap-3">
+  <Button className="flex-1 text-left justify-start">Item</Button>
+  <Button className="w-12 sm:w-16 flex-shrink-0">✕</Button>
+</div>
+```
+
+### Testing Mobile Changes
+- Test navigation functionality on mobile viewport (375x667)
+- Verify responsive breakpoints work correctly
+- Ensure touch targets are accessible
+- Update tests when changing UI interaction patterns
 
 
 ## Troubleshooting
