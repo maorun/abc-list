@@ -45,35 +45,43 @@ describe("ExportUtils", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(Papa.unparse).mockReturnValue("Letter,Word,Explanation,Imported\nA,Apple,A red fruit,false");
-    
+    vi.mocked(Papa.unparse).mockReturnValue(
+      "Letter,Word,Explanation,Imported\nA,Apple,A red fruit,false",
+    );
+
     // Mock URL.createObjectURL and related DOM APIs
     global.URL.createObjectURL = vi.fn(() => "blob:url");
     global.URL.revokeObjectURL = vi.fn();
-    
+
     // Mock Blob constructor
     global.Blob = vi.fn().mockImplementation((content, options) => ({
       type: options?.type || "",
       size: content[0]?.length || 0,
     }));
-    
+
     // Mock document.createElement and DOM manipulation
     const mockElement = {
       href: "",
       download: "",
       click: vi.fn(),
     };
-    vi.spyOn(document, "createElement").mockReturnValue(mockElement as any);
-    vi.spyOn(document.body, "appendChild").mockImplementation(() => mockElement as any);
-    vi.spyOn(document.body, "removeChild").mockImplementation(() => mockElement as any);
+    vi.spyOn(document, "createElement").mockReturnValue(
+      mockElement as unknown as HTMLAnchorElement,
+    );
+    vi.spyOn(document.body, "appendChild").mockImplementation(
+      () => mockElement as unknown as HTMLAnchorElement,
+    );
+    vi.spyOn(document.body, "removeChild").mockImplementation(
+      () => mockElement as unknown as HTMLAnchorElement,
+    );
   });
 
   describe("exportToPDF", () => {
     it("should call PDF generation with correct parameters", () => {
       ExportUtils.exportToPDF("Test List", testWords);
-      
+
       expect(mockSave).toHaveBeenCalledWith(
-        expect.stringMatching(/abc-liste-Test List-\d{4}-\d{2}-\d{2}\.pdf/)
+        expect.stringMatching(/abc-liste-Test List-\d{4}-\d{2}-\d{2}\.pdf/),
       );
     });
   });
@@ -81,7 +89,7 @@ describe("ExportUtils", () => {
   describe("exportToCSV", () => {
     it("should generate CSV with correct structure", () => {
       ExportUtils.exportToCSV("Test List", testWords);
-      
+
       expect(Papa.unparse).toHaveBeenCalledWith(
         expect.arrayContaining([
           expect.objectContaining({
@@ -91,7 +99,7 @@ describe("ExportUtils", () => {
             Imported: false,
           }),
           expect.objectContaining({
-            Letter: "A", 
+            Letter: "A",
             Word: "Ant",
             Explanation: "Small insect",
             Imported: true,
@@ -107,13 +115,13 @@ describe("ExportUtils", () => {
           delimiter: ",",
           header: true,
           encoding: "utf-8",
-        })
+        }),
       );
     });
 
     it("should create and download CSV file", () => {
       ExportUtils.exportToCSV("Test List", testWords);
-      
+
       expect(document.createElement).toHaveBeenCalledWith("a");
       expect(document.body.appendChild).toHaveBeenCalled();
       expect(document.body.removeChild).toHaveBeenCalled();
@@ -123,12 +131,12 @@ describe("ExportUtils", () => {
   describe("exportToMarkdown", () => {
     it("should generate markdown with correct format", () => {
       ExportUtils.exportToMarkdown("Test List", testWords);
-      
+
       expect(global.Blob).toHaveBeenCalledWith(
         [expect.stringContaining("# ABC-Liste: Test List")],
-        {type: "text/markdown;charset=utf-8;"}
+        {type: "text/markdown;charset=utf-8;"},
       );
-      
+
       expect(document.createElement).toHaveBeenCalledWith("a");
     });
   });
@@ -140,12 +148,14 @@ describe("ExportUtils", () => {
         {Letter: "A", Word: "Apple", Explanation: "Fruit", Imported: false},
       ];
 
-      vi.mocked(Papa.parse).mockImplementation((file, options: any) => {
-        options.complete({data: mockCsvData, errors: []});
-      });
+      vi.mocked(Papa.parse).mockImplementation(
+        (file, options: Papa.ParseConfig) => {
+          options.complete({data: mockCsvData, errors: []});
+        },
+      );
 
       const result = await ExportUtils.parseCSVFile(mockFile);
-      
+
       expect(result).toEqual(mockCsvData);
       expect(Papa.parse).toHaveBeenCalledWith(
         mockFile,
@@ -153,33 +163,39 @@ describe("ExportUtils", () => {
           header: true,
           skipEmptyLines: true,
           encoding: "utf-8",
-        })
+        }),
       );
     });
 
     it("should reject on parse errors", async () => {
       const mockFile = new File(["test"], "test.csv", {type: "text/csv"});
-      
-      vi.mocked(Papa.parse).mockImplementation((file, options: any) => {
-        options.complete({
-          data: [],
-          errors: [{message: "Parse error"}],
-        });
-      });
 
-      await expect(ExportUtils.parseCSVFile(mockFile)).rejects.toThrow("CSV Parse Error: Parse error");
+      vi.mocked(Papa.parse).mockImplementation(
+        (file, options: Papa.ParseConfig) => {
+          options.complete({
+            data: [],
+            errors: [{message: "Parse error"}],
+          });
+        },
+      );
+
+      await expect(ExportUtils.parseCSVFile(mockFile)).rejects.toThrow(
+        "CSV Parse Error: Parse error",
+      );
     });
 
     it("should reject if required columns are missing", async () => {
       const mockFile = new File(["test"], "test.csv", {type: "text/csv"});
       const invalidData = [{InvalidColumn: "value"}];
 
-      vi.mocked(Papa.parse).mockImplementation((file, options: any) => {
-        options.complete({data: invalidData, errors: []});
-      });
+      vi.mocked(Papa.parse).mockImplementation(
+        (file, options: Papa.ParseConfig) => {
+          options.complete({data: invalidData, errors: []});
+        },
+      );
 
       await expect(ExportUtils.parseCSVFile(mockFile)).rejects.toThrow(
-        "CSV muss mindestens die Spalten 'Letter' und 'Word' enthalten"
+        "CSV muss mindestens die Spalten 'Letter' und 'Word' enthalten",
       );
     });
   });
@@ -201,7 +217,7 @@ describe("ExportUtils", () => {
           text: "Apple",
           explanation: "Fruit",
           imported: true,
-        })
+        }),
       );
       expect(result.words.b).toHaveLength(1);
       expect(result.words.b[0]).toEqual(
@@ -209,7 +225,7 @@ describe("ExportUtils", () => {
           text: "Ball",
           explanation: "Toy",
           imported: true,
-        })
+        }),
       );
     });
 
@@ -217,7 +233,12 @@ describe("ExportUtils", () => {
       const csvRows: CSVRow[] = [
         {Letter: "A", Word: "Apple", Explanation: "Fruit", Imported: false},
         {Letter: "Z", Word: "", Explanation: "Empty", Imported: false}, // Empty word
-        {Letter: "Invalid", Word: "Test", Explanation: "Invalid letter", Imported: false}, // Invalid letter
+        {
+          Letter: "Invalid",
+          Word: "Test",
+          Explanation: "Invalid letter",
+          Imported: false,
+        }, // Invalid letter
       ];
 
       const result = ExportUtils.csvToExportedList(csvRows, "Test List");
