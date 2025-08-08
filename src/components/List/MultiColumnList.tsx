@@ -67,7 +67,7 @@ export function MultiColumnList() {
 
   return (
     <div className="p-4">
-      <div className="flex justify-center items-center space-x-2">
+      <div className="flex justify-center items-center space-x-2 flex-wrap">
         <NewStringItem
           title={"Neue Mehrspaltige ABC-Liste"}
           onSave={(item) => createNewItem(item.text)}
