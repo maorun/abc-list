@@ -20,6 +20,7 @@ export function Letter({cacheKey, letter}: LetterProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [words, setWords] = useState<WordWithExplanation[]>([]);
   const [newWord, setNewWord] = useState("");
+  const [needsMigration, setNeedsMigration] = useState(false);
 
   const getStorageKey = useCallback(
     () => `${cacheKey}:${letter}`,
@@ -33,7 +34,7 @@ export function Letter({cacheKey, letter}: LetterProps) {
       // Handle both old string[] format and new WordWithExplanation[] format
       if (Array.isArray(parsed) && parsed.length > 0) {
         if (parsed.every((item) => typeof item === "string")) {
-          // Convert old format to new format
+          // Convert old format to new format in memory only
           const converted = parsed.map((word: string) => ({
             text: word,
             explanation: "",
@@ -41,13 +42,22 @@ export function Letter({cacheKey, letter}: LetterProps) {
             imported: false,
           }));
           setWords(converted);
-          localStorage.setItem(getStorageKey(), JSON.stringify(converted));
+          setNeedsMigration(true); // Flag for separate migration effect
         } else {
           setWords(parsed);
         }
       }
     }
   }, [getStorageKey]);
+
+  // Separate effect for migrating data to avoid rerender loops
+  useEffect(() => {
+    if (needsMigration && words.length > 0) {
+      // Only migrate once when flag is set and we have converted data
+      localStorage.setItem(getStorageKey(), JSON.stringify(words));
+      setNeedsMigration(false);
+    }
+  }, [needsMigration, words, getStorageKey]);
 
   const updateStorage = useCallback(
     (newWords: WordWithExplanation[]) => {
