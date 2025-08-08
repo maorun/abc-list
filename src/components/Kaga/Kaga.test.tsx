@@ -49,7 +49,7 @@ describe("Kaga", () => {
     expect(screen.getByText("Neues KaGa")).toBeInTheDocument();
     expect(screen.getByText("Bisherige KaGas")).toBeInTheDocument();
     expect(
-      screen.getByText("Tipp: Rechtsklick zum Löschen"),
+      screen.getByText("Tipp: ✕ Button zum Löschen verwenden"),
     ).toBeInTheDocument();
   });
 
@@ -137,8 +137,8 @@ describe("Kaga", () => {
       </MemoryRouter>,
     );
 
-    // Right click on the KaGa item
-    fireEvent.contextMenu(screen.getByText("Delete Me KaGa"));
+    // Click on delete button
+    fireEvent.click(screen.getByRole("button", {name: "✕"}));
 
     // Check that delete confirmation is shown
     expect(screen.getByText("Löschen bestätigen")).toBeInTheDocument();
@@ -157,8 +157,8 @@ describe("Kaga", () => {
       </MemoryRouter>,
     );
 
-    // Right click to show delete confirmation
-    fireEvent.contextMenu(screen.getByText("Delete Me KaGa"));
+    // Click delete button to show delete confirmation
+    fireEvent.click(screen.getByRole("button", {name: "✕"}));
 
     // Confirm deletion
     fireEvent.click(screen.getByText("Ja"));

@@ -4,13 +4,19 @@ Welcome, agent! This document provides instructions and guidelines for working o
 
 ## 1. Project Overview
 
-This is a web application built with **React**, **TypeScript**, and **Vite**. It uses **Tailwind CSS** for styling and **Vitest** for testing.
+This is a web application built with **React**, **TypeScript**, and **Vite**. It uses **Tailwind CSS** for styling and **Vitest** for testing. The application follows **mobile-first responsive design principles**.
 
 ABC-List implements Vera F. Birkenbihl's learning methodology with multiple learning modes:
 - **ABC-Lists**: Create association lists for any topic using letters A-Z
 - **KaWa (Word Associations)**: Build associations for each letter of a specific word
 - **KaGa (Graphical Associations)**: Visual learning with drawing tools and graphical elements
 - **Stadt-Land-Fluss**: Quick knowledge retrieval game training with customizable categories and timer-based rounds
+
+**Key Technical Features:**
+- Mobile-first responsive design with hamburger navigation
+- shadcn/ui components for consistent UI
+- Accessibility-focused implementation
+- Touch-friendly interface for mobile devices
 
 The main application logic is in the `src` directory. Components are located in `src/components`.
 

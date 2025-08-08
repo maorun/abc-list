@@ -53,7 +53,7 @@ describe("List", () => {
     localStorage.setItem("abcList-Liste 1", "some-data");
     render(<List />, {wrapper: MemoryRouter});
 
-    const deleteButton = screen.getAllByRole("button", {name: "X"})[0];
+    const deleteButton = screen.getAllByRole("button", {name: "✕"})[0];
     fireEvent.click(deleteButton);
 
     expect(screen.queryByText("Liste 1")).not.toBeInTheDocument();
@@ -98,7 +98,7 @@ describe("List", () => {
     expect(await screen.findByText("First Item")).toBeInTheDocument();
 
     // Delete the item
-    const deleteButton = screen.getAllByRole("button", {name: "X"})[0];
+    const deleteButton = screen.getAllByRole("button", {name: "✕"})[0];
     fireEvent.click(deleteButton);
     expect(screen.queryByText("First Item")).not.toBeInTheDocument();
 

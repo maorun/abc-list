@@ -50,52 +50,63 @@ export function StadtLandFluss() {
   };
 
   return (
-    <div className="p-4">
-      <div className="flex justify-center items-center space-x-2">
+    <div className="space-y-4">
+      {/* Mobile-first button layout */}
+      <div className="flex flex-col sm:flex-row sm:justify-center sm:items-center gap-2 sm:gap-2">
         <NewStringItem
           title={"Neues Stadt-Land-Fluss Spiel"}
           onSave={(item) => createNewGame(item.text)}
         />
-        <Button variant="destructive" onClick={clearAll}>
-          Alle löschen
-        </Button>
-        <Button variant="secondary" onClick={() => setIsReversed(!isReversed)}>
-          Sortierung umkehren
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="destructive"
+            onClick={clearAll}
+            className="text-sm flex-1 sm:flex-none"
+          >
+            Alle löschen
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={() => setIsReversed(!isReversed)}
+            className="text-sm flex-1 sm:flex-none"
+          >
+            Sortierung umkehren
+          </Button>
+        </div>
       </div>
-      <h2 className="text-2xl font-bold text-center my-4">
+
+      <h2 className="text-xl sm:text-2xl font-bold text-center my-4 sm:my-6">
         Stadt-Land-Fluss Spiele
       </h2>
-      <div className="text-center mb-6">
-        <p className="text-gray-600">
+
+      <div className="text-center mb-6 px-2">
+        <p className="text-gray-600 text-sm sm:text-base leading-relaxed">
           Der &quot;Stadt-Land-Fluss-Effekt&quot; nach Vera F. Birkenbihl
           trainiert das schnelle Abrufen von Wissen aus dem Gedächtnis.
         </p>
       </div>
-      <ul className="space-y-2">
+
+      <ul className="space-y-2 sm:space-y-3">
         {games
           .slice()
           .sort((a, b) =>
             isReversed ? b.localeCompare(a) : a.localeCompare(b),
           )
           .map((game) => (
-            <li
-              key={game}
-              className="flex items-center justify-center space-x-2"
-            >
+            <li key={game} className="flex items-stretch gap-2 sm:gap-3">
               <Button
                 variant="default"
-                className="w-4/5"
+                className="flex-1 text-left justify-start py-3 px-4"
                 onClick={() => showGame(game)}
               >
                 {game}
               </Button>
               <Button
                 variant="destructive"
-                className="w-1/5"
+                className="w-12 sm:w-16 flex-shrink-0"
                 onClick={() => deleteGame(game)}
               >
-                X
+                ✕
               </Button>
             </li>
           ))}
