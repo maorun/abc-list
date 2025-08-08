@@ -21,6 +21,7 @@ import {StadtLandFluss} from "./components/StadtLandFluss/StadtLandFluss";
 import {StadtLandFlussGame} from "./components/StadtLandFluss/StadtLandFlussGame";
 import {Analytics} from "./components/Analytics/Analytics";
 import {SokratesCheck} from "./components/SokratesCheck/SokratesCheck";
+import {Basar} from "./components/Basar/Basar";
 
 function Navigation() {
   const location = useLocation();
@@ -57,6 +58,7 @@ function Navigation() {
                 <NavButton to="/kawa">Kawas</NavButton>
                 <NavButton to="/kaga">KaGa</NavButton>
                 <NavButton to="/slf">Stadt-Land-Fluss</NavButton>
+                <NavButton to="/basar">Basar</NavButton>
                 <NavButton to="/sokrates">Sokrates-Check</NavButton>
                 <NavButton to="/analytics">Analytics</NavButton>
               </div>
@@ -86,6 +88,7 @@ function App() {
             <Route path="/kaga/:key" element={<KagaItem />} />
             <Route path="/slf" element={<StadtLandFluss />} />
             <Route path="/slf/:game" element={<StadtLandFlussGame />} />
+            <Route path="/basar" element={<Basar />} />
             <Route path="/sokrates" element={<SokratesCheck />} />
             <Route path="/analytics" element={<Analytics />} />
           </Routes>
