@@ -20,7 +20,6 @@ export function Basar() {
   const [marketplaceTerms, setMarketplaceTerms] = useState<MarketplaceTerm[]>(
     [],
   );
-  const [filteredTerms, setFilteredTerms] = useState<MarketplaceTerm[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedLetter, setSelectedLetter] = useState<string>("all");
   const [sortBy, setSortBy] = useState<"date" | "price" | "quality">("date");
@@ -37,7 +36,24 @@ export function Basar() {
     setMarketplaceTerms(terms);
   }, [basarService]);
 
-  const filterTerms = useCallback(() => {
+  const initializeData = useCallback(() => {
+    basarService.initializeSampleData();
+    const user = basarService.getCurrentUser();
+
+    if (!user) {
+      setShowUserSetup(true);
+    } else {
+      setCurrentUser(user);
+    }
+
+    loadMarketplaceTerms();
+  }, [basarService, loadMarketplaceTerms]);
+
+  useEffect(() => {
+    initializeData();
+  }, [initializeData]);
+
+  const filteredTerms = React.useMemo(() => {
     let filtered = [...marketplaceTerms];
 
     // Filter by search term
@@ -70,29 +86,8 @@ export function Basar() {
       }
     });
 
-    setFilteredTerms(filtered);
+    return filtered;
   }, [marketplaceTerms, searchTerm, selectedLetter, sortBy]);
-
-  const initializeData = useCallback(() => {
-    basarService.initializeSampleData();
-    const user = basarService.getCurrentUser();
-
-    if (!user) {
-      setShowUserSetup(true);
-    } else {
-      setCurrentUser(user);
-    }
-
-    loadMarketplaceTerms();
-  }, [basarService, loadMarketplaceTerms]);
-
-  useEffect(() => {
-    initializeData();
-  }, [initializeData]);
-
-  useEffect(() => {
-    filterTerms();
-  }, [filterTerms]);
 
   const handleCreateUser = () => {
     if (!newUserName.trim()) {

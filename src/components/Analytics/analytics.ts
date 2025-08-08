@@ -1,5 +1,3 @@
-import {useState, useEffect, useCallback} from "react";
-
 export interface ABCListData {
   name: string;
   words: Record<
@@ -227,71 +225,39 @@ const calculateLearningStreak = (lastActivityDate: Date | null): number => {
   return diffDays <= 1 ? 1 : 0;
 };
 
-export function useAnalyticsData(): AnalyticsData {
-  const [analyticsData, setAnalyticsData] = useState<AnalyticsData>({
-    abcLists: [],
-    kawas: [],
-    kagas: [],
-    stadtLandFlussGames: [],
-    totalWords: 0,
-    totalLists: 0,
-    averageWordsPerList: 0,
-    mostActiveLetters: [],
-    learningStreak: 0,
-    lastActivityDate: null,
-    knowledgeAreas: [],
-  });
+export const getAnalyticsData = (): AnalyticsData => {
+  const abcListsData = loadABCLists();
+  const kawasData = loadKawas();
+  const kagasData = loadKagas();
+  const slfData = loadStadtLandFlussGames();
+  const totalWords = calculateTotalWords(abcListsData);
+  const totalLists = abcListsData.length + kawasData.length + kagasData.length;
+  const averageWordsPerList = totalLists > 0 ? totalWords / totalLists : 0;
+  const mostActiveLetters = calculateMostActiveLetters(abcListsData);
+  const knowledgeAreas = identifyKnowledgeAreas(
+    abcListsData,
+    kawasData,
+    kagasData,
+  );
+  const lastActivityDate = getLastActivityDate(
+    abcListsData,
+    kawasData,
+    kagasData,
+    slfData,
+  );
+  const learningStreak = calculateLearningStreak(lastActivityDate);
 
-  const loadAnalyticsData = useCallback(() => {
-    // Load ABC Lists
-    const abcListsData = loadABCLists();
-
-    // Load Kawas
-    const kawasData = loadKawas();
-
-    // Load Kagas
-    const kagasData = loadKagas();
-
-    // Load Stadt-Land-Fluss games
-    const slfData = loadStadtLandFlussGames();
-
-    // Calculate analytics
-    const totalWords = calculateTotalWords(abcListsData);
-    const totalLists =
-      abcListsData.length + kawasData.length + kagasData.length;
-    const averageWordsPerList = totalLists > 0 ? totalWords / totalLists : 0;
-    const mostActiveLetters = calculateMostActiveLetters(abcListsData);
-    const knowledgeAreas = identifyKnowledgeAreas(
-      abcListsData,
-      kawasData,
-      kagasData,
-    );
-    const lastActivityDate = getLastActivityDate(
-      abcListsData,
-      kawasData,
-      kagasData,
-      slfData,
-    );
-    const learningStreak = calculateLearningStreak(lastActivityDate);
-
-    setAnalyticsData({
-      abcLists: abcListsData,
-      kawas: kawasData,
-      kagas: kagasData,
-      stadtLandFlussGames: slfData,
-      totalWords,
-      totalLists,
-      averageWordsPerList,
-      mostActiveLetters,
-      learningStreak,
-      lastActivityDate,
-      knowledgeAreas,
-    });
-  }, []);
-
-  useEffect(() => {
-    loadAnalyticsData();
-  }, [loadAnalyticsData]);
-
-  return analyticsData;
-}
+  return {
+    abcLists: abcListsData,
+    kawas: kawasData,
+    kagas: kagasData,
+    stadtLandFlussGames: slfData,
+    totalWords,
+    totalLists,
+    averageWordsPerList,
+    mostActiveLetters,
+    learningStreak,
+    lastActivityDate,
+    knowledgeAreas,
+  };
+};

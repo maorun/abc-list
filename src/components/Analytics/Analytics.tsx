@@ -5,7 +5,7 @@ import {ProgressGraphs} from "./ProgressGraphs";
 import {ListComparison} from "./ListComparison";
 import {StrengthsWeaknessesAnalysis} from "./StrengthsWeaknessesAnalysis";
 import {MilestoneTracking} from "./MilestoneTracking";
-import {useAnalyticsData} from "./useAnalyticsData";
+import {getAnalyticsData, AnalyticsData} from "./analytics";
 
 type TabType =
   | "overview"
@@ -17,10 +17,14 @@ type TabType =
 
 export function Analytics() {
   const [activeTab, setActiveTab] = useState<TabType>("overview");
-  const analyticsData = useAnalyticsData();
+  const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(
+    null,
+  );
 
   useEffect(() => {
     document.title = "Lernanalyse - ABC-Listen App";
+    const data = getAnalyticsData();
+    setAnalyticsData(data);
   }, []);
 
   const tabs = [
@@ -33,6 +37,10 @@ export function Analytics() {
   ] as const;
 
   const renderTabContent = () => {
+    if (!analyticsData) {
+      return <div>Loading...</div>;
+    }
+
     switch (activeTab) {
       case "overview":
         return <LearningStatistics data={analyticsData} />;

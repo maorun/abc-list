@@ -203,7 +203,6 @@ export function StadtLandFlussGame() {
     const newAnswers = {...gameData.answers, [category]: value};
     const newGameData = {...gameData, answers: newAnswers};
     setGameData(newGameData);
-    saveGameData(newGameData);
   };
 
   const addCategory = () => {

@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useCallback} from "react";
 import {CheckCircle, Target, Plus, Trash2} from "lucide-react";
-import {AnalyticsData} from "./useAnalyticsData";
+import {AnalyticsData} from "./analytics";
 import {
   Dialog,
   DialogContent,
