@@ -31,7 +31,7 @@ export function MultiColumnStatistics({
     if (isOpen) {
       calculateStatistics();
     }
-  }, [isOpen, listData, calculateStatistics]);
+  }, [isOpen, listData]);
 
   const calculateStatistics = useCallback(() => {
     const alphabet = Array.from({length: 26}, (_, i) =>
