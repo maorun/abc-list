@@ -29,19 +29,17 @@ export function ListItem() {
     }
   }, [item]);
 
-  const getCacheKey = (): string => {
-    return "abcList-" + item;
-  };
-
   const alphabet = Array.from({length: 26}, (_, i) =>
     String.fromCharCode(97 + i),
   );
+
+  const cacheKey = React.useMemo(() => "abcList-" + item, [item]);
 
   const getWordsData = (): Record<string, WordWithExplanation[]> => {
     const words: Record<string, WordWithExplanation[]> = {};
 
     alphabet.forEach((letter) => {
-      const storageKey = `${getCacheKey()}:${letter}`;
+      const storageKey = `${cacheKey}:${letter}`;
       const storedData = localStorage.getItem(storageKey);
       if (storedData) {
         const parsed = JSON.parse(storedData);
@@ -324,7 +322,7 @@ export function ListItem() {
       <div className="flex flex-row flex-wrap justify-around gap-4">
         {alphabet.map((char) => (
           <div key={char} className="m-2">
-            <Letter letter={char} cacheKey={getCacheKey()} />
+            <Letter letter={char} cacheKey={cacheKey} />
           </div>
         ))}
       </div>

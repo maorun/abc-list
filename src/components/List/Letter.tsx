@@ -18,7 +18,6 @@ interface LetterProps {
 
 export function Letter({cacheKey, letter}: LetterProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [words, setWords] = useState<WordWithExplanation[]>([]);
   const [newWord, setNewWord] = useState("");
 
   const getStorageKey = useCallback(
@@ -26,28 +25,27 @@ export function Letter({cacheKey, letter}: LetterProps) {
     [cacheKey, letter],
   );
 
-  useEffect(() => {
+  const [words, setWords] = useState<WordWithExplanation[]>(() => {
     const storedData = localStorage.getItem(getStorageKey());
     if (storedData) {
       const parsed = JSON.parse(storedData);
-      // Handle both old string[] format and new WordWithExplanation[] format
       if (Array.isArray(parsed) && parsed.length > 0) {
         if (parsed.every((item) => typeof item === "string")) {
-          // Convert old format to new format
           const converted = parsed.map((word: string) => ({
             text: word,
             explanation: "",
             version: 1,
             imported: false,
           }));
-          setWords(converted);
           localStorage.setItem(getStorageKey(), JSON.stringify(converted));
+          return converted;
         } else {
-          setWords(parsed);
+          return parsed;
         }
       }
     }
-  }, [getStorageKey]);
+    return [];
+  });
 
   const updateStorage = useCallback(
     (newWords: WordWithExplanation[]) => {
