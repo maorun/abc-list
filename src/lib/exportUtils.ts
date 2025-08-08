@@ -1,5 +1,6 @@
 import jsPDF from "jspdf";
 import Papa from "papaparse";
+import {z} from "zod";
 import {WordWithExplanation} from "@/components/List/types";
 
 export interface ExportedList {
@@ -16,6 +17,24 @@ export interface CSVRow {
   Imported: boolean;
   Timestamp?: string;
 }
+
+// Zod schema for runtime validation of CSV rows
+const CSVRowSchema = z.object({
+  Letter: z.string().min(1, "Letter is required"),
+  Word: z.string().min(1, "Word is required"),
+  Explanation: z.string().optional().default(""),
+  Imported: z
+    .union([z.boolean(), z.string()])
+    .transform((val) => {
+      if (typeof val === "string") {
+        return val.toLowerCase() === "true" || val === "1";
+      }
+      return Boolean(val);
+    })
+    .optional()
+    .default(false),
+  Timestamp: z.string().optional(),
+});
 
 export class ExportUtils {
   static exportToPDF(
@@ -205,22 +224,52 @@ export class ExportUtils {
             return;
           }
 
-          const csvRows = results.data as CSVRow[];
+          try {
+            // Validate and transform the data using Zod schema
+            const validatedRows: CSVRow[] = [];
+            const rawData = results.data as unknown[];
 
-          // Validate required columns
-          if (csvRows.length > 0) {
-            const firstRow = csvRows[0];
-            if (!("Letter" in firstRow) || !("Word" in firstRow)) {
-              reject(
-                new Error(
-                  "CSV muss mindestens die Spalten 'Letter' und 'Word' enthalten",
-                ),
-              );
-              return;
+            // Check if we have any data and required columns exist
+            if (rawData.length > 0) {
+              const firstRow = rawData[0] as Record<string, unknown>;
+              if (!("Letter" in firstRow) || !("Word" in firstRow)) {
+                reject(
+                  new Error(
+                    "CSV muss mindestens die Spalten 'Letter' und 'Word' enthalten",
+                  ),
+                );
+                return;
+              }
             }
-          }
 
-          resolve(csvRows);
+            for (let i = 0; i < rawData.length; i++) {
+              try {
+                const validatedRow = CSVRowSchema.parse(rawData[i]);
+                validatedRows.push(validatedRow);
+              } catch (zodError) {
+                const errorMessage =
+                  zodError instanceof z.ZodError
+                    ? zodError.errors
+                        .map((e) => `${e.path.join(".")}: ${e.message}`)
+                        .join(", ")
+                    : "Unbekannter Validierungsfehler";
+                reject(
+                  new Error(
+                    `Validierungsfehler in Zeile ${i + 1}: ${errorMessage}`,
+                  ),
+                );
+                return;
+              }
+            }
+
+            resolve(validatedRows);
+          } catch (error) {
+            reject(
+              new Error(
+                `Fehler beim Validieren der CSV-Daten: ${error instanceof Error ? error.message : "Unbekannter Fehler"}`,
+              ),
+            );
+          }
         },
         error: (error) => {
           reject(
