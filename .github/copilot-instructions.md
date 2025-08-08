@@ -192,6 +192,13 @@ ABC-List is a React/TypeScript/Vite web application implementing Vera F. Birkenb
 - Use proper type annotations for function parameters and return values
 - Define interfaces for all data structures, especially those used in multiple components
 - Avoid type assertions (`as`) unless absolutely necessary with proper justification
+- **STRICTLY FORBIDDEN: Never use ESLint disable comments** (e.g., `// eslint-disable-next-line`)
+  - Instead of disabling ESLint rules, fix the underlying issue by:
+    - Adding proper dependencies to useEffect hooks
+    - Using useCallback to stabilize function references 
+    - Moving pure functions outside components to avoid unnecessary re-creation
+    - Restructuring code to follow React best practices
+  - ESLint rules exist for good reasons and should not be suppressed
 
 ### Modifying Styles  
 - Uses Tailwind CSS 4 for styling

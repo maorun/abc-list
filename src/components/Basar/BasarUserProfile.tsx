@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useCallback} from "react";
 import {Button} from "../ui/button";
 import {Input} from "../ui/input";
 import {
@@ -39,24 +39,23 @@ export function BasarUserProfile({
     "overview" | "history" | "achievements" | "sell"
   >("overview");
 
-  useEffect(() => {
-    if (selectedList && selectedLetter) {
-      loadTermsForLetter();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedList, selectedLetter]);
-
-  const getAvailableLists = (): string[] => {
-    const stored = localStorage.getItem("abcLists");
-    return stored ? JSON.parse(stored) : [];
-  };
-
-  const loadTermsForLetter = () => {
+  const loadTermsForLetter = useCallback(() => {
     const storageKey = `abcList-${selectedList}:${selectedLetter}`;
     const stored = localStorage.getItem(storageKey);
     const terms: WordWithExplanation[] = stored ? JSON.parse(stored) : [];
     setAvailableTerms(terms);
     setSelectedTerm(null);
+  }, [selectedList, selectedLetter]);
+
+  useEffect(() => {
+    if (selectedList && selectedLetter) {
+      loadTermsForLetter();
+    }
+  }, [selectedList, selectedLetter, loadTermsForLetter]);
+
+  const getAvailableLists = (): string[] => {
+    const stored = localStorage.getItem("abcLists");
+    return stored ? JSON.parse(stored) : [];
   };
 
   const handleSellTerm = () => {

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useCallback} from "react";
 import {toast} from "sonner";
 import {Button} from "../ui/button";
 import {Input} from "../ui/input";
@@ -32,35 +32,12 @@ export function Basar() {
 
   const basarService = BasarService.getInstance();
 
-  useEffect(() => {
-    initializeData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    filterTerms();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [marketplaceTerms, searchTerm, selectedLetter, sortBy]);
-
-  const initializeData = () => {
-    basarService.initializeSampleData();
-    const user = basarService.getCurrentUser();
-
-    if (!user) {
-      setShowUserSetup(true);
-    } else {
-      setCurrentUser(user);
-    }
-
-    loadMarketplaceTerms();
-  };
-
-  const loadMarketplaceTerms = () => {
+  const loadMarketplaceTerms = useCallback(() => {
     const terms = basarService.getMarketplaceTerms();
     setMarketplaceTerms(terms);
-  };
+  }, [basarService]);
 
-  const filterTerms = () => {
+  const filterTerms = useCallback(() => {
     let filtered = [...marketplaceTerms];
 
     // Filter by search term
@@ -94,7 +71,28 @@ export function Basar() {
     });
 
     setFilteredTerms(filtered);
-  };
+  }, [marketplaceTerms, searchTerm, selectedLetter, sortBy]);
+
+  const initializeData = useCallback(() => {
+    basarService.initializeSampleData();
+    const user = basarService.getCurrentUser();
+
+    if (!user) {
+      setShowUserSetup(true);
+    } else {
+      setCurrentUser(user);
+    }
+
+    loadMarketplaceTerms();
+  }, [basarService, loadMarketplaceTerms]);
+
+  useEffect(() => {
+    initializeData();
+  }, [initializeData]);
+
+  useEffect(() => {
+    filterTerms();
+  }, [filterTerms]);
 
   const handleCreateUser = () => {
     if (!newUserName.trim()) {
