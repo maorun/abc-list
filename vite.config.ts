@@ -6,7 +6,7 @@ import path from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  // The base path is set for GitHub Pages deployment.
+  // The base path is set to a relative value ('./') to support multiple deployment scenarios, including GitHub Pages and other static hosts.
   base: './',
   plugins: [react(), tailwindcss()],
   resolve: {
