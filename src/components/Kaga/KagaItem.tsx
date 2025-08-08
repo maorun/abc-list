@@ -2,6 +2,7 @@ import React, {useEffect, useRef, useState} from "react";
 import {useLocation} from "react-router-dom";
 import {NewItemWithSaveKey} from "../NewStringItem";
 import {usePrompt} from "@/components/ui/prompt-dialog";
+import {Button} from "../ui/button";
 
 interface DrawingData {
   paths: Array<{
@@ -193,22 +194,20 @@ export function KagaItem() {
       <div className="flex flex-wrap justify-center gap-4 mb-4 p-4 bg-gray-100 rounded">
         <div className="flex items-center gap-2">
           <span className="font-semibold">Werkzeug:</span>
-          <button
-            className={`px-3 py-1 rounded ${
-              tool === "pen" ? "bg-blue-500 text-white" : "bg-gray-300"
-            }`}
+          <Button
+            variant={tool === "pen" ? "default" : "secondary"}
+            size="sm"
             onClick={() => setTool("pen")}
           >
             Stift
-          </button>
-          <button
-            className={`px-3 py-1 rounded ${
-              tool === "text" ? "bg-blue-500 text-white" : "bg-gray-300"
-            }`}
+          </Button>
+          <Button
+            variant={tool === "text" ? "default" : "secondary"}
+            size="sm"
             onClick={() => setTool("text")}
           >
             Text
-          </button>
+          </Button>
         </div>
 
         <div className="flex items-center gap-2">
@@ -240,19 +239,17 @@ export function KagaItem() {
           <span className="text-sm">{brushSize}px</span>
         </div>
 
-        <button
+        <Button
           onClick={saveCanvas}
-          className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+          variant="default"
+          className="bg-green-500 hover:bg-green-700"
         >
           Speichern
-        </button>
+        </Button>
 
-        <button
-          onClick={clearCanvas}
-          className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-        >
+        <Button onClick={clearCanvas} variant="destructive">
           Löschen
-        </button>
+        </Button>
       </div>
 
       {/* Canvas */}

@@ -14,9 +14,7 @@ describe("NewStringItem", () => {
   it("should open a modal when the add button is clicked", () => {
     render(<NewStringItem title={title} />);
     fireEvent.click(screen.getByRole("button", {name: title}));
-    expect(
-      screen.getByRole("heading", {name: `${title}:`}),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", {name: title})).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Enter text...")).toBeInTheDocument();
     expect(screen.getByRole("button", {name: "Speichern"})).toBeInTheDocument();
     expect(screen.getByRole("button", {name: "Abbrechen"})).toBeInTheDocument();
@@ -35,12 +33,10 @@ describe("NewStringItem", () => {
     const onAbort = vi.fn();
     render(<NewStringItem title={title} onAbort={onAbort} />);
     fireEvent.click(screen.getByRole("button", {name: title}));
-    expect(
-      screen.getByRole("heading", {name: `${title}:`}),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", {name: title})).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", {name: "Abbrechen"}));
     expect(
-      screen.queryByRole("heading", {name: `${title}:`}),
+      screen.queryByRole("heading", {name: title}),
     ).not.toBeInTheDocument();
     expect(onAbort).toHaveBeenCalled();
   });
@@ -53,7 +49,7 @@ describe("NewStringItem", () => {
     fireEvent.change(input, {target: {value: "Gespeicherter Text"}});
     fireEvent.click(screen.getByRole("button", {name: "Speichern"}));
     expect(
-      screen.queryByRole("heading", {name: `${title}:`}),
+      screen.queryByRole("heading", {name: title}),
     ).not.toBeInTheDocument();
     expect(onSave).toHaveBeenCalledWith(
       expect.objectContaining({text: "Gespeicherter Text"}),
@@ -64,12 +60,10 @@ describe("NewStringItem", () => {
     const onSave = vi.fn();
     render(<NewStringItem title={title} onSave={onSave} />);
     fireEvent.click(screen.getByRole("button", {name: title}));
-    expect(
-      screen.getByRole("heading", {name: `${title}:`}),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", {name: title})).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", {name: "Speichern"}));
     expect(
-      screen.queryByRole("heading", {name: `${title}:`}),
+      screen.queryByRole("heading", {name: title}),
     ).not.toBeInTheDocument();
     expect(onSave).not.toHaveBeenCalled();
   });

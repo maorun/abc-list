@@ -13,7 +13,7 @@ describe("SavedWord", () => {
   it("should show delete confirmation on click", () => {
     render(<SavedWord text={text} />);
     fireEvent.click(screen.getByRole("button", {name: text}));
-    expect(screen.getByText("Wirklich löschen?")).toBeInTheDocument();
+    expect(screen.getByText("Löschen bestätigen")).toBeInTheDocument();
   });
 
   it("should call onDelete and hide confirmation when deletion is confirmed", () => {
@@ -22,7 +22,7 @@ describe("SavedWord", () => {
     fireEvent.click(screen.getByRole("button", {name: text}));
     fireEvent.click(screen.getByRole("button", {name: "Ja"}));
     expect(onDelete).toHaveBeenCalled();
-    expect(screen.queryByText("Wirklich löschen?")).not.toBeInTheDocument();
+    expect(screen.queryByText("Löschen bestätigen")).not.toBeInTheDocument();
   });
 
   it("should hide confirmation when deletion is aborted", () => {
@@ -31,6 +31,6 @@ describe("SavedWord", () => {
     fireEvent.click(screen.getByRole("button", {name: text}));
     fireEvent.click(screen.getByRole("button", {name: "Nein"}));
     expect(onDelete).not.toHaveBeenCalled();
-    expect(screen.queryByText("Wirklich löschen?")).not.toBeInTheDocument();
+    expect(screen.queryByText("Löschen bestätigen")).not.toBeInTheDocument();
   });
 });

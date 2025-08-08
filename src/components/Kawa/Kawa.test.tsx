@@ -85,7 +85,7 @@ describe("Kawa", () => {
     render(<Kawa />, {wrapper: MemoryRouter});
 
     fireEvent.contextMenu(screen.getByRole("button", {name: "Kawa 1"}));
-    expect(screen.getByText("Wirklich löschen?")).toBeInTheDocument();
+    expect(screen.getByText("Löschen bestätigen")).toBeInTheDocument();
   });
 
   it("deletes a kawa when confirmed", () => {
@@ -100,7 +100,7 @@ describe("Kawa", () => {
       screen.queryByRole("button", {name: "Kawa 1"}),
     ).not.toBeInTheDocument();
     expect(localStorage.getItem(storageKey)).toBe("[]");
-    expect(screen.queryByText("Wirklich löschen?")).not.toBeInTheDocument();
+    expect(screen.queryByText("Löschen bestätigen")).not.toBeInTheDocument();
   });
 
   it('aborts deletion when "Nein" is clicked', () => {
@@ -113,6 +113,6 @@ describe("Kawa", () => {
 
     expect(screen.getByRole("button", {name: "Kawa 1"})).toBeInTheDocument();
     expect(localStorage.getItem(storageKey)).toBe(JSON.stringify(testKawas));
-    expect(screen.queryByText("Wirklich löschen?")).not.toBeInTheDocument();
+    expect(screen.queryByText("Löschen bestätigen")).not.toBeInTheDocument();
   });
 });

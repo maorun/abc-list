@@ -1,4 +1,15 @@
 import React, {useState} from "react";
+import {Button} from "./ui/button";
+import {Input} from "./ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
 
 export interface NewItemWithSaveKey {
   key: string;
@@ -12,11 +23,11 @@ interface NewStringItemProps {
 }
 
 export function NewStringItem({title, onSave, onAbort}: NewStringItemProps) {
-  const [isVisible, setIsVisible] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [newItem, setNewItem] = useState("");
 
   const handleAbort = () => {
-    setIsVisible(false);
+    setIsOpen(false);
     setNewItem("");
     if (onAbort) {
       onAbort();
@@ -32,40 +43,35 @@ export function NewStringItem({title, onSave, onAbort}: NewStringItemProps) {
 
   return (
     <div className="my-4 text-center">
-      <button
-        onClick={() => setIsVisible(true)}
-        className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-      >
-        {title}
-      </button>
-      {isVisible && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-lg shadow-xl">
-            <h2 className="text-xl font-bold mb-4">{title}:</h2>
-            <input
-              type="text"
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogTrigger asChild>
+          <Button variant="default" className="bg-green-500 hover:bg-green-700">
+            {title}
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>{title}</DialogTitle>
+            <DialogDescription>
+              Geben Sie einen Namen für das neue Element ein.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <Input
               value={newItem}
               onChange={(e) => setNewItem(e.target.value)}
               placeholder="Enter text..."
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-4"
+              className="col-span-3"
             />
-            <div className="flex justify-end space-x-2">
-              <button
-                onClick={handleSave}
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              >
-                Speichern
-              </button>
-              <button
-                onClick={handleAbort}
-                className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
-              >
-                Abbrechen
-              </button>
-            </div>
           </div>
-        </div>
-      )}
+          <DialogFooter>
+            <Button variant="outline" onClick={handleAbort}>
+              Abbrechen
+            </Button>
+            <Button onClick={handleSave}>Speichern</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
