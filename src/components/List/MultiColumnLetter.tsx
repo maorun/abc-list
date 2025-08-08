@@ -49,17 +49,17 @@ export function MultiColumnLetter({
   }, [getStorageKey]);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let intervalId: NodeJS.Timeout;
 
-    if (startTime && column.timeLimit && timeLeft !== null) {
-      interval = setInterval(() => {
+    if (startTime && column.timeLimit && timeLeft !== null && isModalOpen) {
+      // Use a more efficient timer that only updates when modal is open
+      intervalId = setInterval(() => {
         const elapsed = Math.floor((Date.now() - startTime) / 1000);
         const remaining = column.timeLimit! * 60 - elapsed;
 
         if (remaining <= 0) {
           setTimeLeft(0);
           setIsModalOpen(false);
-          clearInterval(interval);
         } else {
           setTimeLeft(remaining);
         }
@@ -67,11 +67,11 @@ export function MultiColumnLetter({
     }
 
     return () => {
-      if (interval) {
-        clearInterval(interval);
+      if (intervalId) {
+        clearInterval(intervalId);
       }
     };
-  }, [startTime, column.timeLimit, timeLeft]);
+  }, [startTime, column.timeLimit, timeLeft, isModalOpen]);
 
   const updateStorage = useCallback(
     (newWords: WordWithExplanation[]) => {

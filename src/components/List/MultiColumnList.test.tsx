@@ -1,9 +1,9 @@
 import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
-import { vi } from "vitest";
-import { MultiColumnList } from "./MultiColumnList";
-import { MULTI_COLUMN_CACHE_KEY } from "./types";
+import {render, screen, fireEvent} from "@testing-library/react";
+import {MemoryRouter} from "react-router-dom";
+import {vi} from "vitest";
+import {MultiColumnList} from "./MultiColumnList";
+import {MULTI_COLUMN_CACHE_KEY} from "./types";
 
 // Mock localStorage
 const mockLocalStorage = (() => {
@@ -50,12 +50,8 @@ describe("MultiColumnList", () => {
     );
 
     expect(screen.getByText("Mehrspaltige ABC-Listen")).toBeInTheDocument();
-    expect(
-      screen.getByText("Neue Mehrspaltige ABC-Liste"),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText("ℹ️ Mehrspaltiges ABC-System"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Neue Mehrspaltige ABC-Liste")).toBeInTheDocument();
+    expect(screen.getByText("ℹ️ Mehrspaltiges ABC-System")).toBeInTheDocument();
     expect(
       screen.getByText(/Nach Vera F. Birkenbihl können Sie/),
     ).toBeInTheDocument();
@@ -155,9 +151,11 @@ describe("MultiColumnList", () => {
     );
 
     // Initial order should be alphabetical
-    const listItems = screen.getAllByRole("button").filter((button) =>
-      testLists.some((list) => button.textContent?.includes(list)),
-    );
+    const listItems = screen
+      .getAllByRole("button")
+      .filter((button) =>
+        testLists.some((list) => button.textContent?.includes(list)),
+      );
     expect(listItems[0].textContent).toContain("A List");
     expect(listItems[1].textContent).toContain("B List");
     expect(listItems[2].textContent).toContain("C List");
@@ -167,9 +165,11 @@ describe("MultiColumnList", () => {
     fireEvent.click(sortButton);
 
     // Order should now be reversed
-    const reversedListItems = screen.getAllByRole("button").filter((button) =>
-      testLists.some((list) => button.textContent?.includes(list)),
-    );
+    const reversedListItems = screen
+      .getAllByRole("button")
+      .filter((button) =>
+        testLists.some((list) => button.textContent?.includes(list)),
+      );
     expect(reversedListItems[0].textContent).toContain("C List");
     expect(reversedListItems[1].textContent).toContain("B List");
     expect(reversedListItems[2].textContent).toContain("A List");

@@ -1,8 +1,8 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
-import { vi } from "vitest";
-import { ColumnConfigDialog } from "./ColumnConfigDialog";
-import { ColumnConfig } from "./types";
+import {render, screen, fireEvent} from "@testing-library/react";
+import {vi} from "vitest";
+import {ColumnConfigDialog} from "./ColumnConfigDialog";
+import {ColumnConfig} from "./types";
 
 describe("ColumnConfigDialog", () => {
   const mockColumns: ColumnConfig[] = [
@@ -55,12 +55,8 @@ describe("ColumnConfigDialog", () => {
       />,
     );
 
-    expect(
-      screen.getByDisplayValue("Allgemeines Thema 1"),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByDisplayValue("Allgemeines Thema 2"),
-    ).toBeInTheDocument();
+    expect(screen.getByDisplayValue("Allgemeines Thema 1")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("Allgemeines Thema 2")).toBeInTheDocument();
     expect(screen.getByDisplayValue("5")).toBeInTheDocument();
   });
 
@@ -82,7 +78,7 @@ describe("ColumnConfigDialog", () => {
   });
 
   it("prevents adding more than 5 columns", () => {
-    const maxColumns: ColumnConfig[] = Array.from({ length: 5 }, (_, i) => ({
+    const maxColumns: ColumnConfig[] = Array.from({length: 5}, (_, i) => ({
       id: `column-${i}`,
       theme: `Thema ${i + 1}`,
       color: "#3B82F6",
@@ -146,7 +142,7 @@ describe("ColumnConfigDialog", () => {
     );
 
     const themeInput = screen.getByDisplayValue("Allgemeines Thema 1");
-    fireEvent.change(themeInput, { target: { value: "Neues Thema" } });
+    fireEvent.change(themeInput, {target: {value: "Neues Thema"}});
 
     expect(screen.getByDisplayValue("Neues Thema")).toBeInTheDocument();
   });
@@ -162,7 +158,7 @@ describe("ColumnConfigDialog", () => {
     );
 
     const timeLimitInputs = screen.getAllByPlaceholderText("Optional");
-    fireEvent.change(timeLimitInputs[0], { target: { value: "10" } });
+    fireEvent.change(timeLimitInputs[0], {target: {value: "10"}});
 
     expect(screen.getByDisplayValue("10")).toBeInTheDocument();
   });
@@ -178,9 +174,9 @@ describe("ColumnConfigDialog", () => {
     );
 
     // Color buttons should be present
-    const colorButtons = screen.getAllByRole("button").filter((button) =>
-      button.style.backgroundColor,
-    );
+    const colorButtons = screen
+      .getAllByRole("button")
+      .filter((button) => button.style.backgroundColor);
     expect(colorButtons.length).toBeGreaterThan(0);
   });
 
@@ -219,7 +215,7 @@ describe("ColumnConfigDialog", () => {
 
     // Clear a theme to trigger validation error
     const themeInput = screen.getByDisplayValue("Allgemeines Thema 1");
-    fireEvent.change(themeInput, { target: { value: "" } });
+    fireEvent.change(themeInput, {target: {value: ""}});
 
     const saveButton = screen.getByText("Speichern");
     fireEvent.click(saveButton);

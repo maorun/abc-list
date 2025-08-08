@@ -101,11 +101,8 @@ export function PredictionDialog({
 
       let correctPredictions = 0;
       predictedWords.forEach((pred) => {
-        if (
-          actualTexts.some(
-            (actual) => actual.includes(pred) || pred.includes(actual),
-          )
-        ) {
+        // Use exact matching instead of inclusion to prevent false positives
+        if (actualTexts.includes(pred)) {
           correctPredictions++;
         }
       });

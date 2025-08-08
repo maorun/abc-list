@@ -1,8 +1,8 @@
 import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { vi } from "vitest";
-import { MultiColumnLetter } from "./MultiColumnLetter";
-import { ColumnConfig, getMultiColumnStorageKey } from "./types";
+import {render, screen, fireEvent} from "@testing-library/react";
+import {vi} from "vitest";
+import {MultiColumnLetter} from "./MultiColumnLetter";
+import {ColumnConfig, getMultiColumnStorageKey} from "./types";
 
 // Mock localStorage
 const mockLocalStorage = (() => {
@@ -62,7 +62,7 @@ describe("MultiColumnLetter", () => {
       />,
     );
 
-    const letterButton = screen.getByRole("button", { name: /A/ });
+    const letterButton = screen.getByRole("button", {name: /A/});
     expect(letterButton).toBeInTheDocument();
     expect(letterButton).toHaveTextContent("A");
   });
@@ -76,15 +76,19 @@ describe("MultiColumnLetter", () => {
       />,
     );
 
-    const letterButton = screen.getByRole("button", { name: /A/ });
+    const letterButton = screen.getByRole("button", {name: /A/});
     expect(letterButton).toHaveStyle(`border-color: ${mockColumn.color}`);
   });
 
   it("displays word count when words exist", () => {
-    const storageKey = getMultiColumnStorageKey(listName, mockColumn.id, letter);
+    const storageKey = getMultiColumnStorageKey(
+      listName,
+      mockColumn.id,
+      letter,
+    );
     const mockWords = [
-      { text: "Apple", explanation: "", version: 1, imported: false },
-      { text: "Ant", explanation: "", version: 1, imported: false },
+      {text: "Apple", explanation: "", version: 1, imported: false},
+      {text: "Ant", explanation: "", version: 1, imported: false},
     ];
     mockLocalStorage.setItem(storageKey, JSON.stringify(mockWords));
 
@@ -108,7 +112,7 @@ describe("MultiColumnLetter", () => {
       />,
     );
 
-    const letterButton = screen.getByRole("button", { name: /A/ });
+    const letterButton = screen.getByRole("button", {name: /A/});
     fireEvent.click(letterButton);
 
     expect(
@@ -125,7 +129,7 @@ describe("MultiColumnLetter", () => {
       />,
     );
 
-    const letterButton = screen.getByRole("button", { name: /A/ });
+    const letterButton = screen.getByRole("button", {name: /A/});
     fireEvent.click(letterButton);
 
     expect(screen.getByText("⏱️ 1:00")).toBeInTheDocument();
@@ -140,11 +144,11 @@ describe("MultiColumnLetter", () => {
       />,
     );
 
-    const letterButton = screen.getByRole("button", { name: /A/ });
+    const letterButton = screen.getByRole("button", {name: /A/});
     fireEvent.click(letterButton);
 
     const input = screen.getByPlaceholderText("Wort eingeben...");
-    fireEvent.change(input, { target: { value: "Apple" } });
+    fireEvent.change(input, {target: {value: "Apple"}});
 
     const saveButton = screen.getByText("Speichern");
     fireEvent.click(saveButton);
@@ -161,9 +165,13 @@ describe("MultiColumnLetter", () => {
   });
 
   it("prevents adding duplicate words", () => {
-    const storageKey = getMultiColumnStorageKey(listName, mockColumn.id, letter);
+    const storageKey = getMultiColumnStorageKey(
+      listName,
+      mockColumn.id,
+      letter,
+    );
     const existingWords = [
-      { text: "Apple", explanation: "", version: 1, imported: false },
+      {text: "Apple", explanation: "", version: 1, imported: false},
     ];
     mockLocalStorage.setItem(storageKey, JSON.stringify(existingWords));
 
@@ -175,13 +183,13 @@ describe("MultiColumnLetter", () => {
       />,
     );
 
-    const letterButton = screen.getByRole("button", { 
-      name: `Wort für Buchstabe ${letter.toUpperCase()} in Spalte ${mockColumn.theme} hinzufügen` 
+    const letterButton = screen.getByRole("button", {
+      name: `Wort für Buchstabe ${letter.toUpperCase()} in Spalte ${mockColumn.theme} hinzufügen`,
     });
     fireEvent.click(letterButton);
 
     const input = screen.getByPlaceholderText("Wort eingeben...");
-    fireEvent.change(input, { target: { value: "Apple" } });
+    fireEvent.change(input, {target: {value: "Apple"}});
 
     const saveButton = screen.getByText("Speichern");
     fireEvent.click(saveButton);
@@ -200,12 +208,12 @@ describe("MultiColumnLetter", () => {
       />,
     );
 
-    const letterButton = screen.getByRole("button", { name: /A/ });
+    const letterButton = screen.getByRole("button", {name: /A/});
     fireEvent.click(letterButton);
 
     const input = screen.getByPlaceholderText("Wort eingeben...");
-    fireEvent.change(input, { target: { value: "Apple" } });
-    fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
+    fireEvent.change(input, {target: {value: "Apple"}});
+    fireEvent.keyDown(input, {key: "Enter", code: "Enter"});
 
     // Check if word was saved
     const storageKey = getMultiColumnStorageKey(
@@ -219,8 +227,12 @@ describe("MultiColumnLetter", () => {
   });
 
   it("displays saved words with truncation for many words", () => {
-    const storageKey = getMultiColumnStorageKey(listName, mockColumn.id, letter);
-    const manyWords = Array.from({ length: 5 }, (_, i) => ({
+    const storageKey = getMultiColumnStorageKey(
+      listName,
+      mockColumn.id,
+      letter,
+    );
+    const manyWords = Array.from({length: 5}, (_, i) => ({
       text: `Word${i + 1}`,
       explanation: "",
       version: 1,
@@ -254,7 +266,7 @@ describe("MultiColumnLetter", () => {
       />,
     );
 
-    const letterButton = screen.getByRole("button", { name: /A/ });
+    const letterButton = screen.getByRole("button", {name: /A/});
     fireEvent.click(letterButton);
 
     const cancelButton = screen.getByText("Abbrechen");
