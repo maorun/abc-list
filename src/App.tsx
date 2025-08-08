@@ -90,7 +90,7 @@ function Navigation() {
                 </SheetTrigger>
                 <SheetContent
                   side="right"
-                  className="w-64 bg-blue-800 border-blue-700"
+                  className="w-3/5 max-w-xs bg-blue-800 border-blue-700"
                 >
                   <SheetHeader>
                     <SheetTitle className="text-white text-left">
