@@ -113,7 +113,7 @@ describe("Letter", () => {
 
     // Find the button associated with the word 'Apple' to delete it.
     // The SavedWord component renders the text as a button.
-    const appleWordButton = screen.getByRole("button", {name: "Apple"});
+    const appleWordButton = screen.getByRole("button", {name: "Apple 📊"});
     fireEvent.click(appleWordButton); // This opens the delete confirmation
 
     const confirmDeleteButton = screen.getByRole("button", {name: "Ja"});
