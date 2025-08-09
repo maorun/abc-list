@@ -29,11 +29,28 @@ export function ListItem() {
     }
   }, [item]);
 
-  const cacheKey = useMemo(() => `abcList-${item}`, [item]);
+  // More stable cacheKey that doesn't recreate on every render
+  const cacheKey = useMemo(() => {
+    if (!item) return null;
+    return `abcList-${item}`;
+  }, [item]);
 
   const alphabet = Array.from({length: 26}, (_, i) =>
     String.fromCharCode(97 + i),
   );
+
+  // Don't render Letter components until we have a valid item
+  if (!item || !cacheKey) {
+    return (
+      <div className="p-4">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="text-lg font-medium text-gray-600">Lade ABC-Liste...</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const getWordsData = (): Record<string, WordWithExplanation[]> => {
     const words: Record<string, WordWithExplanation[]> = {};
