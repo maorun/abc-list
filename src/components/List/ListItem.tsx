@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useMemo, useCallback} from "react";
 import {useParams} from "react-router-dom";
 import {toast} from "sonner";
 import {usePrompt} from "@/components/ui/prompt-dialog";
@@ -16,6 +16,7 @@ import {
 
 export function ListItem() {
   const {item} = useParams<{item: string}>();
+  const [isReady, setIsReady] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
   const [importData, setImportData] = useState("");
@@ -26,22 +27,39 @@ export function ListItem() {
   useEffect(() => {
     if (item) {
       document.title = `ABC-Liste für ${item}`;
+      // Defer rendering of Letter components to next tick to avoid router timing issues
+      const timer = setTimeout(() => setIsReady(true), 0);
+      return () => clearTimeout(timer);
     }
   }, [item]);
 
-  const getCacheKey = (): string => {
-    return "abcList-" + item;
-  };
+  // Stable cacheKey that only exists when we have a valid item
+  const cacheKey = useMemo(() => {
+    return item ? `abcList-${item}` : null;
+  }, [item]);
 
-  const alphabet = Array.from({length: 26}, (_, i) =>
-    String.fromCharCode(97 + i),
-  );
+  const alphabet = useMemo(() => 
+    Array.from({length: 26}, (_, i) => String.fromCharCode(97 + i))
+  , []);
+
+  // Don't render Letter components until we have a valid item and are ready
+  if (!item || !cacheKey || !isReady) {
+    return (
+      <div className="p-4">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="text-lg font-medium text-gray-600">Lade ABC-Liste...</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const getWordsData = (): Record<string, WordWithExplanation[]> => {
     const words: Record<string, WordWithExplanation[]> = {};
 
     alphabet.forEach((letter) => {
-      const storageKey = `${getCacheKey()}:${letter}`;
+      const storageKey = `${cacheKey}:${letter}`;
       const storedData = localStorage.getItem(storageKey);
       if (storedData) {
         const parsed = JSON.parse(storedData);
@@ -165,7 +183,7 @@ export function ListItem() {
     const newTerms: Array<{letter: string; word: WordWithExplanation}> = [];
 
     alphabet.forEach((letter) => {
-      const existingStorageKey = `${getCacheKey()}:${letter}`;
+      const existingStorageKey = `${cacheKey}:${letter}`;
       const existingData = localStorage.getItem(existingStorageKey);
       const existingWords = existingData ? JSON.parse(existingData) : [];
       const existingTexts = existingWords.map(
@@ -228,7 +246,7 @@ export function ListItem() {
     }
 
     // Save the term with explanation
-    const storageKey = `${getCacheKey()}:${currentTerm.letter}`;
+    const storageKey = `${cacheKey}:${currentTerm.letter}`;
     const existingData = localStorage.getItem(storageKey);
     const existingWords = existingData ? JSON.parse(existingData) : [];
 
@@ -324,9 +342,9 @@ export function ListItem() {
       </div>
 
       <div className="flex flex-row flex-wrap justify-around gap-4">
-        {alphabet.map((char) => (
+        {cacheKey && alphabet.map((char) => (
           <div key={char} className="m-2">
-            <Letter letter={char} cacheKey={getCacheKey()} />
+            <Letter letter={char} cacheKey={cacheKey} />
           </div>
         ))}
       </div>

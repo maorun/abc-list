@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useCallback, useMemo} from "react";
 import {
   Dialog,
   DialogContent,
@@ -84,43 +84,46 @@ export function usePrompt() {
     description?: string;
     placeholder?: string;
     defaultValue?: string;
-    resolve: ((value: string | null) => void) | null;
   }>({
     title: "",
-    resolve: null,
   });
+  
+  // Use useRef to store the resolve function to avoid dependency issues
+  const resolveRef = React.useRef<((value: string | null) => void) | null>(null);
 
-  const prompt = (
+  const prompt = useCallback((
     title: string,
     description?: string,
     placeholder?: string,
     defaultValue?: string,
   ): Promise<string | null> => {
     return new Promise((resolve) => {
+      resolveRef.current = resolve;
       setConfig({
         title,
         description,
         placeholder,
         defaultValue,
-        resolve,
       });
       setIsOpen(true);
     });
-  };
+  }, []);
 
-  const handleConfirm = (value: string) => {
-    config.resolve?.(value);
+  const handleConfirm = useCallback((value: string) => {
+    resolveRef.current?.(value);
+    resolveRef.current = null;
     setIsOpen(false);
-    setConfig({title: "", resolve: null});
-  };
+    setConfig({title: ""});
+  }, []); // No dependencies - stable callback
 
-  const handleCancel = () => {
-    config.resolve?.(null);
+  const handleCancel = useCallback(() => {
+    resolveRef.current?.(null);
+    resolveRef.current = null;
     setIsOpen(false);
-    setConfig({title: "", resolve: null});
-  };
+    setConfig({title: ""});
+  }, []); // No dependencies - stable callback
 
-  const PromptComponent = () => (
+  const PromptComponent = useMemo(() => () => (
     <PromptDialog
       isOpen={isOpen}
       title={config.title}
@@ -130,7 +133,7 @@ export function usePrompt() {
       onConfirm={handleConfirm}
       onCancel={handleCancel}
     />
-  );
+  ), [isOpen, config.title, config.description, config.placeholder, config.defaultValue, handleConfirm, handleCancel]);
 
   return {prompt, PromptComponent};
 }
