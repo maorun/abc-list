@@ -183,6 +183,6 @@ export const Letter = React.memo(function Letter({cacheKey, letter}: LetterProps
     </div>
   );
 }, (prevProps, nextProps) => {
-  // Custom comparison function to prevent unnecessary re-renders
+  // Custom comparison function to prevent unnecessary re-renders  
   return prevProps.cacheKey === nextProps.cacheKey && prevProps.letter === nextProps.letter;
 });

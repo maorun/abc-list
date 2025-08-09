@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useCallback, useMemo} from "react";
 import {
   Dialog,
   DialogContent,
@@ -90,7 +90,7 @@ export function usePrompt() {
     resolve: null,
   });
 
-  const prompt = (
+  const prompt = useCallback((
     title: string,
     description?: string,
     placeholder?: string,
@@ -106,21 +106,21 @@ export function usePrompt() {
       });
       setIsOpen(true);
     });
-  };
+  }, []);
 
-  const handleConfirm = (value: string) => {
+  const handleConfirm = useCallback((value: string) => {
     config.resolve?.(value);
     setIsOpen(false);
     setConfig({title: "", resolve: null});
-  };
+  }, [config.resolve]);
 
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     config.resolve?.(null);
     setIsOpen(false);
     setConfig({title: "", resolve: null});
-  };
+  }, [config.resolve]);
 
-  const PromptComponent = () => (
+  const PromptComponent = useMemo(() => () => (
     <PromptDialog
       isOpen={isOpen}
       title={config.title}
@@ -130,7 +130,7 @@ export function usePrompt() {
       onConfirm={handleConfirm}
       onCancel={handleCancel}
     />
-  );
+  ), [isOpen, config.title, config.description, config.placeholder, config.defaultValue, handleConfirm, handleCancel]);
 
   return {prompt, PromptComponent};
 }

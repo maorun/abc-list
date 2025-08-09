@@ -33,10 +33,9 @@ export function ListItem() {
     }
   }, [item]);
 
-  // More stable cacheKey that doesn't recreate on every render
+  // Stable cacheKey that only exists when we have a valid item
   const cacheKey = useMemo(() => {
-    if (!item) return null;
-    return `abcList-${item}`;
+    return item ? `abcList-${item}` : null;
   }, [item]);
 
   const alphabet = useMemo(() => 
@@ -343,9 +342,9 @@ export function ListItem() {
       </div>
 
       <div className="flex flex-row flex-wrap justify-around gap-4">
-        {alphabet.map((char) => (
+        {cacheKey && alphabet.map((char) => (
           <div key={char} className="m-2">
-            <Letter letter={char} cacheKey={cacheKey as string} />
+            <Letter letter={char} cacheKey={cacheKey} />
           </div>
         ))}
       </div>
