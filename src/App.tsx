@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useCallback} from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -31,39 +31,48 @@ import {Analytics} from "./components/Analytics/Analytics";
 import {SokratesCheck} from "./components/SokratesCheck/SokratesCheck";
 import {Basar} from "./components/Basar/Basar";
 
+// Move navigationItems outside component to prevent recreation on every render
+const navigationItems = [
+  {to: "/", label: "Listen"},
+  {to: "/link", label: "Verknüpfen"},
+  {to: "/kawa", label: "Kawas"},
+  {to: "/kaga", label: "KaGa"},
+  {to: "/slf", label: "Stadt-Land-Fluss"},
+  {to: "/basar", label: "Basar"},
+  {to: "/sokrates", label: "Sokrates-Check"},
+  {to: "/analytics", label: "Analytics"},
+] as const;
+
+// Move NavButton outside and memoize to prevent recreation on every render
+interface NavButtonProps {
+  to: string;
+  children: React.ReactNode;
+  onClick?: () => void;
+  isActive: boolean;
+}
+
+const NavButton = React.memo(({
+  to,
+  children,
+  onClick,
+  isActive,
+}: NavButtonProps) => (
+  <NavLink to={to} onClick={onClick}>
+    <Button
+      variant={isActive ? "secondary" : "ghost"}
+      className="w-full justify-start text-white hover:text-slate-900 sm:w-auto sm:justify-center"
+    >
+      {children}
+    </Button>
+  </NavLink>
+));
+
 function Navigation() {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
 
-  const navigationItems = [
-    {to: "/", label: "Listen"},
-    {to: "/link", label: "Verknüpfen"},
-    {to: "/kawa", label: "Kawas"},
-    {to: "/kaga", label: "KaGa"},
-    {to: "/slf", label: "Stadt-Land-Fluss"},
-    {to: "/basar", label: "Basar"},
-    {to: "/sokrates", label: "Sokrates-Check"},
-    {to: "/analytics", label: "Analytics"},
-  ];
-
-  const NavButton = ({
-    to,
-    children,
-    onClick,
-  }: {
-    to: string;
-    children: React.ReactNode;
-    onClick?: () => void;
-  }) => (
-    <NavLink to={to} onClick={onClick}>
-      <Button
-        variant={location.pathname === to ? "secondary" : "ghost"}
-        className="w-full justify-start text-white hover:text-slate-900 sm:w-auto sm:justify-center"
-      >
-        {children}
-      </Button>
-    </NavLink>
-  );
+  // Stable callback to prevent recreating onClick handlers
+  const closeNavigation = useCallback(() => setIsOpen(false), []);
 
   return (
     <nav className="bg-blue-800">
@@ -102,7 +111,8 @@ function Navigation() {
                       <NavButton
                         key={item.to}
                         to={item.to}
-                        onClick={() => setIsOpen(false)}
+                        isActive={location.pathname === item.to}
+                        onClick={closeNavigation}
                       >
                         {item.label}
                       </NavButton>
@@ -117,7 +127,11 @@ function Navigation() {
           <div className="hidden sm:ml-6 sm:flex sm:items-center">
             <div className="flex space-x-2">
               {navigationItems.map((item) => (
-                <NavButton key={item.to} to={item.to}>
+                <NavButton 
+                  key={item.to} 
+                  to={item.to}
+                  isActive={location.pathname === item.to}
+                >
                   {item.label}
                 </NavButton>
               ))}
