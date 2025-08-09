@@ -345,7 +345,7 @@ export function ListItem() {
       <div className="flex flex-row flex-wrap justify-around gap-4">
         {alphabet.map((char) => (
           <div key={char} className="m-2">
-            <Letter letter={char} cacheKey={cacheKey} />
+            <Letter letter={char} cacheKey={cacheKey as string} />
           </div>
         ))}
       </div>

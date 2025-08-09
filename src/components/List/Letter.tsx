@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback} from "react";
+import React, {useState, useEffect, useMemo} from "react";
 import {SavedWord, WordWithExplanation} from "./SavedWord";
 import {
   Dialog,
@@ -16,54 +16,51 @@ interface LetterProps {
   letter: string;
 }
 
+// Custom memo with detailed comparison to prevent unnecessary re-renders
 export const Letter = React.memo(function Letter({cacheKey, letter}: LetterProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [words, setWords] = useState<WordWithExplanation[]>([]);
   const [newWord, setNewWord] = useState("");
-  const [needsMigration, setNeedsMigration] = useState(false);
 
-  const getStorageKey = useCallback(() => {
+  // Use useMemo for storage key to prevent recreation on every render
+  const storageKey = useMemo(() => {
     return `${cacheKey}:${letter}`;
   }, [cacheKey, letter]);
 
+  // Load data only once when storage key changes
   useEffect(() => {
-    const storedData = localStorage.getItem(getStorageKey());
+    const storedData = localStorage.getItem(storageKey);
     if (storedData) {
-      const parsed = JSON.parse(storedData);
-      // Handle both old string[] format and new WordWithExplanation[] format
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        if (parsed.every((item) => typeof item === "string")) {
-          // Convert old format to new format in memory only
-          const converted = parsed.map((word: string) => ({
-            text: word,
-            explanation: "",
-            version: 1,
-            imported: false,
-          }));
-          setWords(converted);
-          setNeedsMigration(true); // Flag for separate migration effect
+      try {
+        const parsed = JSON.parse(storedData);
+        // Handle both old string[] format and new WordWithExplanation[] format
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          if (parsed.every((item) => typeof item === "string")) {
+            // Convert old format to new format and migrate immediately
+            const converted = parsed.map((word: string) => ({
+              text: word,
+              explanation: "",
+              version: 1,
+              imported: false,
+            }));
+            setWords(converted);
+            // Migrate to new format immediately to avoid future conversions
+            localStorage.setItem(storageKey, JSON.stringify(converted));
+          } else {
+            setWords(parsed);
+          }
         } else {
-          setWords(parsed);
+          setWords([]);
         }
+      } catch (error) {
+        // Handle JSON parse errors gracefully
+        console.warn(`Failed to parse stored data for ${storageKey}:`, error);
+        setWords([]);
       }
+    } else {
+      setWords([]);
     }
-  }, [getStorageKey]);
-
-  // Separate effect for migrating data to avoid rerender loops
-  useEffect(() => {
-    if (needsMigration && words.length > 0) {
-      // Only migrate once when flag is set and we have converted data
-      localStorage.setItem(getStorageKey(), JSON.stringify(words));
-      setNeedsMigration(false);
-    }
-  }, [needsMigration, words, getStorageKey]);
-
-  const updateStorage = useCallback(
-    (newWords: WordWithExplanation[]) => {
-      localStorage.setItem(getStorageKey(), JSON.stringify(newWords));
-    },
-    [getStorageKey],
-  );
+  }, [storageKey]); // Only depend on storageKey, which is stable
 
   const handleAddWord = () => {
     if (newWord && !words.some((w) => w.text === newWord)) {
@@ -75,7 +72,7 @@ export const Letter = React.memo(function Letter({cacheKey, letter}: LetterProps
       };
       const newWords = [...words, newWordObj];
       setWords(newWords);
-      updateStorage(newWords);
+      localStorage.setItem(storageKey, JSON.stringify(newWords));
       setNewWord("");
       setIsModalOpen(false);
     }
@@ -91,7 +88,7 @@ export const Letter = React.memo(function Letter({cacheKey, letter}: LetterProps
   const handleDeleteWord = (wordToDelete: string) => {
     const newWords = words.filter((word) => word.text !== wordToDelete);
     setWords(newWords);
-    updateStorage(newWords);
+    localStorage.setItem(storageKey, JSON.stringify(newWords));
   };
 
   const handleExplanationChange = (wordText: string, explanation: string) => {
@@ -101,7 +98,7 @@ export const Letter = React.memo(function Letter({cacheKey, letter}: LetterProps
         : word,
     );
     setWords(newWords);
-    updateStorage(newWords);
+    localStorage.setItem(storageKey, JSON.stringify(newWords));
   };
 
   const handleRatingChange = (wordText: string, rating: number) => {
@@ -111,7 +108,7 @@ export const Letter = React.memo(function Letter({cacheKey, letter}: LetterProps
         : word,
     );
     setWords(newWords);
-    updateStorage(newWords);
+    localStorage.setItem(storageKey, JSON.stringify(newWords));
   };
 
   return (
@@ -185,4 +182,7 @@ export const Letter = React.memo(function Letter({cacheKey, letter}: LetterProps
       </Dialog>
     </div>
   );
+}, (prevProps, nextProps) => {
+  // Custom comparison function to prevent unnecessary re-renders
+  return prevProps.cacheKey === nextProps.cacheKey && prevProps.letter === nextProps.letter;
 });
