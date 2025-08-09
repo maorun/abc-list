@@ -84,11 +84,12 @@ export function usePrompt() {
     description?: string;
     placeholder?: string;
     defaultValue?: string;
-    resolve: ((value: string | null) => void) | null;
   }>({
     title: "",
-    resolve: null,
   });
+  
+  // Use useRef to store the resolve function to avoid dependency issues
+  const resolveRef = React.useRef<((value: string | null) => void) | null>(null);
 
   const prompt = useCallback((
     title: string,
@@ -97,28 +98,30 @@ export function usePrompt() {
     defaultValue?: string,
   ): Promise<string | null> => {
     return new Promise((resolve) => {
+      resolveRef.current = resolve;
       setConfig({
         title,
         description,
         placeholder,
         defaultValue,
-        resolve,
       });
       setIsOpen(true);
     });
   }, []);
 
   const handleConfirm = useCallback((value: string) => {
-    config.resolve?.(value);
+    resolveRef.current?.(value);
+    resolveRef.current = null;
     setIsOpen(false);
-    setConfig({title: "", resolve: null});
-  }, [config.resolve]);
+    setConfig({title: ""});
+  }, []); // No dependencies - stable callback
 
   const handleCancel = useCallback(() => {
-    config.resolve?.(null);
+    resolveRef.current?.(null);
+    resolveRef.current = null;
     setIsOpen(false);
-    setConfig({title: "", resolve: null});
-  }, [config.resolve]);
+    setConfig({title: ""});
+  }, []); // No dependencies - stable callback
 
   const PromptComponent = useMemo(() => () => (
     <PromptDialog
