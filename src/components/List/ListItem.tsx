@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useMemo} from "react";
 import {useParams} from "react-router-dom";
 import {toast} from "sonner";
 import {usePrompt} from "@/components/ui/prompt-dialog";
@@ -29,9 +29,7 @@ export function ListItem() {
     }
   }, [item]);
 
-  const getCacheKey = (): string => {
-    return "abcList-" + item;
-  };
+  const cacheKey = useMemo(() => `abcList-${item}`, [item]);
 
   const alphabet = Array.from({length: 26}, (_, i) =>
     String.fromCharCode(97 + i),
@@ -41,7 +39,7 @@ export function ListItem() {
     const words: Record<string, WordWithExplanation[]> = {};
 
     alphabet.forEach((letter) => {
-      const storageKey = `${getCacheKey()}:${letter}`;
+      const storageKey = `${cacheKey}:${letter}`;
       const storedData = localStorage.getItem(storageKey);
       if (storedData) {
         const parsed = JSON.parse(storedData);
@@ -165,7 +163,7 @@ export function ListItem() {
     const newTerms: Array<{letter: string; word: WordWithExplanation}> = [];
 
     alphabet.forEach((letter) => {
-      const existingStorageKey = `${getCacheKey()}:${letter}`;
+      const existingStorageKey = `${cacheKey}:${letter}`;
       const existingData = localStorage.getItem(existingStorageKey);
       const existingWords = existingData ? JSON.parse(existingData) : [];
       const existingTexts = existingWords.map(
@@ -228,7 +226,7 @@ export function ListItem() {
     }
 
     // Save the term with explanation
-    const storageKey = `${getCacheKey()}:${currentTerm.letter}`;
+    const storageKey = `${cacheKey}:${currentTerm.letter}`;
     const existingData = localStorage.getItem(storageKey);
     const existingWords = existingData ? JSON.parse(existingData) : [];
 
@@ -326,7 +324,7 @@ export function ListItem() {
       <div className="flex flex-row flex-wrap justify-around gap-4">
         {alphabet.map((char) => (
           <div key={char} className="m-2">
-            <Letter letter={char} cacheKey={getCacheKey()} />
+            <Letter letter={char} cacheKey={cacheKey} />
           </div>
         ))}
       </div>
