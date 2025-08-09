@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useMemo} from "react";
+import React, {useEffect, useState, useMemo, useCallback} from "react";
 import {useParams} from "react-router-dom";
 import {toast} from "sonner";
 import {usePrompt} from "@/components/ui/prompt-dialog";
@@ -16,6 +16,7 @@ import {
 
 export function ListItem() {
   const {item} = useParams<{item: string}>();
+  const [isReady, setIsReady] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
   const [importData, setImportData] = useState("");
@@ -26,6 +27,9 @@ export function ListItem() {
   useEffect(() => {
     if (item) {
       document.title = `ABC-Liste für ${item}`;
+      // Defer rendering of Letter components to next tick to avoid router timing issues
+      const timer = setTimeout(() => setIsReady(true), 0);
+      return () => clearTimeout(timer);
     }
   }, [item]);
 
@@ -35,12 +39,12 @@ export function ListItem() {
     return `abcList-${item}`;
   }, [item]);
 
-  const alphabet = Array.from({length: 26}, (_, i) =>
-    String.fromCharCode(97 + i),
-  );
+  const alphabet = useMemo(() => 
+    Array.from({length: 26}, (_, i) => String.fromCharCode(97 + i))
+  , []);
 
-  // Don't render Letter components until we have a valid item
-  if (!item || !cacheKey) {
+  // Don't render Letter components until we have a valid item and are ready
+  if (!item || !cacheKey || !isReady) {
     return (
       <div className="p-4">
         <div className="flex items-center justify-center h-64">

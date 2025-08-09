@@ -16,16 +16,15 @@ interface LetterProps {
   letter: string;
 }
 
-export function Letter({cacheKey, letter}: LetterProps) {
+export const Letter = React.memo(function Letter({cacheKey, letter}: LetterProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [words, setWords] = useState<WordWithExplanation[]>([]);
   const [newWord, setNewWord] = useState("");
   const [needsMigration, setNeedsMigration] = useState(false);
 
-  const getStorageKey = useCallback(
-    () => `${cacheKey}:${letter}`,
-    [cacheKey, letter],
-  );
+  const getStorageKey = useCallback(() => {
+    return `${cacheKey}:${letter}`;
+  }, [cacheKey, letter]);
 
   useEffect(() => {
     const storedData = localStorage.getItem(getStorageKey());
@@ -186,4 +185,4 @@ export function Letter({cacheKey, letter}: LetterProps) {
       </Dialog>
     </div>
   );
-}
+});
