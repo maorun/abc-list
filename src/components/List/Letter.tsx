@@ -16,6 +16,96 @@ interface LetterProps {
   letter: string;
 }
 
+// Extracted function handlers to prevent recreation on every render
+const handleAddWordAction = (
+  newWord: string,
+  words: WordWithExplanation[],
+  storageKey: string,
+  setWords: (words: WordWithExplanation[]) => void,
+  setNewWord: (word: string) => void,
+  setIsModalOpen: (open: boolean) => void,
+) => {
+  if (newWord && !words.some((w) => w.text === newWord)) {
+    const newWordObj: WordWithExplanation = {
+      text: newWord,
+      explanation: "",
+      version: 1,
+      imported: false,
+    };
+    const newWords = [...words, newWordObj];
+    setWords(newWords);
+    localStorage.setItem(storageKey, JSON.stringify(newWords));
+    setNewWord("");
+    setIsModalOpen(false);
+  }
+};
+
+const handleKeyDownAction = (
+  e: React.KeyboardEvent,
+  newWord: string,
+  words: WordWithExplanation[],
+  storageKey: string,
+  setWords: (words: WordWithExplanation[]) => void,
+  setNewWord: (word: string) => void,
+  setIsModalOpen: (open: boolean) => void,
+) => {
+  if (e.key === "Enter" && newWord.trim()) {
+    e.preventDefault();
+    handleAddWordAction(newWord, words, storageKey, setWords, setNewWord, setIsModalOpen);
+  }
+};
+
+const handleDeleteWordAction = (
+  wordToDelete: string,
+  words: WordWithExplanation[],
+  storageKey: string,
+  setWords: (words: WordWithExplanation[]) => void,
+) => {
+  const newWords = words.filter((word) => word.text !== wordToDelete);
+  setWords(newWords);
+  localStorage.setItem(storageKey, JSON.stringify(newWords));
+};
+
+const handleExplanationChangeAction = (
+  wordText: string,
+  explanation: string,
+  words: WordWithExplanation[],
+  storageKey: string,
+  setWords: (words: WordWithExplanation[]) => void,
+) => {
+  const newWords = words.map((word) =>
+    word.text === wordText
+      ? {...word, explanation, version: (word.version || 1) + 1}
+      : word,
+  );
+  setWords(newWords);
+  localStorage.setItem(storageKey, JSON.stringify(newWords));
+};
+
+const handleRatingChangeAction = (
+  wordText: string,
+  rating: number,
+  words: WordWithExplanation[],
+  storageKey: string,
+  setWords: (words: WordWithExplanation[]) => void,
+) => {
+  const newWords = words.map((word) =>
+    word.text === wordText
+      ? {...word, rating, lastReviewed: new Date().toISOString()}
+      : word,
+  );
+  setWords(newWords);
+  localStorage.setItem(storageKey, JSON.stringify(newWords));
+};
+
+const setModalOpenAction = (setIsModalOpen: (open: boolean) => void) => () => {
+  setIsModalOpen(true);
+};
+
+const setModalCloseAction = (setIsModalOpen: (open: boolean) => void) => () => {
+  setIsModalOpen(false);
+};
+
 // Custom memo with detailed comparison to prevent unnecessary re-renders
 export const Letter = React.memo(
   function Letter({cacheKey, letter}: LetterProps) {
@@ -63,54 +153,19 @@ export const Letter = React.memo(
       }
     }, [storageKey]); // Only depend on storageKey, which is stable
 
-    const handleAddWord = () => {
-      if (newWord && !words.some((w) => w.text === newWord)) {
-        const newWordObj: WordWithExplanation = {
-          text: newWord,
-          explanation: "",
-          version: 1,
-          imported: false,
-        };
-        const newWords = [...words, newWordObj];
-        setWords(newWords);
-        localStorage.setItem(storageKey, JSON.stringify(newWords));
-        setNewWord("");
-        setIsModalOpen(false);
-      }
-    };
-
-    const handleKeyDown = (e: React.KeyboardEvent) => {
-      if (e.key === "Enter" && newWord.trim()) {
-        e.preventDefault();
-        handleAddWord();
-      }
-    };
-
-    const handleDeleteWord = (wordToDelete: string) => {
-      const newWords = words.filter((word) => word.text !== wordToDelete);
-      setWords(newWords);
-      localStorage.setItem(storageKey, JSON.stringify(newWords));
-    };
-
-    const handleExplanationChange = (wordText: string, explanation: string) => {
-      const newWords = words.map((word) =>
-        word.text === wordText
-          ? {...word, explanation, version: (word.version || 1) + 1}
-          : word,
-      );
-      setWords(newWords);
-      localStorage.setItem(storageKey, JSON.stringify(newWords));
-    };
-
-    const handleRatingChange = (wordText: string, rating: number) => {
-      const newWords = words.map((word) =>
-        word.text === wordText
-          ? {...word, rating, lastReviewed: new Date().toISOString()}
-          : word,
-      );
-      setWords(newWords);
-      localStorage.setItem(storageKey, JSON.stringify(newWords));
-    };
+    // Create stable function references inside component
+    const handleAddWord = () => handleAddWordAction(newWord, words, storageKey, setWords, setNewWord, setIsModalOpen);
+    
+    const handleKeyDown = (e: React.KeyboardEvent) => handleKeyDownAction(e, newWord, words, storageKey, setWords, setNewWord, setIsModalOpen);
+    
+    const handleDeleteWord = (wordToDelete: string) => handleDeleteWordAction(wordToDelete, words, storageKey, setWords);
+    
+    const handleExplanationChange = (wordText: string, explanation: string) => handleExplanationChangeAction(wordText, explanation, words, storageKey, setWords);
+    
+    const handleRatingChange = (wordText: string, rating: number) => handleRatingChangeAction(wordText, rating, words, storageKey, setWords);
+    
+    const openModal = setModalOpenAction(setIsModalOpen);
+    const closeModal = setModalCloseAction(setIsModalOpen);
 
     return (
       <div className="flex flex-col items-center">
@@ -118,7 +173,7 @@ export const Letter = React.memo(
           variant="secondary"
           size="icon"
           className="w-16 h-16 text-2xl font-bold rounded-full"
-          onClick={() => setIsModalOpen(true)}
+          onClick={openModal}
           aria-label={`Wort für Buchstabe ${letter.toUpperCase()} hinzufügen`}
         >
           {letter.toUpperCase()}
@@ -172,7 +227,7 @@ export const Letter = React.memo(
                 Speichern
               </Button>
               <Button
-                onClick={() => setIsModalOpen(false)}
+                onClick={closeModal}
                 variant="outline"
                 aria-label="Dialog schließen"
               >

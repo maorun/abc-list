@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback} from "react";
+import React, {useState, useEffect, useMemo} from "react";
 import {Input} from "../ui/input";
 
 interface KawaLetterProps {
@@ -7,28 +7,34 @@ interface KawaLetterProps {
   onChangeText?: (text: string) => void;
 }
 
+// Extracted function handlers to prevent recreation on every render
+const handleTextChangeAction = (
+  setText: (text: string) => void,
+  storageKey: string,
+  onChangeText?: (text: string) => void,
+) => (newText: string) => {
+  setText(newText);
+  localStorage.setItem(storageKey, JSON.stringify({text: newText}));
+  if (onChangeText) {
+    onChangeText(newText);
+  }
+};
+
 export function KawaLetter({letter, index, onChangeText}: KawaLetterProps) {
   const [text, setText] = useState("");
 
-  const getStorageKey = useCallback(
-    () => `KawaItem_${letter}_${index}`,
-    [letter, index],
-  );
+  // Use useMemo to prevent recreation of storageKey on every render
+  const storageKey = useMemo(() => `KawaItem_${letter}_${index}`, [letter, index]);
 
   useEffect(() => {
-    const storedText = localStorage.getItem(getStorageKey());
+    const storedText = localStorage.getItem(storageKey);
     if (storedText) {
       setText(JSON.parse(storedText).text);
     }
-  }, [getStorageKey]);
+  }, [storageKey]);
 
-  const handleTextChange = (newText: string) => {
-    setText(newText);
-    localStorage.setItem(getStorageKey(), JSON.stringify({text: newText}));
-    if (onChangeText) {
-      onChangeText(newText);
-    }
-  };
+  // Create stable function reference inside component
+  const handleTextChange = handleTextChangeAction(setText, storageKey, onChangeText);
 
   const inputId = `kawa-letter-input-${index}`;
   return (

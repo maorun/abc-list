@@ -22,24 +22,37 @@ interface NewStringItemProps {
   onAbort?: () => void;
 }
 
+// Extracted function handlers to prevent recreation on every render
+const handleAbortAction = (
+  setIsOpen: (open: boolean) => void,
+  setNewItem: (item: string) => void,
+  onAbort?: () => void,
+) => () => {
+  setIsOpen(false);
+  setNewItem("");
+  if (onAbort) {
+    onAbort();
+  }
+};
+
+const handleSaveAction = (
+  newItem: string,
+  handleAbort: () => void,
+  onSave?: (item: NewItemWithSaveKey) => void,
+) => () => {
+  if (onSave && newItem) {
+    onSave({key: crypto.randomUUID(), text: newItem});
+  }
+  handleAbort();
+};
+
 export function NewStringItem({title, onSave, onAbort}: NewStringItemProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [newItem, setNewItem] = useState("");
 
-  const handleAbort = () => {
-    setIsOpen(false);
-    setNewItem("");
-    if (onAbort) {
-      onAbort();
-    }
-  };
-
-  const handleSave = () => {
-    if (onSave && newItem) {
-      onSave({key: crypto.randomUUID(), text: newItem});
-    }
-    handleAbort();
-  };
+  // Create stable function references inside component
+  const handleAbort = handleAbortAction(setIsOpen, setNewItem, onAbort);
+  const handleSave = handleSaveAction(newItem, handleAbort, onSave);
 
   return (
     <div className="my-4 text-center">

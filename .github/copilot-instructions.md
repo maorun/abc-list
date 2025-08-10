@@ -205,7 +205,7 @@ ABC-List is a React/TypeScript/Vite web application implementing Vera F. Birkenb
 **CRITICAL: Use this pattern to prevent production rerender loops and optimize React.memo performance**
 
 #### Core Principle: Extract All Functions Outside Components
-Move ALL function definitions outside React components to prevent recreation on every render, which is essential for production performance:
+Move ALL function definitions outside React components to prevent recreation on every render, which is essential for production performance. This pattern has been applied to critical components like Navigation, ListItem, Letter, SavedWord, DeleteConfirm, NewStringItem, and KawaLetter:
 
 ```typescript
 // ✅ CORRECT: Extract functions outside component
@@ -221,12 +221,36 @@ const handleExportAsJSON = (
   setShowExportModal(true);
 };
 
+const handleAddWordAction = (
+  newWord: string,
+  words: WordWithExplanation[],
+  storageKey: string,
+  setWords: (words: WordWithExplanation[]) => void,
+  setNewWord: (word: string) => void,
+  setIsModalOpen: (open: boolean) => void,
+) => {
+  if (newWord && !words.some((w) => w.text === newWord)) {
+    const newWordObj: WordWithExplanation = {
+      text: newWord,
+      explanation: "",
+      version: 1,
+      imported: false,
+    };
+    const newWords = [...words, newWordObj];
+    setWords(newWords);
+    localStorage.setItem(storageKey, JSON.stringify(newWords));
+    setNewWord("");
+    setIsModalOpen(false);
+  }
+};
+
 function MyComponent() {
   const [exportedData, setExportedData] = useState("");
   const [showExportModal, setShowExportModal] = useState(false);
   
   // ✅ Create stable reference inside component
   const exportAsJSON = () => handleExportAsJSON(item, cacheKey, setExportedData, setShowExportModal);
+  const handleAddWord = () => handleAddWordAction(newWord, words, storageKey, setWords, setNewWord, setIsModalOpen);
   
   return <button onClick={exportAsJSON}>Export</button>;
 }
@@ -239,8 +263,70 @@ function MyComponent() {
     // ... logic here
   };
   
+  const handleAddWord = () => {  // ← Another new function reference each render
+    // ... logic here
+  };
+  
   return <button onClick={exportAsJSON}>Export</button>;
 }
+```
+
+#### Applied Function Extraction Examples
+
+**Letter Component:**
+```typescript
+// Extracted handlers prevent recreation on every render
+const handleAddWordAction = (newWord, words, storageKey, setWords, setNewWord, setIsModalOpen) => { ... };
+const handleDeleteWordAction = (wordToDelete, words, storageKey, setWords) => { ... };
+const handleExplanationChangeAction = (wordText, explanation, words, storageKey, setWords) => { ... };
+
+// Inside component - create stable references
+const handleAddWord = () => handleAddWordAction(newWord, words, storageKey, setWords, setNewWord, setIsModalOpen);
+```
+
+**SavedWord Component:**
+```typescript
+// Extracted handlers with proper state management
+const handleDeleteAction = (setShowDelete, onDelete) => () => { ... };
+const handleSaveExplanationAction = (explanationText, setEditingExplanation, onExplanationChange) => () => { ... };
+const handleRatingClickAction = (setShowRating, onRatingChange) => (newRating) => { ... };
+```
+
+**Navigation Component:**
+```typescript
+// Extracted navigation items and handlers prevent app-wide rerenders
+const navigationItems = [ ... ]; // Moved outside component
+const createCloseHandler = (setIsOpen) => () => setIsOpen(false);
+const noOpHandler = () => {}; // Stable no-op for consistent props
+```
+
+#### Components Updated with Function Extraction Pattern
+- ✅ **Navigation** - Prevents app-wide rerenders by stabilizing navigation handlers
+- ✅ **ListItem** - Eliminates localStorage access loops during production rerenders  
+- ✅ **Letter** - Stabilizes word management functions (add, delete, explanation, rating)
+- ✅ **SavedWord** - Optimizes word interaction handlers and modal controls
+- ✅ **KawaLetter** - Stabilizes text change handlers using useMemo for storage keys
+- ✅ **DeleteConfirm** - Prevents recreation of delete confirmation handlers
+- ✅ **NewStringItem** - Stabilizes item creation and dialog management functions
+
+#### Key Extraction Patterns by Component Type
+
+**Dialog Components:**
+```typescript
+const setModalOpenAction = (setIsModalOpen) => () => setIsModalOpen(true);
+const setModalCloseAction = (setIsModalOpen) => () => setIsModalOpen(false);
+```
+
+**Form Components:**
+```typescript
+const handleSubmitAction = (formData, onSubmit, resetForm) => () => { ... };
+const handleCancelAction = (resetForm, closeDialog) => () => { ... };
+```
+
+**List Management Components:**
+```typescript
+const handleItemAddAction = (item, items, setItems, saveToStorage) => () => { ... };
+const handleItemDeleteAction = (itemId, items, setItems, saveToStorage) => (id) => { ... };
 ```
 
 #### Avoid useEffect When Possible
