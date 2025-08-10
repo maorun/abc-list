@@ -31,39 +31,57 @@ import {Analytics} from "./components/Analytics/Analytics";
 import {SokratesCheck} from "./components/SokratesCheck/SokratesCheck";
 import {Basar} from "./components/Basar/Basar";
 
-function Navigation() {
-  const location = useLocation();
-  const [isOpen, setIsOpen] = useState(false);
+// Extract navigation items to prevent recreation on every render
+const navigationItems = [
+  {to: "/", label: "Listen"},
+  {to: "/link", label: "Verknüpfen"},
+  {to: "/kawa", label: "Kawas"},
+  {to: "/kaga", label: "KaGa"},
+  {to: "/slf", label: "Stadt-Land-Fluss"},
+  {to: "/basar", label: "Basar"},
+  {to: "/sokrates", label: "Sokrates-Check"},
+  {to: "/analytics", label: "Analytics"},
+] as const;
 
-  const navigationItems = [
-    {to: "/", label: "Listen"},
-    {to: "/link", label: "Verknüpfen"},
-    {to: "/kawa", label: "Kawas"},
-    {to: "/kaga", label: "KaGa"},
-    {to: "/slf", label: "Stadt-Land-Fluss"},
-    {to: "/basar", label: "Basar"},
-    {to: "/sokrates", label: "Sokrates-Check"},
-    {to: "/analytics", label: "Analytics"},
-  ];
+// Extract NavButton interface outside component
+interface NavButtonProps {
+  to: string;
+  children: React.ReactNode;
+  onClick: () => void;
+  isActive: boolean;
+}
 
-  const NavButton = ({
-    to,
-    children,
-    onClick,
-  }: {
-    to: string;
-    children: React.ReactNode;
-    onClick?: () => void;
-  }) => (
+// Extract NavButton component completely outside to eliminate function recreation
+const NavButton = React.memo(function NavButton({
+  to,
+  children,
+  onClick,
+  isActive,
+}: NavButtonProps) {
+  return (
     <NavLink to={to} onClick={onClick}>
       <Button
-        variant={location.pathname === to ? "secondary" : "ghost"}
+        variant={isActive ? "secondary" : "ghost"}
         className="w-full justify-start text-white hover:text-slate-900 sm:w-auto sm:justify-center"
       >
         {children}
       </Button>
     </NavLink>
   );
+});
+
+// Extract handler functions outside Navigation component to prevent recreation
+const createCloseHandler = (setIsOpen: (open: boolean) => void) => () =>
+  setIsOpen(false);
+const noOpHandler = () => {};
+
+function Navigation() {
+  const location = useLocation();
+  const [isOpen, setIsOpen] = useState(false);
+
+  // Extract handlers to stable references
+  const closeNavigation = createCloseHandler(setIsOpen);
+  const currentPath = location.pathname;
 
   return (
     <nav className="bg-blue-800">
@@ -102,7 +120,8 @@ function Navigation() {
                       <NavButton
                         key={item.to}
                         to={item.to}
-                        onClick={() => setIsOpen(false)}
+                        isActive={currentPath === item.to}
+                        onClick={closeNavigation}
                       >
                         {item.label}
                       </NavButton>
@@ -117,7 +136,12 @@ function Navigation() {
           <div className="hidden sm:ml-6 sm:flex sm:items-center">
             <div className="flex space-x-2">
               {navigationItems.map((item) => (
-                <NavButton key={item.to} to={item.to}>
+                <NavButton
+                  key={item.to}
+                  to={item.to}
+                  isActive={currentPath === item.to}
+                  onClick={noOpHandler}
+                >
                   {item.label}
                 </NavButton>
               ))}

@@ -20,6 +20,100 @@ interface SavedWordProps {
   onRatingChange?: (rating: number) => void;
 }
 
+// Extracted function handlers to prevent recreation on every render
+const handleDeleteAction =
+  (setShowDelete: (show: boolean) => void, onDelete?: () => void) => () => {
+    setShowDelete(false);
+    if (onDelete) {
+      onDelete();
+    }
+  };
+
+const handleSaveExplanationAction =
+  (
+    explanationText: string,
+    setEditingExplanation: (editing: boolean) => void,
+    onExplanationChange?: (explanation: string) => void,
+  ) =>
+  () => {
+    if (onExplanationChange) {
+      onExplanationChange(explanationText);
+    }
+    setEditingExplanation(false);
+  };
+
+const handleRatingClickAction =
+  (
+    setShowRating: (show: boolean) => void,
+    onRatingChange?: (rating: number) => void,
+  ) =>
+  (newRating: number) => {
+    if (onRatingChange) {
+      onRatingChange(newRating);
+    }
+    setShowRating(false);
+  };
+
+const handleRightClickAction =
+  (showExplanation: boolean, setShowExplanation: (show: boolean) => void) =>
+  (e: React.MouseEvent) => {
+    e.preventDefault();
+    setShowExplanation(!showExplanation);
+  };
+
+const handleRatingToggleAction =
+  (showRating: boolean, setShowRating: (show: boolean) => void) =>
+  (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowRating(!showRating);
+  };
+
+const handleRatingKeyDownAction =
+  (showRating: boolean, setShowRating: (show: boolean) => void) =>
+  (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      e.stopPropagation();
+      setShowRating(!showRating);
+    }
+  };
+
+const handleCancelExplanationAction =
+  (
+    explanation: string | undefined,
+    setEditingExplanation: (editing: boolean) => void,
+    setExplanationText: (text: string) => void,
+  ) =>
+  () => {
+    setEditingExplanation(false);
+    setExplanationText(explanation || "");
+  };
+
+const setShowDeleteTrueAction =
+  (setShowDelete: (show: boolean) => void) => () => {
+    setShowDelete(true);
+  };
+
+const setShowDeleteFalseAction =
+  (setShowDelete: (show: boolean) => void) => () => {
+    setShowDelete(false);
+  };
+
+const setShowExplanationFalseAction =
+  (setShowExplanation: (show: boolean) => void) => () => {
+    setShowExplanation(false);
+  };
+
+const setShowRatingFalseAction =
+  (setShowRating: (show: boolean) => void) => () => {
+    setShowRating(false);
+  };
+
+const setEditingExplanationTrueAction =
+  (setEditingExplanation: (editing: boolean) => void) => () => {
+    setEditingExplanation(true);
+  };
+
 export function SavedWord({
   text,
   explanation,
@@ -35,26 +129,42 @@ export function SavedWord({
   const [explanationText, setExplanationText] = useState(explanation || "");
   const [showRating, setShowRating] = useState(false);
 
-  const handleDelete = () => {
-    setShowDelete(false);
-    if (onDelete) {
-      onDelete();
-    }
-  };
-
-  const handleSaveExplanation = () => {
-    if (onExplanationChange) {
-      onExplanationChange(explanationText);
-    }
-    setEditingExplanation(false);
-  };
-
-  const handleRatingClick = (newRating: number) => {
-    if (onRatingChange) {
-      onRatingChange(newRating);
-    }
-    setShowRating(false);
-  };
+  // Create stable function references inside component
+  const handleDelete = handleDeleteAction(setShowDelete, onDelete);
+  const handleSaveExplanation = handleSaveExplanationAction(
+    explanationText,
+    setEditingExplanation,
+    onExplanationChange,
+  );
+  const handleRatingClick = handleRatingClickAction(
+    setShowRating,
+    onRatingChange,
+  );
+  const handleRightClick = handleRightClickAction(
+    showExplanation,
+    setShowExplanation,
+  );
+  const handleRatingToggle = handleRatingToggleAction(
+    showRating,
+    setShowRating,
+  );
+  const handleRatingKeyDown = handleRatingKeyDownAction(
+    showRating,
+    setShowRating,
+  );
+  const handleCancelExplanation = handleCancelExplanationAction(
+    explanation,
+    setEditingExplanation,
+    setExplanationText,
+  );
+  const showDeleteTrue = setShowDeleteTrueAction(setShowDelete);
+  const showDeleteFalse = setShowDeleteFalseAction(setShowDelete);
+  const showExplanationFalse =
+    setShowExplanationFalseAction(setShowExplanation);
+  const showRatingFalse = setShowRatingFalseAction(setShowRating);
+  const editingExplanationTrue = setEditingExplanationTrueAction(
+    setEditingExplanation,
+  );
 
   const renderStars = (currentRating?: number, interactive = false) => {
     const stars = [];
@@ -91,11 +201,6 @@ export function SavedWord({
     return stars;
   };
 
-  const handleRightClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setShowExplanation(!showExplanation);
-  };
-
   return (
     <div className="my-1">
       <div className="relative">
@@ -103,7 +208,7 @@ export function SavedWord({
           className={`p-2 border rounded cursor-pointer hover:bg-gray-100 w-full text-left ${
             imported ? "border-blue-300 bg-blue-50" : ""
           } ${explanation ? "border-l-4 border-l-green-400" : ""}`}
-          onClick={() => setShowDelete(true)}
+          onClick={showDeleteTrue}
           onContextMenu={handleRightClick}
           title={
             imported
@@ -127,17 +232,8 @@ export function SavedWord({
                 </div>
               )}
               <span
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowRating(!showRating);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setShowRating(!showRating);
-                  }
-                }}
+                onClick={handleRatingToggle}
+                onKeyDown={handleRatingKeyDown}
                 role="button"
                 tabIndex={0}
                 className="text-xs text-blue-600 hover:text-blue-800 cursor-pointer"
@@ -157,7 +253,7 @@ export function SavedWord({
                 Sokrates-Check: &ldquo;{text}&rdquo;
               </h4>
               <button
-                onClick={() => setShowRating(false)}
+                onClick={showRatingFalse}
                 className="text-gray-400 hover:text-gray-600"
               >
                 ✕
@@ -187,7 +283,7 @@ export function SavedWord({
                 Erklärung für &ldquo;{text}&rdquo;
               </h4>
               <button
-                onClick={() => setShowExplanation(false)}
+                onClick={showExplanationFalse}
                 className="text-gray-400 hover:text-gray-600"
               >
                 ✕
@@ -211,10 +307,7 @@ export function SavedWord({
                     Speichern
                   </button>
                   <button
-                    onClick={() => {
-                      setEditingExplanation(false);
-                      setExplanationText(explanation || "");
-                    }}
+                    onClick={handleCancelExplanation}
                     className="bg-gray-500 hover:bg-gray-700 text-white text-xs px-2 py-1 rounded"
                   >
                     Abbrechen
@@ -227,7 +320,7 @@ export function SavedWord({
                   {explanation || "Keine Erklärung vorhanden"}
                 </p>
                 <button
-                  onClick={() => setEditingExplanation(true)}
+                  onClick={editingExplanationTrue}
                   className="bg-green-500 hover:bg-green-700 text-white text-xs px-2 py-1 rounded"
                 >
                   {explanation ? "Bearbeiten" : "Hinzufügen"}
@@ -241,7 +334,7 @@ export function SavedWord({
       <DeleteConfirm
         itemToDelete={text}
         isVisible={showDelete}
-        onAbort={() => setShowDelete(false)}
+        onAbort={showDeleteFalse}
         onDelete={handleDelete}
       />
     </div>

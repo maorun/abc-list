@@ -127,11 +127,40 @@ ABC-List is a React/TypeScript/Vite web application implementing Vera F. Birkenb
 
 ## CI/CD Requirements
 
+### Test-First Development Workflow
+
+**CRITICAL: Always test FIRST, then fix linting issues. This prevents accidental breaking of working functionality.**
+
+**Recommended development sequence:**
+1. **Test first** - Run tests to ensure functionality works:
+   ```bash
+   npm run test
+   ```
+   - Takes ~8 seconds. Set timeout to 30+ seconds.
+   - All 153 tests must pass before proceeding
+
+2. **Build verification** - Ensure build succeeds:
+   ```bash
+   npm run build
+   ```
+   - Takes ~2-3 seconds. Set timeout to 60+ seconds.
+
+3. **Fix linting last** - Only after tests pass and build succeeds:
+   ```bash
+   npm run lint
+   npm run format     # Auto-fix formatting issues
+   ```
+   - Linting takes ~2-5 seconds. Set timeout to 30+ seconds.
+
+**Rationale:** Tests verify that functionality works correctly. Linting only addresses code style and formatting. Fixing linting first can accidentally break working code, while fixing linting after tests ensures functionality remains intact.
+
+### Pre-commit Validation
+
 **Always run these commands before committing to ensure CI passes:**
 
-1. **Pre-commit validation (required for CI):**
+1. **Complete validation pipeline (required for CI):**
    ```bash
-   npm run lint && npm run format:check && npm run test && npm run build
+   npm run test && npm run build && npm run lint && npm run format:check
    ```
    - Total time: ~15-20 seconds. NEVER CANCEL. Set timeout to 60+ seconds.
    - All commands must pass for CI to succeed
@@ -200,6 +229,233 @@ ABC-List is a React/TypeScript/Vite web application implementing Vera F. Birkenb
     - Moving pure functions outside components to avoid unnecessary re-creation
     - Restructuring code to follow React best practices
   - ESLint rules exist for good reasons and should not be suppressed
+
+### Function Extraction Pattern for Production Performance
+**CRITICAL: Use this pattern to prevent production rerender loops and optimize React.memo performance**
+
+#### Core Principle: Extract All Functions Outside Components
+Move ALL function definitions outside React components to prevent recreation on every render, which is essential for production performance. This pattern has been applied to critical components like Navigation, ListItem, Letter, SavedWord, DeleteConfirm, NewStringItem, and KawaLetter:
+
+```typescript
+// ✅ CORRECT: Extract functions outside component
+const handleExportAsJSON = (
+  item: string,
+  cacheKey: string,
+  setExportedData: (data: string) => void,
+  setShowExportModal: (show: boolean) => void,
+) => {
+  const exportData = createExportData(item, cacheKey);
+  const jsonString = JSON.stringify(exportData, null, 2);
+  setExportedData(jsonString);
+  setShowExportModal(true);
+};
+
+const handleAddWordAction = (
+  newWord: string,
+  words: WordWithExplanation[],
+  storageKey: string,
+  setWords: (words: WordWithExplanation[]) => void,
+  setNewWord: (word: string) => void,
+  setIsModalOpen: (open: boolean) => void,
+) => {
+  if (newWord && !words.some((w) => w.text === newWord)) {
+    const newWordObj: WordWithExplanation = {
+      text: newWord,
+      explanation: "",
+      version: 1,
+      imported: false,
+    };
+    const newWords = [...words, newWordObj];
+    setWords(newWords);
+    localStorage.setItem(storageKey, JSON.stringify(newWords));
+    setNewWord("");
+    setIsModalOpen(false);
+  }
+};
+
+function MyComponent() {
+  const [exportedData, setExportedData] = useState("");
+  const [showExportModal, setShowExportModal] = useState(false);
+  
+  // ✅ Create stable reference inside component
+  const exportAsJSON = () => handleExportAsJSON(item, cacheKey, setExportedData, setShowExportModal);
+  const handleAddWord = () => handleAddWordAction(newWord, words, storageKey, setWords, setNewWord, setIsModalOpen);
+  
+  return <button onClick={exportAsJSON}>Export</button>;
+}
+
+// ❌ WRONG: Functions inside component recreate on every render
+function MyComponent() {
+  const [exportedData, setExportedData] = useState("");
+  
+  const exportAsJSON = () => {  // ← Creates new function reference each render
+    // ... logic here
+  };
+  
+  const handleAddWord = () => {  // ← Another new function reference each render
+    // ... logic here
+  };
+  
+  return <button onClick={exportAsJSON}>Export</button>;
+}
+```
+
+#### Applied Function Extraction Examples
+
+**Letter Component:**
+```typescript
+// Extracted handlers prevent recreation on every render
+const handleAddWordAction = (newWord, words, storageKey, setWords, setNewWord, setIsModalOpen) => { ... };
+const handleDeleteWordAction = (wordToDelete, words, storageKey, setWords) => { ... };
+const handleExplanationChangeAction = (wordText, explanation, words, storageKey, setWords) => { ... };
+
+// Inside component - create stable references
+const handleAddWord = () => handleAddWordAction(newWord, words, storageKey, setWords, setNewWord, setIsModalOpen);
+```
+
+**SavedWord Component:**
+```typescript
+// Extracted handlers with proper state management
+const handleDeleteAction = (setShowDelete, onDelete) => () => { ... };
+const handleSaveExplanationAction = (explanationText, setEditingExplanation, onExplanationChange) => () => { ... };
+const handleRatingClickAction = (setShowRating, onRatingChange) => (newRating) => { ... };
+```
+
+**Navigation Component:**
+```typescript
+// Extracted navigation items and handlers prevent app-wide rerenders
+const navigationItems = [ ... ]; // Moved outside component
+const createCloseHandler = (setIsOpen) => () => setIsOpen(false);
+const noOpHandler = () => {}; // Stable no-op for consistent props
+```
+
+#### Components Updated with Function Extraction Pattern
+- ✅ **Navigation** - Prevents app-wide rerenders by stabilizing navigation handlers
+- ✅ **ListItem** - Eliminates localStorage access loops during production rerenders  
+- ✅ **Letter** - Stabilizes word management functions (add, delete, explanation, rating)
+- ✅ **SavedWord** - Optimizes word interaction handlers and modal controls
+- ✅ **KawaLetter** - Stabilizes text change handlers using useMemo for storage keys
+- ✅ **DeleteConfirm** - Prevents recreation of delete confirmation handlers
+- ✅ **NewStringItem** - Stabilizes item creation and dialog management functions
+
+#### Key Extraction Patterns by Component Type
+
+**Dialog Components:**
+```typescript
+const setModalOpenAction = (setIsModalOpen) => () => setIsModalOpen(true);
+const setModalCloseAction = (setIsModalOpen) => () => setIsModalOpen(false);
+```
+
+**Form Components:**
+```typescript
+const handleSubmitAction = (formData, onSubmit, resetForm) => () => { ... };
+const handleCancelAction = (resetForm, closeDialog) => () => { ... };
+```
+
+**List Management Components:**
+```typescript
+const handleItemAddAction = (item, items, setItems, saveToStorage) => () => { ... };
+const handleItemDeleteAction = (itemId, items, setItems, saveToStorage) => (id) => { ... };
+```
+
+#### Avoid useEffect When Possible
+Replace useEffect with direct computation to eliminate dependency-related rerenders:
+
+```typescript
+// ✅ CORRECT: Direct computation
+export function ListItem() {
+  const {item} = useParams<{item: string}>();
+  
+  // Compute derived state directly instead of using useEffect
+  const cacheKey = getCacheKey(item);
+  
+  // Set title directly without useEffect
+  if (item) {
+    setDocumentTitle(item);
+  }
+  
+  // Don't render until ready - no useEffect needed
+  if (!item || !cacheKey) {
+    return <div>Loading...</div>;
+  }
+  
+  return <div>Content...</div>;
+}
+
+// ❌ WRONG: useEffect creates dependency chains and timing issues
+export function ListItem() {
+  const {item} = useParams<{item: string}>();
+  const [isReady, setIsReady] = useState(false);
+  
+  useEffect(() => {  // ← Creates effect dependency chain
+    if (item) {
+      document.title = `ABC-Liste für ${item}`;
+      const timer = setTimeout(() => setIsReady(true), 0);
+      return () => clearTimeout(timer);
+    }
+  }, [item]);  // ← Can cause rerenders when item changes
+  
+  if (!isReady) return <div>Loading...</div>;
+  return <div>Content...</div>;
+}
+```
+
+#### Navigation Component Pattern
+Extract all navigation handlers to prevent cascading rerenders:
+
+```typescript
+// ✅ CORRECT: All functions extracted outside component
+const createCloseHandler = (setIsOpen: (open: boolean) => void) => () => setIsOpen(false);
+const noOpHandler = () => {};
+
+function Navigation() {
+  const [isOpen, setIsOpen] = useState(false);
+  
+  // Create stable references
+  const closeNavigation = createCloseHandler(setIsOpen);
+  
+  return (
+    <NavButton onClick={closeNavigation} />
+    <NavButton onClick={noOpHandler} />
+  );
+}
+```
+
+#### Testing Pattern
+Always test for rerender loops in integration tests:
+
+```typescript
+it("should handle production rerender scenarios without localStorage access growth", async () => {
+  let localStorageAccess = 0;
+  const originalGetItem = localStorage.getItem;
+  
+  localStorage.getItem = function(...args) {
+    localStorageAccess++;
+    return originalGetItem.apply(this, args);
+  };
+  
+  // Test multiple rerenders
+  for (let i = 0; i < 10; i++) {
+    rerender(<Component />);
+  }
+  
+  // CRITICAL: Should be 0 with proper function extraction
+  expect(localStorageAccess).toBe(0);
+});
+```
+
+#### Why This Pattern Is Required
+- **Production builds** optimize differently than development
+- **React.memo** fails when function references change between renders
+- **Navigation components** being global cause app-wide rerenders
+- **localStorage access** during rerenders indicates optimization failures
+
+#### Key Benefits
+- ✅ Eliminates production rerender loops completely
+- ✅ Stabilizes React.memo optimization
+- ✅ Improves overall application performance  
+- ✅ Prevents cascading rerenders from global components
+- ✅ Reduces localStorage access during rerenders to zero
 
 ### Modifying Styles  
 - Uses Tailwind CSS 4 for styling

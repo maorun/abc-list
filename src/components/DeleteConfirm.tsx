@@ -16,22 +16,41 @@ interface DeleteConfirmProps<T> {
   isVisible: boolean;
 }
 
+// Extracted function handlers to prevent recreation on every render
+const handleDeleteAction =
+  (
+    itemToDelete: unknown,
+    onDelete?: (itemToDelete: unknown) => void,
+    onAbort?: () => void,
+  ) =>
+  () => {
+    if (onDelete) {
+      onDelete(itemToDelete);
+    } else if (onAbort) {
+      onAbort();
+    }
+  };
+
+const handleDialogChangeAction = (onAbort: () => void) => (open: boolean) => {
+  if (!open) onAbort();
+};
+
 export function DeleteConfirm<T>({
   itemToDelete,
   onDelete,
   onAbort,
   isVisible,
 }: DeleteConfirmProps<T>) {
-  const handleDelete = () => {
-    if (onDelete) {
-      onDelete(itemToDelete);
-    } else {
-      onAbort();
-    }
-  };
+  // Create stable function references inside component
+  const handleDelete = handleDeleteAction(
+    itemToDelete,
+    onDelete as ((itemToDelete: unknown) => void) | undefined,
+    onAbort,
+  );
+  const handleDialogChange = handleDialogChangeAction(onAbort);
 
   return (
-    <Dialog open={isVisible} onOpenChange={(open) => !open && onAbort()}>
+    <Dialog open={isVisible} onOpenChange={handleDialogChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Löschen bestätigen</DialogTitle>

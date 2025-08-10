@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {useParams} from "react-router-dom";
 import {toast} from "sonner";
 import {usePrompt} from "@/components/ui/prompt-dialog";
@@ -14,38 +14,33 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 
-export function ListItem() {
-  const {item} = useParams<{item: string}>();
-  const [showExportModal, setShowExportModal] = useState(false);
-  const [showImportModal, setShowImportModal] = useState(false);
-  const [importData, setImportData] = useState("");
-  const [exportedData, setExportedData] = useState("");
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const {prompt, PromptComponent} = usePrompt();
+// Extract alphabet generation outside component to prevent recreation
+const alphabet = Array.from({length: 26}, (_, i) =>
+  String.fromCharCode(97 + i),
+);
 
-  useEffect(() => {
-    if (item) {
-      document.title = `ABC-Liste für ${item}`;
-    }
-  }, [item]);
+// Extract utility functions outside component
+const getCacheKey = (item: string | undefined): string | null => {
+  return item ? `abcList-${item}` : null;
+};
 
-  const getCacheKey = (): string => {
-    return "abcList-" + item;
-  };
+const setDocumentTitle = (item: string | undefined): void => {
+  if (item) {
+    document.title = `ABC-Liste für ${item}`;
+  }
+};
 
-  const alphabet = Array.from({length: 26}, (_, i) =>
-    String.fromCharCode(97 + i),
-  );
+const getWordsData = (
+  cacheKey: string,
+): Record<string, WordWithExplanation[]> => {
+  const words: Record<string, WordWithExplanation[]> = {};
 
-  const getWordsData = (): Record<string, WordWithExplanation[]> => {
-    const words: Record<string, WordWithExplanation[]> = {};
-
-    alphabet.forEach((letter) => {
-      const storageKey = `${getCacheKey()}:${letter}`;
-      const storedData = localStorage.getItem(storageKey);
-      if (storedData) {
+  alphabet.forEach((letter) => {
+    const storageKey = `${cacheKey}:${letter}`;
+    const storedData = localStorage.getItem(storageKey);
+    if (storedData) {
+      try {
         const parsed = JSON.parse(storedData);
-        // Ensure we have the new format
         if (Array.isArray(parsed) && parsed.length > 0) {
           if (typeof parsed[0] === "string") {
             words[letter] = parsed.map((word: string) => ({
@@ -60,216 +55,306 @@ export function ListItem() {
         } else {
           words[letter] = [];
         }
-      } else {
+      } catch {
         words[letter] = [];
       }
-    });
+    } else {
+      words[letter] = [];
+    }
+  });
 
-    return words;
-  };
+  return words;
+};
 
-  const exportAsJSON = () => {
-    const exportData: ExportedList = {
-      name: item || "Unbekannt",
-      version: 1,
-      exportDate: new Date().toISOString(),
-      words: getWordsData(),
-    };
+const createExportData = (item: string, cacheKey: string): ExportedList => ({
+  name: item || "Unbekannt",
+  version: 1,
+  exportDate: new Date().toISOString(),
+  words: getWordsData(cacheKey),
+});
 
-    const jsonString = JSON.stringify(exportData, null, 2);
-    setExportedData(jsonString);
-    setShowExportModal(true);
-  };
+const handleExportAsJSON = (
+  item: string,
+  cacheKey: string,
+  setExportedData: (data: string) => void,
+  setShowExportModal: (show: boolean) => void,
+) => {
+  const exportData = createExportData(item, cacheKey);
+  const jsonString = JSON.stringify(exportData, null, 2);
+  setExportedData(jsonString);
+  setShowExportModal(true);
+};
 
-  const exportAsPDF = () => {
-    const words = getWordsData();
-    ExportUtils.exportToPDF(item || "Unbekannt", words);
-    toast.success("PDF-Export erfolgreich heruntergeladen!");
-  };
+const handleExportAsPDF = (item: string, cacheKey: string) => {
+  const words = getWordsData(cacheKey);
+  ExportUtils.exportToPDF(item || "Unbekannt", words);
+  toast.success("PDF-Export erfolgreich heruntergeladen!");
+};
 
-  const exportAsCSV = () => {
-    const words = getWordsData();
-    ExportUtils.exportToCSV(item || "Unbekannt", words);
-    toast.success("CSV-Export erfolgreich heruntergeladen!");
-  };
+const handleExportAsCSV = (item: string, cacheKey: string) => {
+  const words = getWordsData(cacheKey);
+  ExportUtils.exportToCSV(item || "Unbekannt", words);
+  toast.success("CSV-Export erfolgreich heruntergeladen!");
+};
 
-  const exportAsMarkdown = () => {
-    const words = getWordsData();
-    ExportUtils.exportToMarkdown(item || "Unbekannt", words);
-    toast.success("Markdown-Export erfolgreich heruntergeladen!");
-  };
+const handleExportAsMarkdown = (item: string, cacheKey: string) => {
+  const words = getWordsData(cacheKey);
+  ExportUtils.exportToMarkdown(item || "Unbekannt", words);
+  toast.success("Markdown-Export erfolgreich heruntergeladen!");
+};
 
-  const importFromJSON = () => {
-    try {
-      const parsedData: ExportedList = JSON.parse(importData);
+const handleImportFromJSON = (
+  importData: string,
+  setShowImportModal: (show: boolean) => void,
+  showImportPreview: (data: ExportedList) => void,
+) => {
+  try {
+    const parsedData: ExportedList = JSON.parse(importData);
 
-      if (!parsedData.name || !parsedData.words) {
-        toast.error(
-          "Ungültige Datei-Struktur. Bitte überprüfen Sie das JSON-Format.",
-        );
-        return;
-      }
-
-      // Show import preview and require explanations for imported terms
-      setShowImportModal(false);
-      showImportPreview(parsedData);
-    } catch {
+    if (!parsedData.name || !parsedData.words) {
       toast.error(
-        "Fehler beim Lesen der Datei. Bitte überprüfen Sie das JSON-Format.",
+        "Ungültige Datei-Struktur. Bitte überprüfen Sie das JSON-Format.",
       );
-    }
-  };
-
-  const importFromCSV = async () => {
-    if (!selectedFile) {
-      toast.error("Bitte wählen Sie eine CSV-Datei aus.");
       return;
     }
 
-    try {
-      const csvRows = await ExportUtils.parseCSVFile(selectedFile);
-      const listName = selectedFile.name.replace(/\.(csv|xlsx?)$/i, "");
-      const exportedList = ExportUtils.csvToExportedList(csvRows, listName);
-
-      setShowImportModal(false);
-      showImportPreview(exportedList);
-      setSelectedFile(null);
-    } catch (error) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Fehler beim Lesen der CSV-Datei",
-      );
-    }
-  };
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const fileExtension = file.name.split(".").pop()?.toLowerCase();
-      if (
-        fileExtension === "csv" ||
-        fileExtension === "xlsx" ||
-        fileExtension === "xls"
-      ) {
-        setSelectedFile(file);
-        setImportData(""); // Clear JSON data when file is selected
-      } else {
-        toast.error("Bitte wählen Sie eine CSV- oder Excel-Datei aus.");
-        event.target.value = "";
-      }
-    }
-  };
-
-  const showImportPreview = (data: ExportedList) => {
-    const newTerms: Array<{letter: string; word: WordWithExplanation}> = [];
-
-    alphabet.forEach((letter) => {
-      const existingStorageKey = `${getCacheKey()}:${letter}`;
-      const existingData = localStorage.getItem(existingStorageKey);
-      const existingWords = existingData ? JSON.parse(existingData) : [];
-      const existingTexts = existingWords.map(
-        (w: WordWithExplanation) => w.text,
-      );
-
-      if (data.words[letter]) {
-        data.words[letter].forEach((word) => {
-          if (!existingTexts.includes(word.text)) {
-            newTerms.push({
-              letter,
-              word: {
-                ...word,
-                imported: true,
-                explanation: "", // Reset explanation to require new one
-              },
-            });
-          }
-        });
-      }
-    });
-
-    if (newTerms.length === 0) {
-      toast.info("Keine neuen Begriffe zum Importieren gefunden.");
-      return;
-    }
-
-    // Create import wizard
-    showImportWizard(newTerms);
-  };
-
-  const showImportWizard = async (
-    terms: Array<{letter: string; word: WordWithExplanation}>,
-  ) => {
-    if (terms.length === 0) {
-      toast.success("Import abgeschlossen!");
-      return;
-    }
-
-    const currentTerm = terms[0];
-    const remainingTerms = terms.slice(1);
-
-    const explanation = await prompt(
-      `Begriff erklären: "${currentTerm.word.text}"`,
-      `Erklären Sie den Begriff "${currentTerm.word.text}" (${currentTerm.letter.toUpperCase()})\n\nHinweis: Sie müssen jeden importierten Begriff erklären können.\nVerbleibende Begriffe: ${terms.length}`,
-      "Ihre Erklärung hier eingeben...",
+    setShowImportModal(false);
+    showImportPreview(parsedData);
+  } catch {
+    toast.error(
+      "Fehler beim Lesen der Datei. Bitte überprüfen Sie das JSON-Format.",
     );
+  }
+};
 
-    if (explanation === null) {
-      // User cancelled
-      return;
+const handleImportFromCSV = async (
+  selectedFile: File | null,
+  setShowImportModal: (show: boolean) => void,
+  showImportPreview: (data: ExportedList) => void,
+  setSelectedFile: (file: File | null) => void,
+) => {
+  if (!selectedFile) {
+    toast.error("Bitte wählen Sie eine CSV-Datei aus.");
+    return;
+  }
+
+  try {
+    const csvRows = await ExportUtils.parseCSVFile(selectedFile);
+    const listName = selectedFile.name.replace(/\.(csv|xlsx?)$/i, "");
+    const exportedList = ExportUtils.csvToExportedList(csvRows, listName);
+
+    setShowImportModal(false);
+    showImportPreview(exportedList);
+    setSelectedFile(null);
+  } catch (error) {
+    toast.error(
+      error instanceof Error
+        ? error.message
+        : "Fehler beim Lesen der CSV-Datei",
+    );
+  }
+};
+
+const handleFileChange = (
+  event: React.ChangeEvent<HTMLInputElement>,
+  setSelectedFile: (file: File | null) => void,
+  setImportData: (data: string) => void,
+) => {
+  const file = event.target.files?.[0];
+  if (file) {
+    const fileExtension = file.name.split(".").pop()?.toLowerCase();
+    if (
+      fileExtension === "csv" ||
+      fileExtension === "xlsx" ||
+      fileExtension === "xls"
+    ) {
+      setSelectedFile(file);
+      setImportData(""); // Clear JSON data when file is selected
+    } else {
+      toast.error("Bitte wählen Sie eine CSV- oder Excel-Datei aus.");
+      event.target.value = "";
     }
+  }
+};
 
-    if (explanation.trim() === "") {
+const handleCopyToClipboard = (exportedData: string) => {
+  navigator.clipboard
+    .writeText(exportedData)
+    .then(() => {
+      toast.success("Export-Daten in die Zwischenablage kopiert!");
+    })
+    .catch(() => {
       toast.error(
-        "Eine Erklärung ist erforderlich. Bitte versuchen Sie es erneut.",
+        "Fehler beim Kopieren in die Zwischenablage. Bitte prüfen Sie die Berechtigungen oder versuchen Sie es erneut.",
       );
-      showImportWizard(terms);
-      return;
-    }
+    });
+};
 
-    // Save the term with explanation
-    const storageKey = `${getCacheKey()}:${currentTerm.letter}`;
-    const existingData = localStorage.getItem(storageKey);
+const handleDownloadAsFile = (exportedData: string, item: string) => {
+  const blob = new Blob([exportedData], {type: "application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `abc-liste-${item}-${new Date().toISOString().split("T")[0]}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+};
+
+const createImportPreview = (
+  data: ExportedList,
+  cacheKey: string,
+  showImportWizard: (
+    terms: Array<{letter: string; word: WordWithExplanation}>,
+  ) => void,
+) => {
+  const newTerms: Array<{letter: string; word: WordWithExplanation}> = [];
+
+  alphabet.forEach((letter) => {
+    const existingStorageKey = `${cacheKey}:${letter}`;
+    const existingData = localStorage.getItem(existingStorageKey);
     const existingWords = existingData ? JSON.parse(existingData) : [];
+    const existingTexts = existingWords.map((w: WordWithExplanation) => w.text);
 
-    const newWord: WordWithExplanation = {
-      ...currentTerm.word,
-      explanation: explanation.trim(),
-      imported: true,
-      version: 1,
-    };
-
-    const updatedWords = [...existingWords, newWord];
-    localStorage.setItem(storageKey, JSON.stringify(updatedWords));
-
-    // Continue with remaining terms
-    setTimeout(() => showImportWizard(remainingTerms), 100);
-  };
-
-  const copyToClipboard = () => {
-    navigator.clipboard
-      .writeText(exportedData)
-      .then(() => {
-        toast.success("Export-Daten in die Zwischenablage kopiert!");
-      })
-      .catch(() => {
-        toast.error(
-          "Fehler beim Kopieren in die Zwischenablage. Bitte prüfen Sie die Berechtigungen oder versuchen Sie es erneut.",
-        );
+    if (data.words[letter]) {
+      data.words[letter].forEach((word) => {
+        if (!existingTexts.includes(word.text)) {
+          newTerms.push({
+            letter,
+            word: {
+              ...word,
+              imported: true,
+              explanation: "", // Reset explanation to require new one
+            },
+          });
+        }
       });
+    }
+  });
+
+  if (newTerms.length === 0) {
+    toast.info("Keine neuen Begriffe zum Importieren gefunden.");
+    return;
+  }
+
+  showImportWizard(newTerms);
+};
+
+const createImportWizard = async (
+  terms: Array<{letter: string; word: WordWithExplanation}>,
+  cacheKey: string,
+  prompt: (
+    title: string,
+    description?: string,
+    placeholder?: string,
+  ) => Promise<string | null>,
+) => {
+  if (terms.length === 0) {
+    toast.success("Import abgeschlossen!");
+    return;
+  }
+
+  const currentTerm = terms[0];
+  const remainingTerms = terms.slice(1);
+
+  const explanation = await prompt(
+    `Begriff erklären: "${currentTerm.word.text}"`,
+    `Erklären Sie den Begriff "${currentTerm.word.text}" (${currentTerm.letter.toUpperCase()})\n\nHinweis: Sie müssen jeden importierten Begriff erklären können.\nVerbleibende Begriffe: ${terms.length}`,
+    "Ihre Erklärung hier eingeben...",
+  );
+
+  if (explanation === null) {
+    // User cancelled
+    return;
+  }
+
+  if (explanation.trim() === "") {
+    toast.error(
+      "Eine Erklärung ist erforderlich. Bitte versuchen Sie es erneut.",
+    );
+    createImportWizard(terms, cacheKey, prompt);
+    return;
+  }
+
+  // Save the term with explanation
+  const storageKey = `${cacheKey}:${currentTerm.letter}`;
+  const existingData = localStorage.getItem(storageKey);
+  const existingWords = existingData ? JSON.parse(existingData) : [];
+
+  const newWord: WordWithExplanation = {
+    ...currentTerm.word,
+    explanation: explanation.trim(),
+    imported: true,
+    version: 1,
   };
 
-  const downloadAsFile = () => {
-    const blob = new Blob([exportedData], {type: "application/json"});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `abc-liste-${item}-${new Date().toISOString().split("T")[0]}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
+  const updatedWords = [...existingWords, newWord];
+  localStorage.setItem(storageKey, JSON.stringify(updatedWords));
+
+  // Continue with remaining terms
+  setTimeout(() => createImportWizard(remainingTerms, cacheKey, prompt), 100);
+};
+
+export function ListItem() {
+  const {item} = useParams<{item: string}>();
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [importData, setImportData] = useState("");
+  const [exportedData, setExportedData] = useState("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const {prompt, PromptComponent} = usePrompt();
+
+  // Compute derived state directly instead of using useEffect
+  const cacheKey = getCacheKey(item);
+
+  // Set title directly without useEffect
+  if (item) {
+    setDocumentTitle(item);
+  }
+
+  // Don't render Letter components until we have a valid item and cacheKey
+  if (!item || !cacheKey) {
+    return (
+      <div className="p-4">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="text-lg font-medium text-gray-600">
+              Lade ABC-Liste...
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Extract function handlers with stable references
+  const exportAsJSON = () =>
+    handleExportAsJSON(item, cacheKey, setExportedData, setShowExportModal);
+  const exportAsPDF = () => handleExportAsPDF(item, cacheKey);
+  const exportAsCSV = () => handleExportAsCSV(item, cacheKey);
+  const exportAsMarkdown = () => handleExportAsMarkdown(item, cacheKey);
+  const importFromJSON = () =>
+    handleImportFromJSON(importData, setShowImportModal, showImportPreview);
+  const importFromCSV = () =>
+    handleImportFromCSV(
+      selectedFile,
+      setShowImportModal,
+      showImportPreview,
+      setSelectedFile,
+    );
+  const copyToClipboard = () => handleCopyToClipboard(exportedData);
+  const downloadAsFile = () => handleDownloadAsFile(exportedData, item);
+
+  const onFileChange = (event: React.ChangeEvent<HTMLInputElement>) =>
+    handleFileChange(event, setSelectedFile, setImportData);
+
+  const showImportPreview = (data: ExportedList) =>
+    createImportPreview(data, cacheKey, showImportWizard);
+
+  const showImportWizard = (
+    terms: Array<{letter: string; word: WordWithExplanation}>,
+  ) => createImportWizard(terms, cacheKey, prompt);
 
   return (
     <div className="p-4">
@@ -324,11 +409,12 @@ export function ListItem() {
       </div>
 
       <div className="flex flex-row flex-wrap justify-around gap-4">
-        {alphabet.map((char) => (
-          <div key={char} className="m-2">
-            <Letter letter={char} cacheKey={getCacheKey()} />
-          </div>
-        ))}
+        {cacheKey &&
+          alphabet.map((char) => (
+            <div key={char} className="m-2">
+              <Letter letter={char} cacheKey={cacheKey} />
+            </div>
+          ))}
       </div>
 
       {/* Export Modal */}
@@ -410,7 +496,7 @@ export function ListItem() {
                 <input
                   type="file"
                   accept=".csv,.xlsx,.xls"
-                  onChange={handleFileChange}
+                  onChange={onFileChange}
                   className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                 />
                 {selectedFile && (

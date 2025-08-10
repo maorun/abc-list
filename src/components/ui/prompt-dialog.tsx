@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useRef} from "react";
 import {
   Dialog,
   DialogContent,
@@ -20,6 +20,35 @@ interface PromptDialogProps {
   onCancel: () => void;
 }
 
+// Extract handler functions outside component
+const createHandleConfirm =
+  (
+    onConfirm: (value: string) => void,
+    setValue: (value: string) => void,
+    value: string,
+  ) =>
+  () => {
+    onConfirm(value);
+    setValue("");
+  };
+
+const createHandleCancel =
+  (onCancel: () => void, setValue: (value: string) => void) => () => {
+    onCancel();
+    setValue("");
+  };
+
+const createHandleKeyDown =
+  (handleConfirm: () => void, handleCancel: () => void) =>
+  (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleConfirm();
+    }
+    if (e.key === "Escape") {
+      handleCancel();
+    }
+  };
+
 export function PromptDialog({
   isOpen,
   title,
@@ -31,24 +60,9 @@ export function PromptDialog({
 }: PromptDialogProps) {
   const [value, setValue] = useState(defaultValue);
 
-  const handleConfirm = () => {
-    onConfirm(value);
-    setValue("");
-  };
-
-  const handleCancel = () => {
-    onCancel();
-    setValue("");
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      handleConfirm();
-    }
-    if (e.key === "Escape") {
-      handleCancel();
-    }
-  };
+  const handleConfirm = createHandleConfirm(onConfirm, setValue, value);
+  const handleCancel = createHandleCancel(onCancel, setValue);
+  const handleKeyDown = createHandleKeyDown(handleConfirm, handleCancel);
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleCancel()}>
@@ -76,6 +90,62 @@ export function PromptDialog({
   );
 }
 
+// Extract prompt handler functions outside the hook
+const createPromptFunction =
+  (
+    resolveRef: React.MutableRefObject<((value: string | null) => void) | null>,
+    setConfig: (config: {
+      title: string;
+      description?: string;
+      placeholder?: string;
+      defaultValue?: string;
+    }) => void,
+    setIsOpen: (open: boolean) => void,
+  ) =>
+  (
+    title: string,
+    description?: string,
+    placeholder?: string,
+    defaultValue?: string,
+  ): Promise<string | null> => {
+    return new Promise((resolve) => {
+      resolveRef.current = resolve;
+      setConfig({
+        title,
+        description,
+        placeholder,
+        defaultValue,
+      });
+      setIsOpen(true);
+    });
+  };
+
+const createHandleConfirmHook =
+  (
+    resolveRef: React.MutableRefObject<((value: string | null) => void) | null>,
+    setIsOpen: (open: boolean) => void,
+    setConfig: (config: {title: string}) => void,
+  ) =>
+  (value: string) => {
+    resolveRef.current?.(value);
+    resolveRef.current = null;
+    setIsOpen(false);
+    setConfig({title: ""});
+  };
+
+const createHandleCancelHook =
+  (
+    resolveRef: React.MutableRefObject<((value: string | null) => void) | null>,
+    setIsOpen: (open: boolean) => void,
+    setConfig: (config: {title: string}) => void,
+  ) =>
+  () => {
+    resolveRef.current?.(null);
+    resolveRef.current = null;
+    setIsOpen(false);
+    setConfig({title: ""});
+  };
+
 // Hook for using the prompt dialog
 export function usePrompt() {
   const [isOpen, setIsOpen] = useState(false);
@@ -84,42 +154,23 @@ export function usePrompt() {
     description?: string;
     placeholder?: string;
     defaultValue?: string;
-    resolve: ((value: string | null) => void) | null;
   }>({
     title: "",
-    resolve: null,
   });
 
-  const prompt = (
-    title: string,
-    description?: string,
-    placeholder?: string,
-    defaultValue?: string,
-  ): Promise<string | null> => {
-    return new Promise((resolve) => {
-      setConfig({
-        title,
-        description,
-        placeholder,
-        defaultValue,
-        resolve,
-      });
-      setIsOpen(true);
-    });
-  };
+  // Use useRef to store the resolve function to avoid dependency issues
+  const resolveRef = useRef<((value: string | null) => void) | null>(null);
 
-  const handleConfirm = (value: string) => {
-    config.resolve?.(value);
-    setIsOpen(false);
-    setConfig({title: "", resolve: null});
-  };
+  // Create stable handlers
+  const prompt = createPromptFunction(resolveRef, setConfig, setIsOpen);
+  const handleConfirm = createHandleConfirmHook(
+    resolveRef,
+    setIsOpen,
+    setConfig,
+  );
+  const handleCancel = createHandleCancelHook(resolveRef, setIsOpen, setConfig);
 
-  const handleCancel = () => {
-    config.resolve?.(null);
-    setIsOpen(false);
-    setConfig({title: "", resolve: null});
-  };
-
+  // Create PromptComponent directly without useMemo to avoid dependencies
   const PromptComponent = () => (
     <PromptDialog
       isOpen={isOpen}
