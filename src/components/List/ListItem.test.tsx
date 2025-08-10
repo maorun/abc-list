@@ -237,4 +237,104 @@ describe("ListItem Integration Test - Rerender with existing words", () => {
       "✅ RERENDER LOOP ISSUE FIXED - No localStorage access growth during rerenders",
     );
   });
+
+  it("should handle the exact production scenario: Neue Liste Foobar → reload → no rerender loop", async () => {
+    // Setup: Track localStorage to measure rerender impact
+    let localStorageAccess = 0;
+    const originalGetItem = localStorage.getItem;
+    const originalSetItem = localStorage.setItem;
+
+    localStorage.getItem = function (...args) {
+      localStorageAccess++;
+      return originalGetItem.apply(this, args);
+    };
+
+    localStorage.setItem = function (...args) {
+      localStorageAccess++;
+      return originalSetItem.apply(this, args);
+    };
+
+    // Step 1: Create neue Liste "Foobar" (simulate existing data)
+    localStorage.setItem(
+      "abcList-Foobar:a",
+      JSON.stringify([
+        {
+          text: "Apple",
+          explanation: "A red fruit",
+          version: 1,
+          imported: false,
+        },
+      ]),
+    );
+    localStorage.setItem(
+      "abcList-Foobar:b",
+      JSON.stringify([
+        {
+          text: "Ball",
+          explanation: "Round object",
+          version: 1,
+          imported: false,
+        },
+      ]),
+    );
+
+    // Reset counter after setup
+    localStorageAccess = 0;
+
+    // Step 2: Simulate page reload at /list/Foobar
+    const {rerender, unmount} = render(
+      <MemoryRouter initialEntries={["/list/Foobar"]}>
+        <Routes>
+          <Route path="/list/:item" element={<ListItem />} />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    // Wait for initial load
+    await waitFor(
+      () => {
+        expect(screen.getByText("ABC-Liste für Foobar")).toBeInTheDocument();
+      },
+      {timeout: 2000},
+    );
+
+    const initialAccess = localStorageAccess;
+    console.log(
+      `🔍 Production scenario - Initial load access: ${initialAccess}`,
+    );
+
+    // Step 3: Simulate production rerender scenario
+    // In production builds, React.memo optimization failures cause continuous rerenders
+    localStorageAccess = 0; // Reset to measure only rerenders
+
+    // Force multiple rerenders to simulate production behavior
+    for (let i = 0; i < 10; i++) {
+      rerender(
+        <MemoryRouter initialEntries={["/list/Foobar"]}>
+          <Routes>
+            <Route path="/list/:item" element={<ListItem />} />
+          </Routes>
+        </MemoryRouter>,
+      );
+      await new Promise((resolve) => setTimeout(resolve, 10));
+    }
+
+    const rerenderAccess = localStorageAccess;
+    console.log(
+      `🔍 Production scenario - Stress test access: ${rerenderAccess}`,
+    );
+
+    // CRITICAL TEST: With function extraction, rerenders should NOT cause localStorage access
+    // SUCCESS: 0 localStorage accesses during rerenders = RERENDER LOOP FIXED!
+    expect(rerenderAccess).toBe(0);
+
+    console.log(
+      "✅ PRODUCTION RERENDER LOOP FIXED - Function extraction successful!",
+    );
+
+    // Cleanup
+    localStorage.getItem = originalGetItem;
+    localStorage.setItem = originalSetItem;
+    unmount();
+  });
 });

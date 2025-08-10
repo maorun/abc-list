@@ -55,15 +55,11 @@ vi.mock("react-router-dom", async () => {
 });
 
 describe("ListItem Integration Test - Production Rerender Issue", () => {
-  let renderCount = 0;
   let localStorageAccessCount = 0;
-  let effectRunCount = 0;
 
   beforeEach(() => {
     localStorage.clear();
-    renderCount = 0;
     localStorageAccessCount = 0;
-    effectRunCount = 0;
 
     // Mock console to avoid noise
     vi.spyOn(console, "warn").mockImplementation(() => {});
@@ -220,8 +216,6 @@ describe("ListItem Integration Test - Production Rerender Issue", () => {
       },
       {timeout: 1000},
     );
-
-    const stableAccessCount = localStorageAccessCount;
 
     // Simulate what happens in production - force React to reconcile
     unmount();

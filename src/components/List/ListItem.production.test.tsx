@@ -68,17 +68,23 @@ const originalUseMemo = React.useMemo;
 const originalUseCallback = React.useCallback;
 
 // Production simulation: effects and callbacks behave differently
-React.useEffect = function (effect: any, deps?: any[]) {
+React.useEffect = function (
+  effect: () => void | (() => void),
+  deps?: unknown[],
+) {
   productionTracker.trackEffect("useEffect");
   return originalUseEffect(effect, deps);
 };
 
-React.useMemo = function (factory: any, deps?: any[]) {
+React.useMemo = function <T>(factory: () => T, deps?: unknown[]) {
   // In production, memoization might be more aggressive
   return originalUseMemo(factory, deps);
 };
 
-React.useCallback = function (callback: any, deps?: any[]) {
+React.useCallback = function <T extends (...args: unknown[]) => unknown>(
+  callback: T,
+  deps?: unknown[],
+) {
   // In production, callback memoization might behave differently
   return originalUseCallback(callback, deps);
 };

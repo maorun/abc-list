@@ -1,4 +1,4 @@
-import React, {useState, useCallback, useMemo} from "react";
+import React, {useState} from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -31,7 +31,7 @@ import {Analytics} from "./components/Analytics/Analytics";
 import {SokratesCheck} from "./components/SokratesCheck/SokratesCheck";
 import {Basar} from "./components/Basar/Basar";
 
-// Move navigationItems outside component to prevent recreation on every render
+// Extract navigation items to prevent recreation on every render
 const navigationItems = [
   {to: "/", label: "Listen"},
   {to: "/link", label: "Verknüpfen"},
@@ -43,50 +43,45 @@ const navigationItems = [
   {to: "/analytics", label: "Analytics"},
 ] as const;
 
-// Move NavButton outside and memoize to prevent recreation on every render
+// Extract NavButton interface outside component
 interface NavButtonProps {
   to: string;
   children: React.ReactNode;
-  onClick?: () => void;
+  onClick: () => void;
   isActive: boolean;
 }
 
-const NavButton = React.memo(
-  function NavButton({to, children, onClick, isActive}: NavButtonProps) {
-    return (
-      <NavLink to={to} onClick={onClick}>
-        <Button
-          variant={isActive ? "secondary" : "ghost"}
-          className="w-full justify-start text-white hover:text-slate-900 sm:w-auto sm:justify-center"
-        >
-          {children}
-        </Button>
-      </NavLink>
-    );
-  },
-  (prevProps, nextProps) => {
-    // Custom comparison to prevent unnecessary rerenders from boolean recreations
-    return (
-      prevProps.to === nextProps.to &&
-      prevProps.children === nextProps.children &&
-      prevProps.isActive === nextProps.isActive &&
-      prevProps.onClick === nextProps.onClick
-    );
-  },
-);
+// Extract NavButton component completely outside to eliminate function recreation
+const NavButton = React.memo(function NavButton({
+  to,
+  children,
+  onClick,
+  isActive,
+}: NavButtonProps) {
+  return (
+    <NavLink to={to} onClick={onClick}>
+      <Button
+        variant={isActive ? "secondary" : "ghost"}
+        className="w-full justify-start text-white hover:text-slate-900 sm:w-auto sm:justify-center"
+      >
+        {children}
+      </Button>
+    </NavLink>
+  );
+});
+
+// Extract handler functions outside Navigation component to prevent recreation
+const createCloseHandler = (setIsOpen: (open: boolean) => void) => () =>
+  setIsOpen(false);
+const noOpHandler = () => {};
 
 function Navigation() {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
 
-  // Stable callback to prevent recreating onClick handlers
-  const closeNavigation = useCallback(() => setIsOpen(false), []);
-  
-  // Stable no-op function for desktop navigation
-  const noOpNavigation = useCallback(() => {}, []);
-
-  // Memoize pathname to prevent cascade rerenders when location object changes
-  const currentPath = useMemo(() => location.pathname, [location.pathname]);
+  // Extract handlers to stable references
+  const closeNavigation = createCloseHandler(setIsOpen);
+  const currentPath = location.pathname;
 
   return (
     <nav className="bg-blue-800">
@@ -145,7 +140,7 @@ function Navigation() {
                   key={item.to}
                   to={item.to}
                   isActive={currentPath === item.to}
-                  onClick={noOpNavigation}
+                  onClick={noOpHandler}
                 >
                   {item.label}
                 </NavButton>

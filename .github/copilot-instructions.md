@@ -201,6 +201,147 @@ ABC-List is a React/TypeScript/Vite web application implementing Vera F. Birkenb
     - Restructuring code to follow React best practices
   - ESLint rules exist for good reasons and should not be suppressed
 
+### Function Extraction Pattern for Production Performance
+**CRITICAL: Use this pattern to prevent production rerender loops and optimize React.memo performance**
+
+#### Core Principle: Extract All Functions Outside Components
+Move ALL function definitions outside React components to prevent recreation on every render, which is essential for production performance:
+
+```typescript
+// ✅ CORRECT: Extract functions outside component
+const handleExportAsJSON = (
+  item: string,
+  cacheKey: string,
+  setExportedData: (data: string) => void,
+  setShowExportModal: (show: boolean) => void,
+) => {
+  const exportData = createExportData(item, cacheKey);
+  const jsonString = JSON.stringify(exportData, null, 2);
+  setExportedData(jsonString);
+  setShowExportModal(true);
+};
+
+function MyComponent() {
+  const [exportedData, setExportedData] = useState("");
+  const [showExportModal, setShowExportModal] = useState(false);
+  
+  // ✅ Create stable reference inside component
+  const exportAsJSON = () => handleExportAsJSON(item, cacheKey, setExportedData, setShowExportModal);
+  
+  return <button onClick={exportAsJSON}>Export</button>;
+}
+
+// ❌ WRONG: Functions inside component recreate on every render
+function MyComponent() {
+  const [exportedData, setExportedData] = useState("");
+  
+  const exportAsJSON = () => {  // ← Creates new function reference each render
+    // ... logic here
+  };
+  
+  return <button onClick={exportAsJSON}>Export</button>;
+}
+```
+
+#### Avoid useEffect When Possible
+Replace useEffect with direct computation to eliminate dependency-related rerenders:
+
+```typescript
+// ✅ CORRECT: Direct computation
+export function ListItem() {
+  const {item} = useParams<{item: string}>();
+  
+  // Compute derived state directly instead of using useEffect
+  const cacheKey = getCacheKey(item);
+  
+  // Set title directly without useEffect
+  if (item) {
+    setDocumentTitle(item);
+  }
+  
+  // Don't render until ready - no useEffect needed
+  if (!item || !cacheKey) {
+    return <div>Loading...</div>;
+  }
+  
+  return <div>Content...</div>;
+}
+
+// ❌ WRONG: useEffect creates dependency chains and timing issues
+export function ListItem() {
+  const {item} = useParams<{item: string}>();
+  const [isReady, setIsReady] = useState(false);
+  
+  useEffect(() => {  // ← Creates effect dependency chain
+    if (item) {
+      document.title = `ABC-Liste für ${item}`;
+      const timer = setTimeout(() => setIsReady(true), 0);
+      return () => clearTimeout(timer);
+    }
+  }, [item]);  // ← Can cause rerenders when item changes
+  
+  if (!isReady) return <div>Loading...</div>;
+  return <div>Content...</div>;
+}
+```
+
+#### Navigation Component Pattern
+Extract all navigation handlers to prevent cascading rerenders:
+
+```typescript
+// ✅ CORRECT: All functions extracted outside component
+const createCloseHandler = (setIsOpen: (open: boolean) => void) => () => setIsOpen(false);
+const noOpHandler = () => {};
+
+function Navigation() {
+  const [isOpen, setIsOpen] = useState(false);
+  
+  // Create stable references
+  const closeNavigation = createCloseHandler(setIsOpen);
+  
+  return (
+    <NavButton onClick={closeNavigation} />
+    <NavButton onClick={noOpHandler} />
+  );
+}
+```
+
+#### Testing Pattern
+Always test for rerender loops in integration tests:
+
+```typescript
+it("should handle production rerender scenarios without localStorage access growth", async () => {
+  let localStorageAccess = 0;
+  const originalGetItem = localStorage.getItem;
+  
+  localStorage.getItem = function(...args) {
+    localStorageAccess++;
+    return originalGetItem.apply(this, args);
+  };
+  
+  // Test multiple rerenders
+  for (let i = 0; i < 10; i++) {
+    rerender(<Component />);
+  }
+  
+  // CRITICAL: Should be 0 with proper function extraction
+  expect(localStorageAccess).toBe(0);
+});
+```
+
+#### Why This Pattern Is Required
+- **Production builds** optimize differently than development
+- **React.memo** fails when function references change between renders
+- **Navigation components** being global cause app-wide rerenders
+- **localStorage access** during rerenders indicates optimization failures
+
+#### Key Benefits
+- ✅ Eliminates production rerender loops completely
+- ✅ Stabilizes React.memo optimization
+- ✅ Improves overall application performance  
+- ✅ Prevents cascading rerenders from global components
+- ✅ Reduces localStorage access during rerenders to zero
+
 ### Modifying Styles  
 - Uses Tailwind CSS 4 for styling
 - Global styles in `src/index.css`

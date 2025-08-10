@@ -131,4 +131,102 @@ Closes #42
 
 Common types include `feat`, `fix`, `docs`, `style`, `refactor`, `test`, and `chore`.
 
+## 7. Performance Optimization Pattern: Function Extraction
+
+### Critical: Production Rerender Prevention
+
+To prevent production rerender loops and optimize React.memo performance, **extract ALL function definitions outside React components**:
+
+```typescript
+// ✅ CORRECT: Extract functions outside component
+const handleExportAsJSON = (item: string, setData: (data: string) => void) => {
+  const jsonString = JSON.stringify(createExportData(item), null, 2);
+  setData(jsonString);
+};
+
+function MyComponent() {
+  const [data, setData] = useState("");
+  
+  // Create stable reference inside component
+  const exportAsJSON = () => handleExportAsJSON(item, setData);
+  
+  return <button onClick={exportAsJSON}>Export</button>;
+}
+
+// ❌ WRONG: Functions inside component recreate on every render
+function MyComponent() {
+  const exportAsJSON = () => {  // ← New function reference each render
+    // ... logic
+  };
+  
+  return <button onClick={exportAsJSON}>Export</button>;
+}
+```
+
+### Avoid useEffect When Possible
+
+Replace useEffect with direct computation:
+
+```typescript
+// ✅ CORRECT: Direct computation
+export function ListItem() {
+  const {item} = useParams<{item: string}>();
+  const cacheKey = getCacheKey(item);
+  
+  if (item) setDocumentTitle(item);
+  
+  if (!item || !cacheKey) {
+    return <div>Loading...</div>;
+  }
+  
+  return <div>Content...</div>;
+}
+
+// ❌ WRONG: useEffect creates dependency chains
+export function ListItem() {
+  const {item} = useParams<{item: string}>();
+  const [isReady, setIsReady] = useState(false);
+  
+  useEffect(() => {  // ← Creates timing issues and rerenders
+    if (item) {
+      document.title = `ABC-Liste für ${item}`;
+      const timer = setTimeout(() => setIsReady(true), 0);
+      return () => clearTimeout(timer);
+    }
+  }, [item]);
+  
+  if (!isReady) return <div>Loading...</div>;
+  return <div>Content...</div>;
+}
+```
+
+### Why This Matters
+
+- **Production builds** behave differently than development
+- **Global components** (like Navigation) cause app-wide rerenders
+- **React.memo** fails when function references change
+- **localStorage access** during rerenders indicates performance issues
+
+### Testing Pattern
+
+Always verify no rerender loops in tests:
+
+```typescript
+it("should prevent production rerender loops", async () => {
+  let accessCount = 0;
+  const originalGetItem = localStorage.getItem;
+  
+  localStorage.getItem = function(...args) {
+    accessCount++;
+    return originalGetItem.apply(this, args);
+  };
+  
+  for (let i = 0; i < 10; i++) {
+    rerender(<Component />);
+  }
+  
+  expect(accessCount).toBe(0); // Should be 0 with proper function extraction
+});
+```
+
 Thank you for your contribution!
