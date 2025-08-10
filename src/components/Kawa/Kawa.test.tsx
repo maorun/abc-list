@@ -49,11 +49,11 @@ describe("Kawa", () => {
   it("creates a new kawa, saves it, and navigates", () => {
     render(<Kawa />, {wrapper: MemoryRouter});
 
-    fireEvent.click(screen.getByRole("button", {name: "Neues Kawa"}));
+    fireEvent.click(screen.getByRole("button", {name: /neues kawa/i}));
 
     const input = screen.getByPlaceholderText("Enter text...");
     fireEvent.change(input, {target: {value: "Neues Kawa Item"}});
-    fireEvent.click(screen.getByRole("button", {name: "Speichern"}));
+    fireEvent.click(screen.getByRole("button", {name: /speichern/i}));
 
     expect(
       screen.getByRole("button", {name: "Neues Kawa Item"}),

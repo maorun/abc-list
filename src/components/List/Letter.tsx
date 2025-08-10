@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/dialog";
 import {Button} from "../ui/button";
 import {Input} from "../ui/input";
+import {VoiceInput} from "../VoiceInput";
+import {Mic} from "lucide-react";
 
 interface LetterProps {
   cacheKey: string;
@@ -117,6 +119,7 @@ const setModalCloseAction = (setIsModalOpen: (open: boolean) => void) => () => {
 export const Letter = React.memo(
   function Letter({cacheKey, letter}: LetterProps) {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isVoiceOpen, setIsVoiceOpen] = useState(false);
     const [words, setWords] = useState<WordWithExplanation[]>([]);
     const [newWord, setNewWord] = useState("");
 
@@ -200,6 +203,19 @@ export const Letter = React.memo(
     const openModal = setModalOpenAction(setIsModalOpen);
     const closeModal = setModalCloseAction(setIsModalOpen);
 
+    const handleVoiceInput = (word: string) => {
+      setNewWord(word);
+      handleAddWordAction(
+        word,
+        words,
+        storageKey,
+        setWords,
+        setNewWord,
+        setIsModalOpen,
+      );
+      setIsVoiceOpen(false);
+    };
+
     return (
       <div className="flex flex-col items-center">
         <Button
@@ -249,6 +265,18 @@ export const Letter = React.memo(
                 placeholder="Wort eingeben..."
                 aria-label="Neues Wort eingeben"
               />
+              
+              <div className="flex justify-center">
+                <Button
+                  variant="outline"
+                  onClick={() => setIsVoiceOpen(true)}
+                  className="flex items-center gap-2"
+                  aria-label="Spracheingabe verwenden"
+                >
+                  <Mic className="h-4 w-4" />
+                  Spracheingabe
+                </Button>
+              </div>
             </div>
 
             <DialogFooter className="flex justify-end space-x-2">
@@ -269,6 +297,13 @@ export const Letter = React.memo(
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        <VoiceInput
+          isOpen={isVoiceOpen}
+          onClose={() => setIsVoiceOpen(false)}
+          onWordRecognized={handleVoiceInput}
+          letter={letter.toUpperCase()}
+        />
       </div>
     );
   },
