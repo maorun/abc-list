@@ -17,17 +17,19 @@ interface DeleteConfirmProps<T> {
 }
 
 // Extracted function handlers to prevent recreation on every render
-const handleDeleteAction = (
-  itemToDelete: unknown,
-  onDelete?: (itemToDelete: unknown) => void,
-  onAbort?: () => void,
-) => () => {
-  if (onDelete) {
-    onDelete(itemToDelete);
-  } else if (onAbort) {
-    onAbort();
-  }
-};
+const handleDeleteAction =
+  (
+    itemToDelete: unknown,
+    onDelete?: (itemToDelete: unknown) => void,
+    onAbort?: () => void,
+  ) =>
+  () => {
+    if (onDelete) {
+      onDelete(itemToDelete);
+    } else if (onAbort) {
+      onAbort();
+    }
+  };
 
 const handleDialogChangeAction = (onAbort: () => void) => (open: boolean) => {
   if (!open) onAbort();

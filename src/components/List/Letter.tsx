@@ -51,7 +51,14 @@ const handleKeyDownAction = (
 ) => {
   if (e.key === "Enter" && newWord.trim()) {
     e.preventDefault();
-    handleAddWordAction(newWord, words, storageKey, setWords, setNewWord, setIsModalOpen);
+    handleAddWordAction(
+      newWord,
+      words,
+      storageKey,
+      setWords,
+      setNewWord,
+      setIsModalOpen,
+    );
   }
 };
 
@@ -154,16 +161,42 @@ export const Letter = React.memo(
     }, [storageKey]); // Only depend on storageKey, which is stable
 
     // Create stable function references inside component
-    const handleAddWord = () => handleAddWordAction(newWord, words, storageKey, setWords, setNewWord, setIsModalOpen);
-    
-    const handleKeyDown = (e: React.KeyboardEvent) => handleKeyDownAction(e, newWord, words, storageKey, setWords, setNewWord, setIsModalOpen);
-    
-    const handleDeleteWord = (wordToDelete: string) => handleDeleteWordAction(wordToDelete, words, storageKey, setWords);
-    
-    const handleExplanationChange = (wordText: string, explanation: string) => handleExplanationChangeAction(wordText, explanation, words, storageKey, setWords);
-    
-    const handleRatingChange = (wordText: string, rating: number) => handleRatingChangeAction(wordText, rating, words, storageKey, setWords);
-    
+    const handleAddWord = () =>
+      handleAddWordAction(
+        newWord,
+        words,
+        storageKey,
+        setWords,
+        setNewWord,
+        setIsModalOpen,
+      );
+
+    const handleKeyDown = (e: React.KeyboardEvent) =>
+      handleKeyDownAction(
+        e,
+        newWord,
+        words,
+        storageKey,
+        setWords,
+        setNewWord,
+        setIsModalOpen,
+      );
+
+    const handleDeleteWord = (wordToDelete: string) =>
+      handleDeleteWordAction(wordToDelete, words, storageKey, setWords);
+
+    const handleExplanationChange = (wordText: string, explanation: string) =>
+      handleExplanationChangeAction(
+        wordText,
+        explanation,
+        words,
+        storageKey,
+        setWords,
+      );
+
+    const handleRatingChange = (wordText: string, rating: number) =>
+      handleRatingChangeAction(wordText, rating, words, storageKey, setWords);
+
     const openModal = setModalOpenAction(setIsModalOpen);
     const closeModal = setModalCloseAction(setIsModalOpen);
 

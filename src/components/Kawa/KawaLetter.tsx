@@ -8,23 +8,28 @@ interface KawaLetterProps {
 }
 
 // Extracted function handlers to prevent recreation on every render
-const handleTextChangeAction = (
-  setText: (text: string) => void,
-  storageKey: string,
-  onChangeText?: (text: string) => void,
-) => (newText: string) => {
-  setText(newText);
-  localStorage.setItem(storageKey, JSON.stringify({text: newText}));
-  if (onChangeText) {
-    onChangeText(newText);
-  }
-};
+const handleTextChangeAction =
+  (
+    setText: (text: string) => void,
+    storageKey: string,
+    onChangeText?: (text: string) => void,
+  ) =>
+  (newText: string) => {
+    setText(newText);
+    localStorage.setItem(storageKey, JSON.stringify({text: newText}));
+    if (onChangeText) {
+      onChangeText(newText);
+    }
+  };
 
 export function KawaLetter({letter, index, onChangeText}: KawaLetterProps) {
   const [text, setText] = useState("");
 
   // Use useMemo to prevent recreation of storageKey on every render
-  const storageKey = useMemo(() => `KawaItem_${letter}_${index}`, [letter, index]);
+  const storageKey = useMemo(
+    () => `KawaItem_${letter}_${index}`,
+    [letter, index],
+  );
 
   useEffect(() => {
     const storedText = localStorage.getItem(storageKey);
@@ -34,7 +39,11 @@ export function KawaLetter({letter, index, onChangeText}: KawaLetterProps) {
   }, [storageKey]);
 
   // Create stable function reference inside component
-  const handleTextChange = handleTextChangeAction(setText, storageKey, onChangeText);
+  const handleTextChange = handleTextChangeAction(
+    setText,
+    storageKey,
+    onChangeText,
+  );
 
   const inputId = `kawa-letter-input-${index}`;
   return (

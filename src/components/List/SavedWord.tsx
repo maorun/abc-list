@@ -21,92 +21,98 @@ interface SavedWordProps {
 }
 
 // Extracted function handlers to prevent recreation on every render
-const handleDeleteAction = (
-  setShowDelete: (show: boolean) => void,
-  onDelete?: () => void,
-) => () => {
-  setShowDelete(false);
-  if (onDelete) {
-    onDelete();
-  }
-};
+const handleDeleteAction =
+  (setShowDelete: (show: boolean) => void, onDelete?: () => void) => () => {
+    setShowDelete(false);
+    if (onDelete) {
+      onDelete();
+    }
+  };
 
-const handleSaveExplanationAction = (
-  explanationText: string,
-  setEditingExplanation: (editing: boolean) => void,
-  onExplanationChange?: (explanation: string) => void,
-) => () => {
-  if (onExplanationChange) {
-    onExplanationChange(explanationText);
-  }
-  setEditingExplanation(false);
-};
+const handleSaveExplanationAction =
+  (
+    explanationText: string,
+    setEditingExplanation: (editing: boolean) => void,
+    onExplanationChange?: (explanation: string) => void,
+  ) =>
+  () => {
+    if (onExplanationChange) {
+      onExplanationChange(explanationText);
+    }
+    setEditingExplanation(false);
+  };
 
-const handleRatingClickAction = (
-  setShowRating: (show: boolean) => void,
-  onRatingChange?: (rating: number) => void,
-) => (newRating: number) => {
-  if (onRatingChange) {
-    onRatingChange(newRating);
-  }
-  setShowRating(false);
-};
+const handleRatingClickAction =
+  (
+    setShowRating: (show: boolean) => void,
+    onRatingChange?: (rating: number) => void,
+  ) =>
+  (newRating: number) => {
+    if (onRatingChange) {
+      onRatingChange(newRating);
+    }
+    setShowRating(false);
+  };
 
-const handleRightClickAction = (
-  showExplanation: boolean,
-  setShowExplanation: (show: boolean) => void,
-) => (e: React.MouseEvent) => {
-  e.preventDefault();
-  setShowExplanation(!showExplanation);
-};
-
-const handleRatingToggleAction = (
-  showRating: boolean,
-  setShowRating: (show: boolean) => void,
-) => (e: React.MouseEvent) => {
-  e.stopPropagation();
-  setShowRating(!showRating);
-};
-
-const handleRatingKeyDownAction = (
-  showRating: boolean,
-  setShowRating: (show: boolean) => void,
-) => (e: React.KeyboardEvent) => {
-  if (e.key === "Enter" || e.key === " ") {
+const handleRightClickAction =
+  (showExplanation: boolean, setShowExplanation: (show: boolean) => void) =>
+  (e: React.MouseEvent) => {
     e.preventDefault();
+    setShowExplanation(!showExplanation);
+  };
+
+const handleRatingToggleAction =
+  (showRating: boolean, setShowRating: (show: boolean) => void) =>
+  (e: React.MouseEvent) => {
     e.stopPropagation();
     setShowRating(!showRating);
-  }
-};
+  };
 
-const handleCancelExplanationAction = (
-  explanation: string | undefined,
-  setEditingExplanation: (editing: boolean) => void,
-  setExplanationText: (text: string) => void,
-) => () => {
-  setEditingExplanation(false);
-  setExplanationText(explanation || "");
-};
+const handleRatingKeyDownAction =
+  (showRating: boolean, setShowRating: (show: boolean) => void) =>
+  (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      e.stopPropagation();
+      setShowRating(!showRating);
+    }
+  };
 
-const setShowDeleteTrueAction = (setShowDelete: (show: boolean) => void) => () => {
-  setShowDelete(true);
-};
+const handleCancelExplanationAction =
+  (
+    explanation: string | undefined,
+    setEditingExplanation: (editing: boolean) => void,
+    setExplanationText: (text: string) => void,
+  ) =>
+  () => {
+    setEditingExplanation(false);
+    setExplanationText(explanation || "");
+  };
 
-const setShowDeleteFalseAction = (setShowDelete: (show: boolean) => void) => () => {
-  setShowDelete(false);
-};
+const setShowDeleteTrueAction =
+  (setShowDelete: (show: boolean) => void) => () => {
+    setShowDelete(true);
+  };
 
-const setShowExplanationFalseAction = (setShowExplanation: (show: boolean) => void) => () => {
-  setShowExplanation(false);
-};
+const setShowDeleteFalseAction =
+  (setShowDelete: (show: boolean) => void) => () => {
+    setShowDelete(false);
+  };
 
-const setShowRatingFalseAction = (setShowRating: (show: boolean) => void) => () => {
-  setShowRating(false);
-};
+const setShowExplanationFalseAction =
+  (setShowExplanation: (show: boolean) => void) => () => {
+    setShowExplanation(false);
+  };
 
-const setEditingExplanationTrueAction = (setEditingExplanation: (editing: boolean) => void) => () => {
-  setEditingExplanation(true);
-};
+const setShowRatingFalseAction =
+  (setShowRating: (show: boolean) => void) => () => {
+    setShowRating(false);
+  };
+
+const setEditingExplanationTrueAction =
+  (setEditingExplanation: (editing: boolean) => void) => () => {
+    setEditingExplanation(true);
+  };
 
 export function SavedWord({
   text,
@@ -125,17 +131,40 @@ export function SavedWord({
 
   // Create stable function references inside component
   const handleDelete = handleDeleteAction(setShowDelete, onDelete);
-  const handleSaveExplanation = handleSaveExplanationAction(explanationText, setEditingExplanation, onExplanationChange);
-  const handleRatingClick = handleRatingClickAction(setShowRating, onRatingChange);
-  const handleRightClick = handleRightClickAction(showExplanation, setShowExplanation);
-  const handleRatingToggle = handleRatingToggleAction(showRating, setShowRating);
-  const handleRatingKeyDown = handleRatingKeyDownAction(showRating, setShowRating);
-  const handleCancelExplanation = handleCancelExplanationAction(explanation, setEditingExplanation, setExplanationText);
+  const handleSaveExplanation = handleSaveExplanationAction(
+    explanationText,
+    setEditingExplanation,
+    onExplanationChange,
+  );
+  const handleRatingClick = handleRatingClickAction(
+    setShowRating,
+    onRatingChange,
+  );
+  const handleRightClick = handleRightClickAction(
+    showExplanation,
+    setShowExplanation,
+  );
+  const handleRatingToggle = handleRatingToggleAction(
+    showRating,
+    setShowRating,
+  );
+  const handleRatingKeyDown = handleRatingKeyDownAction(
+    showRating,
+    setShowRating,
+  );
+  const handleCancelExplanation = handleCancelExplanationAction(
+    explanation,
+    setEditingExplanation,
+    setExplanationText,
+  );
   const showDeleteTrue = setShowDeleteTrueAction(setShowDelete);
   const showDeleteFalse = setShowDeleteFalseAction(setShowDelete);
-  const showExplanationFalse = setShowExplanationFalseAction(setShowExplanation);
+  const showExplanationFalse =
+    setShowExplanationFalseAction(setShowExplanation);
   const showRatingFalse = setShowRatingFalseAction(setShowRating);
-  const editingExplanationTrue = setEditingExplanationTrueAction(setEditingExplanation);
+  const editingExplanationTrue = setEditingExplanationTrueAction(
+    setEditingExplanation,
+  );
 
   const renderStars = (currentRating?: number, interactive = false) => {
     const stars = [];
