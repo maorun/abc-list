@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useMemo, useCallback} from "react";
+import React, {useEffect, useState, useMemo} from "react";
 import {useParams} from "react-router-dom";
 import {toast} from "sonner";
 import {usePrompt} from "@/components/ui/prompt-dialog";
@@ -38,9 +38,10 @@ export function ListItem() {
     return item ? `abcList-${item}` : null;
   }, [item]);
 
-  const alphabet = useMemo(() => 
-    Array.from({length: 26}, (_, i) => String.fromCharCode(97 + i))
-  , []);
+  const alphabet = useMemo(
+    () => Array.from({length: 26}, (_, i) => String.fromCharCode(97 + i)),
+    [],
+  );
 
   // Don't render Letter components until we have a valid item and are ready
   if (!item || !cacheKey || !isReady) {
@@ -48,7 +49,9 @@ export function ListItem() {
       <div className="p-4">
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
-            <div className="text-lg font-medium text-gray-600">Lade ABC-Liste...</div>
+            <div className="text-lg font-medium text-gray-600">
+              Lade ABC-Liste...
+            </div>
           </div>
         </div>
       </div>
@@ -342,11 +345,12 @@ export function ListItem() {
       </div>
 
       <div className="flex flex-row flex-wrap justify-around gap-4">
-        {cacheKey && alphabet.map((char) => (
-          <div key={char} className="m-2">
-            <Letter letter={char} cacheKey={cacheKey} />
-          </div>
-        ))}
+        {cacheKey &&
+          alphabet.map((char) => (
+            <div key={char} className="m-2">
+              <Letter letter={char} cacheKey={cacheKey} />
+            </div>
+          ))}
       </div>
 
       {/* Export Modal */}

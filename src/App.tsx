@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from "react";
+import React, {useState, useCallback, useMemo} from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -51,21 +51,29 @@ interface NavButtonProps {
   isActive: boolean;
 }
 
-const NavButton = React.memo(({
-  to,
-  children,
-  onClick,
-  isActive,
-}: NavButtonProps) => (
-  <NavLink to={to} onClick={onClick}>
-    <Button
-      variant={isActive ? "secondary" : "ghost"}
-      className="w-full justify-start text-white hover:text-slate-900 sm:w-auto sm:justify-center"
-    >
-      {children}
-    </Button>
-  </NavLink>
-));
+const NavButton = React.memo(
+  function NavButton({to, children, onClick, isActive}: NavButtonProps) {
+    return (
+      <NavLink to={to} onClick={onClick}>
+        <Button
+          variant={isActive ? "secondary" : "ghost"}
+          className="w-full justify-start text-white hover:text-slate-900 sm:w-auto sm:justify-center"
+        >
+          {children}
+        </Button>
+      </NavLink>
+    );
+  },
+  (prevProps, nextProps) => {
+    // Custom comparison to prevent unnecessary rerenders from boolean recreations
+    return (
+      prevProps.to === nextProps.to &&
+      prevProps.children === nextProps.children &&
+      prevProps.isActive === nextProps.isActive &&
+      prevProps.onClick === nextProps.onClick
+    );
+  },
+);
 
 function Navigation() {
   const location = useLocation();
@@ -73,6 +81,9 @@ function Navigation() {
 
   // Stable callback to prevent recreating onClick handlers
   const closeNavigation = useCallback(() => setIsOpen(false), []);
+
+  // Memoize pathname to prevent cascade rerenders when location object changes
+  const currentPath = useMemo(() => location.pathname, [location.pathname]);
 
   return (
     <nav className="bg-blue-800">
@@ -111,7 +122,7 @@ function Navigation() {
                       <NavButton
                         key={item.to}
                         to={item.to}
-                        isActive={location.pathname === item.to}
+                        isActive={currentPath === item.to}
                         onClick={closeNavigation}
                       >
                         {item.label}
@@ -127,10 +138,10 @@ function Navigation() {
           <div className="hidden sm:ml-6 sm:flex sm:items-center">
             <div className="flex space-x-2">
               {navigationItems.map((item) => (
-                <NavButton 
-                  key={item.to} 
+                <NavButton
+                  key={item.to}
                   to={item.to}
-                  isActive={location.pathname === item.to}
+                  isActive={currentPath === item.to}
                 >
                   {item.label}
                 </NavButton>

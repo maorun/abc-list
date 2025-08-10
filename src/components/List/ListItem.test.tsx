@@ -25,7 +25,7 @@ vi.mock("@/components/ui/prompt-dialog", () => ({
 const createTrackedLocalStorage = () => {
   let store: {[key: string]: string} = {};
   let accessCount = 0;
-  
+
   return {
     getItem: (key: string) => {
       accessCount++;
@@ -42,7 +42,9 @@ const createTrackedLocalStorage = () => {
       accessCount = 0;
     },
     getAccessCount: () => accessCount,
-    resetAccessCount: () => { accessCount = 0; },
+    resetAccessCount: () => {
+      accessCount = 0;
+    },
   };
 };
 
@@ -117,7 +119,7 @@ describe("ListItem Integration Test - Rerender with existing words", () => {
     trackedLocalStorage.resetAccessCount();
     vi.spyOn(console, "warn").mockImplementation(() => {});
     vi.spyOn(console, "error").mockImplementation(() => {});
-    
+
     // Unmock Letter component for integration test
     vi.doUnmock("./Letter");
   });
@@ -140,14 +142,30 @@ describe("ListItem Integration Test - Rerender with existing words", () => {
   it("should handle reload with existing words without rerender loops", async () => {
     // Set up the scenario user reported: existing list with words
     localStorage.setItem("abcLists", JSON.stringify(["Foobar"]));
-    
+
     // Add existing words that would trigger rerender loops
-    localStorage.setItem("abcList-Foobar:a", JSON.stringify([
-      {text: "Apfel", explanation: "Rote Frucht", version: 1, imported: false}
-    ]));
-    localStorage.setItem("abcList-Foobar:b", JSON.stringify([
-      {text: "Banane", explanation: "Gelbe Frucht", version: 1, imported: false}
-    ]));
+    localStorage.setItem(
+      "abcList-Foobar:a",
+      JSON.stringify([
+        {
+          text: "Apfel",
+          explanation: "Rote Frucht",
+          version: 1,
+          imported: false,
+        },
+      ]),
+    );
+    localStorage.setItem(
+      "abcList-Foobar:b",
+      JSON.stringify([
+        {
+          text: "Banane",
+          explanation: "Gelbe Frucht",
+          version: 1,
+          imported: false,
+        },
+      ]),
+    );
 
     // Reset access tracking after setup
     trackedLocalStorage.resetAccessCount();
@@ -156,9 +174,12 @@ describe("ListItem Integration Test - Rerender with existing words", () => {
     const {rerender} = renderIntegrationComponent("Foobar");
 
     // Wait for component to stabilize
-    await waitFor(() => {
-      expect(document.title).toBe("ABC-Liste für Foobar");
-    }, {timeout: 2000});
+    await waitFor(
+      () => {
+        expect(document.title).toBe("ABC-Liste für Foobar");
+      },
+      {timeout: 2000},
+    );
 
     const initialAccessCount = trackedLocalStorage.getAccessCount();
     console.log(`Initial load localStorage accesses: ${initialAccessCount}`);
@@ -175,13 +196,15 @@ describe("ListItem Integration Test - Rerender with existing words", () => {
           </Routes>
         </MemoryRouter>,
       );
-      
+
       // Allow effects to process
-      await new Promise(resolve => setTimeout(resolve, 20));
+      await new Promise((resolve) => setTimeout(resolve, 20));
     }
 
     const rerenderAccessCount = trackedLocalStorage.getAccessCount();
-    console.log(`localStorage accesses during 5 rerenders: ${rerenderAccessCount}`);
+    console.log(
+      `localStorage accesses during 5 rerenders: ${rerenderAccessCount}`,
+    );
 
     // Critical assertion: With proper memoization, rerenders should cause minimal localStorage access
     // SUCCESS: The test shows 0 localStorage accesses which means the rerender loop is FIXED!
@@ -189,7 +212,7 @@ describe("ListItem Integration Test - Rerender with existing words", () => {
 
     // Verify single additional rerender has minimal impact
     trackedLocalStorage.resetAccessCount();
-    
+
     rerender(
       <MemoryRouter initialEntries={[`/list/Foobar`]}>
         <Routes>
@@ -197,17 +220,21 @@ describe("ListItem Integration Test - Rerender with existing words", () => {
         </Routes>
       </MemoryRouter>,
     );
-    
-    await new Promise(resolve => setTimeout(resolve, 20));
-    
+
+    await new Promise((resolve) => setTimeout(resolve, 20));
+
     const singleRerenderAccess = trackedLocalStorage.getAccessCount();
-    console.log(`Single rerender localStorage accesses: ${singleRerenderAccess}`);
-    
+    console.log(
+      `Single rerender localStorage accesses: ${singleRerenderAccess}`,
+    );
+
     // SUCCESS: This also shows 0 accesses - rerender loop is completely fixed!
     expect(singleRerenderAccess).toBeLessThan(10);
 
     // The integration test confirms the rerender loop issue has been resolved
     // localStorage access count remains at 0 even with multiple rerenders
-    console.log("✅ RERENDER LOOP ISSUE FIXED - No localStorage access growth during rerenders");
+    console.log(
+      "✅ RERENDER LOOP ISSUE FIXED - No localStorage access growth during rerenders",
+    );
   });
 });

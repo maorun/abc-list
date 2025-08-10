@@ -64,11 +64,11 @@ describe("ListItem Integration Test - Production Rerender Issue", () => {
     renderCount = 0;
     localStorageAccessCount = 0;
     effectRunCount = 0;
-    
+
     // Mock console to avoid noise
     vi.spyOn(console, "warn").mockImplementation(() => {});
     vi.spyOn(console, "error").mockImplementation(() => {});
-    
+
     // Track localStorage access
     const originalGetItem = localStorage.getItem;
     localStorage.getItem = (key: string) => {
@@ -85,23 +85,39 @@ describe("ListItem Integration Test - Production Rerender Issue", () => {
     // Set up the scenario: Create a list "Foobar" first
     const listData = ["Foobar"];
     localStorage.setItem("abcLists", JSON.stringify(listData));
-    
-    // Add some sample data for the list to make it more realistic
-    localStorage.setItem("abcList-Foobar:a", JSON.stringify([
-      {text: "Apfel", explanation: "Rote Frucht", version: 1, imported: false}
-    ]));
-    localStorage.setItem("abcList-Foobar:b", JSON.stringify([
-      {text: "Banane", explanation: "Gelbe Frucht", version: 1, imported: false}
-    ]));
 
-    // Step 1: Simulate initial router state (undefined item) 
+    // Add some sample data for the list to make it more realistic
+    localStorage.setItem(
+      "abcList-Foobar:a",
+      JSON.stringify([
+        {
+          text: "Apfel",
+          explanation: "Rote Frucht",
+          version: 1,
+          imported: false,
+        },
+      ]),
+    );
+    localStorage.setItem(
+      "abcList-Foobar:b",
+      JSON.stringify([
+        {
+          text: "Banane",
+          explanation: "Gelbe Frucht",
+          version: 1,
+          imported: false,
+        },
+      ]),
+    );
+
+    // Step 1: Simulate initial router state (undefined item)
     // This happens when the page first loads
     mockUseParams.mockReturnValue({item: undefined});
 
     const {rerender} = render(
       <MemoryRouter>
         <ListItem />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     // Should show loading state, no localStorage access for Letter components yet
@@ -111,11 +127,11 @@ describe("ListItem Integration Test - Production Rerender Issue", () => {
     // Step 2: Simulate router updating with actual item value
     // This is the critical transition that was causing rerender loops
     mockUseParams.mockReturnValue({item: "Foobar"});
-    
+
     rerender(
       <MemoryRouter>
         <ListItem />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     // Wait for all effects to settle
@@ -131,11 +147,11 @@ describe("ListItem Integration Test - Production Rerender Issue", () => {
       rerender(
         <MemoryRouter>
           <ListItem />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
-      
+
       // Small delay to allow effects to run
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 10));
     }
 
     const finalAccessCount = localStorageAccessCount;
@@ -145,81 +161,89 @@ describe("ListItem Integration Test - Production Rerender Issue", () => {
     // 26 letters * 2-3 accesses per letter = ~52-78 accesses is reasonable
     // But continuous rerenders would cause hundreds or thousands of accesses
     const accessGrowth = finalAccessCount - afterNavAccessCount;
-    
-    console.log(`Initial access: ${initialAccessCount}, After nav: ${afterNavAccessCount}, Final: ${finalAccessCount}, Growth: ${accessGrowth}`);
-    
+
+    console.log(
+      `Initial access: ${initialAccessCount}, After nav: ${afterNavAccessCount}, Final: ${finalAccessCount}, Growth: ${accessGrowth}`,
+    );
+
     // The key test: rerender growth should be minimal (< 50 additional accesses)
     // If there's a rerender loop, this would be in the hundreds or thousands
     expect(accessGrowth).toBeLessThan(50);
-    
+
     // Additional check: No continuous growth pattern
     // Re-render once more and check for minimal additional access
     const beforeFinalRerender = localStorageAccessCount;
     rerender(
       <MemoryRouter>
         <ListItem />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
-    await new Promise(resolve => setTimeout(resolve, 10));
-    
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
     const afterFinalRerender = localStorageAccessCount;
     const finalGrowth = afterFinalRerender - beforeFinalRerender;
-    
+
     // Should be nearly zero additional access on stable rerenders
     expect(finalGrowth).toBeLessThan(5);
   });
 
   it("should handle the exact scenario: neue Liste → reload → no rerender loop", async () => {
     // Simulate exact user workflow
-    
+
     // Step 1: Create new list "Foobar" (simulating user creating it)
     const listData = ["Foobar"];
     localStorage.setItem("abcLists", JSON.stringify(listData));
-    
+
     // Step 2: Simulate page reload at /list/Foobar
     // This is the problematic scenario user reported
     mockUseParams.mockReturnValue({item: "Foobar"});
-    
+
     // Track render cycles and localStorage access during mount/unmount
     let componentMountCount = 0;
     const OriginalListItem = ListItem;
-    
+
     const TestWrapper = () => {
       componentMountCount++;
       return <OriginalListItem />;
     };
-    
+
     const {unmount} = render(
       <MemoryRouter>
         <TestWrapper />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     // Wait for component to stabilize
-    await waitFor(() => {
-      expect(document.title).toBe("ABC-Liste für Foobar");
-    }, {timeout: 1000});
+    await waitFor(
+      () => {
+        expect(document.title).toBe("ABC-Liste für Foobar");
+      },
+      {timeout: 1000},
+    );
 
     const stableAccessCount = localStorageAccessCount;
 
     // Simulate what happens in production - force React to reconcile
     unmount();
-    
+
     // Reset counters for clean measurement
     localStorageAccessCount = 0;
     componentMountCount = 0;
-    
+
     // Re-mount component (simulating reload)
     const {rerender} = render(
       <MemoryRouter>
         <TestWrapper />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     // Wait for stabilization again
-    await waitFor(() => {
-      expect(document.title).toBe("ABC-Liste für Foobar");
-    }, {timeout: 1000});
+    await waitFor(
+      () => {
+        expect(document.title).toBe("ABC-Liste für Foobar");
+      },
+      {timeout: 1000},
+    );
 
     const afterReloadAccessCount = localStorageAccessCount;
     console.log(`After reload access count: ${afterReloadAccessCount}`);
@@ -229,9 +253,9 @@ describe("ListItem Integration Test - Production Rerender Issue", () => {
       rerender(
         <MemoryRouter>
           <TestWrapper />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
-      await new Promise(resolve => setTimeout(resolve, 5));
+      await new Promise((resolve) => setTimeout(resolve, 5));
     }
 
     const afterStressTestCount = localStorageAccessCount;
@@ -239,26 +263,28 @@ describe("ListItem Integration Test - Production Rerender Issue", () => {
 
     // The critical assertion: stress test should not cause significant localStorage growth
     // Production rerender loops would cause exponential growth here
-    console.log(`Reload access: ${afterReloadAccessCount}, After stress: ${afterStressTestCount}, Growth: ${stressGrowth}`);
-    
+    console.log(
+      `Reload access: ${afterReloadAccessCount}, After stress: ${afterStressTestCount}, Growth: ${stressGrowth}`,
+    );
+
     // The fix: growth should be minimal (< 60 for 26 components * 10 rerenders is reasonable)
     // A true rerender loop would cause hundreds or thousands of accesses
     expect(stressGrowth).toBeLessThan(60); // Reasonable threshold for this scenario
-    
+
     // Verify no runaway render cycles
     expect(componentMountCount).toBeLessThan(15); // Should be around 11 (1 + 10 rerenders)
   });
 
   it("should handle router timing edge case without infinite loops", async () => {
     // Test the specific router timing issue that was causing problems
-    
+
     // Step 1: Start with undefined (router not ready)
     mockUseParams.mockReturnValue({item: undefined});
-    
+
     const {rerender} = render(
       <MemoryRouter>
         <ListItem />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     // Should show loading state
@@ -269,15 +295,15 @@ describe("ListItem Integration Test - Production Rerender Issue", () => {
     // Step 2: Router becomes ready but with different values in rapid succession
     // This simulates the timing issue where router updates multiple times
     const items = [undefined, "Foobar", "Foobar", "Foobar"];
-    
+
     for (const item of items) {
       mockUseParams.mockReturnValue({item});
       rerender(
         <MemoryRouter>
           <ListItem />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
-      await new Promise(resolve => setTimeout(resolve, 1));
+      await new Promise((resolve) => setTimeout(resolve, 1));
     }
 
     // Wait for final state
@@ -293,7 +319,7 @@ describe("ListItem Integration Test - Production Rerender Issue", () => {
       rerender(
         <MemoryRouter>
           <ListItem />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     }
 
