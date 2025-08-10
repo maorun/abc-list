@@ -127,11 +127,40 @@ ABC-List is a React/TypeScript/Vite web application implementing Vera F. Birkenb
 
 ## CI/CD Requirements
 
+### Test-First Development Workflow
+
+**CRITICAL: Always test FIRST, then fix linting issues. This prevents accidental breaking of working functionality.**
+
+**Recommended development sequence:**
+1. **Test first** - Run tests to ensure functionality works:
+   ```bash
+   npm run test
+   ```
+   - Takes ~8 seconds. Set timeout to 30+ seconds.
+   - All 153 tests must pass before proceeding
+
+2. **Build verification** - Ensure build succeeds:
+   ```bash
+   npm run build
+   ```
+   - Takes ~2-3 seconds. Set timeout to 60+ seconds.
+
+3. **Fix linting last** - Only after tests pass and build succeeds:
+   ```bash
+   npm run lint
+   npm run format     # Auto-fix formatting issues
+   ```
+   - Linting takes ~2-5 seconds. Set timeout to 30+ seconds.
+
+**Rationale:** Tests verify that functionality works correctly. Linting only addresses code style and formatting. Fixing linting first can accidentally break working code, while fixing linting after tests ensures functionality remains intact.
+
+### Pre-commit Validation
+
 **Always run these commands before committing to ensure CI passes:**
 
-1. **Pre-commit validation (required for CI):**
+1. **Complete validation pipeline (required for CI):**
    ```bash
-   npm run lint && npm run format:check && npm run test && npm run build
+   npm run test && npm run build && npm run lint && npm run format:check
    ```
    - Total time: ~15-20 seconds. NEVER CANCEL. Set timeout to 60+ seconds.
    - All commands must pass for CI to succeed

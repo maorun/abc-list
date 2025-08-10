@@ -3,7 +3,6 @@ import {render, screen, waitFor, act} from "@testing-library/react";
 import {describe, it, expect, vi, beforeEach, afterEach} from "vitest";
 import {MemoryRouter, Route, Routes} from "react-router-dom";
 import {ListItem} from "./ListItem";
-import App from "../../App";
 
 // Mock sonner toast
 vi.mock("sonner", () => ({
@@ -214,6 +213,4 @@ describe("ListItem Production Rerender Investigation", () => {
 
     console.log("✅ Production rerender investigation complete");
   });
-
-
 });

@@ -26,7 +26,43 @@ The main application logic is in the `src` directory. Components are located in 
 
 Before you start, make sure you have Node.js and npm installed.
 
-### 2.2. Installing Dependencies
+### 2.2. Test-First Development Approach
+
+**CRITICAL: Always follow the test-first workflow to prevent breaking functionality.**
+
+**Recommended development sequence:**
+
+1. **Test First** - Always verify functionality works before making changes:
+   ```bash
+   npm run test
+   ```
+   - Takes ~8 seconds, set timeout to 30+ seconds
+   - Ensures all 153 tests pass before proceeding
+   - Validates that existing functionality works correctly
+
+2. **Build Verification** - Confirm the application builds successfully:
+   ```bash
+   npm run build
+   ```
+   - Takes ~2-3 seconds, set timeout to 60+ seconds
+   - Ensures production build works before making changes
+
+3. **Make Changes** - Implement your modifications with confidence
+
+4. **Test Again** - Verify your changes don't break anything:
+   ```bash
+   npm run test
+   ```
+
+5. **Fix Linting Last** - Address code style only after functionality is confirmed:
+   ```bash
+   npm run lint
+   npm run format     # Auto-fix formatting issues
+   ```
+
+**Why test first?** Tests verify functionality works correctly. Linting only addresses code style. Fixing linting first can accidentally break working code, while testing first ensures functionality remains intact throughout the development process.
+
+### 2.3. Installing Dependencies
 
 To install the project dependencies, run the following command from the root of the repository:
 
@@ -34,7 +70,7 @@ To install the project dependencies, run the following command from the root of 
 npm install
 ```
 
-### 2.3. Running the Development Server
+### 2.4. Running the Development Server
 
 To start the local development server, run:
 
@@ -44,7 +80,7 @@ npm run dev
 
 The server will be accessible at `http://localhost:5173` (or the next available port).
 
-### 2.4. Building for Production
+### 2.5. Building for Production
 
 To create a production-ready build, run:
 
