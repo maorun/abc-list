@@ -81,6 +81,9 @@ function Navigation() {
 
   // Stable callback to prevent recreating onClick handlers
   const closeNavigation = useCallback(() => setIsOpen(false), []);
+  
+  // Stable no-op function for desktop navigation
+  const noOpNavigation = useCallback(() => {}, []);
 
   // Memoize pathname to prevent cascade rerenders when location object changes
   const currentPath = useMemo(() => location.pathname, [location.pathname]);
@@ -142,6 +145,7 @@ function Navigation() {
                   key={item.to}
                   to={item.to}
                   isActive={currentPath === item.to}
+                  onClick={noOpNavigation}
                 >
                   {item.label}
                 </NavButton>
