@@ -265,7 +265,7 @@ export const Letter = React.memo(
                 placeholder="Wort eingeben..."
                 aria-label="Neues Wort eingeben"
               />
-              
+
               <div className="flex justify-center">
                 <Button
                   variant="outline"

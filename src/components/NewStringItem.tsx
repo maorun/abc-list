@@ -62,15 +62,15 @@ export function NewStringItem({title, onSave, onAbort}: NewStringItemProps) {
     <div className="my-4 text-center">
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-          <Button 
-            variant="default" 
+          <Button
+            variant="default"
             className="bg-green-500 hover:bg-green-700"
             aria-label={`${title} - Dialog öffnen`}
           >
             {title}
           </Button>
         </DialogTrigger>
-        <DialogContent 
+        <DialogContent
           className="sm:max-w-[425px]"
           aria-describedby="new-item-description"
         >
@@ -93,18 +93,17 @@ export function NewStringItem({title, onSave, onAbort}: NewStringItemProps) {
               placeholder="Enter text..."
               className="col-span-3"
               aria-label="Name für neues Element"
-              autoFocus
             />
           </div>
           <DialogFooter>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={handleAbort}
               aria-label="Erstellung abbrechen"
             >
               Abbrechen
             </Button>
-            <Button 
+            <Button
               onClick={handleSave}
               disabled={!newItem.trim()}
               aria-label="Element speichern"

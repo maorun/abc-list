@@ -12,11 +12,7 @@ vi.mock("sonner", () => ({
 }));
 
 function renderWithProvider(component: React.ReactNode) {
-  return render(
-    <AccessibilityProvider>
-      {component}
-    </AccessibilityProvider>
-  );
+  return render(<AccessibilityProvider>{component}</AccessibilityProvider>);
 }
 
 describe("AccessibilityToolbar", () => {
@@ -30,17 +26,27 @@ describe("AccessibilityToolbar", () => {
     renderWithProvider(<AccessibilityToolbar />);
 
     // Check if toolbar is properly labeled
-    expect(screen.getByRole("toolbar", {name: /barrierefreiheit-einstellungen/i})).toBeInTheDocument();
+    expect(
+      screen.getByRole("toolbar", {name: /barrierefreiheit-einstellungen/i}),
+    ).toBeInTheDocument();
 
     // Check for high contrast button
-    expect(screen.getByLabelText(/hohen kontrast aktivieren/i)).toBeInTheDocument();
+    expect(
+      screen.getByLabelText(/hohen kontrast aktivieren/i),
+    ).toBeInTheDocument();
 
     // Check for font size buttons
-    expect(screen.getByLabelText(/schriftgröße vergrößern/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/schriftgröße verkleinern/i)).toBeInTheDocument();
+    expect(
+      screen.getByLabelText(/schriftgröße vergrößern/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByLabelText(/schriftgröße verkleinern/i),
+    ).toBeInTheDocument();
 
     // Check for settings button
-    expect(screen.getByLabelText(/barrierefreiheit-einstellungen öffnen/i)).toBeInTheDocument();
+    expect(
+      screen.getByLabelText(/barrierefreiheit-einstellungen öffnen/i),
+    ).toBeInTheDocument();
   });
 
   it("should toggle high contrast mode", () => {
@@ -50,7 +56,9 @@ describe("AccessibilityToolbar", () => {
     fireEvent.click(contrastButton);
 
     // Button should now show "deactivate" label
-    expect(screen.getByLabelText(/hohen kontrast deaktivieren/i)).toBeInTheDocument();
+    expect(
+      screen.getByLabelText(/hohen kontrast deaktivieren/i),
+    ).toBeInTheDocument();
     expect(contrastButton).toHaveAttribute("aria-pressed", "true");
   });
 
@@ -65,14 +73,14 @@ describe("AccessibilityToolbar", () => {
 
     // Increase font size
     fireEvent.click(increaseButton);
-    
+
     // Now increase button should be disabled (at large)
     expect(increaseButton).toBeDisabled();
 
     // Decrease font size twice
     fireEvent.click(decreaseButton);
     fireEvent.click(decreaseButton);
-    
+
     // Now decrease button should be disabled (at small)
     expect(decreaseButton).toBeDisabled();
   });
@@ -80,17 +88,27 @@ describe("AccessibilityToolbar", () => {
   it("should open settings dialog with keyboard shortcuts information", () => {
     renderWithProvider(<AccessibilityToolbar />);
 
-    const settingsButton = screen.getByLabelText(/barrierefreiheit-einstellungen öffnen/i);
+    const settingsButton = screen.getByLabelText(
+      /barrierefreiheit-einstellungen öffnen/i,
+    );
     fireEvent.click(settingsButton);
 
     // Check if dialog is open
     expect(screen.getByRole("dialog")).toBeInTheDocument();
-    expect(screen.getByText(/barrierefreiheit-einstellungen/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/barrierefreiheit-einstellungen/i),
+    ).toBeInTheDocument();
 
     // Check for keyboard shortcuts
-    expect(screen.getByText(/alt \+ k: hoher kontrast umschalten/i)).toBeInTheDocument();
-    expect(screen.getByText(/alt \+ plus: schrift vergrößern/i)).toBeInTheDocument();
-    expect(screen.getByText(/alt \+ minus: schrift verkleinern/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/alt \+ k: hoher kontrast umschalten/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/alt \+ plus: schrift vergrößern/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/alt \+ minus: schrift verkleinern/i),
+    ).toBeInTheDocument();
   });
 
   it("should show current accessibility status in settings dialog", () => {
@@ -101,7 +119,9 @@ describe("AccessibilityToolbar", () => {
     fireEvent.click(contrastButton);
 
     // Open settings dialog
-    const settingsButton = screen.getByLabelText(/barrierefreiheit-einstellungen öffnen/i);
+    const settingsButton = screen.getByLabelText(
+      /barrierefreiheit-einstellungen öffnen/i,
+    );
     fireEvent.click(settingsButton);
 
     // Check status display
@@ -116,7 +136,10 @@ describe("AccessibilityToolbar", () => {
 
     // Check toolbar attributes
     const toolbar = screen.getByRole("toolbar");
-    expect(toolbar).toHaveAttribute("aria-label", "Barrierefreiheit-Einstellungen");
+    expect(toolbar).toHaveAttribute(
+      "aria-label",
+      "Barrierefreiheit-Einstellungen",
+    );
 
     // Check button attributes
     const contrastButton = screen.getByLabelText(/hohen kontrast aktivieren/i);
@@ -135,8 +158,8 @@ describe("AccessibilityToolbar", () => {
     renderWithProvider(<AccessibilityToolbar />);
 
     // Get the button by its current state (initially "activate")
-    let contrastButton = screen.getByLabelText(/hohen kontrast aktivieren/i);
-    
+    const contrastButton = screen.getByLabelText(/hohen kontrast aktivieren/i);
+
     // Focus the button
     contrastButton.focus();
     expect(contrastButton).toHaveFocus();
@@ -145,6 +168,8 @@ describe("AccessibilityToolbar", () => {
     fireEvent.click(contrastButton);
 
     // Should toggle high contrast (button text changes to "deactivate")
-    expect(screen.getByLabelText(/hohen kontrast deaktivieren/i)).toBeInTheDocument();
+    expect(
+      screen.getByLabelText(/hohen kontrast deaktivieren/i),
+    ).toBeInTheDocument();
   });
 });

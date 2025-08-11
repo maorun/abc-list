@@ -1,15 +1,14 @@
 import {render, screen, fireEvent, waitFor} from "@testing-library/react";
-import {describe, it, expect, beforeEach, vi} from "vitest";
-import {AccessibilityProvider, useAccessibility} from "@/contexts/AccessibilityContext";
+import {describe, it, expect, beforeEach} from "vitest";
+import {
+  AccessibilityProvider,
+  useAccessibility,
+} from "@/contexts/AccessibilityContext";
 
 // Test component to access the context
 function TestComponent() {
-  const {
-    settings,
-    toggleHighContrast,
-    increaseFontSize,
-    decreaseFontSize,
-  } = useAccessibility();
+  const {settings, toggleHighContrast, increaseFontSize, decreaseFontSize} =
+    useAccessibility();
 
   return (
     <div>
@@ -55,7 +54,9 @@ describe("AccessibilityContext", () => {
     });
 
     // Check if class is applied to document
-    expect(document.documentElement.classList.contains("high-contrast")).toBe(true);
+    expect(document.documentElement.classList.contains("high-contrast")).toBe(
+      true,
+    );
   });
 
   it("should increase font size", async () => {
@@ -72,7 +73,9 @@ describe("AccessibilityContext", () => {
       expect(screen.getByTestId("font-size")).toHaveTextContent("large");
     });
 
-    expect(document.documentElement.classList.contains("font-large")).toBe(true);
+    expect(document.documentElement.classList.contains("font-large")).toBe(
+      true,
+    );
   });
 
   it("should decrease font size", async () => {
@@ -85,7 +88,7 @@ describe("AccessibilityContext", () => {
     // First increase, then decrease
     const increaseButton = screen.getByText("Increase Font");
     const decreaseButton = screen.getByText("Decrease Font");
-    
+
     fireEvent.click(increaseButton);
     fireEvent.click(decreaseButton);
 
@@ -141,7 +144,7 @@ describe("AccessibilityContext", () => {
     );
 
     const increaseButton = screen.getByText("Increase Font");
-    
+
     // Click multiple times
     fireEvent.click(increaseButton);
     fireEvent.click(increaseButton);
@@ -158,7 +161,7 @@ describe("AccessibilityContext", () => {
     );
 
     const decreaseButton = screen.getByText("Decrease Font");
-    
+
     // Click multiple times
     fireEvent.click(decreaseButton);
     fireEvent.click(decreaseButton);

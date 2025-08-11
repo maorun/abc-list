@@ -117,9 +117,9 @@ function Navigation() {
         <div className="relative flex h-16 items-center justify-between">
           {/* Mobile-first: Logo + Hamburger */}
           <div className="flex items-center justify-between w-full sm:w-auto">
-            <div className="flex-shrink-0 text-white font-bold text-lg">
-              <h1>ABC-Listen App</h1>
-            </div>
+            <h1 className="flex-shrink-0 text-white font-bold text-lg">
+              ABC-Listen App
+            </h1>
 
             {/* Mobile hamburger menu */}
             <div className="sm:hidden">

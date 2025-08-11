@@ -16,7 +16,7 @@ export function AccessibilityToolbar() {
 
   return (
     <div
-      className="fixed bottom-4 right-4 z-50 bg-white border border-gray-300 rounded-lg shadow-lg p-2"
+      className="fixed bottom-4 right-4 z-50 bg-card border border-border rounded-lg shadow-lg p-2"
       role="toolbar"
       aria-label="Barrierefreiheit-Einstellungen"
     >

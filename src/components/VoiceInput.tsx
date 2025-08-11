@@ -18,49 +18,6 @@ interface VoiceInputProps {
   letter?: string;
 }
 
-interface SpeechRecognitionEvent extends Event {
-  results: SpeechRecognitionResultList;
-  resultIndex: number;
-}
-
-interface SpeechRecognitionErrorEvent extends Event {
-  error: string;
-  message: string;
-}
-
-declare global {
-  interface Window {
-    SpeechRecognition: typeof SpeechRecognition;
-    webkitSpeechRecognition: typeof SpeechRecognition;
-  }
-
-  class SpeechRecognition extends EventTarget {
-    continuous: boolean;
-    grammars: SpeechGrammarList;
-    interimResults: boolean;
-    lang: string;
-    maxAlternatives: number;
-    onaudioend: ((this: SpeechRecognition, ev: Event) => unknown) | null;
-    onaudiostart: ((this: SpeechRecognition, ev: Event) => unknown) | null;
-    onend: ((this: SpeechRecognition, ev: Event) => unknown) | null;
-    onerror:
-      | ((this: SpeechRecognition, ev: SpeechRecognitionErrorEvent) => unknown)
-      | null;
-    onnomatch: ((this: SpeechRecognition, ev: Event) => unknown) | null;
-    onresult:
-      | ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => unknown)
-      | null;
-    onsoundend: ((this: SpeechRecognition, ev: Event) => unknown) | null;
-    onsoundstart: ((this: SpeechRecognition, ev: Event) => unknown) | null;
-    onspeechend: ((this: SpeechRecognition, ev: Event) => unknown) | null;
-    onspeechstart: ((this: SpeechRecognition, ev: Event) => unknown) | null;
-    onstart: ((this: SpeechRecognition, ev: Event) => unknown) | null;
-    abort(): void;
-    start(): void;
-    stop(): void;
-  }
-}
-
 export function VoiceInput({
   onWordRecognized,
   isOpen,
@@ -76,24 +33,24 @@ export function VoiceInput({
     // Check if speech recognition is supported
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
-    
+
     if (SpeechRecognition) {
       setIsSupported(true);
       const recognition = new SpeechRecognition();
-      
+
       recognition.continuous = false;
       recognition.interimResults = true;
       recognition.lang = "de-DE"; // German language for the app
-      
+
       recognition.onstart = () => {
         setIsListening(true);
         setTranscript("");
       };
-      
+
       recognition.onresult = (event: SpeechRecognitionEvent) => {
         let finalTranscript = "";
         let interimTranscript = "";
-        
+
         for (let i = event.resultIndex; i < event.results.length; i++) {
           const result = event.results[i];
           if (result.isFinal) {
@@ -102,9 +59,9 @@ export function VoiceInput({
             interimTranscript += result[0].transcript;
           }
         }
-        
+
         setTranscript(finalTranscript || interimTranscript);
-        
+
         if (finalTranscript) {
           const word = finalTranscript.trim();
           if (word) {
@@ -114,14 +71,16 @@ export function VoiceInput({
           }
         }
       };
-      
+
       recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
         console.error("Speech recognition error:", event.error);
         setIsListening(false);
-        
+
         switch (event.error) {
           case "no-speech":
-            toast.error("Keine Sprache erkannt. Bitte versuchen Sie es erneut.");
+            toast.error(
+              "Keine Sprache erkannt. Bitte versuchen Sie es erneut.",
+            );
             break;
           case "audio-capture":
             toast.error("Mikrofon-Zugriff verweigert.");
@@ -133,16 +92,16 @@ export function VoiceInput({
             toast.error("Spracherkennung fehlgeschlagen.");
         }
       };
-      
+
       recognition.onend = () => {
         setIsListening(false);
       };
-      
+
       recognitionRef.current = recognition;
     } else {
       setIsSupported(false);
     }
-    
+
     return () => {
       if (recognitionRef.current) {
         recognitionRef.current.abort();
@@ -212,7 +171,9 @@ export function VoiceInput({
               onClick={isListening ? stopListening : startListening}
               className="flex items-center gap-2"
               aria-label={
-                isListening ? "Spracherkennung stoppen" : "Spracherkennung starten"
+                isListening
+                  ? "Spracherkennung stoppen"
+                  : "Spracherkennung starten"
               }
             >
               {isListening ? (
