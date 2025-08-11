@@ -52,12 +52,12 @@ export function StadtLandFluss() {
   return (
     <div className="space-y-4">
       {/* Mobile-first button layout */}
-      <div className="flex flex-col sm:flex-row sm:justify-center sm:items-center gap-2 sm:gap-2">
+      <div className="flex flex-col sm:flex-row sm:justify-center sm:items-center gap-2 sm:gap-2 flex-wrap">
         <NewStringItem
           title={"Neues Stadt-Land-Fluss Spiel"}
           onSave={(item) => createNewGame(item.text)}
         />
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <Button
             variant="destructive"
             onClick={clearAll}
