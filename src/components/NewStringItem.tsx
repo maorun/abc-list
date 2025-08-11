@@ -62,14 +62,21 @@ export function NewStringItem({title, onSave, onAbort}: NewStringItemProps) {
     <div className="my-4 text-center">
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-          <Button variant="default" className="bg-green-500 hover:bg-green-700">
+          <Button
+            variant="default"
+            className="bg-green-500 hover:bg-green-700"
+            aria-label={`${title} - Dialog öffnen`}
+          >
             {title}
           </Button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent
+          className="sm:max-w-[425px]"
+          aria-describedby="new-item-description"
+        >
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
-            <DialogDescription>
+            <DialogDescription id="new-item-description">
               Geben Sie einen Namen für das neue Element ein.
             </DialogDescription>
           </DialogHeader>
@@ -77,15 +84,32 @@ export function NewStringItem({title, onSave, onAbort}: NewStringItemProps) {
             <Input
               value={newItem}
               onChange={(e) => setNewItem(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && newItem.trim()) {
+                  e.preventDefault();
+                  handleSave();
+                }
+              }}
               placeholder="Enter text..."
               className="col-span-3"
+              aria-label="Name für neues Element"
             />
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={handleAbort}>
+            <Button
+              variant="outline"
+              onClick={handleAbort}
+              aria-label="Erstellung abbrechen"
+            >
               Abbrechen
             </Button>
-            <Button onClick={handleSave}>Speichern</Button>
+            <Button
+              onClick={handleSave}
+              disabled={!newItem.trim()}
+              aria-label="Element speichern"
+            >
+              Speichern
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -75,11 +75,11 @@ describe("List", () => {
     render(<List />, {wrapper: MemoryRouter});
 
     // Simulate creating a new item through NewStringItem
-    fireEvent.click(screen.getByRole("button", {name: "Neue ABC-Liste"}));
+    fireEvent.click(screen.getByRole("button", {name: /neue abc-liste/i}));
 
     const input = screen.getByPlaceholderText("Enter text...");
     fireEvent.change(input, {target: {value: "Neue Liste"}});
-    fireEvent.click(screen.getByRole("button", {name: "Speichern"}));
+    fireEvent.click(screen.getByRole("button", {name: /speichern/i}));
 
     expect(screen.getByText("Neue Liste")).toBeInTheDocument();
     expect(localStorage.getItem(cacheKey)).toBe(JSON.stringify(["Neue Liste"]));
@@ -90,11 +90,11 @@ describe("List", () => {
     render(<List />, {wrapper: MemoryRouter});
 
     // Add first item
-    fireEvent.click(screen.getByRole("button", {name: "Neue ABC-Liste"}));
+    fireEvent.click(screen.getByRole("button", {name: /neue abc-liste/i}));
     fireEvent.change(screen.getByPlaceholderText("Enter text..."), {
       target: {value: "First Item"},
     });
-    fireEvent.click(screen.getByRole("button", {name: "Speichern"}));
+    fireEvent.click(screen.getByRole("button", {name: /speichern/i}));
     expect(await screen.findByText("First Item")).toBeInTheDocument();
 
     // Delete the item
@@ -103,11 +103,11 @@ describe("List", () => {
     expect(screen.queryByText("First Item")).not.toBeInTheDocument();
 
     // Add second item
-    fireEvent.click(screen.getByRole("button", {name: "Neue ABC-Liste"}));
+    fireEvent.click(screen.getByRole("button", {name: /neue abc-liste/i}));
     fireEvent.change(screen.getByPlaceholderText("Enter text..."), {
       target: {value: "Second Item"},
     });
-    fireEvent.click(screen.getByRole("button", {name: "Speichern"}));
+    fireEvent.click(screen.getByRole("button", {name: /speichern/i}));
     expect(await screen.findByText("Second Item")).toBeInTheDocument();
   });
 
