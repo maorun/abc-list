@@ -9,6 +9,8 @@ import {
   DialogDescription,
   DialogFooter,
 } from "../ui/dialog";
+import {Card, CardContent} from "../ui/card";
+import {Tabs, TabsList, TabsTrigger, TabsContent} from "../ui/tabs";
 import {UserProfile, DEFAULT_ACHIEVEMENTS} from "./types";
 import {BasarService} from "./BasarService";
 import {WordWithExplanation} from "../List/types";
@@ -109,243 +111,262 @@ export function BasarUserProfile({
   const progressToNextLevel = ((user.points % 100) / 100) * 100;
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6">
-      {/* Tab Navigation */}
-      <div className="flex space-x-1 mb-6 bg-gray-100 p-1 rounded-lg">
-        {[
-          {key: "overview", label: "📊 Übersicht", icon: "📊"},
-          {key: "history", label: "📜 Historie", icon: "📜"},
-          {key: "achievements", label: "🏆 Erfolge", icon: "🏆"},
-          {key: "sell", label: "💼 Verkaufen", icon: "💼"},
-        ].map((tab) => (
-          <Button
-            key={tab.key}
-            variant={activeTab === tab.key ? "default" : "ghost"}
-            onClick={() => setActiveTab(tab.key as typeof activeTab)}
-            className="flex-1"
+    <>
+      <Card className="shadow-lg">
+        <CardContent className="p-6">
+          {/* Tab Navigation */}
+          <Tabs
+            defaultValue="overview"
+            value={activeTab}
+            onValueChange={(value) => setActiveTab(value as typeof activeTab)}
           >
-            {tab.label}
-          </Button>
-        ))}
-      </div>
+            <TabsList className="grid w-full grid-cols-4 mb-6">
+              <TabsTrigger value="overview">📊 Übersicht</TabsTrigger>
+              <TabsTrigger value="history">📜 Historie</TabsTrigger>
+              <TabsTrigger value="achievements">🏆 Erfolge</TabsTrigger>
+              <TabsTrigger value="sell">💼 Verkaufen</TabsTrigger>
+            </TabsList>
 
-      {activeTab === "overview" && (
-        <div className="space-y-6">
-          {/* User Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-4 rounded-lg">
-              <div className="text-2xl font-bold">{user.points}</div>
-              <div className="text-sm opacity-90">💰 Punkte</div>
-            </div>
-            <div className="bg-gradient-to-r from-green-500 to-green-600 text-white p-4 rounded-lg">
-              <div className="text-2xl font-bold">{user.tradesCompleted}</div>
-              <div className="text-sm opacity-90">🤝 Handelsgeschäfte</div>
-            </div>
-            <div className="bg-gradient-to-r from-purple-500 to-purple-600 text-white p-4 rounded-lg">
-              <div className="text-2xl font-bold">{user.termsContributed}</div>
-              <div className="text-sm opacity-90">📚 Begriffe beigetragen</div>
-            </div>
-          </div>
-
-          {/* Level Progress */}
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <div className="flex justify-between items-center mb-2">
-              <span className="font-medium">Level {user.level}</span>
-              <span className="text-sm text-gray-600">
-                {user.points % 100}/100 XP
-              </span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div
-                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                style={{width: `${progressToNextLevel}%`}}
-              />
-            </div>
-            <div className="text-xs text-gray-500 mt-1">
-              Nächstes Level bei {Math.ceil(user.points / 100) * 100} Punkten
-            </div>
-          </div>
-
-          {/* Recent Achievements */}
-          <div>
-            <h3 className="text-lg font-semibold mb-3">🏆 Letzte Erfolge</h3>
-            {user.achievements.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {user.achievements
-                  .slice(-4)
-                  .reverse()
-                  .map((achievement) => (
-                    <div
-                      key={achievement.id}
-                      className="bg-yellow-50 border border-yellow-200 p-3 rounded-lg"
-                    >
-                      <div className="flex items-center space-x-2">
-                        <span className="text-2xl">{achievement.icon}</span>
-                        <div>
-                          <div className="font-medium text-yellow-800">
-                            {achievement.name}
-                          </div>
-                          <div className="text-sm text-yellow-600">
-                            +{achievement.points} Punkte
-                          </div>
-                        </div>
-                      </div>
+            <TabsContent value="overview">
+              <div className="space-y-6">
+                {/* User Stats */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-4 rounded-lg">
+                    <div className="text-2xl font-bold">{user.points}</div>
+                    <div className="text-sm opacity-90">💰 Punkte</div>
+                  </div>
+                  <div className="bg-gradient-to-r from-green-500 to-green-600 text-white p-4 rounded-lg">
+                    <div className="text-2xl font-bold">
+                      {user.tradesCompleted}
                     </div>
-                  ))}
-              </div>
-            ) : (
-              <div className="text-gray-500 text-center py-4">
-                Noch keine Erfolge freigeschaltet
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {activeTab === "history" && (
-        <div>
-          <h3 className="text-lg font-semibold mb-4">📜 Handelsgeschichte</h3>
-          {user.tradingHistory.length > 0 ? (
-            <div className="space-y-3">
-              {user.tradingHistory
-                .slice()
-                .reverse()
-                .map((trade) => (
-                  <div
-                    key={trade.id}
-                    className={`p-3 rounded-lg border ${
-                      trade.type === "buy"
-                        ? "bg-red-50 border-red-200"
-                        : "bg-green-50 border-green-200"
-                    }`}
-                  >
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <div className="font-medium">
-                          {trade.type === "buy" ? "🛒 Gekauft" : "💰 Verkauft"}:{" "}
-                          {trade.termText} ({trade.letter.toUpperCase()})
-                        </div>
-                        <div className="text-sm text-gray-600">
-                          {trade.type === "buy" ? "Von" : "An"}:{" "}
-                          {trade.partnerName}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          {formatDate(trade.date)}
-                        </div>
-                      </div>
-                      <div
-                        className={`font-bold ${
-                          trade.type === "buy"
-                            ? "text-red-600"
-                            : "text-green-600"
-                        }`}
-                      >
-                        {trade.type === "buy" ? "-" : "+"}
-                        {trade.price} Punkte
-                      </div>
+                    <div className="text-sm opacity-90">
+                      🤝 Handelsgeschäfte
                     </div>
                   </div>
-                ))}
-            </div>
-          ) : (
-            <div className="text-gray-500 text-center py-8">
-              <div className="text-4xl mb-2">📝</div>
-              <div>Noch keine Handelsgeschäfte</div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {activeTab === "achievements" && (
-        <div>
-          <h3 className="text-lg font-semibold mb-4">🏆 Erfolge</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {DEFAULT_ACHIEVEMENTS.map((achievement) => {
-              const earned = user.achievements.find(
-                (a) => a.id === achievement.id,
-              );
-              return (
-                <div
-                  key={achievement.id}
-                  className={`p-4 rounded-lg border ${
-                    earned
-                      ? "bg-yellow-50 border-yellow-300"
-                      : "bg-gray-50 border-gray-200"
-                  }`}
-                >
-                  <div className="flex items-start space-x-3">
-                    <span
-                      className={`text-3xl ${earned ? "" : "filter grayscale"}`}
-                    >
-                      {achievement.icon}
-                    </span>
-                    <div className="flex-1">
-                      <div
-                        className={`font-medium ${
-                          earned ? "text-yellow-800" : "text-gray-600"
-                        }`}
-                      >
-                        {achievement.name}
-                      </div>
-                      <div
-                        className={`text-sm ${
-                          earned ? "text-yellow-600" : "text-gray-500"
-                        }`}
-                      >
-                        {achievement.description}
-                      </div>
-                      <div className="text-xs text-gray-500 mt-1">
-                        💰 {achievement.points} Punkte
-                      </div>
-                      {earned && (
-                        <div className="text-xs text-yellow-600 mt-1">
-                          ✅ Erreicht am {formatDate(earned.dateEarned)}
-                        </div>
-                      )}
+                  <div className="bg-gradient-to-r from-purple-500 to-purple-600 text-white p-4 rounded-lg">
+                    <div className="text-2xl font-bold">
+                      {user.termsContributed}
+                    </div>
+                    <div className="text-sm opacity-90">
+                      📚 Begriffe beigetragen
                     </div>
                   </div>
                 </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
 
-      {activeTab === "sell" && (
-        <div>
-          <h3 className="text-lg font-semibold mb-4">💼 Begriffe verkaufen</h3>
-          <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg mb-4">
-            <h4 className="font-medium text-blue-800 mb-2">
-              💡 So verkaufen Sie Begriffe:
-            </h4>
-            <ol className="text-sm text-blue-700 list-decimal list-inside space-y-1">
-              <li>Wählen Sie eine ABC-Liste aus</li>
-              <li>Wählen Sie einen Buchstaben</li>
-              <li>Wählen Sie einen Begriff aus</li>
-              <li>Legen Sie einen fairen Preis fest</li>
-              <li>Stellen Sie den Begriff im Basar ein</li>
-            </ol>
-          </div>
+                {/* Level Progress */}
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-medium">Level {user.level}</span>
+                    <span className="text-sm text-gray-600">
+                      {user.points % 100}/100 XP
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div
+                      className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                      style={{width: `${progressToNextLevel}%`}}
+                    />
+                  </div>
+                  <div className="text-xs text-gray-500 mt-1">
+                    Nächstes Level bei {Math.ceil(user.points / 100) * 100}{" "}
+                    Punkten
+                  </div>
+                </div>
 
-          <Button
-            onClick={() => setShowSellDialog(true)}
-            className="w-full bg-green-500 hover:bg-green-600"
-            disabled={availableLists.length === 0}
-          >
-            🏷️ Begriff zum Verkauf anbieten
-          </Button>
-
-          {availableLists.length === 0 && (
-            <div className="text-center text-gray-500 mt-4">
-              <div className="text-4xl mb-2">📝</div>
-              <div>
-                Erstellen Sie zuerst ABC-Listen, um Begriffe verkaufen zu
-                können.
+                {/* Recent Achievements */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-3">
+                    🏆 Letzte Erfolge
+                  </h3>
+                  {user.achievements.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {user.achievements
+                        .slice(-4)
+                        .reverse()
+                        .map((achievement) => (
+                          <div
+                            key={achievement.id}
+                            className="bg-yellow-50 border border-yellow-200 p-3 rounded-lg"
+                          >
+                            <div className="flex items-center space-x-2">
+                              <span className="text-2xl">
+                                {achievement.icon}
+                              </span>
+                              <div>
+                                <div className="font-medium text-yellow-800">
+                                  {achievement.name}
+                                </div>
+                                <div className="text-sm text-yellow-600">
+                                  +{achievement.points} Punkte
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  ) : (
+                    <div className="text-gray-500 text-center py-4">
+                      Noch keine Erfolge freigeschaltet
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          )}
-        </div>
-      )}
+            </TabsContent>
+
+            <TabsContent value="history">
+              <div>
+                <h3 className="text-lg font-semibold mb-4">
+                  📜 Handelsgeschichte
+                </h3>
+                {user.tradingHistory.length > 0 ? (
+                  <div className="space-y-3">
+                    {user.tradingHistory
+                      .slice()
+                      .reverse()
+                      .map((trade) => (
+                        <div
+                          key={trade.id}
+                          className={`p-3 rounded-lg border ${
+                            trade.type === "buy"
+                              ? "bg-red-50 border-red-200"
+                              : "bg-green-50 border-green-200"
+                          }`}
+                        >
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <div className="font-medium">
+                                {trade.type === "buy"
+                                  ? "🛒 Gekauft"
+                                  : "💰 Verkauft"}
+                                : {trade.termText} ({trade.letter.toUpperCase()}
+                                )
+                              </div>
+                              <div className="text-sm text-gray-600">
+                                {trade.type === "buy" ? "Von" : "An"}:{" "}
+                                {trade.partnerName}
+                              </div>
+                              <div className="text-xs text-gray-500">
+                                {formatDate(trade.date)}
+                              </div>
+                            </div>
+                            <div
+                              className={`font-bold ${
+                                trade.type === "buy"
+                                  ? "text-red-600"
+                                  : "text-green-600"
+                              }`}
+                            >
+                              {trade.type === "buy" ? "-" : "+"}
+                              {trade.price} Punkte
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                ) : (
+                  <div className="text-gray-500 text-center py-8">
+                    <div className="text-4xl mb-2">📝</div>
+                    <div>Noch keine Handelsgeschäfte</div>
+                  </div>
+                )}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="achievements">
+              <div>
+                <h3 className="text-lg font-semibold mb-4">🏆 Erfolge</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {DEFAULT_ACHIEVEMENTS.map((achievement) => {
+                    const earned = user.achievements.find(
+                      (a) => a.id === achievement.id,
+                    );
+                    return (
+                      <div
+                        key={achievement.id}
+                        className={`p-4 rounded-lg border ${
+                          earned
+                            ? "bg-yellow-50 border-yellow-300"
+                            : "bg-gray-50 border-gray-200"
+                        }`}
+                      >
+                        <div className="flex items-start space-x-3">
+                          <span
+                            className={`text-3xl ${earned ? "" : "filter grayscale"}`}
+                          >
+                            {achievement.icon}
+                          </span>
+                          <div className="flex-1">
+                            <div
+                              className={`font-medium ${
+                                earned ? "text-yellow-800" : "text-gray-600"
+                              }`}
+                            >
+                              {achievement.name}
+                            </div>
+                            <div
+                              className={`text-sm ${
+                                earned ? "text-yellow-600" : "text-gray-500"
+                              }`}
+                            >
+                              {achievement.description}
+                            </div>
+                            <div className="text-xs text-gray-500 mt-1">
+                              💰 {achievement.points} Punkte
+                            </div>
+                            {earned && (
+                              <div className="text-xs text-yellow-600 mt-1">
+                                ✅ Erreicht am {formatDate(earned.dateEarned)}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="sell">
+              <div>
+                <h3 className="text-lg font-semibold mb-4">
+                  💼 Begriffe verkaufen
+                </h3>
+                <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg mb-4">
+                  <h4 className="font-medium text-blue-800 mb-2">
+                    💡 So verkaufen Sie Begriffe:
+                  </h4>
+                  <ol className="text-sm text-blue-700 list-decimal list-inside space-y-1">
+                    <li>Wählen Sie eine ABC-Liste aus</li>
+                    <li>Wählen Sie einen Buchstaben</li>
+                    <li>Wählen Sie einen Begriff aus</li>
+                    <li>Legen Sie einen fairen Preis fest</li>
+                    <li>Stellen Sie den Begriff im Basar ein</li>
+                  </ol>
+                </div>
+
+                <Button
+                  onClick={() => setShowSellDialog(true)}
+                  className="w-full bg-green-500 hover:bg-green-600"
+                  disabled={availableLists.length === 0}
+                >
+                  🏷️ Begriff zum Verkauf anbieten
+                </Button>
+
+                {availableLists.length === 0 && (
+                  <div className="text-center text-gray-500 mt-4">
+                    <div className="text-4xl mb-2">📝</div>
+                    <div>
+                      Erstellen Sie zuerst ABC-Listen, um Begriffe verkaufen zu
+                      können.
+                    </div>
+                  </div>
+                )}
+              </div>
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
 
       {/* Sell Dialog */}
       <Dialog open={showSellDialog} onOpenChange={setShowSellDialog}>
@@ -502,6 +523,6 @@ export function BasarUserProfile({
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 }
