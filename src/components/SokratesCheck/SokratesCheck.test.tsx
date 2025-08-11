@@ -27,7 +27,9 @@ describe("SokratesCheck", () => {
       screen.getByText("💡 Wissenschaftliche Spaced Repetition"),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/Der Sokrates-Check nutzt einen wissenschaftlich fundierten/),
+      screen.getByText(
+        /Der Sokrates-Check nutzt einen wissenschaftlich fundierten/,
+      ),
     ).toBeInTheDocument();
   });
 

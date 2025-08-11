@@ -53,13 +53,20 @@ export function calculateNextReview(
   let currentEaseFactor = reviewData?.easeFactor ?? settings.easeFactor;
   let newInterval: number;
 
-  // First review - use rating-based intervals
-  if (currentRepetitionCount === 1) {
-    newInterval = RATING_INTERVALS[rating as keyof typeof RATING_INTERVALS] || RATING_INTERVALS[3];
+  // First review or no previous interval data - use rating-based intervals
+  if (currentRepetitionCount === 1 || !reviewData?.interval) {
+    // Validate rating
+    if (rating < 1 || rating > 5 || !Number.isInteger(rating)) {
+      console.warn(
+        `Invalid rating value: ${rating}. Using default rating of 3.`,
+      );
+      rating = 3;
+    }
+    newInterval = RATING_INTERVALS[rating as keyof typeof RATING_INTERVALS];
   } else {
     // Subsequent reviews - apply spaced repetition algorithm
-    const previousInterval = reviewData?.interval ?? RATING_INTERVALS[rating as keyof typeof RATING_INTERVALS];
-    
+    const previousInterval = reviewData.interval;
+
     // Adjust ease factor based on rating (SM-2 algorithm adaptation)
     if (rating < 3) {
       // Poor performance - reset to beginning and reduce ease factor
@@ -67,13 +74,17 @@ export function calculateNextReview(
       newInterval = 1; // Start over
     } else {
       // Good performance - increase interval
-      currentEaseFactor = currentEaseFactor + (0.1 - (5 - rating) * (0.08 + (5 - rating) * 0.02));
+      currentEaseFactor =
+        currentEaseFactor + (0.1 - (5 - rating) * (0.08 + (5 - rating) * 0.02));
       newInterval = Math.round(previousInterval * currentEaseFactor);
     }
   }
 
   // Apply constraints
-  newInterval = Math.max(settings.minInterval, Math.min(settings.maxInterval, newInterval));
+  newInterval = Math.max(
+    settings.minInterval,
+    Math.min(settings.maxInterval, newInterval),
+  );
 
   // Calculate next review date
   const nextReviewDate = new Date(now);
@@ -98,7 +109,7 @@ export function isTermDueForReview(
   if (!lastReviewed) return true; // Never reviewed
 
   const now = new Date();
-  
+
   // Use explicit next review date if available
   if (nextReviewDate) {
     try {
@@ -117,7 +128,8 @@ export function isTermDueForReview(
       const lastReviewDate = new Date(lastReviewed);
       // Check if date is valid
       if (isNaN(lastReviewDate.getTime())) return true;
-      const daysSinceReview = (now.getTime() - lastReviewDate.getTime()) / (1000 * 60 * 60 * 24);
+      const daysSinceReview =
+        (now.getTime() - lastReviewDate.getTime()) / (1000 * 60 * 60 * 24);
       return daysSinceReview >= interval;
     } catch {
       return true; // Invalid date format, consider due for review
@@ -129,7 +141,8 @@ export function isTermDueForReview(
     const lastReviewDate = new Date(lastReviewed);
     // Check if date is valid
     if (isNaN(lastReviewDate.getTime())) return true;
-    const daysSinceReview = (now.getTime() - lastReviewDate.getTime()) / (1000 * 60 * 60 * 24);
+    const daysSinceReview =
+      (now.getTime() - lastReviewDate.getTime()) / (1000 * 60 * 60 * 24);
     return daysSinceReview >= 7;
   } catch {
     return true; // Invalid date format, consider due for review
@@ -156,22 +169,28 @@ export function getSpacedRepetitionStats(
   masteredTerms: number; // Terms with rating 5 and interval >= 30 days
 } {
   const totalTerms = reviewData.length;
-  const reviewedTerms = reviewData.filter(term => term.rating && term.lastReviewed).length;
-  const dueTerms = reviewData.filter(term => 
-    isTermDueForReview(term.lastReviewed, term.interval, term.nextReviewDate)
+  const reviewedTerms = reviewData.filter(
+    (term) => term.rating && term.lastReviewed,
   ).length;
-  
+  const dueTerms = reviewData.filter((term) =>
+    isTermDueForReview(term.lastReviewed, term.interval, term.nextReviewDate),
+  ).length;
+
   const intervalsSum = reviewData
-    .filter(term => term.interval)
+    .filter((term) => term.interval)
     .reduce((sum, term) => sum + (term.interval || 0), 0);
-  const termsWithIntervals = reviewData.filter(term => term.interval).length;
-  const averageInterval = termsWithIntervals > 0 ? intervalsSum / termsWithIntervals : 0;
-  
-  const wellKnownTerms = reviewData.filter(term => term.rating && term.rating >= 4).length;
-  const retentionRate = reviewedTerms > 0 ? (wellKnownTerms / reviewedTerms) * 100 : 0;
-  
-  const masteredTerms = reviewData.filter(term => 
-    term.rating === 5 && term.interval && term.interval >= 30
+  const termsWithIntervals = reviewData.filter((term) => term.interval).length;
+  const averageInterval =
+    termsWithIntervals > 0 ? intervalsSum / termsWithIntervals : 0;
+
+  const wellKnownTerms = reviewData.filter(
+    (term) => term.rating && term.rating >= 4,
+  ).length;
+  const retentionRate =
+    reviewedTerms > 0 ? (wellKnownTerms / reviewedTerms) * 100 : 0;
+
+  const masteredTerms = reviewData.filter(
+    (term) => term.rating === 5 && term.interval && term.interval >= 30,
   ).length;
 
   return {
@@ -207,18 +226,29 @@ export function sortTermsByPriority(
 ): typeof terms {
   return terms.sort((a, b) => {
     // First, sort by due date
-    const aNextReview = a.nextReviewDate || (a.lastReviewed && a.interval 
-      ? new Date(new Date(a.lastReviewed).getTime() + a.interval * 24 * 60 * 60 * 1000).toISOString()
-      : '');
-    const bNextReview = b.nextReviewDate || (b.lastReviewed && b.interval 
-      ? new Date(new Date(b.lastReviewed).getTime() + b.interval * 24 * 60 * 60 * 1000).toISOString()
-      : '');
-    
+    const aNextReview =
+      a.nextReviewDate ||
+      (a.lastReviewed && a.interval
+        ? new Date(
+            new Date(a.lastReviewed).getTime() +
+              a.interval * 24 * 60 * 60 * 1000,
+          ).toISOString()
+        : "");
+    const bNextReview =
+      b.nextReviewDate ||
+      (b.lastReviewed && b.interval
+        ? new Date(
+            new Date(b.lastReviewed).getTime() +
+              b.interval * 24 * 60 * 60 * 1000,
+          ).toISOString()
+        : "");
+
     if (aNextReview && bNextReview) {
-      const comparison = new Date(aNextReview).getTime() - new Date(bNextReview).getTime();
+      const comparison =
+        new Date(aNextReview).getTime() - new Date(bNextReview).getTime();
       if (comparison !== 0) return comparison;
     }
-    
+
     // If due dates are equal, prioritize lower ratings (need more attention)
     return (a.rating || 0) - (b.rating || 0);
   });

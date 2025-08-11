@@ -1,4 +1,4 @@
-import {describe, it, expect, beforeEach} from "vitest";
+import {describe, it, expect} from "vitest";
 import {
   calculateNextReview,
   isTermDueForReview,
@@ -72,19 +72,25 @@ describe("Spaced Repetition Algorithm", () => {
       };
 
       const result = calculateNextReview(5, reviewData, customSettings);
-      expect(result.newInterval).toBeLessThanOrEqual(customSettings.maxInterval);
-      expect(result.newInterval).toBeGreaterThanOrEqual(customSettings.minInterval);
+      expect(result.newInterval).toBeLessThanOrEqual(
+        customSettings.maxInterval,
+      );
+      expect(result.newInterval).toBeGreaterThanOrEqual(
+        customSettings.minInterval,
+      );
     });
 
     it("should calculate next review date correctly", () => {
       const now = new Date();
       const result = calculateNextReview(3);
-      
+
       const expectedDate = new Date(now);
       expectedDate.setDate(expectedDate.getDate() + 4);
-      
+
       // Allow for small time differences
-      const timeDiff = Math.abs(result.nextReviewDate.getTime() - expectedDate.getTime());
+      const timeDiff = Math.abs(
+        result.nextReviewDate.getTime() - expectedDate.getTime(),
+      );
       expect(timeDiff).toBeLessThan(60000); // Less than 1 minute difference
     });
   });
@@ -98,29 +104,29 @@ describe("Spaced Repetition Algorithm", () => {
     it("should return true for terms due by explicit next review date", () => {
       const yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
-      
-      expect(isTermDueForReview(
-        new Date().toISOString(),
-        7,
-        yesterday.toISOString()
-      )).toBe(true);
+
+      expect(
+        isTermDueForReview(
+          new Date().toISOString(),
+          7,
+          yesterday.toISOString(),
+        ),
+      ).toBe(true);
     });
 
     it("should return false for terms not yet due by explicit next review date", () => {
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
-      
-      expect(isTermDueForReview(
-        new Date().toISOString(),
-        7,
-        tomorrow.toISOString()
-      )).toBe(false);
+
+      expect(
+        isTermDueForReview(new Date().toISOString(), 7, tomorrow.toISOString()),
+      ).toBe(false);
     });
 
     it("should use interval when next review date is not available", () => {
       const threeDaysAgo = new Date();
       threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
-      
+
       expect(isTermDueForReview(threeDaysAgo.toISOString(), 2)).toBe(true);
       expect(isTermDueForReview(threeDaysAgo.toISOString(), 5)).toBe(false);
     });
@@ -128,12 +134,12 @@ describe("Spaced Repetition Algorithm", () => {
     it("should use 7-day fallback for legacy data", () => {
       const tenDaysAgo = new Date();
       tenDaysAgo.setDate(tenDaysAgo.getDate() - 10);
-      
+
       expect(isTermDueForReview(tenDaysAgo.toISOString())).toBe(true);
-      
+
       const threeDaysAgo = new Date();
       threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
-      
+
       expect(isTermDueForReview(threeDaysAgo.toISOString())).toBe(false);
     });
   });
@@ -149,7 +155,7 @@ describe("Spaced Repetition Algorithm", () => {
 
     it("should calculate basic statistics correctly", () => {
       const stats = getSpacedRepetitionStats(sampleData);
-      
+
       expect(stats.totalTerms).toBe(5);
       expect(stats.reviewedTerms).toBe(4);
       expect(stats.averageInterval).toBe(11.8); // (30+14+2+1)/4 = 11.75, rounded to 11.8
@@ -157,21 +163,21 @@ describe("Spaced Repetition Algorithm", () => {
 
     it("should calculate retention rate correctly", () => {
       const stats = getSpacedRepetitionStats(sampleData);
-      
+
       // 2 terms with rating >= 4 out of 4 reviewed = 50%
       expect(stats.retentionRate).toBe(50);
     });
 
     it("should identify mastered terms correctly", () => {
       const stats = getSpacedRepetitionStats(sampleData);
-      
+
       // Only 1 term with rating 5 and interval >= 30 days
       expect(stats.masteredTerms).toBe(1);
     });
 
     it("should handle empty data gracefully", () => {
       const stats = getSpacedRepetitionStats([]);
-      
+
       expect(stats.totalTerms).toBe(0);
       expect(stats.reviewedTerms).toBe(0);
       expect(stats.dueTerms).toBe(0);
@@ -261,7 +267,9 @@ describe("Spaced Repetition Algorithm", () => {
 
     it("should handle negative intervals", () => {
       const result = calculateNextReview(1, {interval: -5});
-      expect(result.newInterval).toBeGreaterThanOrEqual(DEFAULT_SETTINGS.minInterval);
+      expect(result.newInterval).toBeGreaterThanOrEqual(
+        DEFAULT_SETTINGS.minInterval,
+      );
     });
   });
 
@@ -272,7 +280,7 @@ describe("Spaced Repetition Algorithm", () => {
       const ratings = [5, 4, 3, 2, 1]; // Declining performance
       const intervals: number[] = [];
 
-      ratings.forEach(rating => {
+      ratings.forEach((rating) => {
         const result = calculateNextReview(rating, reviewData);
         intervals.push(result.newInterval);
         reviewData = {

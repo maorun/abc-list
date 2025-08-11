@@ -31,13 +31,13 @@ export function SokratesCheck() {
   useEffect(() => {
     // Initialize notifications system
     const getDueReviewsCount = () => reviewTerms.length;
-    
+
     // Check immediately
     initializeNotifications(getDueReviewsCount);
-    
+
     // Set up periodic checking
     const cleanup = setupPeriodicNotifications(getDueReviewsCount);
-    
+
     return cleanup;
   }, [reviewTerms.length]);
 
@@ -151,7 +151,8 @@ export function SokratesCheck() {
           Der Sokrates-Check nutzt einen wissenschaftlich fundierten
           Wiederholungsalgorithmus basierend auf der Ebbinghaus-Vergessenskurve.
           Begriffe werden optimal terminiert für maximale Lerneffizienz und
-          Langzeitretention. Browser-Benachrichtigungen erinnern Sie automatisch an fällige Wiederholungen.
+          Langzeitretention. Browser-Benachrichtigungen erinnern Sie automatisch
+          an fällige Wiederholungen.
         </p>
       </div>
 

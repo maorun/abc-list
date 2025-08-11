@@ -23,34 +23,42 @@ interface SpacedRepetitionSettingsProps {
   onSettingsChange?: () => void;
 }
 
-const SETTINGS_STORAGE_KEY = 'spacedRepetition_settings';
+const SETTINGS_STORAGE_KEY = "spacedRepetition_settings";
 
 function getSpacedRepetitionSettings(): SpacedRepetitionSettings {
   try {
     const stored = localStorage.getItem(SETTINGS_STORAGE_KEY);
     if (stored) {
-      return { ...DEFAULT_SETTINGS, ...JSON.parse(stored) };
+      return {...DEFAULT_SETTINGS, ...JSON.parse(stored)};
     }
   } catch (error) {
-    console.warn('Failed to load spaced repetition settings:', error);
+    console.warn("Failed to load spaced repetition settings:", error);
   }
   return DEFAULT_SETTINGS;
 }
 
-function saveSpacedRepetitionSettings(settings: SpacedRepetitionSettings): void {
+function saveSpacedRepetitionSettings(
+  settings: SpacedRepetitionSettings,
+): void {
   try {
     localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
   } catch (error) {
-    console.warn('Failed to save spaced repetition settings:', error);
+    console.warn("Failed to save spaced repetition settings:", error);
   }
 }
 
-export function SpacedRepetitionSettings({onSettingsChange}: SpacedRepetitionSettingsProps) {
+export function SpacedRepetitionSettings({
+  onSettingsChange,
+}: SpacedRepetitionSettingsProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [spacedSettings, setSpacedSettings] = useState<SpacedRepetitionSettings>(getSpacedRepetitionSettings);
-  const [notificationSettings, setNotificationSettings] = useState<NotificationSettings>(getNotificationSettings);
+  const [spacedSettings, setSpacedSettings] =
+    useState<SpacedRepetitionSettings>(getSpacedRepetitionSettings);
+  const [notificationSettings, setNotificationSettings] =
+    useState<NotificationSettings>(getNotificationSettings);
   const [notificationPermission, setNotificationPermission] = useState(
-    typeof Notification !== 'undefined' ? Notification.permission : 'unsupported'
+    typeof Notification !== "undefined"
+      ? Notification.permission
+      : "unsupported",
   );
 
   useEffect(() => {
@@ -68,15 +76,15 @@ export function SpacedRepetitionSettings({onSettingsChange}: SpacedRepetitionSet
 
   const handleRequestNotificationPermission = async () => {
     const granted = await requestNotificationPermission();
-    setNotificationPermission(granted ? 'granted' : 'denied');
+    setNotificationPermission(granted ? "granted" : "denied");
   };
 
   const handleReset = () => {
     setSpacedSettings(DEFAULT_SETTINGS);
     setNotificationSettings({
       enabled: true,
-      frequency: 'daily',
-      quietHours: { start: 22, end: 8 },
+      frequency: "daily",
+      quietHours: {start: 22, end: 8},
       maxNotifications: 3,
     });
   };
@@ -92,14 +100,17 @@ export function SpacedRepetitionSettings({onSettingsChange}: SpacedRepetitionSet
         <DialogHeader>
           <DialogTitle>Spaced Repetition Einstellungen</DialogTitle>
           <DialogDescription>
-            Passen Sie den Algorithmus und die Benachrichtigungen an Ihre Lernpräferenzen an
+            Passen Sie den Algorithmus und die Benachrichtigungen an Ihre
+            Lernpräferenzen an
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">
           {/* Spaced Repetition Algorithm Settings */}
           <div>
-            <h3 className="text-lg font-semibold mb-3">Algorithmus-Einstellungen</h3>
+            <h3 className="text-lg font-semibold mb-3">
+              Algorithmus-Einstellungen
+            </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-1">
@@ -188,31 +199,38 @@ export function SpacedRepetitionSettings({onSettingsChange}: SpacedRepetitionSet
 
           {/* Notification Settings */}
           <div>
-            <h3 className="text-lg font-semibold mb-3">Benachrichtigung-Einstellungen</h3>
-            
+            <h3 className="text-lg font-semibold mb-3">
+              Benachrichtigung-Einstellungen
+            </h3>
+
             {/* Permission Status */}
             <div className="mb-4 p-3 rounded border bg-gray-50">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium">Browser-Benachrichtigungen</p>
+                  <p className="text-sm font-medium">
+                    Browser-Benachrichtigungen
+                  </p>
                   <p className="text-xs text-gray-600">
-                    Status: {
-                      notificationPermission === 'granted' ? '✅ Erlaubt' :
-                      notificationPermission === 'denied' ? '❌ Abgelehnt' :
-                      notificationPermission === 'default' ? '⚠️ Nicht entschieden' :
-                      '❌ Nicht unterstützt'
-                    }
+                    Status:{" "}
+                    {notificationPermission === "granted"
+                      ? "✅ Erlaubt"
+                      : notificationPermission === "denied"
+                        ? "❌ Abgelehnt"
+                        : notificationPermission === "default"
+                          ? "⚠️ Nicht entschieden"
+                          : "❌ Nicht unterstützt"}
                   </p>
                 </div>
-                {notificationPermission !== 'granted' && notificationPermission !== 'unsupported' && (
-                  <Button
-                    size="sm"
-                    onClick={handleRequestNotificationPermission}
-                    variant="outline"
-                  >
-                    Erlaubnis anfragen
-                  </Button>
-                )}
+                {notificationPermission !== "granted" &&
+                  notificationPermission !== "unsupported" && (
+                    <Button
+                      size="sm"
+                      onClick={handleRequestNotificationPermission}
+                      variant="outline"
+                    >
+                      Erlaubnis anfragen
+                    </Button>
+                  )}
               </div>
             </div>
 
@@ -230,7 +248,10 @@ export function SpacedRepetitionSettings({onSettingsChange}: SpacedRepetitionSet
                   }
                   className="w-4 h-4"
                 />
-                <label htmlFor="notifications-enabled" className="text-sm font-medium">
+                <label
+                  htmlFor="notifications-enabled"
+                  className="text-sm font-medium"
+                >
                   Benachrichtigungen aktivieren
                 </label>
               </div>
@@ -246,7 +267,8 @@ export function SpacedRepetitionSettings({onSettingsChange}: SpacedRepetitionSet
                       onChange={(e) =>
                         setNotificationSettings({
                           ...notificationSettings,
-                          frequency: e.target.value as NotificationSettings['frequency'],
+                          frequency: e.target
+                            .value as NotificationSettings["frequency"],
                         })
                       }
                       className="w-full p-2 border rounded text-sm"
@@ -277,7 +299,7 @@ export function SpacedRepetitionSettings({onSettingsChange}: SpacedRepetitionSet
                       >
                         {Array.from({length: 24}, (_, i) => (
                           <option key={i} value={i}>
-                            {i.toString().padStart(2, '0')}:00
+                            {i.toString().padStart(2, "0")}:00
                           </option>
                         ))}
                       </select>
@@ -302,7 +324,7 @@ export function SpacedRepetitionSettings({onSettingsChange}: SpacedRepetitionSet
                       >
                         {Array.from({length: 24}, (_, i) => (
                           <option key={i} value={i}>
-                            {i.toString().padStart(2, '0')}:00
+                            {i.toString().padStart(2, "0")}:00
                           </option>
                         ))}
                       </select>
@@ -385,9 +407,7 @@ export function SpacedRepetitionSettings({onSettingsChange}: SpacedRepetitionSet
             <Button variant="outline" onClick={() => setIsOpen(false)}>
               Abbrechen
             </Button>
-            <Button onClick={handleSave}>
-              Speichern
-            </Button>
+            <Button onClick={handleSave}>Speichern</Button>
           </div>
         </div>
       </DialogContent>

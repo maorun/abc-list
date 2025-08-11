@@ -13,6 +13,14 @@ interface SokratesData {
   word: WordWithExplanation;
 }
 
+interface SortableTermWithData {
+  rating?: number;
+  lastReviewed?: string;
+  interval?: number;
+  nextReviewDate?: string;
+  __termData: SokratesData;
+}
+
 interface SokratesReviewProps {
   reviewTerms: SokratesData[];
   onTermUpdate: (
@@ -30,25 +38,28 @@ export function SokratesReview({
 }: SokratesReviewProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showExplanation, setShowExplanation] = useState(false);
-  
+
   // Check for bulk review mode
-  const bulkReviewLists = localStorage.getItem('bulkReviewLists');
+  const bulkReviewLists = localStorage.getItem("bulkReviewLists");
   const selectedLists = bulkReviewLists ? JSON.parse(bulkReviewLists) : null;
-  
+
   // Filter review terms for bulk mode
-  const filteredReviewTerms = selectedLists 
-    ? reviewTerms.filter(term => selectedLists.includes(term.listName))
+  const filteredReviewTerms = selectedLists
+    ? reviewTerms.filter((term) => selectedLists.includes(term.listName))
     : reviewTerms;
-  
-  const [sessionSize] = useState(() => 
-    Math.min(getRecommendedSessionSize(filteredReviewTerms.length), filteredReviewTerms.length)
+
+  const [sessionSize] = useState(() =>
+    Math.min(
+      getRecommendedSessionSize(filteredReviewTerms.length),
+      filteredReviewTerms.length,
+    ),
   );
 
   // Clear bulk review selection when component unmounts or finishes
   useEffect(() => {
     return () => {
       if (bulkReviewLists) {
-        localStorage.removeItem('bulkReviewLists');
+        localStorage.removeItem("bulkReviewLists");
       }
     };
   }, [bulkReviewLists]);
@@ -60,10 +71,9 @@ export function SokratesReview({
           🎉 Keine Begriffe zur Wiederholung!
         </h2>
         <p className="text-gray-600 mb-4">
-          {selectedLists 
+          {selectedLists
             ? "Die ausgewählten Listen haben keine fälligen Begriffe."
-            : "Alle Ihre Begriffe sind optimal terminiert nach dem wissenschaftlichen Spaced Repetition Algorithmus."
-          }
+            : "Alle Ihre Begriffe sind optimal terminiert nach dem wissenschaftlichen Spaced Repetition Algorithmus."}
         </p>
         <Button onClick={onFinish}>Zurück zum Dashboard</Button>
       </div>
@@ -72,11 +82,14 @@ export function SokratesReview({
 
   // Sort terms by priority (earliest due first, then by rating)
   const sortedTerms = sortTermsByPriority(
-    filteredReviewTerms.map(term => ({
-      ...term.word,
-      __termData: term, // Keep reference to original data
-    }))
-  ).map(term => (term as any).__termData as SokratesData);
+    filteredReviewTerms.map(
+      (term) =>
+        ({
+          ...term.word,
+          __termData: term, // Keep reference to original data
+        }) as SortableTermWithData,
+    ),
+  ).map((term: SortableTermWithData) => term.__termData);
 
   // Use only session-sized portion
   const sessionTerms = sortedTerms.slice(0, sessionSize);
@@ -106,12 +119,8 @@ export function SokratesReview({
       interval: currentTerm.word.interval || 1,
     };
 
-    const {
-      nextReviewDate,
-      newInterval,
-      newEaseFactor,
-      repetitionCount,
-    } = calculateNextReview(rating, reviewData);
+    const {nextReviewDate, newInterval, newEaseFactor, repetitionCount} =
+      calculateNextReview(rating, reviewData);
 
     const updatedWord: WordWithExplanation = {
       ...currentTerm.word,
@@ -174,7 +183,7 @@ export function SokratesReview({
       easeFactor: currentTerm.word.easeFactor || 2.5,
       interval: currentTerm.word.interval || 1,
     };
-    
+
     return calculateNextReview(rating, reviewData).newInterval;
   };
 
@@ -192,7 +201,8 @@ export function SokratesReview({
             Begriff {currentIndex + 1} von {sessionTerms.length}
             {sessionTerms.length < filteredReviewTerms.length && (
               <span className="text-sm text-gray-600 ml-2">
-                (Empfohlene Sitzung: {sessionTerms.length} von {filteredReviewTerms.length} fälligen Begriffen)
+                (Empfohlene Sitzung: {sessionTerms.length} von{" "}
+                {filteredReviewTerms.length} fälligen Begriffen)
               </span>
             )}
           </h2>
@@ -226,14 +236,10 @@ export function SokratesReview({
               </div>
             )}
             {currentTerm.word.repetitionCount && (
-              <div>
-                Wiederholungen: {currentTerm.word.repetitionCount}
-              </div>
+              <div>Wiederholungen: {currentTerm.word.repetitionCount}</div>
             )}
             {currentTerm.word.interval && (
-              <div>
-                Letztes Intervall: {currentTerm.word.interval} Tage
-              </div>
+              <div>Letztes Intervall: {currentTerm.word.interval} Tage</div>
             )}
           </div>
         </div>
@@ -251,18 +257,22 @@ export function SokratesReview({
         {/* Rating Stars with Preview */}
         <div className="mb-6">
           <div className="flex justify-center gap-2 mb-4">{renderStars()}</div>
-          
+
           {/* Interval Preview */}
           <div className="text-center">
-            <p className="text-xs text-gray-500 mb-2">Nächste Wiederholung in:</p>
+            <p className="text-xs text-gray-500 mb-2">
+              Nächste Wiederholung in:
+            </p>
             <div className="flex justify-center gap-4 text-xs">
-              {[1, 2, 3, 4, 5].map(rating => (
+              {[1, 2, 3, 4, 5].map((rating) => (
                 <div key={rating} className="text-center">
                   <div className="mb-1">
-                    {"★".repeat(rating)}{"☆".repeat(5 - rating)}
+                    {"★".repeat(rating)}
+                    {"☆".repeat(5 - rating)}
                   </div>
                   <div className="text-blue-600 font-medium">
-                    {getNextIntervalPreview(rating)} Tag{getNextIntervalPreview(rating) !== 1 ? 'e' : ''}
+                    {getNextIntervalPreview(rating)} Tag
+                    {getNextIntervalPreview(rating) !== 1 ? "e" : ""}
                   </div>
                 </div>
               ))}
@@ -307,7 +317,9 @@ export function SokratesReview({
           🧠 Wissenschaftlich optimiert
         </h4>
         <ul className="text-sm text-blue-700 space-y-1">
-          <li>• Basiert auf der Ebbinghaus-Vergessenskurve für optimale Retention</li>
+          <li>
+            • Basiert auf der Ebbinghaus-Vergessenskurve für optimale Retention
+          </li>
           <li>• Intervalle passen sich automatisch an Ihre Leistung an</li>
           <li>• Schlecht bewertete Begriffe erscheinen häufiger</li>
           <li>• Gut beherrschte Begriffe werden seltener wiederholt</li>
