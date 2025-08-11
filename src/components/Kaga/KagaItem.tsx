@@ -3,6 +3,7 @@ import {useLocation} from "react-router-dom";
 import {NewItemWithSaveKey} from "../NewStringItem";
 import {usePrompt} from "@/components/ui/prompt-dialog";
 import {Button} from "../ui/button";
+import {KagaTemplates, KagaTemplate} from "./KagaTemplates";
 
 interface DrawingData {
   paths: Array<{
@@ -265,6 +266,18 @@ export function KagaItem() {
     }
 
     return shape;
+  };
+
+  // Handle template selection
+  const handleTemplateSelect = (template: KagaTemplate) => {
+    const newData = {
+      paths: template.data.paths || [],
+      texts: template.data.texts || [],
+      shapes: template.data.shapes || [],
+    };
+    setDrawingData(newData);
+    addToHistory(newData);
+    redrawCanvas(newData);
   };
 
   const saveCanvas = () => {
@@ -615,6 +628,8 @@ export function KagaItem() {
           >
             ↷ Wiederholen
           </Button>
+
+          <KagaTemplates onTemplateSelect={handleTemplateSelect} />
         </div>
 
         <div className="flex gap-2 w-full sm:w-auto">

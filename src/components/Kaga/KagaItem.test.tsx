@@ -87,6 +87,7 @@ describe("KagaItem", () => {
     // Check for action buttons
     expect(screen.getByText("↶ Rückgängig")).toBeInTheDocument();
     expect(screen.getByText("↷ Wiederholen")).toBeInTheDocument();
+    expect(screen.getByText("📋 Vorlage")).toBeInTheDocument();
     expect(screen.getByText("💾 Speichern")).toBeInTheDocument();
     expect(screen.getByText("🗑️ Löschen")).toBeInTheDocument();
 
