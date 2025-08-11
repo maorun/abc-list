@@ -27,12 +27,6 @@ export function MultiColumnStatistics({
 }: MultiColumnStatisticsProps) {
   const [statistics, setStatistics] = useState<ColumnStatistics[]>([]);
 
-  useEffect(() => {
-    if (isOpen) {
-      calculateStatistics();
-    }
-  }, [isOpen, listData, calculateStatistics]);
-
   const calculateStatistics = useCallback(() => {
     const alphabet = Array.from({length: 26}, (_, i) =>
       String.fromCharCode(97 + i),
@@ -86,6 +80,12 @@ export function MultiColumnStatistics({
 
     setStatistics(stats);
   }, [listData]);
+
+  useEffect(() => {
+    if (isOpen) {
+      calculateStatistics();
+    }
+  }, [isOpen, listData, calculateStatistics]);
 
   const getColumnById = (columnId: string) => {
     return listData.columns.find((col) => col.id === columnId);
