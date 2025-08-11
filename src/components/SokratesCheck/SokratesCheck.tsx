@@ -96,9 +96,9 @@ export function SokratesCheck() {
 
   return (
     <div className="p-4">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-6 flex-wrap">
         <h1 className="text-3xl font-bold">Sokrates-Check</h1>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <Button
             variant={view === "dashboard" ? "default" : "outline"}
             onClick={() => setView("dashboard")}

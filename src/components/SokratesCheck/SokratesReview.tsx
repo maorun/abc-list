@@ -152,7 +152,7 @@ export function SokratesReview({
         </div>
 
         {/* Rating Stars */}
-        <div className="flex justify-center gap-2 mb-6">{renderStars()}</div>
+        <div className="flex justify-center gap-2 mb-6 flex-wrap">{renderStars()}</div>
 
         {/* Explanation Toggle */}
         {currentTerm.word.explanation && (
@@ -175,7 +175,7 @@ export function SokratesReview({
         )}
 
         {/* Action Buttons */}
-        <div className="flex justify-center gap-4">
+        <div className="flex justify-center gap-4 flex-wrap">
           <Button variant="outline" onClick={handleSkip}>
             Überspringen
           </Button>

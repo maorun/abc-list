@@ -164,8 +164,8 @@ export function List() {
   return (
     <div className="space-y-4">
       {/* Mobile-first button layout */}
-      <div className="flex flex-col sm:flex-row sm:justify-center sm:items-center gap-2 sm:gap-2">
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-2 flex-1 sm:flex-none">
+      <div className="flex flex-col sm:flex-row sm:justify-center sm:items-center gap-2 sm:gap-2 flex-wrap">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-2 flex-1 sm:flex-none flex-wrap">
           <NewStringItem
             title={"Neue ABC-Liste"}
             onSave={(item) => createNewItem(item.text)}
@@ -178,7 +178,7 @@ export function List() {
             📊 Mehrspaltige Liste
           </Button>
         </div>
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-2 flex-1 sm:flex-none">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-2 flex-1 sm:flex-none flex-wrap">
           <Button
             variant="secondary"
             onClick={() => setShowBulkImportModal(true)}
