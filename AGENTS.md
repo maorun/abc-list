@@ -11,7 +11,6 @@ ABC-List implements Vera F. Birkenbihl's learning methodology with multiple lear
 - **KaWa (Word Associations)**: Build associations for each letter of a specific word
 - **KaGa (Graphical Associations)**: Visual learning with drawing tools and graphical elements
 - **Stadt-Land-Fluss**: Quick knowledge retrieval game training with customizable categories and timer-based rounds
-- **Sokrates Check**: Scientifically-backed spaced repetition system for optimal learning retention using the Ebbinghaus forgetting curve
 
 **Key Technical Features:**
 - Mobile-first responsive design with hamburger navigation
@@ -109,7 +108,7 @@ To run tests and view coverage:
 npm run coverage
 ```
 
-**Important:** Before submitting any changes, you **must** ensure all existing tests pass. The project currently has tests covering all components including ABC-Lists, KaWa, KaGa, Stadt-Land-Fluss, Sokrates spaced repetition system, and UI utilities. For new features, you should add corresponding tests. For bug fixes, you should add a test that reproduces the bug and verifies the fix.
+**Important:** Before submitting any changes, you **must** ensure all existing tests pass. The project currently has 78 tests covering all components including ABC-Lists, KaWa, KaGa, Stadt-Land-Fluss, and UI utilities. For new features, you should add corresponding tests. For bug fixes, you should add a test that reproduces the bug and verifies the fix.
 
 ## 4. Coding Style
 
@@ -307,91 +306,3 @@ it("should prevent production rerender loops", async () => {
 ```
 
 Thank you for your contribution!
-
-## 8. Sokrates Spaced Repetition System
-
-### 8.1. Overview
-
-The Sokrates spaced repetition system implements a scientifically-backed learning algorithm based on the Ebbinghaus forgetting curve. This transforms the ABC-Lists from simple self-assessment tools into optimized learning systems that adapt to individual performance and maximize long-term retention.
-
-### 8.2. Core Components
-
-**Spaced Repetition Algorithm (`src/lib/spacedRepetition.ts`)**
-- SM-2 based intervals with dynamic ease factor adjustments
-- Rating-based initial intervals: 1★=1day, 2★=2days, 3★=4days, 4★=7days, 5★=14days
-- Forgetting curve adaptation that increases intervals for good performance and resets for poor performance
-- Comprehensive statistics including retention rate, mastery tracking, and performance analytics
-
-**Settings Component (`src/components/SokratesCheck/SpacedRepetitionSettings.tsx`)**
-- Algorithm customization: Base interval, ease factor, min/max intervals
-- Preset configurations: Intensiv (aggressive), Standard (balanced), Entspannt (relaxed)
-- Real-time preview showing how settings affect review intervals
-- Notification management with quiet hours and frequency control
-
-**Dashboard Component (`src/components/SokratesCheck/SokratesDashboard.tsx`)**
-- Advanced metrics: Retention rate, mastery progress, average intervals
-- Visual analytics: Interval distribution charts, algorithm status indicators
-- KI-based recommendations tailored to learning patterns
-- Performance tracking across multiple ABC lists
-
-**Review Component (`src/components/SokratesCheck/SokratesReview.tsx`)**
-- Bulk review functionality with list selection dialog
-- Session optimization with recommended sizes (10-25 terms based on cognitive load research)
-- Priority scheduling: Earliest due terms first, then by difficulty
-- Interval preview showing next review date for each rating choice
-
-**Notification System (`src/lib/notifications.ts`)**
-- Intelligent scheduling: Daily, twice-daily, or hourly check frequencies
-- Quiet hours: Respects user sleep/work schedules (default: 22:00-08:00)
-- Permission management: Graceful handling of browser notification permissions
-- Non-intrusive design: Auto-closing notifications with click-to-open functionality
-
-### 8.3. Data Model Enhancement
-
-The existing `WordWithExplanation` interface has been enhanced with spaced repetition fields:
-
-```typescript
-interface WordWithExplanation {
-  // Existing fields...
-  repetitionCount?: number;    // Review history count
-  easeFactor?: number;         // Individual difficulty factor (2.5 default)
-  interval?: number;           // Current review interval in days
-  nextReviewDate?: string;     // Calculated next review date (ISO string)
-}
-```
-
-### 8.4. Algorithm Examples
-
-**First Review Sequence:**
-- Rating 4 (good) → 7 days next review
-- Second review with rating 4 → ~17 days (7 × 2.5 ease factor)
-- Poor performance with rating 2 → reset to 1 day, reduce ease factor
-
-**Progressive Learning:**
-- Terms with consistent good ratings get longer intervals
-- Difficult terms get shorter intervals and more frequent reviews
-- Algorithm adapts to individual learning patterns
-
-### 8.5. Testing Coverage
-
-The spaced repetition system includes comprehensive test coverage:
-- Algorithm behavior across all rating scenarios (1-5 stars)
-- Edge case handling (invalid dates, extreme intervals, first reviews)
-- Performance demonstration with forgetting curve simulation
-- Statistics calculation accuracy and retention metrics
-- Notification system functionality and permission handling
-
-### 8.6. Backwards Compatibility
-
-- Existing SavedWord data automatically upgrades with spaced repetition fields
-- Legacy 7-day review logic serves as fallback for data without spaced repetition
-- All existing ABC-List functionality preserved
-- Gradual migration to spaced repetition without data loss
-
-### 8.7. Mobile-First Design
-
-All Sokrates components follow the existing mobile-first responsive design principles:
-- Touch-friendly interface elements with adequate spacing
-- Responsive charts and dialogs that work on mobile and desktop
-- Hamburger navigation integration for mobile devices
-- Optimized performance for mobile browsers

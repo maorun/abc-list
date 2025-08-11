@@ -8,11 +8,6 @@ export interface WordWithExplanation {
   imported?: boolean;
   rating?: number; // 1-5 scale for Sokrates-Check self-assessment
   lastReviewed?: string; // ISO date string
-  // Enhanced spaced repetition fields
-  repetitionCount?: number; // How many times reviewed
-  easeFactor?: number; // Individual ease factor for this term
-  interval?: number; // Current interval in days
-  nextReviewDate?: string; // Calculated next review date (ISO string)
 }
 
 interface SavedWordProps {

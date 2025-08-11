@@ -24,12 +24,10 @@ describe("SokratesCheck", () => {
     render(<SokratesCheck />);
     expect(screen.getByText("Sokrates-Check")).toBeInTheDocument();
     expect(
-      screen.getByText("💡 Wissenschaftliche Spaced Repetition"),
+      screen.getByText("💡 Was ist der Sokrates-Check?"),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(
-        /Der Sokrates-Check nutzt einen wissenschaftlich fundierten/,
-      ),
+      screen.getByText(/Der Sokrates-Check ist ein wichtiges Birkenbihl-Tool/),
     ).toBeInTheDocument();
   });
 

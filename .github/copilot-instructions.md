@@ -1,6 +1,6 @@
 # ABC-List Learning Application
 
-ABC-List is a React/TypeScript/Vite web application implementing Vera F. Birkenbihl's learning methodology with ABC-Lists, KaWa (word associations), KaGa (graphical associations), Stadt-Land-Fluss (quick knowledge retrieval game), and Sokrates spaced repetition system. This application helps users create learning materials using brain-compatible learning techniques with scientifically-backed retention optimization.
+ABC-List is a React/TypeScript/Vite web application implementing Vera F. Birkenbihl's learning methodology with ABC-Lists, KaWa (word associations), KaGa (graphical associations), and Stadt-Land-Fluss (quick knowledge retrieval game). This application helps users create learning materials using brain-compatible learning techniques.
 
 **ALWAYS reference these instructions first and fallback to search or bash commands only when you encounter unexpected information that does not match the info here.**
 
@@ -125,32 +125,6 @@ ABC-List is a React/TypeScript/Vite web application implementing Vera F. Birkenb
 - Test game history and round tracking
 - Verify game data persistence in localStorage
 
-### 7. Sokrates Spaced Repetition System
-- Navigate to any ABC-List with saved words
-- Click "Sokrates-Check" button to enter spaced repetition mode
-- Test spaced repetition settings:
-  - Click "Einstellungen" to access SpacedRepetitionSettings component
-  - Test preset configurations: Intensiv, Standard, Entspannt
-  - Verify algorithm customization (base interval, ease factor, min/max intervals)
-  - Test notification settings with quiet hours configuration
-- Test review functionality:
-  - Rate words using 1-5 star system in SokratesReview component
-  - Verify next review dates are calculated correctly based on ratings
-  - Test bulk review mode with multiple lists
-  - Verify session optimization with recommended term limits
-- Test dashboard analytics:
-  - Access SokratesDashboard to view retention statistics
-  - Verify performance metrics and interval distribution
-  - Test KI-based learning recommendations
-- Test notification system:
-  - Enable browser notifications through settings
-  - Verify notification scheduling respects quiet hours
-  - Test notification frequency options (daily, twice-daily, hourly)
-- Verify backwards compatibility:
-  - Existing ABC-Lists should work with spaced repetition
-  - Legacy data should upgrade seamlessly
-  - Fallback to 7-day intervals for data without spaced repetition fields
-
 ## CI/CD Requirements
 
 ### The Mandatory Development Workflow
@@ -217,11 +191,7 @@ This cycle continues until your code both passes all tests and has no linting er
     /Kawa             # KaWa (word associations) components
     /List             # ABC-List components
     /LinkLists        # List linking functionality
-    /SokratesCheck    # Spaced repetition system components
     /StadtLandFluss   # Stadt-Land-Fluss game components
-  /lib                # Utility libraries and algorithms
-    notifications.ts  # Browser notification system
-    spacedRepetition.ts # Spaced repetition algorithm implementation
   /test               # Test setup and utilities
   /themes             # Theme configuration
   App.tsx             # Main application component
@@ -573,170 +543,3 @@ it("should handle production rerender scenarios without localStorage access grow
 - Dev server startup: ~1 second
 
 **Remember: NEVER CANCEL long-running commands. Always wait for completion and set appropriate timeouts (5+ minutes for installs, 60+ seconds for builds and tests).**
-
-## Sokrates Spaced Repetition System
-
-### Overview
-The Sokrates spaced repetition system implements a scientifically-backed learning algorithm based on the Ebbinghaus forgetting curve and SM-2 algorithm. This system transforms ABC-Lists from simple self-assessment tools into optimized learning platforms that adapt to individual performance patterns.
-
-### Core Implementation
-
-**Algorithm (`src/lib/spacedRepetition.ts`)**
-- SM-2 based intervals with dynamic ease factor adjustments
-- Rating-based initial intervals: 1★=1day, 2★=2days, 3★=4days, 4★=7days, 5★=14days  
-- Forgetting curve adaptation: increases intervals for good performance, resets for poor performance
-- Comprehensive statistics: retention rate, mastery tracking, average intervals
-
-**Settings Component (`src/components/SokratesCheck/SpacedRepetitionSettings.tsx`)**
-- Algorithm customization: base interval, ease factor, min/max intervals
-- Preset configurations: Intensiv (aggressive), Standard (balanced), Entspannt (relaxed)
-- Real-time preview showing how settings affect review intervals
-- Notification management with quiet hours and frequency control
-
-**Dashboard Analytics (`src/components/SokratesCheck/SokratesDashboard.tsx`)**
-- Advanced metrics: retention rate, mastery progress, interval distribution
-- Visual analytics with responsive charts for mobile and desktop
-- KI-based recommendations tailored to learning patterns
-- Performance tracking across multiple ABC lists
-
-**Review Interface (`src/components/SokratesCheck/SokratesReview.tsx`)**
-- Bulk review functionality with list selection dialog
-- Session optimization: 10-25 terms based on cognitive load research
-- Priority scheduling: earliest due terms first, then by difficulty
-- Interval preview: shows next review date for each rating choice
-
-**Notification System (`src/lib/notifications.ts`)**
-- Intelligent scheduling: daily, twice-daily, or hourly frequencies
-- Quiet hours: respects user sleep/work schedules (default: 22:00-08:00)
-- Permission management: graceful handling of browser notification permissions
-- Non-intrusive design: auto-closing notifications with click-to-open functionality
-
-### Data Model Enhancement
-
-Enhanced `WordWithExplanation` interface with spaced repetition fields:
-
-```typescript
-interface WordWithExplanation {
-  // Existing fields...
-  repetitionCount?: number;    // Review history count
-  easeFactor?: number;         // Individual difficulty factor (2.5 default)
-  interval?: number;           // Current review interval in days
-  nextReviewDate?: string;     // Calculated next review date (ISO string)
-}
-```
-
-### Algorithm Behavior Examples
-
-**Progressive Learning Pattern:**
-```typescript
-// First review: rating 4 → 7 days
-// Second review: rating 4 → ~17 days (7 × 2.5 ease factor)
-// Third review: rating 4 → ~42 days (17 × 2.5 ease factor)
-// Poor performance: rating 2 → reset to 1 day, reduce ease factor
-```
-
-**Adaptive Difficulty:**
-- Terms with consistent good ratings (4-5★) get longer intervals
-- Difficult terms (1-2★) get shorter intervals and more frequent reviews
-- Algorithm adapts ease factor based on individual performance patterns
-
-### Testing Requirements
-
-**Comprehensive Test Coverage (`src/lib/spacedRepetition.test.ts`):**
-- Algorithm behavior across all rating scenarios (1-5 stars)
-- Edge case handling: invalid dates, extreme intervals, first reviews
-- Performance demonstration with forgetting curve simulation
-- Statistics calculation accuracy and retention metrics
-- Notification system functionality and permission handling
-
-**Integration Testing Patterns:**
-```typescript
-// Test spaced repetition algorithm accuracy
-it("should calculate correct intervals for different ratings", () => {
-  expect(calculateNextReview(4).newInterval).toBe(7); // Good rating = 7 days
-  expect(calculateNextReview(2).newInterval).toBe(2); // Poor rating = 2 days
-});
-
-// Test backwards compatibility
-it("should handle legacy data without spaced repetition fields", () => {
-  const legacyWord = { text: "test", explanation: "" };
-  expect(upgradeWordData(legacyWord)).toHaveProperty("repetitionCount", 0);
-});
-```
-
-### Mobile-First Implementation
-
-**Responsive Design Requirements:**
-- Touch-friendly rating buttons with adequate spacing (minimum 44px)
-- Responsive charts that work on mobile viewports (375px width)
-- Settings dialogs optimized for mobile interaction
-- Notification UI that respects mobile notification patterns
-
-**Component Patterns:**
-```jsx
-// Mobile-first rating interface
-<div className="grid grid-cols-5 gap-2 sm:gap-3 w-full">
-  {[1, 2, 3, 4, 5].map(rating => (
-    <Button 
-      key={rating}
-      className="h-12 sm:h-14 flex-col text-xs sm:text-sm"
-      onClick={() => handleRating(rating)}
-    >
-      {"★".repeat(rating)}
-    </Button>
-  ))}
-</div>
-```
-
-### Performance Optimization
-
-**Function Extraction Applied:**
-All Sokrates components follow the function extraction pattern to prevent production rerenders:
-
-```typescript
-// Extracted handlers prevent recreation on every render
-const handleRatingAction = (
-  rating: number,
-  word: WordWithExplanation,
-  onRatingChange: (word: WordWithExplanation, rating: number) => void
-) => () => {
-  onRatingChange(word, rating);
-};
-
-// Inside component - create stable references
-const handleRating = (rating: number) => 
-  handleRatingAction(rating, word, onRatingChange)();
-```
-
-### Integration Points
-
-**Navigation Integration:**
-- Sokrates Check accessible from any ABC-List with saved words
-- Mobile navigation includes spaced repetition status indicators
-- Deep linking support for review sessions and settings
-
-**Data Persistence:**
-- localStorage integration for settings and algorithm state
-- Backwards compatibility with existing ABC-List data
-- Automatic migration of legacy data to spaced repetition format
-
-**Notification Integration:**
-- Browser notification API integration with permission handling
-- Scheduling system that respects user preferences and quiet hours
-- Graceful degradation when notifications are not supported or blocked
-
-### Development Guidelines
-
-**When Working with Spaced Repetition:**
-1. Always test algorithm accuracy with edge cases
-2. Verify mobile responsiveness of new UI components
-3. Ensure backwards compatibility with existing data
-4. Test notification functionality across different browsers
-5. Follow function extraction pattern for all event handlers
-6. Add comprehensive test coverage for new algorithm features
-
-**Common Patterns:**
-- Use `calculateNextReview()` for all interval calculations
-- Apply `upgradeWordData()` when loading legacy data
-- Follow notification permission best practices
-- Implement responsive design with mobile-first approach
