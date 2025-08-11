@@ -71,14 +71,14 @@ describe("KagaItem", () => {
 
     // Check for drawing tools
     expect(screen.getByText("Werkzeug:")).toBeInTheDocument();
-    expect(screen.getByText("Stift")).toBeInTheDocument();
-    expect(screen.getByText("Text")).toBeInTheDocument();
+    expect(screen.getByText("✏️ Stift")).toBeInTheDocument();
+    expect(screen.getByText("📝 Text")).toBeInTheDocument();
     expect(screen.getByText("Farbe:")).toBeInTheDocument();
     expect(screen.getByText("Größe:")).toBeInTheDocument();
 
     // Check for action buttons
-    expect(screen.getByText("Speichern")).toBeInTheDocument();
-    expect(screen.getByText("Löschen")).toBeInTheDocument();
+    expect(screen.getByText("💾 Speichern")).toBeInTheDocument();
+    expect(screen.getByText("🗑️ Löschen")).toBeInTheDocument();
 
     // Check for canvas
     const canvas = document.querySelector("canvas");

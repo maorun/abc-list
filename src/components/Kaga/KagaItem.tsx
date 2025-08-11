@@ -105,6 +105,18 @@ export function KagaItem() {
     };
   };
 
+  const getTouchPos = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return {x: 0, y: 0};
+
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0] || e.changedTouches[0];
+    return {
+      x: touch.clientX - rect.left,
+      y: touch.clientY - rect.top,
+    };
+  };
+
   const startDrawing = async (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (tool === "pen") {
       setIsDrawing(true);
@@ -112,6 +124,37 @@ export function KagaItem() {
       setCurrentPath([pos]);
     } else if (tool === "text") {
       const pos = getMousePos(e);
+      const text = await prompt(
+        "Text eingeben:",
+        "Geben Sie den Text ein, der an dieser Position hinzugefügt werden soll:",
+        "Text hier eingeben...",
+      );
+      if (text) {
+        const newText = {
+          x: pos.x,
+          y: pos.y,
+          text,
+          color: currentColor,
+          fontSize: 16,
+        };
+        const newData = {
+          ...drawingData,
+          texts: [...drawingData.texts, newText],
+        };
+        setDrawingData(newData);
+        redrawCanvas(newData);
+      }
+    }
+  };
+
+  const startTouchDrawing = async (e: React.TouchEvent<HTMLCanvasElement>) => {
+    e.preventDefault(); // Prevent scrolling and other default touch behaviors
+    if (tool === "pen") {
+      setIsDrawing(true);
+      const pos = getTouchPos(e);
+      setCurrentPath([pos]);
+    } else if (tool === "text") {
+      const pos = getTouchPos(e);
       const text = await prompt(
         "Text eingeben:",
         "Geben Sie den Text ein, der an dieser Position hinzugefügt werden soll:",
@@ -159,6 +202,31 @@ export function KagaItem() {
     }
   };
 
+  const touchDraw = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    e.preventDefault(); // Prevent scrolling
+    if (!isDrawing || tool !== "pen") return;
+
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext("2d");
+    if (!canvas || !ctx) return;
+
+    const pos = getTouchPos(e);
+    const newPath = [...currentPath, pos];
+    setCurrentPath(newPath);
+
+    // Draw current stroke
+    if (newPath.length > 1) {
+      ctx.strokeStyle = currentColor;
+      ctx.lineWidth = brushSize;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.beginPath();
+      ctx.moveTo(newPath[newPath.length - 2].x, newPath[newPath.length - 2].y);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+    }
+  };
+
   const stopDrawing = () => {
     if (isDrawing && currentPath.length > 1) {
       const newPath = {
@@ -176,6 +244,11 @@ export function KagaItem() {
     setCurrentPath([]);
   };
 
+  const stopTouchDrawing = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    e.preventDefault();
+    stopDrawing();
+  };
+
   if (!item) {
     return (
       <div className="p-4 text-center">
@@ -191,27 +264,29 @@ export function KagaItem() {
       </h1>
 
       {/* Tools */}
-      <div className="flex flex-wrap justify-center gap-4 mb-4 p-4 bg-gray-100 rounded">
-        <div className="flex items-center gap-2">
-          <span className="font-semibold">Werkzeug:</span>
+      <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-2 sm:gap-4 mb-4 p-3 sm:p-4 bg-gray-100 rounded">
+        <div className="flex items-center justify-center gap-2 w-full sm:w-auto">
+          <span className="font-semibold text-sm sm:text-base">Werkzeug:</span>
           <Button
             variant={tool === "pen" ? "default" : "secondary"}
             size="sm"
             onClick={() => setTool("pen")}
+            className="flex-1 sm:flex-initial min-h-[44px]"
           >
-            Stift
+            ✏️ Stift
           </Button>
           <Button
             variant={tool === "text" ? "default" : "secondary"}
             size="sm"
             onClick={() => setTool("text")}
+            className="flex-1 sm:flex-initial min-h-[44px]"
           >
-            Text
+            📝 Text
           </Button>
         </div>
 
-        <div className="flex items-center gap-2">
-          <label htmlFor="color-picker" className="font-semibold">
+        <div className="flex items-center justify-center gap-2 w-full sm:w-auto">
+          <label htmlFor="color-picker" className="font-semibold text-sm sm:text-base">
             Farbe:
           </label>
           <input
@@ -219,12 +294,12 @@ export function KagaItem() {
             type="color"
             value={currentColor}
             onChange={(e) => setCurrentColor(e.target.value)}
-            className="w-8 h-8 rounded border"
+            className="w-10 h-10 sm:w-8 sm:h-8 rounded border min-h-[44px] sm:min-h-[32px]"
           />
         </div>
 
-        <div className="flex items-center gap-2">
-          <label htmlFor="brush-size" className="font-semibold">
+        <div className="flex items-center justify-center gap-2 w-full sm:w-auto">
+          <label htmlFor="brush-size" className="font-semibold text-sm sm:text-base">
             Größe:
           </label>
           <input
@@ -234,35 +309,41 @@ export function KagaItem() {
             max="10"
             value={brushSize}
             onChange={(e) => setBrushSize(Number(e.target.value))}
-            className="w-20"
+            className="w-20 sm:w-20 min-h-[44px] sm:min-h-auto"
           />
-          <span className="text-sm">{brushSize}px</span>
+          <span className="text-sm min-w-[30px]">{brushSize}px</span>
         </div>
 
-        <Button
-          onClick={saveCanvas}
-          variant="default"
-          className="bg-green-500 hover:bg-green-700"
-        >
-          Speichern
-        </Button>
+        <div className="flex gap-2 w-full sm:w-auto">
+          <Button
+            onClick={saveCanvas}
+            variant="default"
+            className="bg-green-500 hover:bg-green-700 flex-1 sm:flex-initial min-h-[44px]"
+          >
+            💾 Speichern
+          </Button>
 
-        <Button onClick={clearCanvas} variant="destructive">
-          Löschen
-        </Button>
+          <Button onClick={clearCanvas} variant="destructive" className="flex-1 sm:flex-initial min-h-[44px]">
+            🗑️ Löschen
+          </Button>
+        </div>
       </div>
 
       {/* Canvas */}
-      <div className="flex justify-center">
+      <div className="flex justify-center overflow-auto">
         <canvas
           ref={canvasRef}
           width={800}
           height={600}
-          className="border-2 border-gray-300 rounded cursor-crosshair bg-white"
+          className="border-2 border-gray-300 rounded cursor-crosshair bg-white max-w-full h-auto touch-none"
           onMouseDown={startDrawing}
           onMouseMove={draw}
           onMouseUp={stopDrawing}
           onMouseLeave={stopDrawing}
+          onTouchStart={startTouchDrawing}
+          onTouchMove={touchDraw}
+          onTouchEnd={stopTouchDrawing}
+          onTouchCancel={stopTouchDrawing}
         />
       </div>
 
