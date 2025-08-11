@@ -8,6 +8,10 @@ import {
   DialogDescription,
   DialogFooter,
 } from "../ui/dialog";
+import {Card, CardContent, CardFooter, CardHeader} from "../ui/card";
+import {Badge} from "../ui/badge";
+import {Label} from "../ui/label";
+import {Textarea} from "../ui/textarea";
 import {MarketplaceTerm, UserProfile} from "./types";
 import {BasarService} from "./BasarService";
 
@@ -92,97 +96,106 @@ export function BasarTermCard({
 
   return (
     <>
-      <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-4 border border-gray-200">
-        {/* Header */}
-        <div className="flex justify-between items-start mb-3">
-          <div className="flex items-center space-x-2">
-            <span className="text-2xl font-bold text-blue-600 bg-blue-100 w-8 h-8 rounded-full flex items-center justify-center text-sm">
-              {term.letter.toUpperCase()}
-            </span>
-            <div>
-              <h3 className="font-bold text-lg text-gray-800">{term.text}</h3>
-              <p className="text-xs text-gray-500">
-                aus &quot;{term.listName}&quot;
+      <Card className="hover:shadow-lg transition-shadow">
+        <CardHeader className="pb-3">
+          {/* Header */}
+          <div className="flex justify-between items-start">
+            <div className="flex items-center space-x-2">
+              <Badge
+                variant="secondary"
+                className="text-2xl font-bold text-blue-600 bg-blue-100 w-8 h-8 rounded-full flex items-center justify-center text-sm"
+              >
+                {term.letter.toUpperCase()}
+              </Badge>
+              <div>
+                <h3 className="font-bold text-lg text-gray-800">{term.text}</h3>
+                <p className="text-xs text-gray-500">
+                  aus &quot;{term.listName}&quot;
+                </p>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-lg font-bold text-green-600">
+                💰 {term.price}
+              </div>
+              <div className="text-xs text-gray-500">Punkte</div>
+            </div>
+          </div>
+        </CardHeader>
+
+        <CardContent className="pt-0">
+          {/* Explanation */}
+          {term.explanation && (
+            <div className="mb-3">
+              <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded italic">
+                &quot;{term.explanation}&quot;
               </p>
             </div>
-          </div>
-          <div className="text-right">
-            <div className="text-lg font-bold text-green-600">
-              💰 {term.price}
-            </div>
-            <div className="text-xs text-gray-500">Punkte</div>
-          </div>
-        </div>
-
-        {/* Explanation */}
-        {term.explanation && (
-          <div className="mb-3">
-            <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded italic">
-              &quot;{term.explanation}&quot;
-            </p>
-          </div>
-        )}
-
-        {/* Quality Rating */}
-        <div className="mb-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              {term.ratingCount > 0 ? (
-                renderStars(term.quality)
-              ) : (
-                <span className="text-xs text-gray-400">
-                  Noch nicht bewertet
-                </span>
-              )}
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleOpenRating}
-              className="text-xs text-blue-600 hover:text-blue-800"
-            >
-              {existingRating ? "⭐ Bearbeiten" : "⭐ Bewerten"}
-            </Button>
-          </div>
-        </div>
-
-        {/* Seller Info */}
-        <div className="mb-3 text-xs text-gray-500">
-          <div className="flex justify-between">
-            <span>👤 {term.sellerName}</span>
-            <span>📅 {formatDate(term.dateAdded)}</span>
-          </div>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex space-x-2">
-          {isOwnTerm ? (
-            <Button disabled className="flex-1 bg-gray-300">
-              🏷️ Ihr Begriff
-            </Button>
-          ) : (
-            <Button
-              onClick={() => onBuy(term.id)}
-              disabled={!canBuy}
-              className={`flex-1 ${
-                canBuy
-                  ? "bg-green-500 hover:bg-green-600"
-                  : "bg-gray-300 cursor-not-allowed"
-              }`}
-            >
-              {currentUser.points < term.price
-                ? `💸 Zu wenig Punkte`
-                : "🛒 Kaufen"}
-            </Button>
           )}
-        </div>
 
-        {!canBuy && !isOwnTerm && (
-          <div className="mt-2 text-xs text-red-500 text-center">
-            Sie benötigen {term.price - currentUser.points} weitere Punkte
+          {/* Quality Rating */}
+          <div className="mb-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                {term.ratingCount > 0 ? (
+                  renderStars(term.quality)
+                ) : (
+                  <span className="text-xs text-gray-400">
+                    Noch nicht bewertet
+                  </span>
+                )}
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleOpenRating}
+                className="text-xs text-blue-600 hover:text-blue-800"
+              >
+                {existingRating ? "⭐ Bearbeiten" : "⭐ Bewerten"}
+              </Button>
+            </div>
           </div>
-        )}
-      </div>
+
+          {/* Seller Info */}
+          <div className="mb-3 text-xs text-gray-500">
+            <div className="flex justify-between">
+              <span>👤 {term.sellerName}</span>
+              <span>📅 {formatDate(term.dateAdded)}</span>
+            </div>
+          </div>
+        </CardContent>
+
+        <CardFooter className="pt-0">
+          {/* Action Buttons */}
+          <div className="flex space-x-2 w-full">
+            {isOwnTerm ? (
+              <Button disabled className="flex-1 bg-gray-300">
+                🏷️ Ihr Begriff
+              </Button>
+            ) : (
+              <Button
+                onClick={() => onBuy(term.id)}
+                disabled={!canBuy}
+                className={`flex-1 ${
+                  canBuy
+                    ? "bg-green-500 hover:bg-green-600"
+                    : "bg-gray-300 cursor-not-allowed"
+                }`}
+              >
+                {currentUser.points < term.price
+                  ? `💸 Zu wenig Punkte`
+                  : "🛒 Kaufen"}
+              </Button>
+            )}
+          </div>
+
+          {!canBuy && !isOwnTerm && (
+            <div className="mt-2 text-xs text-red-500 text-center w-full">
+              Sie benötigen {term.price - currentUser.points} weitere Punkte
+            </div>
+          )}
+        </CardFooter>
+      </Card>
 
       {/* Rating Dialog */}
       <Dialog open={showRatingDialog} onOpenChange={setShowRatingDialog}>
@@ -196,12 +209,12 @@ export function BasarTermCard({
 
           <div className="space-y-4">
             <div>
-              <label
+              <Label
                 htmlFor="user-rating"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
                 Ihre Bewertung:
-              </label>
+              </Label>
               <div className="flex justify-center">
                 {renderStars(userRating, true, "text-2xl")}
               </div>
@@ -216,18 +229,18 @@ export function BasarTermCard({
             </div>
 
             <div>
-              <label
+              <Label
                 htmlFor="user-comment"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
                 Kommentar (optional):
-              </label>
-              <textarea
+              </Label>
+              <Textarea
                 id="user-comment"
                 value={userComment}
                 onChange={(e) => setUserComment(e.target.value)}
                 placeholder="Was finden Sie an diesem Begriff gut oder verbesserungswürdig?"
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                className="resize-none"
                 rows={3}
                 maxLength={200}
               />
