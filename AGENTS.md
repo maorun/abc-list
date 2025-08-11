@@ -26,41 +26,41 @@ The main application logic is in the `src` directory. Components are located in 
 
 Before you start, make sure you have Node.js and npm installed.
 
-### 2.2. Test-First Development Approach
+### 2.2. The Mandatory Development Workflow
 
-**CRITICAL: Always follow the test-first workflow to prevent breaking functionality.**
+**THE GOLDEN RULE: Test, then Code, then Lint. Never deviate.**
 
-**Recommended development sequence:**
+This workflow is not a recommendation; it is a requirement. Following this sequence is critical to prevent regressions and ensure a stable codebase. Functionality is always prioritized over style.
 
-1. **Test First** - Always verify functionality works before making changes:
-   ```bash
-   npm run test
-   ```
-   - Takes ~8 seconds, set timeout to 30+ seconds
-   - Ensures all 153 tests pass before proceeding
-   - Validates that existing functionality works correctly
+**A. The Workflow Steps**
 
-2. **Build Verification** - Confirm the application builds successfully:
-   ```bash
-   npm run build
-   ```
-   - Takes ~2-3 seconds, set timeout to 60+ seconds
-   - Ensures production build works before making changes
+1.  **Always Start with Tests (`npm run test`)**
+    - Before writing any code, run the entire test suite to confirm the current state of the project is stable.
+    - **NEVER** proceed if any tests are failing.
 
-3. **Make Changes** - Implement your modifications with confidence
+2.  **Write New Tests (for new features)**
+    - When adding a new feature, practice **Test-Driven Development (TDD)**.
+    - Write a failing test that describes the new functionality *before* implementing it. This ensures your feature is testable and correctly implemented.
 
-4. **Test Again** - Verify your changes don't break anything:
-   ```bash
-   npm run test
-   ```
+3.  **Implement Your Changes**
+    - Write the necessary code to either make the new test pass or to fix an existing bug.
 
-5. **Fix Linting Last** - Address code style only after functionality is confirmed:
-   ```bash
-   npm run lint
-   npm run format     # Auto-fix formatting issues
-   ```
+4.  **Verify with Tests (`npm run test`)**
+    - After implementing your changes, run the test suite again.
+    - All tests must pass. This proves that your changes work as expected and have not broken any other part of the application.
 
-**Why test first?** Tests verify functionality works correctly. Linting only addresses code style. Fixing linting first can accidentally break working code, while testing first ensures functionality remains intact throughout the development process.
+5.  **Linting (`npm run lint` and `npm run format`)**
+    - **ONLY** after all tests pass, run the linter and formatter to ensure your code adheres to the project's style guidelines.
+
+**B. The Iterative Cycle: The Most Important Rule**
+
+If you make **any** code changes after linting (e.g., to fix a linting error), you **MUST** return to step 4 and run the tests again.
+
+The development process is a loop:
+
+`Code -> Test -> Lint -> (made a code change?) -> Test -> Lint ...`
+
+This cycle continues until your code both passes all tests and has no linting errors. Breaking this cycle is the most common source of bugs. **Do not submit your work until this cycle is complete and stable.**
 
 ### 2.3. Installing Dependencies
 
