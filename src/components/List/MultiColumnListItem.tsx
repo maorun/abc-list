@@ -100,10 +100,11 @@ export function MultiColumnListItem() {
 
   return (
     <div className="p-4">
-      <div className="flex justify-between items-start mb-4">
+      {/* Mobile-first header layout: stacked on mobile, side-by-side on desktop */}
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-4">
         <h1 className="text-3xl font-bold">Mehrspaltige ABC-Liste: {item}</h1>
         {/* Mobile-first responsive button layout */}
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-2 ml-4">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-2 w-full sm:w-auto">
           <Button
             variant="outline"
             onClick={() => setShowConfig(true)}
