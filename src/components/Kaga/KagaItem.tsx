@@ -17,6 +17,18 @@ interface DrawingData {
     color: string;
     fontSize: number;
   }>;
+  shapes: Array<{
+    type: "rectangle" | "circle" | "line" | "arrow";
+    x: number;
+    y: number;
+    width?: number;
+    height?: number;
+    endX?: number;
+    endY?: number;
+    radius?: number;
+    color: string;
+    lineWidth: number;
+  }>;
 }
 
 interface DrawingHistory {
@@ -31,14 +43,17 @@ export function KagaItem() {
   const [isDrawing, setIsDrawing] = useState(false);
   const [currentColor, setCurrentColor] = useState("#000000");
   const [brushSize, setBrushSize] = useState(2);
-  const [tool, setTool] = useState<"pen" | "text">("pen");
+  const [tool, setTool] = useState<"pen" | "text" | "rectangle" | "circle" | "line" | "arrow">("pen");
   const [drawingData, setDrawingData] = useState<DrawingData>({
     paths: [],
     texts: [],
+    shapes: [],
   });
   const [currentPath, setCurrentPath] = useState<{x: number; y: number}[]>([]);
+  const [isDrawingShape, setIsDrawingShape] = useState(false);
+  const [shapeStartPos, setShapeStartPos] = useState<{x: number; y: number} | null>(null);
   const [history, setHistory] = useState<DrawingHistory>({
-    states: [{ paths: [], texts: [] }],
+    states: [{ paths: [], texts: [], shapes: [] }],
     currentIndex: 0,
   });
   const {prompt, PromptComponent} = usePrompt();
@@ -50,12 +65,18 @@ export function KagaItem() {
       const savedData = localStorage.getItem(`kagaCanvas-${item.key}`);
       if (savedData) {
         const parsedData = JSON.parse(savedData);
-        setDrawingData(parsedData);
+        // Ensure backwards compatibility with existing data
+        const dataWithShapes = {
+          paths: parsedData.paths || [],
+          texts: parsedData.texts || [],
+          shapes: parsedData.shapes || [],
+        };
+        setDrawingData(dataWithShapes);
         setHistory({
-          states: [parsedData],
+          states: [dataWithShapes],
           currentIndex: 0,
         });
-        redrawCanvas(parsedData);
+        redrawCanvas(dataWithShapes);
       }
     }
   }, [item]);
@@ -107,6 +128,64 @@ export function KagaItem() {
       ctx.font = `${textItem.fontSize}px Arial`;
       ctx.fillText(textItem.text, textItem.x, textItem.y);
     });
+
+    // Redraw shapes
+    data.shapes?.forEach((shape) => {
+      ctx.strokeStyle = shape.color;
+      ctx.lineWidth = shape.lineWidth;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+
+      switch (shape.type) {
+        case "rectangle":
+          if (shape.width && shape.height) {
+            ctx.strokeRect(shape.x, shape.y, shape.width, shape.height);
+          }
+          break;
+        case "circle":
+          if (shape.radius) {
+            ctx.beginPath();
+            ctx.arc(shape.x, shape.y, shape.radius, 0, 2 * Math.PI);
+            ctx.stroke();
+          }
+          break;
+        case "line":
+          if (shape.endX !== undefined && shape.endY !== undefined) {
+            ctx.beginPath();
+            ctx.moveTo(shape.x, shape.y);
+            ctx.lineTo(shape.endX, shape.endY);
+            ctx.stroke();
+          }
+          break;
+        case "arrow":
+          if (shape.endX !== undefined && shape.endY !== undefined) {
+            // Draw line
+            ctx.beginPath();
+            ctx.moveTo(shape.x, shape.y);
+            ctx.lineTo(shape.endX, shape.endY);
+            ctx.stroke();
+
+            // Draw arrowhead
+            const angle = Math.atan2(shape.endY - shape.y, shape.endX - shape.x);
+            const arrowLength = 15;
+            const arrowAngle = Math.PI / 6;
+
+            ctx.beginPath();
+            ctx.moveTo(shape.endX, shape.endY);
+            ctx.lineTo(
+              shape.endX - arrowLength * Math.cos(angle - arrowAngle),
+              shape.endY - arrowLength * Math.sin(angle - arrowAngle)
+            );
+            ctx.moveTo(shape.endX, shape.endY);
+            ctx.lineTo(
+              shape.endX - arrowLength * Math.cos(angle + arrowAngle),
+              shape.endY - arrowLength * Math.sin(angle + arrowAngle)
+            );
+            ctx.stroke();
+          }
+          break;
+      }
+    });
   };
 
   // History management functions
@@ -155,6 +234,39 @@ export function KagaItem() {
   const canUndo = history.currentIndex > 0;
   const canRedo = history.currentIndex < history.states.length - 1;
 
+  // Helper function to create shape from start and end positions
+  const createShape = (startPos: {x: number; y: number}, endPos: {x: number; y: number}, shapeType: string) => {
+    const shape: any = {
+      type: shapeType,
+      color: currentColor,
+      lineWidth: brushSize,
+    };
+
+    switch (shapeType) {
+      case "rectangle":
+        shape.x = Math.min(startPos.x, endPos.x);
+        shape.y = Math.min(startPos.y, endPos.y);
+        shape.width = Math.abs(endPos.x - startPos.x);
+        shape.height = Math.abs(endPos.y - startPos.y);
+        break;
+      case "circle":
+        const radius = Math.sqrt(Math.pow(endPos.x - startPos.x, 2) + Math.pow(endPos.y - startPos.y, 2));
+        shape.x = startPos.x;
+        shape.y = startPos.y;
+        shape.radius = radius;
+        break;
+      case "line":
+      case "arrow":
+        shape.x = startPos.x;
+        shape.y = startPos.y;
+        shape.endX = endPos.x;
+        shape.endY = endPos.y;
+        break;
+    }
+
+    return shape;
+  };
+
   const saveCanvas = () => {
     localStorage.setItem(`kagaCanvas-${item.key}`, JSON.stringify(drawingData));
   };
@@ -165,7 +277,7 @@ export function KagaItem() {
     if (!canvas || !ctx) return;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const newData = {paths: [], texts: []};
+    const newData = {paths: [], texts: [], shapes: []};
     setDrawingData(newData);
     addToHistory(newData);
     localStorage.setItem(`kagaCanvas-${item.key}`, JSON.stringify(newData));
@@ -222,6 +334,10 @@ export function KagaItem() {
         addToHistory(newData);
         redrawCanvas(newData);
       }
+    } else if (["rectangle", "circle", "line", "arrow"].includes(tool)) {
+      setIsDrawingShape(true);
+      const pos = getMousePos(e);
+      setShapeStartPos(pos);
     }
   };
 
@@ -254,6 +370,10 @@ export function KagaItem() {
         addToHistory(newData);
         redrawCanvas(newData);
       }
+    } else if (["rectangle", "circle", "line", "arrow"].includes(tool)) {
+      setIsDrawingShape(true);
+      const pos = getTouchPos(e);
+      setShapeStartPos(pos);
     }
   };
 
@@ -306,7 +426,7 @@ export function KagaItem() {
     }
   };
 
-  const stopDrawing = () => {
+  const stopDrawing = (e?: React.MouseEvent<HTMLCanvasElement>) => {
     if (isDrawing && currentPath.length > 1) {
       const newPath = {
         points: currentPath,
@@ -320,13 +440,58 @@ export function KagaItem() {
       setDrawingData(newData);
       addToHistory(newData);
     }
+    
+    if (isDrawingShape && shapeStartPos && e) {
+      const endPos = getMousePos(e);
+      const shape = createShape(shapeStartPos, endPos, tool);
+      const newData = {
+        ...drawingData,
+        shapes: [...drawingData.shapes, shape],
+      };
+      setDrawingData(newData);
+      addToHistory(newData);
+      redrawCanvas(newData);
+    }
+    
     setIsDrawing(false);
+    setIsDrawingShape(false);
+    setShapeStartPos(null);
     setCurrentPath([]);
   };
 
   const stopTouchDrawing = (e: React.TouchEvent<HTMLCanvasElement>) => {
     e.preventDefault();
-    stopDrawing();
+    
+    if (isDrawing && currentPath.length > 1) {
+      const newPath = {
+        points: currentPath,
+        color: currentColor,
+        width: brushSize,
+      };
+      const newData = {
+        ...drawingData,
+        paths: [...drawingData.paths, newPath],
+      };
+      setDrawingData(newData);
+      addToHistory(newData);
+    }
+    
+    if (isDrawingShape && shapeStartPos) {
+      const endPos = getTouchPos(e);
+      const shape = createShape(shapeStartPos, endPos, tool);
+      const newData = {
+        ...drawingData,
+        shapes: [...drawingData.shapes, shape],
+      };
+      setDrawingData(newData);
+      addToHistory(newData);
+      redrawCanvas(newData);
+    }
+    
+    setIsDrawing(false);
+    setIsDrawingShape(false);
+    setShapeStartPos(null);
+    setCurrentPath([]);
   };
 
   if (!item) {
@@ -362,6 +527,42 @@ export function KagaItem() {
             className="flex-1 sm:flex-initial min-h-[44px]"
           >
             📝 Text
+          </Button>
+        </div>
+
+        <div className="flex items-center justify-center gap-2 w-full sm:w-auto">
+          <span className="font-semibold text-sm sm:text-base">Formen:</span>
+          <Button
+            variant={tool === "rectangle" ? "default" : "secondary"}
+            size="sm"
+            onClick={() => setTool("rectangle")}
+            className="flex-1 sm:flex-initial min-h-[44px]"
+          >
+            ⬜ Rechteck
+          </Button>
+          <Button
+            variant={tool === "circle" ? "default" : "secondary"}
+            size="sm"
+            onClick={() => setTool("circle")}
+            className="flex-1 sm:flex-initial min-h-[44px]"
+          >
+            ⭕ Kreis
+          </Button>
+          <Button
+            variant={tool === "line" ? "default" : "secondary"}
+            size="sm"
+            onClick={() => setTool("line")}
+            className="flex-1 sm:flex-initial min-h-[44px]"
+          >
+            📏 Linie
+          </Button>
+          <Button
+            variant={tool === "arrow" ? "default" : "secondary"}
+            size="sm"
+            onClick={() => setTool("arrow")}
+            className="flex-1 sm:flex-initial min-h-[44px]"
+          >
+            ➡️ Pfeil
           </Button>
         </div>
 
