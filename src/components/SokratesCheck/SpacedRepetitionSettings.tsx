@@ -113,10 +113,14 @@ export function SpacedRepetitionSettings({
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label
+                  htmlFor="base-interval"
+                  className="block text-sm font-medium mb-1"
+                >
                   Basis-Intervall (Tage)
                 </label>
                 <input
+                  id="base-interval"
                   type="number"
                   min="1"
                   max="7"
@@ -135,10 +139,14 @@ export function SpacedRepetitionSettings({
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label
+                  htmlFor="ease-factor"
+                  className="block text-sm font-medium mb-1"
+                >
                   Ease-Faktor
                 </label>
                 <input
+                  id="ease-factor"
                   type="number"
                   min="1.3"
                   max="3.0"
@@ -158,10 +166,14 @@ export function SpacedRepetitionSettings({
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label
+                  htmlFor="min-interval"
+                  className="block text-sm font-medium mb-1"
+                >
                   Minimales Intervall (Tage)
                 </label>
                 <input
+                  id="min-interval"
                   type="number"
                   min="1"
                   max="7"
@@ -177,10 +189,14 @@ export function SpacedRepetitionSettings({
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label
+                  htmlFor="max-interval"
+                  className="block text-sm font-medium mb-1"
+                >
                   Maximales Intervall (Tage)
                 </label>
                 <input
+                  id="max-interval"
                   type="number"
                   min="30"
                   max="730"
@@ -259,10 +275,14 @@ export function SpacedRepetitionSettings({
               {notificationSettings.enabled && (
                 <>
                   <div>
-                    <label className="block text-sm font-medium mb-1">
+                    <label
+                      htmlFor="notification-frequency"
+                      className="block text-sm font-medium mb-1"
+                    >
                       Benachrichtigung-Häufigkeit
                     </label>
                     <select
+                      id="notification-frequency"
                       value={notificationSettings.frequency}
                       onChange={(e) =>
                         setNotificationSettings({
@@ -281,10 +301,14 @@ export function SpacedRepetitionSettings({
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium mb-1">
+                      <label
+                        htmlFor="quiet-hours-start"
+                        className="block text-sm font-medium mb-1"
+                      >
                         Ruhezeit Beginn
                       </label>
                       <select
+                        id="quiet-hours-start"
                         value={notificationSettings.quietHours.start}
                         onChange={(e) =>
                           setNotificationSettings({
@@ -306,10 +330,14 @@ export function SpacedRepetitionSettings({
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium mb-1">
+                      <label
+                        htmlFor="quiet-hours-end"
+                        className="block text-sm font-medium mb-1"
+                      >
                         Ruhezeit Ende
                       </label>
                       <select
+                        id="quiet-hours-end"
                         value={notificationSettings.quietHours.end}
                         onChange={(e) =>
                           setNotificationSettings({
@@ -332,10 +360,14 @@ export function SpacedRepetitionSettings({
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-1">
+                    <label
+                      htmlFor="max-notifications"
+                      className="block text-sm font-medium mb-1"
+                    >
                       Maximale Benachrichtigungen pro Tag
                     </label>
                     <input
+                      id="max-notifications"
                       type="number"
                       min="1"
                       max="10"
