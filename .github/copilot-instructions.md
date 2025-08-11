@@ -127,32 +127,41 @@ ABC-List is a React/TypeScript/Vite web application implementing Vera F. Birkenb
 
 ## CI/CD Requirements
 
-### Test-First Development Workflow
+### The Mandatory Development Workflow
 
-**CRITICAL: Always test FIRST, then fix linting issues. This prevents accidental breaking of working functionality.**
+**THE GOLDEN RULE: Test, then Code, then Lint. Never deviate.**
 
-**Recommended development sequence:**
-1. **Test first** - Run tests to ensure functionality works:
-   ```bash
-   npm run test
-   ```
-   - Takes ~8 seconds. Set timeout to 30+ seconds.
-   - All 153 tests must pass before proceeding
+This workflow is not a recommendation; it is a requirement. Following this sequence is critical to prevent regressions and ensure a stable codebase. Functionality is always prioritized over style.
 
-2. **Build verification** - Ensure build succeeds:
-   ```bash
-   npm run build
-   ```
-   - Takes ~2-3 seconds. Set timeout to 60+ seconds.
+**A. The Workflow Steps**
 
-3. **Fix linting last** - Only after tests pass and build succeeds:
-   ```bash
-   npm run lint
-   npm run format     # Auto-fix formatting issues
-   ```
-   - Linting takes ~2-5 seconds. Set timeout to 30+ seconds.
+1.  **Always Start with Tests (`npm run test`)**
+    - Before writing any code, run the entire test suite to confirm the current state of the project is stable.
+    - **NEVER** proceed if any tests are failing.
 
-**Rationale:** Tests verify that functionality works correctly. Linting only addresses code style and formatting. Fixing linting first can accidentally break working code, while fixing linting after tests ensures functionality remains intact.
+2.  **Write New Tests (for new features)**
+    - When adding a new feature, practice **Test-Driven Development (TDD)**.
+    - Write a failing test that describes the new functionality *before* implementing it. This ensures your feature is testable and correctly implemented.
+
+3.  **Implement Your Changes**
+    - Write the necessary code to either make the new test pass or to fix an existing bug.
+
+4.  **Verify with Tests (`npm run test`)**
+    - After implementing your changes, run the test suite again.
+    - All tests must pass. This proves that your changes work as expected and have not broken any other part of the application.
+
+5.  **Linting (`npm run lint` and `npm run format`)**
+    - **ONLY** after all tests pass, run the linter and formatter to ensure your code adheres to the project's style guidelines.
+
+**B. The Iterative Cycle: The Most Important Rule**
+
+If you make **any** code changes after linting (e.g., to fix a linting error), you **MUST** return to step 4 and run the tests again.
+
+The development process is a loop:
+
+`Code -> Test -> Lint -> (made a code change?) -> Test -> Lint ...`
+
+This cycle continues until your code both passes all tests and has no linting errors. Breaking this cycle is the most common source of bugs. **Do not submit your work until this cycle is complete and stable.**
 
 ### Pre-commit Validation
 

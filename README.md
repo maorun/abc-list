@@ -11,6 +11,18 @@ Für weitere Informationen bitte https://www.birkenbihl.com/ besuchen.
 
 ## Projektinformationen
 
+### Funktionen
+
+Diese App bietet eine Vielzahl von Werkzeugen, die auf den Lernmethoden von Vera F. Birkenbihl basieren, um das gehirn-gerechte Lernen zu unterstützen:
+
+-   **ABC-Listen**: Erstellen Sie zu einem beliebigen Thema Assoziationslisten für die Buchstaben A bis Z. Dies hilft, das vorhandene Wissen zu aktivieren und neue Verknüfungen herzustellen.
+-   **KaWa (Wort-Assoziationen)**: Bilden Sie zu jedem Buchstaben eines bestimmten Wortes gezielte Assoziationen. Diese Methode fördert das tiefergehende Nachdenken über ein Thema.
+-   **KaGa (Grafische Assoziationen)**: Nutzen Sie eine digitale Leinwand, um Ihre Gedanken visuell zu organisieren. Zeichnen, kritzeln und beschriften Sie, um komplexe Zusammenhänge grafisch darzustellen.
+-   **Stadt-Land-Fluss**: Trainieren Sie Ihr schnelles Abrufwissen mit dem klassischen Spiel, das mit benutzerdefinierten Kategorien und einem Timer angepasst werden kann.
+-   **Listen Verknüpfen**: Verbinden Sie verschiedene ABC-Listen miteinander, um thematische Überschneidungen und neue Einsichten zu entdecken.
+-   **Export & Import**: Sichern Sie Ihre Lernmaterialien lokal, indem Sie sie als JSON-Dateien exportieren und bei Bedarf wieder importieren.
+-   **Responsive Design**: Die Anwendung ist für alle Geräte optimiert, egal ob Smartphone, Tablet oder Desktop.
+
 ## Lernen, jetzt aber richtig
 
 Hast du schon mal was gelernt und wenig später weißt du nichts mehr?
