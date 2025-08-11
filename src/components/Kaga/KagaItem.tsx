@@ -19,6 +19,11 @@ interface DrawingData {
   }>;
 }
 
+interface DrawingHistory {
+  states: DrawingData[];
+  currentIndex: number;
+}
+
 export function KagaItem() {
   const location = useLocation();
   const item = location.state?.item as NewItemWithSaveKey;
@@ -32,6 +37,10 @@ export function KagaItem() {
     texts: [],
   });
   const [currentPath, setCurrentPath] = useState<{x: number; y: number}[]>([]);
+  const [history, setHistory] = useState<DrawingHistory>({
+    states: [{ paths: [], texts: [] }],
+    currentIndex: 0,
+  });
   const {prompt, PromptComponent} = usePrompt();
 
   useEffect(() => {
@@ -42,10 +51,31 @@ export function KagaItem() {
       if (savedData) {
         const parsedData = JSON.parse(savedData);
         setDrawingData(parsedData);
+        setHistory({
+          states: [parsedData],
+          currentIndex: 0,
+        });
         redrawCanvas(parsedData);
       }
     }
   }, [item]);
+
+  // Keyboard shortcuts for undo/redo
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key === 'z') {
+        e.preventDefault();
+        undo();
+      } else if (((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'z') || 
+                 ((e.ctrlKey || e.metaKey) && e.key === 'y')) {
+        e.preventDefault();
+        redo();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [history]);
 
   const redrawCanvas = (data: DrawingData) => {
     const canvas = canvasRef.current;
@@ -79,6 +109,52 @@ export function KagaItem() {
     });
   };
 
+  // History management functions
+  const addToHistory = (newData: DrawingData) => {
+    setHistory((prev) => {
+      // Remove any future states if we're not at the end
+      const newStates = prev.states.slice(0, prev.currentIndex + 1);
+      // Add the new state
+      newStates.push(newData);
+      // Limit history size to prevent memory issues
+      const maxHistorySize = 50;
+      if (newStates.length > maxHistorySize) {
+        newStates.shift();
+        return {
+          states: newStates,
+          currentIndex: newStates.length - 1,
+        };
+      }
+      return {
+        states: newStates,
+        currentIndex: newStates.length - 1,
+      };
+    });
+  };
+
+  const undo = () => {
+    if (history.currentIndex > 0) {
+      const newIndex = history.currentIndex - 1;
+      const prevData = history.states[newIndex];
+      setHistory((prev) => ({ ...prev, currentIndex: newIndex }));
+      setDrawingData(prevData);
+      redrawCanvas(prevData);
+    }
+  };
+
+  const redo = () => {
+    if (history.currentIndex < history.states.length - 1) {
+      const newIndex = history.currentIndex + 1;
+      const nextData = history.states[newIndex];
+      setHistory((prev) => ({ ...prev, currentIndex: newIndex }));
+      setDrawingData(nextData);
+      redrawCanvas(nextData);
+    }
+  };
+
+  const canUndo = history.currentIndex > 0;
+  const canRedo = history.currentIndex < history.states.length - 1;
+
   const saveCanvas = () => {
     localStorage.setItem(`kagaCanvas-${item.key}`, JSON.stringify(drawingData));
   };
@@ -91,6 +167,7 @@ export function KagaItem() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     const newData = {paths: [], texts: []};
     setDrawingData(newData);
+    addToHistory(newData);
     localStorage.setItem(`kagaCanvas-${item.key}`, JSON.stringify(newData));
   };
 
@@ -142,6 +219,7 @@ export function KagaItem() {
           texts: [...drawingData.texts, newText],
         };
         setDrawingData(newData);
+        addToHistory(newData);
         redrawCanvas(newData);
       }
     }
@@ -173,6 +251,7 @@ export function KagaItem() {
           texts: [...drawingData.texts, newText],
         };
         setDrawingData(newData);
+        addToHistory(newData);
         redrawCanvas(newData);
       }
     }
@@ -239,6 +318,7 @@ export function KagaItem() {
         paths: [...drawingData.paths, newPath],
       };
       setDrawingData(newData);
+      addToHistory(newData);
     }
     setIsDrawing(false);
     setCurrentPath([]);
@@ -312,6 +392,28 @@ export function KagaItem() {
             className="w-20 sm:w-20 min-h-[44px] sm:min-h-auto"
           />
           <span className="text-sm min-w-[30px]">{brushSize}px</span>
+        </div>
+
+        <div className="flex gap-2 w-full sm:w-auto">
+          <Button
+            onClick={undo}
+            disabled={!canUndo}
+            variant="outline"
+            className="flex-1 sm:flex-initial min-h-[44px]"
+            title="Rückgängig (Ctrl+Z)"
+          >
+            ↶ Rückgängig
+          </Button>
+
+          <Button
+            onClick={redo}
+            disabled={!canRedo}
+            variant="outline"
+            className="flex-1 sm:flex-initial min-h-[44px]"
+            title="Wiederholen (Ctrl+Y)"
+          >
+            ↷ Wiederholen
+          </Button>
         </div>
 
         <div className="flex gap-2 w-full sm:w-auto">

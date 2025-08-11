@@ -77,8 +77,14 @@ describe("KagaItem", () => {
     expect(screen.getByText("Größe:")).toBeInTheDocument();
 
     // Check for action buttons
+    expect(screen.getByText("↶ Rückgängig")).toBeInTheDocument();
+    expect(screen.getByText("↷ Wiederholen")).toBeInTheDocument();
     expect(screen.getByText("💾 Speichern")).toBeInTheDocument();
     expect(screen.getByText("🗑️ Löschen")).toBeInTheDocument();
+
+    // Check that undo/redo buttons start disabled
+    expect(screen.getByText("↶ Rückgängig")).toBeDisabled();
+    expect(screen.getByText("↷ Wiederholen")).toBeDisabled();
 
     // Check for canvas
     const canvas = document.querySelector("canvas");
