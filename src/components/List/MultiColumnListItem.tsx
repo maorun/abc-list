@@ -100,25 +100,36 @@ export function MultiColumnListItem() {
 
   return (
     <div className="p-4">
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-start mb-4">
         <h1 className="text-3xl font-bold">Mehrspaltige ABC-Liste: {item}</h1>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => setShowConfig(true)}>
+        {/* Mobile-first responsive button layout */}
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-2 ml-4">
+          <Button
+            variant="outline"
+            onClick={() => setShowConfig(true)}
+            className="text-sm w-full sm:w-auto"
+          >
             ⚙️ Spalten konfigurieren
           </Button>
           {specialtyColumn && (
             <Button
               variant="outline"
               onClick={() => setShowPrediction(true)}
-              className="bg-yellow-50 hover:bg-yellow-100"
+              className="bg-yellow-50 hover:bg-yellow-100 text-sm w-full sm:w-auto"
             >
               🎯 Prognose starten
             </Button>
           )}
-          <Button variant="outline" onClick={() => setShowStatistics(true)}>
+          <Button
+            variant="outline"
+            onClick={() => setShowStatistics(true)}
+            className="text-sm w-full sm:w-auto"
+          >
             📊 Statistiken
           </Button>
-          <MultiColumnExport listData={listData} />
+          <div className="w-full sm:w-auto">
+            <MultiColumnExport listData={listData} />
+          </div>
         </div>
       </div>
 

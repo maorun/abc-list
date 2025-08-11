@@ -85,7 +85,7 @@ export function MultiColumnStatistics({
     if (isOpen) {
       calculateStatistics();
     }
-  }, [isOpen, listData, calculateStatistics]);
+  }, [isOpen, calculateStatistics]);
 
   const getColumnById = (columnId: string) => {
     return listData.columns.find((col) => col.id === columnId);
