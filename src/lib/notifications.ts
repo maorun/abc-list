@@ -55,6 +55,9 @@ export function areNotificationsAllowed(
   settings: NotificationSettings,
 ): boolean {
   if (!settings.enabled) return false;
+
+  // Check if Notification API is available
+  if (typeof Notification === "undefined") return false;
   if (Notification.permission !== "granted") return false;
 
   const now = new Date();
