@@ -211,13 +211,13 @@ export function Basar() {
 
       {/* User Info Bar */}
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 rounded-lg mb-6">
-        <div className="flex justify-between items-center">
-          <div>
+        <div className="flex flex-wrap justify-between items-center gap-4">
+          <div className="flex-grow">
             <span className="font-semibold">{currentUser.name}</span>
             <span className="ml-4">💰 {currentUser.points} Punkte</span>
             <span className="ml-4">📈 Level {currentUser.level}</span>
           </div>
-          <div className="space-x-2">
+          <div className="flex flex-wrap gap-2">
             <Button
               variant={activeTab === "marketplace" ? "secondary" : "ghost"}
               onClick={() => setActiveTab("marketplace")}
