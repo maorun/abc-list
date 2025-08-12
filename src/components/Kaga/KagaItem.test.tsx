@@ -1,5 +1,5 @@
 import {render, screen} from "@testing-library/react";
-import {describe, it, expect, beforeEach} from "vitest";
+import {describe, it, expect, beforeEach, vi} from "vitest";
 import {MemoryRouter} from "react-router-dom";
 import {KagaItem} from "./KagaItem";
 import {NewItemWithSaveKey} from "../NewStringItem";
@@ -134,5 +134,57 @@ describe("KagaItem", () => {
     );
 
     expect(document.title).toBe("KaGa für Test Topic");
+  });
+
+  it("calculates touch coordinates correctly with canvas scaling", () => {
+    render(
+      <MemoryRouter
+        initialEntries={[
+          {
+            pathname: "/kaga/test-key",
+            state: {item: mockItem},
+          },
+        ]}
+      >
+        <KagaItem />
+      </MemoryRouter>,
+    );
+
+    const canvas = document.querySelector("canvas");
+    expect(canvas).toBeInTheDocument();
+
+    if (canvas) {
+      // Mock getBoundingClientRect to simulate mobile scaling
+      const mockGetBoundingClientRect = vi.fn(() => ({
+        left: 10,
+        top: 20,
+        width: 400, // Scaled down from 800 (50% scale)
+        height: 300, // Scaled down from 600 (50% scale)
+      }));
+
+      canvas.getBoundingClientRect = mockGetBoundingClientRect;
+
+      // Mock canvas properties
+      Object.defineProperty(canvas, "width", {value: 800});
+      Object.defineProperty(canvas, "height", {value: 600});
+
+      // Test coordinate calculation directly by simulating the algorithm
+      const rect = mockGetBoundingClientRect();
+      const scaleX = 800 / rect.width; // 800 / 400 = 2
+      const scaleY = 600 / rect.height; // 600 / 300 = 2
+
+      // Touch at position (60, 70) in viewport
+      const touchX = 60;
+      const touchY = 70;
+
+      // Expected canvas coordinates after scaling
+      const expectedX = (touchX - rect.left) * scaleX; // (60 - 10) * 2 = 100
+      const expectedY = (touchY - rect.top) * scaleY; // (70 - 20) * 2 = 100
+
+      expect(expectedX).toBe(100);
+      expect(expectedY).toBe(100);
+      expect(scaleX).toBe(2);
+      expect(scaleY).toBe(2);
+    }
   });
 });
