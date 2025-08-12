@@ -1,9 +1,9 @@
-import React from 'react';
-import { Wifi, WifiOff, Cloud, CloudOff } from 'lucide-react';
-import { useOfflineStatus } from '../contexts/PWAContext';
+import React from "react";
+import {Wifi, WifiOff} from "lucide-react";
+import {useOfflineStatus} from "../contexts/PWAContext";
 
 export function OfflineStatusIndicator() {
-  const { isOnline, isOffline } = useOfflineStatus();
+  const {isOnline} = useOfflineStatus();
 
   if (isOnline) {
     return null; // Don't show anything when online
@@ -17,7 +17,8 @@ export function OfflineStatusIndicator() {
           <div className="text-sm">
             <p className="font-medium text-orange-800">Offline-Modus</p>
             <p className="text-orange-700 text-xs">
-              Du arbeitest offline. Änderungen werden synchronisiert, sobald du wieder online bist.
+              Du arbeitest offline. Änderungen werden synchronisiert, sobald du
+              wieder online bist.
             </p>
           </div>
         </div>
@@ -28,7 +29,7 @@ export function OfflineStatusIndicator() {
 
 // Mini status indicator for navigation bar
 export function OfflineStatusIcon() {
-  const { isOnline } = useOfflineStatus();
+  const {isOnline} = useOfflineStatus();
 
   return (
     <div className="flex items-center">

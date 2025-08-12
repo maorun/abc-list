@@ -1,25 +1,31 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { 
-  PWAInstallState, 
-  PWAInstallManager, 
-  OfflineManager, 
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from "react";
+import {
+  PWAInstallState,
+  PWAInstallManager,
+  OfflineManager,
   PWAStorage,
-  initializePWA 
-} from '../lib/pwa';
-import { EnhancedPWAStorage } from '../lib/enhancedStorage';
+  initializePWA,
+} from "../lib/pwa";
+import {EnhancedPWAStorage} from "../lib/enhancedStorage";
 
 interface PWAContextType {
   // Install state
   installState: PWAInstallState;
   showInstallPrompt: () => Promise<boolean>;
-  
+
   // Offline state
   isOnline: boolean;
-  
+
   // Storage
   storage: PWAStorage;
   enhancedStorage: EnhancedPWAStorage;
-  
+
   // PWA features availability
   isServiceWorkerSupported: boolean;
   isPWACapable: boolean;
@@ -31,13 +37,15 @@ interface PWAProviderProps {
   children: ReactNode;
 }
 
-export function PWAProvider({ children }: PWAProviderProps) {
+export function PWAProvider({children}: PWAProviderProps) {
   const [installState, setInstallState] = useState<PWAInstallState>({
     isInstallable: false,
     isInstalled: false,
-    installPrompt: null
+    installPrompt: null,
   });
-  const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
+  const [isOnline, setIsOnline] = useState(
+    typeof navigator !== "undefined" ? navigator.onLine : true,
+  );
   const [managers, setManagers] = useState<{
     installManager: PWAInstallManager;
     offlineManager: OfflineManager;
@@ -46,15 +54,19 @@ export function PWAProvider({ children }: PWAProviderProps) {
   } | null>(null);
 
   // PWA capabilities detection
-  const isServiceWorkerSupported = typeof window !== 'undefined' && 'serviceWorker' in navigator;
-  const isPWACapable = isServiceWorkerSupported && typeof window !== 'undefined' && 'Notification' in window;
+  const isServiceWorkerSupported =
+    typeof window !== "undefined" && "serviceWorker" in navigator;
+  const isPWACapable =
+    isServiceWorkerSupported &&
+    typeof window !== "undefined" &&
+    "Notification" in window;
 
   useEffect(() => {
     // Initialize PWA functionality
-    const { installManager, offlineManager, storage } = initializePWA();
+    const {installManager, offlineManager, storage} = initializePWA();
     const enhancedStorage = new EnhancedPWAStorage();
-    
-    setManagers({ installManager, offlineManager, storage, enhancedStorage });
+
+    setManagers({installManager, offlineManager, storage, enhancedStorage});
 
     // Subscribe to install state changes
     const unsubscribeInstall = installManager.onStateChange(setInstallState);
@@ -83,42 +95,40 @@ export function PWAProvider({ children }: PWAProviderProps) {
     storage: managers?.storage || new PWAStorage(),
     enhancedStorage: managers?.enhancedStorage || new EnhancedPWAStorage(),
     isServiceWorkerSupported,
-    isPWACapable
+    isPWACapable,
   };
 
   return (
-    <PWAContext.Provider value={contextValue}>
-      {children}
-    </PWAContext.Provider>
+    <PWAContext.Provider value={contextValue}>{children}</PWAContext.Provider>
   );
 }
 
 export function usePWA(): PWAContextType {
   const context = useContext(PWAContext);
   if (context === undefined) {
-    throw new Error('usePWA must be used within a PWAProvider');
+    throw new Error("usePWA must be used within a PWAProvider");
   }
   return context;
 }
 
 // Custom hook for PWA install functionality
 export function usePWAInstall() {
-  const { installState, showInstallPrompt, isServiceWorkerSupported } = usePWA();
-  
+  const {installState, showInstallPrompt, isServiceWorkerSupported} = usePWA();
+
   return {
     canInstall: installState.isInstallable && !installState.isInstalled,
     isInstalled: installState.isInstalled,
     install: showInstallPrompt,
-    isSupported: isServiceWorkerSupported
+    isSupported: isServiceWorkerSupported,
   };
 }
 
 // Custom hook for offline functionality
 export function useOfflineStatus() {
-  const { isOnline } = usePWA();
-  
+  const {isOnline} = usePWA();
+
   return {
     isOnline,
-    isOffline: !isOnline
+    isOffline: !isOnline,
   };
 }

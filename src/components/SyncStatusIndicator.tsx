@@ -1,14 +1,17 @@
-import React from 'react';
-import { RefreshCw, CloudOff, Cloud, Clock } from 'lucide-react';
-import { useSyncStatus } from '../hooks/useEnhancedStorage';
-import { Button } from './ui/button';
+import React from "react";
+import {RefreshCw, CloudOff, Cloud, Clock} from "lucide-react";
+import {useSyncStatus} from "../hooks/useEnhancedStorage";
+import {Button} from "./ui/button";
+
+// Extract icon outside component to prevent re-renders
+const RefreshIcon = <RefreshCw className="h-3 w-3 mr-1" />;
 
 // Extract handler functions outside component
 const handleForceSyncAction = (forceSync: () => Promise<void>) => async () => {
   try {
     await forceSync();
   } catch (error) {
-    console.error('Force sync failed:', error);
+    console.error("Force sync failed:", error);
   }
 };
 
@@ -16,12 +19,13 @@ const handleMigrateAction = (migrateData: () => Promise<void>) => async () => {
   try {
     await migrateData();
   } catch (error) {
-    console.error('Migration failed:', error);
+    console.error("Migration failed:", error);
   }
 };
 
 export function SyncStatusIndicator() {
-  const { syncQueueSize, isOnline, hasPendingChanges, forceSync, migrateData } = useSyncStatus();
+  const {syncQueueSize, isOnline, hasPendingChanges, forceSync, migrateData} =
+    useSyncStatus();
 
   // Create stable handler references
   const handleForceSync = handleForceSyncAction(forceSync);
@@ -47,17 +51,15 @@ export function SyncStatusIndicator() {
               <CloudOff className="h-5 w-5 text-gray-600" />
             )}
           </div>
-          
+
           <div className="flex-1">
             <h4 className="text-sm font-medium text-slate-900">
-              {isOnline ? 'Synchronisation' : 'Offline-Modus'}
+              {isOnline ? "Synchronisation" : "Offline-Modus"}
             </h4>
             <p className="text-xs text-slate-600">
-              {hasPendingChanges ? (
-                `${syncQueueSize} Änderung${syncQueueSize > 1 ? 'en' : ''} ausstehend`
-              ) : (
-                'Alle Daten synchronisiert'
-              )}
+              {hasPendingChanges
+                ? `${syncQueueSize} Änderung${syncQueueSize > 1 ? "en" : ""} ausstehend`
+                : "Alle Daten synchronisiert"}
             </p>
           </div>
 
@@ -68,7 +70,7 @@ export function SyncStatusIndicator() {
               onClick={handleForceSync}
               className="text-xs"
             >
-              <RefreshCw className="h-3 w-3 mr-1" />
+              {RefreshIcon}
               Sync
             </Button>
           )}
@@ -92,7 +94,7 @@ export function SyncStatusIndicator() {
 
 // Mini sync status for navigation bar
 export function SyncStatusIcon() {
-  const { hasPendingChanges, isOnline } = useSyncStatus();
+  const {hasPendingChanges, isOnline} = useSyncStatus();
 
   if (!hasPendingChanges && isOnline) {
     return null;
@@ -102,9 +104,15 @@ export function SyncStatusIcon() {
     <div className="flex items-center gap-1">
       {isOnline ? (
         hasPendingChanges ? (
-          <Clock className="h-4 w-4 text-orange-600" aria-label="Synchronisation ausstehend" />
+          <Clock
+            className="h-4 w-4 text-orange-600"
+            aria-label="Synchronisation ausstehend"
+          />
         ) : (
-          <Cloud className="h-4 w-4 text-green-600" aria-label="Synchronisiert" />
+          <Cloud
+            className="h-4 w-4 text-green-600"
+            aria-label="Synchronisiert"
+          />
         )
       ) : (
         <CloudOff className="h-4 w-4 text-gray-600" aria-label="Offline" />

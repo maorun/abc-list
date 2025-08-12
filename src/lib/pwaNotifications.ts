@@ -3,13 +3,13 @@
  * Extends the existing notification system with PWA push notification capabilities
  */
 
-import { 
-  NotificationSettings, 
-  DEFAULT_NOTIFICATION_SETTINGS, 
+import {
+  NotificationSettings,
+  DEFAULT_NOTIFICATION_SETTINGS,
   requestNotificationPermission as requestBasicPermission,
   areNotificationsAllowed,
-  getNotificationSettings as getBasicSettings
-} from './notifications';
+  getNotificationSettings as getBasicSettings,
+} from "./notifications";
 
 export interface PWANotificationSettings extends NotificationSettings {
   pushEnabled: boolean;
@@ -36,24 +36,26 @@ export async function requestPWANotificationPermission(): Promise<{
 }> {
   // First request basic notification permission
   const basicPermission = await requestBasicPermission();
-  
+
   if (!basicPermission) {
-    return { basicPermission: false, pushPermission: false };
+    return {basicPermission: false, pushPermission: false};
   }
 
   // Then try to set up push notifications
   try {
     const pushPermission = await setupPushNotifications();
-    const subscription = pushPermission ? await getPushSubscription() : undefined;
-    
+    const subscription = pushPermission
+      ? await getPushSubscription()
+      : undefined;
+
     return {
       basicPermission: true,
       pushPermission,
-      subscription
+      subscription,
     };
   } catch (error) {
-    console.error('[PWANotifications] Push setup failed:', error);
-    return { basicPermission: true, pushPermission: false };
+    console.error("[PWANotifications] Push setup failed:", error);
+    return {basicPermission: true, pushPermission: false};
   }
 }
 
@@ -61,32 +63,32 @@ export async function requestPWANotificationPermission(): Promise<{
  * Set up push notification subscription
  */
 async function setupPushNotifications(): Promise<boolean> {
-  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-    console.log('[PWANotifications] Push notifications not supported');
+  if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+    console.log("[PWANotifications] Push notifications not supported");
     return false;
   }
 
   try {
     const registration = await navigator.serviceWorker.ready;
-    
+
     // Check if already subscribed
     let subscription = await registration.pushManager.getSubscription();
-    
+
     if (!subscription) {
       // Create new subscription
       subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: generateVAPIDKey() // In real app, use your VAPID key
+        applicationServerKey: generateVAPIDKey(), // In real app, use your VAPID key
       });
     }
 
     // Store subscription
     storePushSubscription(subscription);
-    
-    console.log('[PWANotifications] Push subscription created:', subscription);
+
+    console.log("[PWANotifications] Push subscription created:", subscription);
     return true;
   } catch (error) {
-    console.error('[PWANotifications] Push subscription failed:', error);
+    console.error("[PWANotifications] Push subscription failed:", error);
     return false;
   }
 }
@@ -97,11 +99,12 @@ async function setupPushNotifications(): Promise<boolean> {
 function generateVAPIDKey(): Uint8Array {
   // This is a dummy key for development
   // In production, replace with your actual VAPID public key
-  const key = 'BChI_ZQh9xH-w3VbJ7qwKU4GUyKyPJM1CtWB7I-sK3I8aQrL5g0JKqJKGi9xNjwKU4GUyKyPJM1CtWB7I-sK3I8';
+  const key =
+    "BChI_ZQh9xH-w3VbJ7qwKU4GUyKyPJM1CtWB7I-sK3I8aQrL5g0JKqJKGi9xNjwKU4GUyKyPJM1CtWB7I-sK3I8";
   return new Uint8Array(
-    atob(key.replace(/-/g, '+').replace(/_/g, '/'))
-      .split('')
-      .map(char => char.charCodeAt(0))
+    atob(key.replace(/-/g, "+").replace(/_/g, "/"))
+      .split("")
+      .map((char) => char.charCodeAt(0)),
   );
 }
 
@@ -110,9 +113,12 @@ function generateVAPIDKey(): Uint8Array {
  */
 function storePushSubscription(subscription: PushSubscription): void {
   try {
-    localStorage.setItem(PUSH_SUBSCRIPTION_KEY, JSON.stringify(subscription.toJSON()));
+    localStorage.setItem(
+      PUSH_SUBSCRIPTION_KEY,
+      JSON.stringify(subscription.toJSON()),
+    );
   } catch (error) {
-    console.error('[PWANotifications] Failed to store subscription:', error);
+    console.error("[PWANotifications] Failed to store subscription:", error);
   }
 }
 
@@ -127,7 +133,7 @@ async function getPushSubscription(): Promise<PushSubscription | null> {
     const registration = await navigator.serviceWorker.ready;
     return await registration.pushManager.getSubscription();
   } catch (error) {
-    console.error('[PWANotifications] Failed to get subscription:', error);
+    console.error("[PWANotifications] Failed to get subscription:", error);
     return null;
   }
 }
@@ -139,10 +145,10 @@ export function getPWANotificationSettings(): PWANotificationSettings {
   try {
     const stored = localStorage.getItem(PWA_NOTIFICATION_STORAGE_KEY);
     if (stored) {
-      return { ...DEFAULT_PWA_NOTIFICATION_SETTINGS, ...JSON.parse(stored) };
+      return {...DEFAULT_PWA_NOTIFICATION_SETTINGS, ...JSON.parse(stored)};
     }
   } catch (error) {
-    console.error('[PWANotifications] Failed to load settings:', error);
+    console.error("[PWANotifications] Failed to load settings:", error);
   }
   return DEFAULT_PWA_NOTIFICATION_SETTINGS;
 }
@@ -150,11 +156,16 @@ export function getPWANotificationSettings(): PWANotificationSettings {
 /**
  * Save PWA notification settings
  */
-export function savePWANotificationSettings(settings: PWANotificationSettings): void {
+export function savePWANotificationSettings(
+  settings: PWANotificationSettings,
+): void {
   try {
-    localStorage.setItem(PWA_NOTIFICATION_STORAGE_KEY, JSON.stringify(settings));
+    localStorage.setItem(
+      PWA_NOTIFICATION_STORAGE_KEY,
+      JSON.stringify(settings),
+    );
   } catch (error) {
-    console.error('[PWANotifications] Failed to save settings:', error);
+    console.error("[PWANotifications] Failed to save settings:", error);
   }
 }
 
@@ -165,42 +176,44 @@ export async function schedulePushNotification(
   title: string,
   body: string,
   delay: number = 0,
-  data?: any
+  data?: any,
 ): Promise<boolean> {
   const settings = getPWANotificationSettings();
-  
+
   if (!settings.pushEnabled || !areNotificationsAllowed(settings)) {
-    console.log('[PWANotifications] Push notifications disabled or not allowed');
+    console.log(
+      "[PWANotifications] Push notifications disabled or not allowed",
+    );
     return false;
   }
 
   try {
     // In a real implementation, this would send the notification data to your server
     // which would then push it to the client. For demo purposes, we'll use local notifications
-    
+
     setTimeout(() => {
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.ready.then(registration => {
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.ready.then((registration) => {
           registration.showNotification(title, {
             body,
-            icon: './assets/icon.png',
-            badge: './assets/favicon.png',
-            tag: 'learning-reminder',
+            icon: "./assets/icon.png",
+            badge: "./assets/favicon.png",
+            tag: "learning-reminder",
             requireInteraction: false,
             actions: [
               {
-                action: 'open-app',
-                title: 'App öffnen'
+                action: "open-app",
+                title: "App öffnen",
               },
               {
-                action: 'dismiss',
-                title: 'Später'
-              }
+                action: "dismiss",
+                title: "Später",
+              },
             ],
             data: {
-              url: './',
-              ...data
-            }
+              url: "./",
+              ...data,
+            },
           });
         });
       }
@@ -208,7 +221,10 @@ export async function schedulePushNotification(
 
     return true;
   } catch (error) {
-    console.error('[PWANotifications] Failed to schedule push notification:', error);
+    console.error(
+      "[PWANotifications] Failed to schedule push notification:",
+      error,
+    );
     return false;
   }
 }
@@ -218,14 +234,15 @@ export async function schedulePushNotification(
  */
 export async function showLearningReminder(dueCount: number): Promise<void> {
   const title = "🧠 ABC-Listen Wiederholung";
-  const body = dueCount === 1
-    ? "Du hast 1 Begriff zu wiederholen"
-    : `Du hast ${dueCount} Begriffe zu wiederholen`;
+  const body =
+    dueCount === 1
+      ? "Du hast 1 Begriff zu wiederholen"
+      : `Du hast ${dueCount} Begriffe zu wiederholen`;
 
   // Try push notification first, fallback to basic notification
   const pushSent = await schedulePushNotification(title, body, 0, {
-    type: 'learning-reminder',
-    dueCount
+    type: "learning-reminder",
+    dueCount,
   });
 
   if (!pushSent) {
@@ -233,8 +250,8 @@ export async function showLearningReminder(dueCount: number): Promise<void> {
     if (areNotificationsAllowed(getBasicSettings())) {
       new Notification(title, {
         body,
-        icon: './assets/icon.png',
-        tag: 'learning-reminder'
+        icon: "./assets/icon.png",
+        tag: "learning-reminder",
       });
     }
   }
@@ -245,7 +262,7 @@ export async function showLearningReminder(dueCount: number): Promise<void> {
  */
 export function scheduleDailyReminders(): void {
   const settings = getPWANotificationSettings();
-  
+
   if (!settings.enabled || !settings.pushEnabled) {
     return;
   }
@@ -256,20 +273,22 @@ export function scheduleDailyReminders(): void {
   const now = new Date();
   const reminderTimes = getReminderTimes(settings);
 
-  reminderTimes.forEach(reminderTime => {
+  reminderTimes.forEach((reminderTime) => {
     const delay = reminderTime.getTime() - now.getTime();
-    
+
     if (delay > 0) {
       schedulePushNotification(
         "🧠 Zeit zum Lernen!",
         "Schau nach, ob du heute etwas zu wiederholen hast.",
         delay,
-        { type: 'daily-reminder' }
+        {type: "daily-reminder"},
       );
     }
   });
 
-  console.log(`[PWANotifications] Scheduled ${reminderTimes.length} daily reminders`);
+  console.log(
+    `[PWANotifications] Scheduled ${reminderTimes.length} daily reminders`,
+  );
 }
 
 /**
@@ -281,33 +300,40 @@ function getReminderTimes(settings: PWANotificationSettings): Date[] {
   tomorrow.setDate(tomorrow.getDate() + 1);
 
   switch (settings.frequency) {
-    case 'hourly':
+    case "hourly": {
       // Every hour between end of quiet hours and start of quiet hours
-      for (let hour = settings.quietHours.end; hour < settings.quietHours.start; hour += 2) {
+      for (
+        let hour = settings.quietHours.end;
+        hour < settings.quietHours.start;
+        hour += 2
+      ) {
         const time = new Date(tomorrow);
         time.setHours(hour, 0, 0, 0);
         times.push(time);
       }
       break;
-      
-    case 'twice-daily':
+    }
+
+    case "twice-daily": {
       // Morning and afternoon
       const morning = new Date(tomorrow);
       morning.setHours(settings.quietHours.end + 1, 0, 0, 0);
       times.push(morning);
-      
+
       const afternoon = new Date(tomorrow);
       afternoon.setHours(14, 0, 0, 0); // 2 PM
       times.push(afternoon);
       break;
-      
-    case 'daily':
-    default:
+    }
+
+    case "daily":
+    default: {
       // Once per day at 10 AM
       const daily = new Date(tomorrow);
       daily.setHours(10, 0, 0, 0);
       times.push(daily);
       break;
+    }
   }
 
   return times;
@@ -319,7 +345,7 @@ function getReminderTimes(settings: PWANotificationSettings): Date[] {
 function clearScheduledReminders(): void {
   // In a real implementation, this would clear scheduled notifications
   // For now, we just log it
-  console.log('[PWANotifications] Clearing scheduled reminders');
+  console.log("[PWANotifications] Clearing scheduled reminders");
 }
 
 /**
@@ -331,9 +357,9 @@ export function checkPWANotificationSupport(): {
   serviceWorker: boolean;
 } {
   return {
-    basicNotifications: 'Notification' in window,
-    pushNotifications: 'PushManager' in window,
-    serviceWorker: 'serviceWorker' in navigator
+    basicNotifications: "Notification" in window,
+    pushNotifications: "PushManager" in window,
+    serviceWorker: "serviceWorker" in navigator,
   };
 }
 
@@ -345,6 +371,6 @@ export async function testPushNotification(): Promise<boolean> {
     "🧪 Test Benachrichtigung",
     "Deine Push-Benachrichtigungen funktionieren!",
     0,
-    { type: 'test' }
+    {type: "test"},
   );
 }

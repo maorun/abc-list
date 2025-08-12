@@ -1,45 +1,48 @@
-import React, { useState } from 'react';
-import { Download, Smartphone, X } from 'lucide-react';
-import { usePWAInstall } from '../contexts/PWAContext';
-import { Button } from './ui/button';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogDescription, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogTrigger 
-} from './ui/dialog';
+import React, {useState} from "react";
+import {Download, Smartphone, X} from "lucide-react";
+import {usePWAInstall} from "../contexts/PWAContext";
+import {Button} from "./ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/dialog";
 
 // Extract handler functions outside component to prevent recreation
-const handleInstallAction = (
-  install: () => Promise<boolean>,
-  setIsInstalling: (installing: boolean) => void,
-  setShowDialog: (show: boolean) => void
-) => async () => {
-  setIsInstalling(true);
-  try {
-    const installed = await install();
-    if (installed) {
-      setShowDialog(false);
+const handleInstallAction =
+  (
+    install: () => Promise<boolean>,
+    setIsInstalling: (installing: boolean) => void,
+    setShowDialog: (show: boolean) => void,
+  ) =>
+  async () => {
+    setIsInstalling(true);
+    try {
+      const installed = await install();
+      if (installed) {
+        setShowDialog(false);
+      }
+    } catch (error) {
+      console.error("PWA installation failed:", error);
+    } finally {
+      setIsInstalling(false);
     }
-  } catch (error) {
-    console.error('PWA installation failed:', error);
-  } finally {
-    setIsInstalling(false);
-  }
-};
+  };
 
-const handleDialogOpenAction = (setShowDialog: (show: boolean) => void) => () => {
-  setShowDialog(true);
-};
+const handleDialogOpenAction =
+  (setShowDialog: (show: boolean) => void) => () => {
+    setShowDialog(true);
+  };
 
-const handleDialogCloseAction = (setShowDialog: (show: boolean) => void) => () => {
-  setShowDialog(false);
-};
+const handleDialogCloseAction =
+  (setShowDialog: (show: boolean) => void) => () => {
+    setShowDialog(false);
+  };
 
 export function PWAInstallPrompt() {
-  const { canInstall, isInstalled, install, isSupported } = usePWAInstall();
+  const {canInstall, isInstalled, install, isSupported} = usePWAInstall();
   const [showDialog, setShowDialog] = useState(false);
   const [isInstalling, setIsInstalling] = useState(false);
 
@@ -49,7 +52,11 @@ export function PWAInstallPrompt() {
   }
 
   // Create stable handler references
-  const handleInstall = handleInstallAction(install, setIsInstalling, setShowDialog);
+  const handleInstall = handleInstallAction(
+    install,
+    setIsInstalling,
+    setShowDialog,
+  );
   const handleDialogOpen = handleDialogOpenAction(setShowDialog);
   const handleDialogClose = handleDialogCloseAction(setShowDialog);
 
@@ -75,10 +82,11 @@ export function PWAInstallPrompt() {
               App installieren
             </DialogTitle>
             <DialogDescription>
-              Installiere die ABC-List App auf deinem Gerät für eine bessere Erfahrung und Offline-Nutzung.
+              Installiere die ABC-List App auf deinem Gerät für eine bessere
+              Erfahrung und Offline-Nutzung.
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="space-y-4">
             <div className="text-sm text-slate-600">
               <h4 className="font-medium mb-2">Vorteile der Installation:</h4>
@@ -89,7 +97,7 @@ export function PWAInstallPrompt() {
                 <li>Vollbild-Erfahrung ohne Browser</li>
               </ul>
             </div>
-            
+
             <div className="flex gap-2 justify-end">
               <Button
                 variant="outline"
@@ -125,7 +133,7 @@ export function PWAInstallPrompt() {
 
 // Inline install banner for specific pages
 export function PWAInstallBanner() {
-  const { canInstall, isInstalled, install, isSupported } = usePWAInstall();
+  const {canInstall, isInstalled, install, isSupported} = usePWAInstall();
   const [isDismissed, setIsDismissed] = useState(false);
   const [isInstalling, setIsInstalling] = useState(false);
 
@@ -154,7 +162,7 @@ export function PWAInstallBanner() {
             </p>
           </div>
         </div>
-        
+
         <div className="flex items-center gap-2">
           <Button
             size="sm"

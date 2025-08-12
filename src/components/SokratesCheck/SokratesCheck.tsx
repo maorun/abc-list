@@ -15,7 +15,7 @@ import {
 } from "../../lib/notifications";
 import {
   showLearningReminder,
-  scheduleDailyReminders
+  scheduleDailyReminders,
 } from "../../lib/pwaNotifications";
 
 interface SokratesData {
@@ -165,8 +165,9 @@ export function SokratesCheck() {
           Der Sokrates-Check nutzt einen wissenschaftlich fundierten
           Wiederholungsalgorithmus basierend auf der Ebbinghaus-Vergessenskurve.
           Begriffe werden optimal terminiert für maximale Lerneffizienz und
-          Langzeitretention. PWA Push-Benachrichtigungen erinnern Sie automatisch
-          an fällige Wiederholungen - auch wenn die App geschlossen ist.
+          Langzeitretention. PWA Push-Benachrichtigungen erinnern Sie
+          automatisch an fällige Wiederholungen - auch wenn die App geschlossen
+          ist.
         </p>
       </div>
 
