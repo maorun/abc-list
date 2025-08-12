@@ -544,6 +544,15 @@ it("should handle production rerender scenarios without localStorage access grow
   <Button className="w-full sm:w-auto">Action</Button>
 </div>
 
+// Mobile-first header with subnavigation buttons (stacked on mobile, side-by-side on desktop)
+<div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-4">
+  <h1 className="text-3xl font-bold">Page Title</h1>
+  <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+    <Button className="text-sm w-full sm:w-auto">Action 1</Button>
+    <Button className="text-sm w-full sm:w-auto">Action 2</Button>
+  </div>
+</div>
+
 // Mobile-first list items with delete
 <div className="flex items-stretch gap-2 sm:gap-3">
   <Button className="flex-1 text-left justify-start">Item</Button>
