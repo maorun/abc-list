@@ -71,14 +71,29 @@ describe("KagaItem", () => {
 
     // Check for drawing tools
     expect(screen.getByText("Werkzeug:")).toBeInTheDocument();
-    expect(screen.getByText("Stift")).toBeInTheDocument();
-    expect(screen.getByText("Text")).toBeInTheDocument();
+    expect(screen.getByText("✏️ Stift")).toBeInTheDocument();
+    expect(screen.getByText("📝 Text")).toBeInTheDocument();
+
+    // Check for shape tools
+    expect(screen.getByText("Formen:")).toBeInTheDocument();
+    expect(screen.getByText("⬜ Rechteck")).toBeInTheDocument();
+    expect(screen.getByText("⭕ Kreis")).toBeInTheDocument();
+    expect(screen.getByText("📏 Linie")).toBeInTheDocument();
+    expect(screen.getByText("➡️ Pfeil")).toBeInTheDocument();
+
     expect(screen.getByText("Farbe:")).toBeInTheDocument();
     expect(screen.getByText("Größe:")).toBeInTheDocument();
 
     // Check for action buttons
-    expect(screen.getByText("Speichern")).toBeInTheDocument();
-    expect(screen.getByText("Löschen")).toBeInTheDocument();
+    expect(screen.getByText("↶ Rückgängig")).toBeInTheDocument();
+    expect(screen.getByText("↷ Wiederholen")).toBeInTheDocument();
+    expect(screen.getByText("📋 Vorlage")).toBeInTheDocument();
+    expect(screen.getByText("💾 Speichern")).toBeInTheDocument();
+    expect(screen.getByText("🗑️ Löschen")).toBeInTheDocument();
+
+    // Check that undo/redo buttons start disabled
+    expect(screen.getByText("↶ Rückgängig")).toBeDisabled();
+    expect(screen.getByText("↷ Wiederholen")).toBeDisabled();
 
     // Check for canvas
     const canvas = document.querySelector("canvas");
