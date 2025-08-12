@@ -3,7 +3,7 @@
 
 export interface StorageItem {
   id: string;
-  data: any;
+  data: unknown;
   timestamp: number;
   lastModified: number;
   syncStatus: "synced" | "pending" | "failed";
@@ -13,7 +13,7 @@ export interface SyncQueueItem {
   id: string;
   storeName: string;
   action: "create" | "update" | "delete";
-  data?: any;
+  data?: unknown;
   timestamp: number;
 }
 
@@ -94,7 +94,7 @@ export class EnhancedPWAStorage {
   }
 
   // Enhanced get method with automatic migration from localStorage
-  public async getItem(storeName: string, key: string): Promise<any> {
+  public async getItem(storeName: string, key: string): Promise<unknown> {
     try {
       // First try IndexedDB
       if (this.db) {
@@ -133,7 +133,7 @@ export class EnhancedPWAStorage {
   public async setItem(
     storeName: string,
     key: string,
-    value: any,
+    value: unknown,
   ): Promise<void> {
     const item: StorageItem = {
       id: key,
@@ -177,7 +177,9 @@ export class EnhancedPWAStorage {
   }
 
   // Get all items from a store
-  public async getAllItems(storeName: string): Promise<Record<string, any>> {
+  public async getAllItems(
+    storeName: string,
+  ): Promise<Record<string, unknown>> {
     try {
       if (this.db) {
         const transaction = this.db.transaction([storeName], "readonly");
@@ -188,7 +190,7 @@ export class EnhancedPWAStorage {
           request.onerror = () => reject(request.error);
         })) as StorageItem[];
 
-        const result: Record<string, any> = {};
+        const result: Record<string, unknown> = {};
         items.forEach((item) => {
           result[item.id] = item.data;
         });
@@ -235,7 +237,7 @@ export class EnhancedPWAStorage {
     storeName: string,
     key: string,
     action: "create" | "update" | "delete",
-    data?: any,
+    data?: unknown,
   ): void {
     const syncItem: SyncQueueItem = {
       id: `${storeName}_${key}_${Date.now()}`,
@@ -330,7 +332,7 @@ export class EnhancedPWAStorage {
   }
 
   // LocalStorage fallback methods
-  private getFromLocalStorage(key: string): any {
+  private getFromLocalStorage(key: string): unknown {
     try {
       const item = localStorage.getItem(key);
       return item ? JSON.parse(item) : null;
@@ -340,7 +342,7 @@ export class EnhancedPWAStorage {
     }
   }
 
-  private setToLocalStorage(key: string, value: any): void {
+  private setToLocalStorage(key: string, value: unknown): void {
     try {
       localStorage.setItem(key, JSON.stringify(value));
     } catch (error) {
@@ -356,8 +358,8 @@ export class EnhancedPWAStorage {
     }
   }
 
-  private getAllFromLocalStorage(storeName: string): Record<string, any> {
-    const result: Record<string, any> = {};
+  private getAllFromLocalStorage(storeName: string): Record<string, unknown> {
+    const result: Record<string, unknown> = {};
 
     try {
       // Try to find localStorage keys that might belong to this store

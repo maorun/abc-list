@@ -38,7 +38,7 @@ export function useEnhancedStorage<T>(
     };
 
     loadData();
-  }, [storeName, key]);
+  }, [storeName, key, storage]);
 
   // Save data function
   const saveData = useCallback(
@@ -50,7 +50,7 @@ export function useEnhancedStorage<T>(
         console.error(`[useEnhancedStorage] Failed to save ${key}:`, error);
       }
     },
-    [storeName, key],
+    [storeName, key, storage],
   );
 
   return [data, saveData, isLoading];
@@ -87,7 +87,7 @@ export function useEnhancedStorageList<T>(
     };
 
     loadItems();
-  }, [storeName]);
+  }, [storeName, storage]);
 
   // Save item function
   const saveItem = useCallback(
@@ -99,7 +99,7 @@ export function useEnhancedStorageList<T>(
         console.error(`[useEnhancedStorageList] Failed to save ${key}:`, error);
       }
     },
-    [storeName],
+    [storeName, storage],
   );
 
   // Delete item function
@@ -119,7 +119,7 @@ export function useEnhancedStorageList<T>(
         );
       }
     },
-    [storeName],
+    [storeName, storage],
   );
 
   return [items, saveItem, deleteItem, isLoading];
@@ -161,7 +161,7 @@ export function useSyncStatus() {
       window.removeEventListener("offline", handleOffline);
       clearInterval(interval);
     };
-  }, []);
+  }, [storage]);
 
   const forceSync = useCallback(async () => {
     try {
@@ -170,7 +170,7 @@ export function useSyncStatus() {
     } catch (error) {
       console.error("[useSyncStatus] Force sync failed:", error);
     }
-  }, []);
+  }, [storage]);
 
   const migrateData = useCallback(async () => {
     try {
@@ -178,7 +178,7 @@ export function useSyncStatus() {
     } catch (error) {
       console.error("[useSyncStatus] Migration failed:", error);
     }
-  }, []);
+  }, [storage]);
 
   return {
     syncQueueSize,

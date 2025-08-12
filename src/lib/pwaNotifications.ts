@@ -176,7 +176,7 @@ export async function schedulePushNotification(
   title: string,
   body: string,
   delay: number = 0,
-  data?: any,
+  data?: unknown,
 ): Promise<boolean> {
   const settings = getPWANotificationSettings();
 

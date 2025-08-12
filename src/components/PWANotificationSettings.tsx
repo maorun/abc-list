@@ -20,9 +20,15 @@ import {
 } from "../lib/pwaNotifications";
 
 // Extract handler functions outside component
+interface PermissionState {
+  basicPermission: boolean;
+  pushPermission: boolean;
+  subscription?: PushSubscription;
+}
+
 const handlePermissionRequestAction =
   (
-    setPermissions: (perms: any) => void,
+    setPermissions: (perms: PermissionState) => void,
     setSettings: (settings: PWANotificationSettings) => void,
   ) =>
   async () => {
@@ -69,7 +75,10 @@ const handleSettingChangeAction =
     settings: PWANotificationSettings,
     setSettings: (settings: PWANotificationSettings) => void,
   ) =>
-  (field: keyof PWANotificationSettings, value: any) => {
+  (
+    field: keyof PWANotificationSettings,
+    value: string | boolean | number | {start: number; end: number},
+  ) => {
     const newSettings = {...settings, [field]: value};
     setSettings(newSettings);
     savePWANotificationSettings(newSettings);
@@ -206,10 +215,11 @@ export function PWANotificationSettingsDialog() {
 
                   {/* Basic Notifications Toggle */}
                   <div className="flex items-center justify-between">
-                    <label className="text-sm">
+                    <label htmlFor="basic-notifications" className="text-sm">
                       Browser-Benachrichtigungen
                     </label>
                     <input
+                      id="basic-notifications"
                       type="checkbox"
                       checked={settings.enabled}
                       onChange={(e) =>
@@ -222,8 +232,11 @@ export function PWANotificationSettingsDialog() {
                   {/* Push Notifications Toggle */}
                   {support.pushNotifications && (
                     <div className="flex items-center justify-between">
-                      <label className="text-sm">Push-Benachrichtigungen</label>
+                      <label htmlFor="push-notifications" className="text-sm">
+                        Push-Benachrichtigungen
+                      </label>
                       <input
+                        id="push-notifications"
                         type="checkbox"
                         checked={settings.pushEnabled}
                         onChange={(e) =>
@@ -236,8 +249,14 @@ export function PWANotificationSettingsDialog() {
 
                   {/* Frequency */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Häufigkeit</label>
+                    <label
+                      htmlFor="frequency-select"
+                      className="text-sm font-medium"
+                    >
+                      Häufigkeit
+                    </label>
                     <select
+                      id="frequency-select"
                       value={settings.frequency}
                       onChange={(e) =>
                         handleSettingChange("frequency", e.target.value)
@@ -252,9 +271,15 @@ export function PWANotificationSettingsDialog() {
 
                   {/* Quiet Hours */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Ruhezeiten</label>
+                    <label
+                      htmlFor="quiet-hours-start"
+                      className="text-sm font-medium"
+                    >
+                      Ruhezeiten
+                    </label>
                     <div className="flex gap-2 items-center">
                       <select
+                        id="quiet-hours-start"
                         value={settings.quietHours.start}
                         onChange={(e) =>
                           handleSettingChange("quietHours", {

@@ -98,9 +98,9 @@ export class PWAInstallManager {
       this.isInstalled =
         typeof window !== "undefined" && window.matchMedia
           ? window.matchMedia("(display-mode: standalone)").matches ||
-            (window.navigator as any).standalone === true
+            (window.navigator as {standalone?: boolean}).standalone === true
           : false;
-    } catch (error) {
+    } catch {
       console.log(
         "[PWA] matchMedia not available, defaulting to not installed",
       );
@@ -288,7 +288,7 @@ export class PWAStorage {
   public async setItem(
     storeName: string,
     key: string,
-    value: any,
+    value: unknown,
   ): Promise<void> {
     if (this.db) {
       try {
@@ -308,7 +308,7 @@ export class PWAStorage {
     }
   }
 
-  public async getItem(storeName: string, key: string): Promise<any> {
+  public async getItem(storeName: string, key: string): Promise<unknown> {
     if (this.db) {
       try {
         const transaction = this.db.transaction([storeName], "readonly");
@@ -327,7 +327,7 @@ export class PWAStorage {
     }
   }
 
-  private fallbackToLocalStorage(key: string, value: any): void {
+  private fallbackToLocalStorage(key: string, value: unknown): void {
     try {
       localStorage.setItem(key, JSON.stringify(value));
     } catch (error) {
@@ -335,7 +335,7 @@ export class PWAStorage {
     }
   }
 
-  private fallbackFromLocalStorage(key: string): any {
+  private fallbackFromLocalStorage(key: string): unknown {
     try {
       const item = localStorage.getItem(key);
       return item ? JSON.parse(item) : null;
