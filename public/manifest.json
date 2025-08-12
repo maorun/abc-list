@@ -1,0 +1,57 @@
+{
+  "name": "ABC-List Lern App",
+  "short_name": "ABC-List",
+  "description": "Hirngerechte Lernmethoden mit ABC-Listen, KaWa, KaGa und Sokrates Wiederholungssystem",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#1e40af",
+  "orientation": "portrait-primary",
+  "scope": "./",
+  "lang": "de",
+  "categories": ["education", "productivity", "lifestyle"],
+  "icons": [
+    {
+      "src": "./assets/favicon.png",
+      "sizes": "48x48",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./assets/drawer-150x150.png", 
+      "sizes": "150x150",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./assets/icon.png",
+      "sizes": "1024x1024", 
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./assets/adaptive-icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png", 
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "./assets/splash.png",
+      "sizes": "1284x2778",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "prefer_related_applications": false,
+  "features": [
+    "offline",
+    "installable", 
+    "background-sync",
+    "push-notifications"
+  ],
+  "edge_side_panel": {
+    "preferred_width": 480
+  }
+}

@@ -18,6 +18,16 @@ import {
 } from "./components/ui/sheet";
 import {AccessibilityProvider} from "./contexts/AccessibilityContext";
 import {AccessibilityToolbar} from "./components/AccessibilityToolbar";
+import {PWAProvider} from "./contexts/PWAContext";
+import {PWAInstallPrompt} from "./components/PWAInstallPrompt";
+import {
+  OfflineStatusIndicator,
+  OfflineStatusIcon,
+} from "./components/OfflineStatusIndicator";
+import {
+  SyncStatusIndicator,
+  SyncStatusIcon,
+} from "./components/SyncStatusIndicator";
 import {useKeyboardNavigation} from "./hooks/useKeyboardNavigation";
 import {List} from "./components/List/List";
 import {ListItem} from "./components/List/ListItem";
@@ -173,7 +183,7 @@ function Navigation() {
           </div>
 
           {/* Desktop navigation */}
-          <div className="hidden sm:ml-6 sm:flex sm:items-center">
+          <div className="hidden sm:ml-6 sm:flex sm:items-center sm:gap-4">
             <div
               className="flex space-x-2"
               role="list"
@@ -192,6 +202,12 @@ function Navigation() {
                 </div>
               ))}
             </div>
+
+            {/* Offline and sync status icons in navigation */}
+            <div className="flex items-center gap-2">
+              <OfflineStatusIcon />
+              <SyncStatusIcon />
+            </div>
           </div>
         </div>
       </div>
@@ -206,6 +222,7 @@ function AppContent() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
+      <OfflineStatusIndicator />
       <main
         id="main-content"
         className="p-4 sm:p-6 lg:p-8"
@@ -232,6 +249,8 @@ function AppContent() {
         </div>
       </main>
       <AccessibilityToolbar />
+      <PWAInstallPrompt />
+      <SyncStatusIndicator />
       <Toaster />
     </div>
   );
@@ -239,11 +258,13 @@ function AppContent() {
 
 function App() {
   return (
-    <AccessibilityProvider>
-      <Router>
-        <AppContent />
-      </Router>
-    </AccessibilityProvider>
+    <PWAProvider>
+      <AccessibilityProvider>
+        <Router>
+          <AppContent />
+        </Router>
+      </AccessibilityProvider>
+    </PWAProvider>
   );
 }
 
