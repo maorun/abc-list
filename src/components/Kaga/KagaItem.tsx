@@ -1,9 +1,39 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import {useLocation} from "react-router-dom";
 import {NewItemWithSaveKey} from "../NewStringItem";
 import {usePrompt} from "@/components/ui/prompt-dialog";
 import {Button} from "../ui/button";
 import {KagaTemplates, KagaTemplate} from "./KagaTemplates";
+
+// Define shape type for better type safety
+type ShapeType = "rectangle" | "circle" | "line" | "arrow";
+
+interface BaseShape {
+  type: ShapeType;
+  x: number;
+  y: number;
+  color: string;
+  lineWidth: number;
+}
+
+interface RectangleShape extends BaseShape {
+  type: "rectangle";
+  width: number;
+  height: number;
+}
+
+interface CircleShape extends BaseShape {
+  type: "circle";
+  radius: number;
+}
+
+interface LineShape extends BaseShape {
+  type: "line" | "arrow";
+  endX: number;
+  endY: number;
+}
+
+type Shape = RectangleShape | CircleShape | LineShape;
 
 interface DrawingData {
   paths: Array<{
@@ -18,18 +48,7 @@ interface DrawingData {
     color: string;
     fontSize: number;
   }>;
-  shapes: Array<{
-    type: "rectangle" | "circle" | "line" | "arrow";
-    x: number;
-    y: number;
-    width?: number;
-    height?: number;
-    endX?: number;
-    endY?: number;
-    radius?: number;
-    color: string;
-    lineWidth: number;
-  }>;
+  shapes: Array<Shape>;
 }
 
 interface DrawingHistory {
@@ -44,7 +63,9 @@ export function KagaItem() {
   const [isDrawing, setIsDrawing] = useState(false);
   const [currentColor, setCurrentColor] = useState("#000000");
   const [brushSize, setBrushSize] = useState(2);
-  const [tool, setTool] = useState<"pen" | "text" | "rectangle" | "circle" | "line" | "arrow">("pen");
+  const [tool, setTool] = useState<
+    "pen" | "text" | "rectangle" | "circle" | "line" | "arrow"
+  >("pen");
   const [drawingData, setDrawingData] = useState<DrawingData>({
     paths: [],
     texts: [],
@@ -52,9 +73,12 @@ export function KagaItem() {
   });
   const [currentPath, setCurrentPath] = useState<{x: number; y: number}[]>([]);
   const [isDrawingShape, setIsDrawingShape] = useState(false);
-  const [shapeStartPos, setShapeStartPos] = useState<{x: number; y: number} | null>(null);
+  const [shapeStartPos, setShapeStartPos] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
   const [history, setHistory] = useState<DrawingHistory>({
-    states: [{ paths: [], texts: [], shapes: [] }],
+    states: [{paths: [], texts: [], shapes: []}],
     currentIndex: 0,
   });
   const {prompt, PromptComponent} = usePrompt();
@@ -81,23 +105,6 @@ export function KagaItem() {
       }
     }
   }, [item]);
-
-  // Keyboard shortcuts for undo/redo
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key === 'z') {
-        e.preventDefault();
-        undo();
-      } else if (((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'z') || 
-                 ((e.ctrlKey || e.metaKey) && e.key === 'y')) {
-        e.preventDefault();
-        redo();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [history]);
 
   const redrawCanvas = (data: DrawingData) => {
     const canvas = canvasRef.current;
@@ -167,7 +174,10 @@ export function KagaItem() {
             ctx.stroke();
 
             // Draw arrowhead
-            const angle = Math.atan2(shape.endY - shape.y, shape.endX - shape.x);
+            const angle = Math.atan2(
+              shape.endY - shape.y,
+              shape.endX - shape.x,
+            );
             const arrowLength = 15;
             const arrowAngle = Math.PI / 6;
 
@@ -175,12 +185,12 @@ export function KagaItem() {
             ctx.moveTo(shape.endX, shape.endY);
             ctx.lineTo(
               shape.endX - arrowLength * Math.cos(angle - arrowAngle),
-              shape.endY - arrowLength * Math.sin(angle - arrowAngle)
+              shape.endY - arrowLength * Math.sin(angle - arrowAngle),
             );
             ctx.moveTo(shape.endX, shape.endY);
             ctx.lineTo(
               shape.endX - arrowLength * Math.cos(angle + arrowAngle),
-              shape.endY - arrowLength * Math.sin(angle + arrowAngle)
+              shape.endY - arrowLength * Math.sin(angle + arrowAngle),
             );
             ctx.stroke();
           }
@@ -212,60 +222,99 @@ export function KagaItem() {
     });
   };
 
-  const undo = () => {
+  const undo = useCallback(() => {
     if (history.currentIndex > 0) {
       const newIndex = history.currentIndex - 1;
       const prevData = history.states[newIndex];
-      setHistory((prev) => ({ ...prev, currentIndex: newIndex }));
+      setHistory((prev) => ({...prev, currentIndex: newIndex}));
       setDrawingData(prevData);
       redrawCanvas(prevData);
     }
-  };
+  }, [history]);
 
-  const redo = () => {
+  const redo = useCallback(() => {
     if (history.currentIndex < history.states.length - 1) {
       const newIndex = history.currentIndex + 1;
       const nextData = history.states[newIndex];
-      setHistory((prev) => ({ ...prev, currentIndex: newIndex }));
+      setHistory((prev) => ({...prev, currentIndex: newIndex}));
       setDrawingData(nextData);
       redrawCanvas(nextData);
     }
-  };
+  }, [history]);
+
+  // Keyboard shortcuts for undo/redo
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key === "z") {
+        e.preventDefault();
+        undo();
+      } else if (
+        ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === "z") ||
+        ((e.ctrlKey || e.metaKey) && e.key === "y")
+      ) {
+        e.preventDefault();
+        redo();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [undo, redo]);
 
   const canUndo = history.currentIndex > 0;
   const canRedo = history.currentIndex < history.states.length - 1;
 
   // Helper function to create shape from start and end positions
-  const createShape = (startPos: {x: number; y: number}, endPos: {x: number; y: number}, shapeType: string) => {
-    const shape: any = {
-      type: shapeType,
+  const createShape = (
+    startPos: {x: number; y: number},
+    endPos: {x: number; y: number},
+    shapeType: ShapeType,
+  ): Shape => {
+    const baseProps = {
       color: currentColor,
       lineWidth: brushSize,
     };
 
     switch (shapeType) {
-      case "rectangle":
-        shape.x = Math.min(startPos.x, endPos.x);
-        shape.y = Math.min(startPos.y, endPos.y);
-        shape.width = Math.abs(endPos.x - startPos.x);
-        shape.height = Math.abs(endPos.y - startPos.y);
-        break;
-      case "circle":
-        const radius = Math.sqrt(Math.pow(endPos.x - startPos.x, 2) + Math.pow(endPos.y - startPos.y, 2));
-        shape.x = startPos.x;
-        shape.y = startPos.y;
-        shape.radius = radius;
-        break;
+      case "rectangle": {
+        return {
+          type: "rectangle",
+          x: Math.min(startPos.x, endPos.x),
+          y: Math.min(startPos.y, endPos.y),
+          width: Math.abs(endPos.x - startPos.x),
+          height: Math.abs(endPos.y - startPos.y),
+          ...baseProps,
+        } as RectangleShape;
+      }
+      case "circle": {
+        const radius = Math.sqrt(
+          Math.pow(endPos.x - startPos.x, 2) +
+            Math.pow(endPos.y - startPos.y, 2),
+        );
+        return {
+          type: "circle",
+          x: startPos.x,
+          y: startPos.y,
+          radius,
+          ...baseProps,
+        } as CircleShape;
+      }
       case "line":
-      case "arrow":
-        shape.x = startPos.x;
-        shape.y = startPos.y;
-        shape.endX = endPos.x;
-        shape.endY = endPos.y;
-        break;
+      case "arrow": {
+        return {
+          type: shapeType,
+          x: startPos.x,
+          y: startPos.y,
+          endX: endPos.x,
+          endY: endPos.y,
+          ...baseProps,
+        } as LineShape;
+      }
+      default: {
+        // This should never happen with proper TypeScript typing
+        throw new Error(`Unknown shape type: ${shapeType}`);
+      }
     }
-
-    return shape;
   };
 
   // Handle template selection
@@ -453,7 +502,7 @@ export function KagaItem() {
       setDrawingData(newData);
       addToHistory(newData);
     }
-    
+
     if (isDrawingShape && shapeStartPos && e) {
       const endPos = getMousePos(e);
       const shape = createShape(shapeStartPos, endPos, tool);
@@ -465,7 +514,7 @@ export function KagaItem() {
       addToHistory(newData);
       redrawCanvas(newData);
     }
-    
+
     setIsDrawing(false);
     setIsDrawingShape(false);
     setShapeStartPos(null);
@@ -474,7 +523,7 @@ export function KagaItem() {
 
   const stopTouchDrawing = (e: React.TouchEvent<HTMLCanvasElement>) => {
     e.preventDefault();
-    
+
     if (isDrawing && currentPath.length > 1) {
       const newPath = {
         points: currentPath,
@@ -488,7 +537,7 @@ export function KagaItem() {
       setDrawingData(newData);
       addToHistory(newData);
     }
-    
+
     if (isDrawingShape && shapeStartPos) {
       const endPos = getTouchPos(e);
       const shape = createShape(shapeStartPos, endPos, tool);
@@ -500,7 +549,7 @@ export function KagaItem() {
       addToHistory(newData);
       redrawCanvas(newData);
     }
-    
+
     setIsDrawing(false);
     setIsDrawingShape(false);
     setShapeStartPos(null);
@@ -580,7 +629,10 @@ export function KagaItem() {
         </div>
 
         <div className="flex items-center justify-center gap-2 w-full sm:w-auto">
-          <label htmlFor="color-picker" className="font-semibold text-sm sm:text-base">
+          <label
+            htmlFor="color-picker"
+            className="font-semibold text-sm sm:text-base"
+          >
             Farbe:
           </label>
           <input
@@ -593,7 +645,10 @@ export function KagaItem() {
         </div>
 
         <div className="flex items-center justify-center gap-2 w-full sm:w-auto">
-          <label htmlFor="brush-size" className="font-semibold text-sm sm:text-base">
+          <label
+            htmlFor="brush-size"
+            className="font-semibold text-sm sm:text-base"
+          >
             Größe:
           </label>
           <input
@@ -641,7 +696,11 @@ export function KagaItem() {
             💾 Speichern
           </Button>
 
-          <Button onClick={clearCanvas} variant="destructive" className="flex-1 sm:flex-initial min-h-[44px]">
+          <Button
+            onClick={clearCanvas}
+            variant="destructive"
+            className="flex-1 sm:flex-initial min-h-[44px]"
+          >
             🗑️ Löschen
           </Button>
         </div>

@@ -73,14 +73,14 @@ describe("KagaItem", () => {
     expect(screen.getByText("Werkzeug:")).toBeInTheDocument();
     expect(screen.getByText("✏️ Stift")).toBeInTheDocument();
     expect(screen.getByText("📝 Text")).toBeInTheDocument();
-    
+
     // Check for shape tools
     expect(screen.getByText("Formen:")).toBeInTheDocument();
     expect(screen.getByText("⬜ Rechteck")).toBeInTheDocument();
     expect(screen.getByText("⭕ Kreis")).toBeInTheDocument();
     expect(screen.getByText("📏 Linie")).toBeInTheDocument();
     expect(screen.getByText("➡️ Pfeil")).toBeInTheDocument();
-    
+
     expect(screen.getByText("Farbe:")).toBeInTheDocument();
     expect(screen.getByText("Größe:")).toBeInTheDocument();
 

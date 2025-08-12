@@ -5,7 +5,7 @@ import {KagaTemplates} from "./KagaTemplates";
 describe("KagaTemplates", () => {
   it("renders template button and opens dialog when clicked", () => {
     const mockOnTemplateSelect = vi.fn();
-    
+
     render(<KagaTemplates onTemplateSelect={mockOnTemplateSelect} />);
 
     // Check that the template button is present
@@ -16,12 +16,16 @@ describe("KagaTemplates", () => {
 
     // Check that the dialog is opened
     expect(screen.getByText("KaGa-Vorlagen auswählen")).toBeInTheDocument();
-    expect(screen.getByText("Wählen Sie eine Vorlage, um schnell mit einer strukturierten KaGa zu beginnen.")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Wählen Sie eine Vorlage, um schnell mit einer strukturierten KaGa zu beginnen.",
+      ),
+    ).toBeInTheDocument();
   });
 
   it("displays all predefined templates", () => {
     const mockOnTemplateSelect = vi.fn();
-    
+
     render(<KagaTemplates onTemplateSelect={mockOnTemplateSelect} />);
 
     // Open the dialog
@@ -34,13 +38,17 @@ describe("KagaTemplates", () => {
     expect(screen.getByText("Lernnotizen")).toBeInTheDocument();
 
     // Check template descriptions
-    expect(screen.getByText("Zentrales Thema mit Ästen für Unterthemen")).toBeInTheDocument();
-    expect(screen.getByText("Schrittweise Darstellung von Abläufen")).toBeInTheDocument();
+    expect(
+      screen.getByText("Zentrales Thema mit Ästen für Unterthemen"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Schrittweise Darstellung von Abläufen"),
+    ).toBeInTheDocument();
   });
 
   it("calls onTemplateSelect when a template is selected", () => {
     const mockOnTemplateSelect = vi.fn();
-    
+
     render(<KagaTemplates onTemplateSelect={mockOnTemplateSelect} />);
 
     // Open the dialog
@@ -57,7 +65,7 @@ describe("KagaTemplates", () => {
         id: "mind-map",
         name: "Mind Map",
         description: "Zentrales Thema mit Ästen für Unterthemen",
-      })
+      }),
     );
   });
 });
