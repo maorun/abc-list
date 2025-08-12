@@ -6,6 +6,7 @@ import {
   PWAStorage,
   initializePWA 
 } from '../lib/pwa';
+import { EnhancedPWAStorage } from '../lib/enhancedStorage';
 
 interface PWAContextType {
   // Install state
@@ -17,6 +18,7 @@ interface PWAContextType {
   
   // Storage
   storage: PWAStorage;
+  enhancedStorage: EnhancedPWAStorage;
   
   // PWA features availability
   isServiceWorkerSupported: boolean;
@@ -35,21 +37,24 @@ export function PWAProvider({ children }: PWAProviderProps) {
     isInstalled: false,
     installPrompt: null
   });
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
   const [managers, setManagers] = useState<{
     installManager: PWAInstallManager;
     offlineManager: OfflineManager;
     storage: PWAStorage;
+    enhancedStorage: EnhancedPWAStorage;
   } | null>(null);
 
   // PWA capabilities detection
-  const isServiceWorkerSupported = 'serviceWorker' in navigator;
-  const isPWACapable = isServiceWorkerSupported && 'Notification' in window;
+  const isServiceWorkerSupported = typeof window !== 'undefined' && 'serviceWorker' in navigator;
+  const isPWACapable = isServiceWorkerSupported && typeof window !== 'undefined' && 'Notification' in window;
 
   useEffect(() => {
     // Initialize PWA functionality
     const { installManager, offlineManager, storage } = initializePWA();
-    setManagers({ installManager, offlineManager, storage });
+    const enhancedStorage = new EnhancedPWAStorage();
+    
+    setManagers({ installManager, offlineManager, storage, enhancedStorage });
 
     // Subscribe to install state changes
     const unsubscribeInstall = installManager.onStateChange(setInstallState);
@@ -76,6 +81,7 @@ export function PWAProvider({ children }: PWAProviderProps) {
     showInstallPrompt,
     isOnline,
     storage: managers?.storage || new PWAStorage(),
+    enhancedStorage: managers?.enhancedStorage || new EnhancedPWAStorage(),
     isServiceWorkerSupported,
     isPWACapable
   };

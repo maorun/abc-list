@@ -4,6 +4,7 @@ import {Button} from "../ui/button";
 import {SokratesReview} from "./SokratesReview";
 import {SokratesDashboard} from "./SokratesDashboard";
 import {SpacedRepetitionSettings} from "./SpacedRepetitionSettings";
+import {PWANotificationSettingsDialog} from "../PWANotificationSettings";
 import {
   isTermDueForReview,
   getSpacedRepetitionStats,
@@ -12,6 +13,10 @@ import {
   initializeNotifications,
   setupPeriodicNotifications,
 } from "../../lib/notifications";
+import {
+  showLearningReminder,
+  scheduleDailyReminders
+} from "../../lib/pwaNotifications";
 
 interface SokratesData {
   listName: string;
@@ -37,6 +42,14 @@ export function SokratesCheck() {
 
     // Set up periodic checking
     const cleanup = setupPeriodicNotifications(getDueReviewsCount);
+
+    // Also show PWA learning reminders if there are due reviews
+    if (reviewTerms.length > 0) {
+      showLearningReminder(reviewTerms.length);
+    }
+
+    // Schedule daily reminders
+    scheduleDailyReminders();
 
     return cleanup;
   }, [reviewTerms.length]);
@@ -127,6 +140,7 @@ export function SokratesCheck() {
         <h1 className="text-3xl font-bold">Sokrates-Check</h1>
         <div className="flex gap-2">
           <SpacedRepetitionSettings onSettingsChange={handleSettingsChange} />
+          <PWANotificationSettingsDialog />
           <Button
             variant={view === "dashboard" ? "default" : "outline"}
             onClick={() => setView("dashboard")}
@@ -151,8 +165,8 @@ export function SokratesCheck() {
           Der Sokrates-Check nutzt einen wissenschaftlich fundierten
           Wiederholungsalgorithmus basierend auf der Ebbinghaus-Vergessenskurve.
           Begriffe werden optimal terminiert für maximale Lerneffizienz und
-          Langzeitretention. Browser-Benachrichtigungen erinnern Sie automatisch
-          an fällige Wiederholungen.
+          Langzeitretention. PWA Push-Benachrichtigungen erinnern Sie automatisch
+          an fällige Wiederholungen - auch wenn die App geschlossen ist.
         </p>
       </div>
 
