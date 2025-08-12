@@ -3,6 +3,7 @@ import {useNavigate} from "react-router-dom";
 import {NewStringItem, NewItemWithSaveKey} from "../NewStringItem";
 import {DeleteConfirm} from "../DeleteConfirm";
 import {Button} from "../ui/button";
+import {useGamification} from "@/hooks/useGamification";
 
 const KAGA_STORAGE_KEY = "Kagas";
 
@@ -12,6 +13,7 @@ export function Kaga() {
     NewItemWithSaveKey | undefined
   >(undefined);
   const navigate = useNavigate();
+  const {trackKagaCreated} = useGamification();
 
   useEffect(() => {
     const storedKagas = localStorage.getItem(KAGA_STORAGE_KEY);
@@ -29,6 +31,10 @@ export function Kaga() {
       const newKagas = [...kagas, newKaga];
       setKagas(newKagas);
       updateStorage(newKagas);
+      
+      // Track gamification activity
+      trackKagaCreated(newKaga.key);
+      
       navigate(`/kaga/${newKaga.key}`, {state: {item: newKaga}});
     }
   };
