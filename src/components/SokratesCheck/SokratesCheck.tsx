@@ -123,9 +123,11 @@ export function SokratesCheck() {
 
   return (
     <div className="p-4">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Sokrates-Check</h1>
-        <div className="flex gap-2">
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+        <h1 className="text-3xl font-bold text-center sm:text-left">
+          Sokrates-Check
+        </h1>
+        <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2">
           <SpacedRepetitionSettings onSettingsChange={handleSettingsChange} />
           <Button
             variant={view === "dashboard" ? "default" : "outline"}
