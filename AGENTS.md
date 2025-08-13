@@ -13,6 +13,7 @@ ABC-List implements Vera F. Birkenbihl's learning methodology with multiple lear
 - **Stadt-Land-Fluss**: Quick knowledge retrieval game training with customizable categories and timer-based rounds
 - **Sokrates Check**: Scientifically-backed spaced repetition system for optimal learning retention using the Ebbinghaus forgetting curve
 - **Gamification System**: Comprehensive achievement and motivation system with daily streaks, challenges, levels, and leaderboards
+- **Search & Tagging System**: Intelligent full-text search with automated tagging, smart collections, and advanced filtering across all content types
 
 **Key Technical Features:**
 - Mobile-first responsive design with hamburger navigation
@@ -486,3 +487,185 @@ All Sokrates components follow the existing mobile-first responsive design princ
 - Responsive charts and dialogs that work on mobile and desktop
 - Hamburger navigation integration for mobile devices
 - Optimized performance for mobile browsers
+
+## 10. Search & Tagging System
+
+### 10.1. Overview
+
+The comprehensive search and tagging system transforms ABC-List into an intelligent content organization platform. It provides full-text search capabilities, automated tag suggestions, smart collections, and advanced filtering across all content types (ABC-Lists, KaWa, KaGa, and individual words).
+
+### 10.2. Core Components
+
+**SearchService (`src/lib/searchService.ts`)**
+- Singleton service managing search indexing and querying
+- Full-text search with relevance scoring and highlighting
+- Multi-criteria filtering (type, tags, dates, ratings, favorites)
+- Search history tracking with persistence
+
+**TaggingService (`src/lib/taggingService.ts`)**
+- AI-powered automatic tag suggestions based on German educational content
+- Subject area detection (Mathematik, Physik, Biologie, etc.)
+- Difficulty level and format-specific tag recognition
+- Tag validation and duplicate prevention
+
+**SearchAndFilter Component (`src/components/Search/SearchAndFilter.tsx`)**
+- Main search interface with tabbed layout (Search Results, Smart Collections, Search History, Favorites)
+- Real-time search with debounced input and live results
+- Advanced filter UI with expandable sections
+- Mobile-first responsive design
+
+### 10.3. Smart Collections System
+
+Automated content organization with four intelligent collections:
+
+- **Favorites**: User-marked important content with heart icon
+- **Recent**: Items created/modified in the last 7 days
+- **Untagged**: Content without tags needing categorization
+- **Most Used**: Items based on search frequency and access patterns
+
+Each collection displays real-time statistics and provides quick action buttons for content management.
+
+### 10.4. Search Features
+
+**Full-Text Search Engine:**
+- Searches across ABC-List titles, KaWa/KaGa content, and individual words
+- Relevance scoring algorithm based on title matches, content frequency, and recency
+- Context-aware result highlighting with text snippets
+- Real-time search suggestions and auto-complete
+
+**Advanced Filtering:**
+- Content type filtering (ABC-Lists, KaWa, KaGa, Words)
+- Tag-based multi-select filtering
+- Date range filtering for content discovery
+- Rating and favorites-based filtering
+- Content presence filtering (items with/without explanations)
+
+**Search History Management:**
+- Persistent search history with frequency tracking
+- Quick re-execution of previous searches
+- Popular search term identification
+- Search analytics and pattern recognition
+
+### 10.5. Tagging System
+
+**Automated Tag Suggestions:**
+- German educational content recognition with subject categorization
+- Difficulty level detection (Anfänger, Fortgeschritten, Experte)
+- Format-specific tags (Vokabeln, Prüfung, Definitionen, Übung)
+- Content analysis for custom tag generation
+
+**Tag Management:**
+- Manual tag addition/removal with validation
+- Bulk tag operations across multiple items
+- Similar tag detection to prevent duplication
+- Popular tags tracking and usage statistics
+
+**German Language Support:**
+- Educational subject keywords (Mathematik, Physik, Chemie, etc.)
+- Learning context detection (Schule, Studium, Beruf)
+- Category-specific term recognition (Wissenschaft, Technik, Kultur)
+- Intelligent categorization based on content analysis
+
+### 10.6. Data Model Enhancement
+
+Enhanced interfaces for search functionality:
+
+```typescript
+interface SearchableItem {
+  id: string;
+  type: 'abc-list' | 'kawa' | 'kaga' | 'word';
+  title: string;
+  content: string;
+  tags: string[];
+  metadata: ListMetadata;
+  lastModified: Date;
+  isFavorite: boolean;
+}
+
+interface SearchFilters {
+  query?: string;
+  tags?: string[];
+  type?: ('abc-list' | 'kawa' | 'kaga' | 'word')[];
+  dateRange?: { start?: Date; end?: Date; };
+  isFavorite?: boolean;
+  hasContent?: boolean;
+}
+```
+
+### 10.7. Integration Points
+
+**Navigation Integration:**
+- New "Suchen" tab with search icon in main navigation
+- Deep linking support for search results and filters
+- Breadcrumb navigation for search contexts
+
+**Feature Integration:**
+- Direct navigation to found ABC-Lists, KaWa, and KaGa items
+- Word-level search within lists with jump-to functionality
+- Tag synchronization across all content types
+- Favorites integration with existing rating systems
+
+**Data Persistence:**
+- localStorage integration for search history and preferences
+- Tag data stored within existing content structures
+- Backwards compatibility with existing ABC-List data
+- Automatic migration of legacy content to searchable format
+
+### 10.8. Testing Requirements
+
+**Comprehensive Test Coverage:**
+- Search functionality across all content types with edge cases
+- Tag suggestion accuracy and German language recognition
+- Filter combinations and complex query scenarios
+- Performance testing with large content collections
+- Mobile responsiveness and touch interaction testing
+
+**Test Patterns:**
+```typescript
+// Test search accuracy
+it("should find ABC-Lists by title and content", () => {
+  const results = searchService.search({ query: "Mathematik" });
+  expect(results).toContainEqual(expect.objectContaining({
+    item: expect.objectContaining({ title: "Grundlagen Mathematik" })
+  }));
+});
+
+// Test German tag suggestions
+it("should suggest educational tags for German content", () => {
+  const suggestions = taggingService.generateSuggestions("Physik Grundlagen");
+  expect(suggestions).toContainEqual(expect.objectContaining({
+    tag: "Wissenschaft",
+    confidence: expect.any(Number)
+  }));
+});
+```
+
+### 10.9. Mobile-First Implementation
+
+**Responsive Design:**
+- Touch-friendly search interface with adequate spacing (minimum 44px)
+- Responsive filter panels that work on mobile viewports (375px width)
+- Collapsible filter sections for mobile optimization
+- Swipe gestures for collection navigation
+
+**Performance Optimization:**
+- Function extraction pattern applied to all search components
+- Debounced search input to prevent excessive API calls
+- Lazy loading of search results and collections
+- Efficient indexing with incremental updates
+
+### 10.10. Development Guidelines
+
+**When Working with Search:**
+1. Always update search index after content modifications
+2. Test tag suggestions with German educational content
+3. Verify mobile responsiveness of search interfaces
+4. Ensure backwards compatibility with existing data
+5. Follow function extraction pattern for all event handlers
+6. Add comprehensive test coverage for new search features
+
+**Common Patterns:**
+- Use `searchService.updateIndex()` after content changes
+- Apply `taggingService.generateSuggestions()` for automatic tagging
+- Follow mobile-first responsive design principles
+- Implement proper error handling for search edge cases

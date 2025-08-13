@@ -151,6 +151,42 @@ ABC-List is a React/TypeScript/Vite web application implementing Vera F. Birkenb
   - Legacy data should upgrade seamlessly
   - Fallback to 7-day intervals for data without spaced repetition fields
 
+### 8. Search & Tagging System
+- Navigate to "Suchen" tab to access the search interface
+- Test full-text search functionality:
+  - Enter search queries in the main search bar
+  - Verify real-time search results across ABC-Lists, KaWa, KaGa, and words
+  - Test search result highlighting and snippets
+  - Verify relevance scoring and result ordering
+- Test advanced filtering:
+  - Click "Filter" button to access advanced filters
+  - Test content type filtering (ABC-Listen, KaWa, KaGa, Wörter)
+  - Test special filters (Nur Favoriten, Mit Inhalt, Ohne Inhalt)
+  - Verify date range filtering functionality
+  - Test tag-based filtering with multi-select
+- Test smart collections:
+  - Navigate to "Sammlungen" tab
+  - Verify "Favoriten" collection shows user-marked content
+  - Check "Kürzlich erstellt" shows items from last 7 days
+  - Verify "Untagged" collection identifies content needing tags
+  - Test "Most Used" collection based on access patterns
+- Test tagging functionality:
+  - Click "Tags" button to access tag management
+  - Test automatic tag suggestions for German educational content
+  - Verify subject area detection (Mathematik, Physik, etc.)
+  - Test manual tag addition and removal
+  - Verify tag validation and duplicate prevention
+- Test search history:
+  - Navigate to "Verlauf" tab
+  - Verify search history persistence and frequency tracking
+  - Test one-click re-execution of previous searches
+  - Check search pattern analytics
+- Test favorites functionality:
+  - Navigate to "Favoriten" tab
+  - Test marking/unmarking content as favorites
+  - Verify favorites persistence across sessions
+  - Test favorites integration with search filters
+
 ## CI/CD Requirements
 
 ### The Mandatory Development Workflow
@@ -237,11 +273,14 @@ This cycle continues until your code both passes all tests and has no linting er
     /Kawa             # KaWa (word associations) components
     /List             # ABC-List components
     /LinkLists        # List linking functionality
+    /Search           # Search and tagging system components
     /SokratesCheck    # Spaced repetition system components
     /StadtLandFluss   # Stadt-Land-Fluss game components
   /lib                # Utility libraries and algorithms
     notifications.ts  # Browser notification system
+    searchService.ts  # Full-text search and indexing engine
     spacedRepetition.ts # Spaced repetition algorithm implementation
+    taggingService.ts # Automated tagging and content categorization
   /test               # Test setup and utilities
   /themes             # Theme configuration
   App.tsx             # Main application component
@@ -782,6 +821,187 @@ const handleRating = (rating: number) =>
 - Apply `upgradeWordData()` when loading legacy data
 - Follow notification permission best practices
 - Implement responsive design with mobile-first approach
+
+## Search & Tagging System
+
+### Overview
+The comprehensive search and tagging system transforms ABC-List into an intelligent content organization platform. It provides full-text search capabilities, automated tag suggestions based on German educational content, smart collections for automatic organization, and advanced filtering across all content types.
+
+### Core Implementation
+
+**SearchService (`src/lib/searchService.ts`)**
+- Singleton service managing search indexing and querying across all content types
+- Full-text search engine with relevance scoring and context highlighting
+- Multi-criteria filtering: type, tags, dates, ratings, favorites, content presence
+- Persistent search history with frequency tracking and analytics
+- Real-time index updates when content changes
+
+**TaggingService (`src/lib/taggingService.ts`)**
+- AI-powered automatic tag suggestions with German language support
+- Educational content recognition: Mathematik, Physik, Biologie, Geschichte, etc.
+- Category detection: Wissenschaft, Technik, Kultur, Natur, Gesundheit
+- Difficulty level suggestions: Anfänger, Fortgeschritten, Experte
+- Format-specific tags: Vokabeln, Prüfung, Definitionen, Übung
+
+**Search Components (`src/components/Search/`)**
+- **SearchAndFilter**: Main tabbed interface with real-time search and filtering
+- **SearchResults**: Result display with highlighting and direct navigation
+- **SmartCollections**: Automated content organization (Favorites, Recent, Untagged, Most Used)
+- **SearchHistory**: Persistent search tracking with one-click re-execution
+- **TagManager**: Manual and automatic tag management interface
+- **SearchFilters**: Advanced filtering UI with expandable sections
+
+### Smart Collections System
+
+**Automated Organization:**
+- **Favorites**: User-marked important content with heart icon integration
+- **Recent**: Items created/modified in the last 7 days with real-time updates
+- **Untagged**: Content without tags requiring categorization
+- **Most Used**: Items ranked by search frequency and access patterns
+
+Each collection provides real-time statistics, visual indicators, and quick action buttons for immediate content management.
+
+### Data Model Enhancement
+
+Enhanced interfaces for comprehensive search functionality:
+
+```typescript
+interface SearchableItem {
+  id: string;
+  type: 'abc-list' | 'kawa' | 'kaga' | 'word';
+  title: string;
+  content: string;
+  tags: string[];
+  metadata: ListMetadata;
+  lastModified: Date;
+  isFavorite: boolean;
+}
+
+interface SearchFilters {
+  query?: string;
+  tags?: string[];
+  type?: ('abc-list' | 'kawa' | 'kaga' | 'word')[];
+  dateRange?: { start?: Date; end?: Date; };
+  isFavorite?: boolean;
+  hasContent?: boolean;
+}
+
+interface TagSuggestion {
+  tag: string;
+  confidence: number; // 0-1 confidence score
+  reason: string; // Explanation for suggestion
+}
+```
+
+### Testing Requirements
+
+**Comprehensive Test Coverage (`src/lib/searchService.test.ts`, `src/lib/taggingService.test.ts`):**
+- Search functionality across all content types with relevance scoring
+- German language tag suggestion accuracy with educational content
+- Filter combinations and complex query scenarios with edge cases
+- Performance testing with large content collections
+- Mobile responsiveness and touch interaction validation
+- Search history persistence and frequency analytics
+
+**Integration Testing Patterns:**
+```typescript
+// Test cross-content search
+it("should search across ABC-Lists, KaWa, and KaGa content", () => {
+  const results = searchService.search({ query: "Mathematik" });
+  expect(results).toContainEqual(expect.objectContaining({
+    item: expect.objectContaining({ type: "abc-list" })
+  }));
+});
+
+// Test German educational tag suggestions
+it("should suggest German educational tags with confidence scores", () => {
+  const suggestions = taggingService.generateSuggestions("Physik Grundlagen");
+  expect(suggestions).toContainEqual(expect.objectContaining({
+    tag: "Wissenschaft",
+    confidence: expect.any(Number)
+  }));
+});
+```
+
+### Mobile-First Implementation
+
+**Responsive Design Requirements:**
+- Touch-friendly search interface with adequate spacing (minimum 44px)
+- Responsive filter panels optimized for mobile viewports (375px width)
+- Collapsible filter sections with smooth animations
+- Swipe gestures for smart collection navigation
+- Mobile-optimized tag management with touch-friendly controls
+
+**Component Patterns:**
+```jsx
+// Mobile-first search interface
+<div className="flex flex-col gap-4">
+  <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+    <Input className="flex-1" placeholder="Durchsuche alle Listen, Wörter und Inhalte..." />
+    <div className="flex gap-2">
+      <Button className="w-full sm:w-auto">Filter</Button>
+      <Button className="w-full sm:w-auto">Tags</Button>
+    </div>
+  </div>
+</div>
+```
+
+### Performance Optimization
+
+**Function Extraction Applied:**
+All search components follow the function extraction pattern to prevent production rerenders:
+
+```typescript
+// Extracted handlers prevent recreation on every render
+const handleSearchAction = (
+  query: string,
+  filters: SearchFilters,
+  onResults: (results: SearchResult[]) => void
+) => () => {
+  const results = searchService.search({ query, ...filters });
+  onResults(results);
+};
+
+// Inside component - create stable references
+const handleSearch = () => handleSearchAction(query, filters, setResults)();
+```
+
+### Integration Points
+
+**Navigation Integration:**
+- New "Suchen" tab with search icon in main navigation
+- Deep linking support for search queries and filter states
+- Breadcrumb navigation for search contexts and result navigation
+
+**Feature Integration:**
+- Direct navigation to found ABC-Lists, KaWa, and KaGa items
+- Word-level search within lists with jump-to functionality
+- Tag synchronization across all content types
+- Favorites integration with existing rating and gamification systems
+- Search analytics integration with usage tracking
+
+**Data Persistence:**
+- localStorage integration for search history and user preferences
+- Tag data embedded within existing content structures
+- Backwards compatibility with all existing ABC-List data
+- Automatic content migration to searchable format
+
+### Development Guidelines
+
+**When Working with Search:**
+1. Always call `searchService.updateIndex()` after content modifications
+2. Test tag suggestions with authentic German educational content
+3. Verify mobile responsiveness of all search interfaces
+4. Ensure backwards compatibility with existing data structures
+5. Follow function extraction pattern for all search event handlers
+6. Add comprehensive test coverage for new search features
+
+**Common Patterns:**
+- Use `searchService.search(filters)` for all search operations
+- Apply `taggingService.generateSuggestions()` for automatic tagging
+- Implement proper error handling for search edge cases
+- Follow mobile-first responsive design principles
+- Use debounced input for real-time search performance
 
 ## Gamification System
 
