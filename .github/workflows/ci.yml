@@ -144,7 +144,7 @@ jobs:
           echo "📝 Checking if documentation updates are needed..."
           
           # Get the list of changed files
-          changed_files=$(git diff --name-only origin/main...HEAD)
+          changed_files=$(git diff --name-only origin/master...HEAD)
           
           # Check if new components or features were added
           new_components=$(echo "$changed_files" | grep -E "src/components/.*\.(tsx|ts)$" | grep -v "\.test\." || true)
