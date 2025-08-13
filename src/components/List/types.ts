@@ -29,12 +29,12 @@ export interface ListMetadata {
   category?: string;
   rating?: number; // 1-5 star rating
   description?: string;
-  type: 'abc-list' | 'kawa' | 'kaga' | 'multi-column';
+  type: "abc-list" | "kawa" | "kaga" | "multi-column";
 }
 
 export interface SearchableItem {
   id: string;
-  type: 'abc-list' | 'kawa' | 'kaga' | 'word';
+  type: "abc-list" | "kawa" | "kaga" | "word";
   title: string;
   content: string;
   tags: string[];

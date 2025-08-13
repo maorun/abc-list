@@ -1,28 +1,28 @@
-import React, { useState } from 'react';
-import { 
-  Calendar, 
-  Star, 
-  Heart, 
-  Filter, 
+import React, {useState} from "react";
+import {
+  Calendar,
+  Star,
+  Heart,
+  Filter,
   X,
   Tag,
   List,
   PenTool,
   Image,
-  BookOpen
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { SearchFilters as SearchFiltersType } from '@/lib/searchService';
+  BookOpen,
+} from "lucide-react";
+import {Button} from "@/components/ui/button";
+import {Badge} from "@/components/ui/badge";
+import {Input} from "@/components/ui/input";
+import {Label} from "@/components/ui/label";
+import {SearchFilters as SearchFiltersType} from "@/lib/searchService";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from "@/components/ui/select";
 
 interface SearchFiltersProps {
   filters: SearchFiltersType;
@@ -31,68 +31,68 @@ interface SearchFiltersProps {
   allCategories: string[];
 }
 
-export function SearchFilters({ 
-  filters, 
-  updateFilters, 
-  allTags, 
-  allCategories 
+export function SearchFilters({
+  filters,
+  updateFilters,
+  allTags,
+  allCategories,
 }: SearchFiltersProps) {
-  const [newTag, setNewTag] = useState('');
+  const [newTag, setNewTag] = useState("");
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   const typeOptions = [
-    { value: 'abc-list', label: 'ABC-Listen', icon: List },
-    { value: 'kawa', label: 'KaWa', icon: PenTool },
-    { value: 'kaga', label: 'KaGa', icon: Image },
-    { value: 'word', label: 'Wörter', icon: BookOpen },
+    {value: "abc-list", label: "ABC-Listen", icon: List},
+    {value: "kawa", label: "KaWa", icon: PenTool},
+    {value: "kaga", label: "KaGa", icon: Image},
+    {value: "word", label: "Wörter", icon: BookOpen},
   ];
 
   const ratingOptions = [
-    { value: 1, label: '★ und höher' },
-    { value: 2, label: '★★ und höher' },
-    { value: 3, label: '★★★ und höher' },
-    { value: 4, label: '★★★★ und höher' },
-    { value: 5, label: '★★★★★' },
+    {value: 1, label: "★ und höher"},
+    {value: 2, label: "★★ und höher"},
+    {value: 3, label: "★★★ und höher"},
+    {value: 4, label: "★★★★ und höher"},
+    {value: 5, label: "★★★★★"},
   ];
 
   const handleTypeToggle = (type: string) => {
     const currentTypes = filters.type || [];
     const newTypes = currentTypes.includes(type as never)
-      ? currentTypes.filter(t => t !== type)
-      : [...currentTypes, type] as ('abc-list' | 'kawa' | 'kaga' | 'word')[];
-    
-    updateFilters({ type: newTypes });
+      ? currentTypes.filter((t) => t !== type)
+      : ([...currentTypes, type] as ("abc-list" | "kawa" | "kaga" | "word")[]);
+
+    updateFilters({type: newTypes});
   };
 
   const handleTagAdd = () => {
     const tag = newTag.trim();
     if (tag && !(filters.tags || []).includes(tag)) {
-      updateFilters({ tags: [...(filters.tags || []), tag] });
-      setNewTag('');
+      updateFilters({tags: [...(filters.tags || []), tag]});
+      setNewTag("");
     }
   };
 
   const handleTagRemove = (tagToRemove: string) => {
-    updateFilters({ 
-      tags: (filters.tags || []).filter(tag => tag !== tagToRemove) 
+    updateFilters({
+      tags: (filters.tags || []).filter((tag) => tag !== tagToRemove),
     });
   };
 
   const handleQuickTagAdd = (tag: string) => {
     if (!(filters.tags || []).includes(tag)) {
-      updateFilters({ tags: [...(filters.tags || []), tag] });
+      updateFilters({tags: [...(filters.tags || []), tag]});
     }
   };
 
-  const handleDateRangeChange = (field: 'start' | 'end', value: string) => {
+  const handleDateRangeChange = (field: "start" | "end", value: string) => {
     const dateRange = filters.dateRange || {};
     const newDate = value ? new Date(value) : undefined;
-    
+
     updateFilters({
       dateRange: {
         ...dateRange,
-        [field]: newDate
-      }
+        [field]: newDate,
+      },
     });
   };
 
@@ -104,18 +104,20 @@ export function SearchFilters({
       rating: undefined,
       dateRange: undefined,
       isFavorite: undefined,
-      hasContent: undefined
+      hasContent: undefined,
     });
   };
 
   const hasActiveFilters = () => {
-    return (filters.tags && filters.tags.length > 0) ||
-           (filters.type && filters.type.length > 0) ||
-           filters.category ||
-           filters.rating ||
-           filters.dateRange ||
-           filters.isFavorite !== undefined ||
-           filters.hasContent !== undefined;
+    return (
+      (filters.tags && filters.tags.length > 0) ||
+      (filters.type && filters.type.length > 0) ||
+      filters.category ||
+      filters.rating ||
+      filters.dateRange ||
+      filters.isFavorite !== undefined ||
+      filters.hasContent !== undefined
+    );
   };
 
   return (
@@ -141,10 +143,12 @@ export function SearchFilters({
         <div className="space-y-2">
           <Label className="text-sm text-gray-600">Typ:</Label>
           <div className="flex flex-wrap gap-2">
-            {typeOptions.map(({ value, label, icon: Icon }) => (
+            {typeOptions.map(({value, label, icon: Icon}) => (
               <Button
                 key={value}
-                variant={filters.type?.includes(value as never) ? "default" : "outline"}
+                variant={
+                  filters.type?.includes(value as never) ? "default" : "outline"
+                }
                 size="sm"
                 onClick={() => handleTypeToggle(value)}
                 className="flex items-center gap-2"
@@ -163,33 +167,41 @@ export function SearchFilters({
             <Button
               variant={filters.isFavorite === true ? "default" : "outline"}
               size="sm"
-              onClick={() => updateFilters({ 
-                isFavorite: filters.isFavorite === true ? undefined : true 
-              })}
+              onClick={() =>
+                updateFilters({
+                  isFavorite: filters.isFavorite === true ? undefined : true,
+                })
+              }
               className="flex items-center gap-2"
             >
-              <Heart className={`h-4 w-4 ${filters.isFavorite ? 'fill-current' : ''}`} />
+              <Heart
+                className={`h-4 w-4 ${filters.isFavorite ? "fill-current" : ""}`}
+              />
               Nur Favoriten
             </Button>
-            
+
             <Button
               variant={filters.hasContent === true ? "default" : "outline"}
               size="sm"
-              onClick={() => updateFilters({ 
-                hasContent: filters.hasContent === true ? undefined : true 
-              })}
+              onClick={() =>
+                updateFilters({
+                  hasContent: filters.hasContent === true ? undefined : true,
+                })
+              }
               className="flex items-center gap-2"
             >
               <BookOpen className="h-4 w-4" />
               Mit Inhalt
             </Button>
-            
+
             <Button
               variant={filters.hasContent === false ? "default" : "outline"}
               size="sm"
-              onClick={() => updateFilters({ 
-                hasContent: filters.hasContent === false ? undefined : false 
-              })}
+              onClick={() =>
+                updateFilters({
+                  hasContent: filters.hasContent === false ? undefined : false,
+                })
+              }
               className="flex items-center gap-2"
             >
               <BookOpen className="h-4 w-4" />
@@ -206,7 +218,7 @@ export function SearchFilters({
           className="flex items-center gap-2 w-full justify-center border-t pt-2"
         >
           <Filter className="h-4 w-4" />
-          {showAdvanced ? 'Weniger Filter' : 'Erweiterte Filter'}
+          {showAdvanced ? "Weniger Filter" : "Erweiterte Filter"}
         </Button>
       </div>
 
@@ -216,12 +228,12 @@ export function SearchFilters({
           {/* Tags */}
           <div className="space-y-2">
             <Label className="text-sm text-gray-600">Tags:</Label>
-            
+
             {/* Selected tags */}
             {filters.tags && filters.tags.length > 0 && (
               <div className="flex flex-wrap gap-1 mb-2">
                 {filters.tags.map((tag) => (
-                  <Badge 
+                  <Badge
                     key={tag}
                     variant="secondary"
                     className="flex items-center gap-1"
@@ -247,7 +259,7 @@ export function SearchFilters({
                 value={newTag}
                 onChange={(e) => setNewTag(e.target.value)}
                 onKeyPress={(e) => {
-                  if (e.key === 'Enter') {
+                  if (e.key === "Enter") {
                     handleTagAdd();
                   }
                 }}
@@ -288,10 +300,12 @@ export function SearchFilters({
           <div className="space-y-2">
             <Label className="text-sm text-gray-600">Kategorie:</Label>
             <Select
-              value={filters.category || ''}
-              onValueChange={(value) => updateFilters({ 
-                category: value || undefined 
-              })}
+              value={filters.category || ""}
+              onValueChange={(value) =>
+                updateFilters({
+                  category: value || undefined,
+                })
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Kategorie auswählen..." />
@@ -311,17 +325,19 @@ export function SearchFilters({
           <div className="space-y-2">
             <Label className="text-sm text-gray-600">Mindestbewertung:</Label>
             <Select
-              value={filters.rating?.toString() || ''}
-              onValueChange={(value) => updateFilters({ 
-                rating: value ? parseInt(value) : undefined 
-              })}
+              value={filters.rating?.toString() || ""}
+              onValueChange={(value) =>
+                updateFilters({
+                  rating: value ? parseInt(value) : undefined,
+                })
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Bewertung auswählen..." />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="">Alle Bewertungen</SelectItem>
-                {ratingOptions.map(({ value, label }) => (
+                {ratingOptions.map(({value, label}) => (
                   <SelectItem key={value} value={value.toString()}>
                     <div className="flex items-center gap-2">
                       <Star className="h-4 w-4" />
@@ -344,9 +360,14 @@ export function SearchFilters({
                 <Input
                   id="date-start"
                   type="date"
-                  value={filters.dateRange?.start ? 
-                    filters.dateRange.start.toISOString().split('T')[0] : ''}
-                  onChange={(e) => handleDateRangeChange('start', e.target.value)}
+                  value={
+                    filters.dateRange?.start
+                      ? filters.dateRange.start.toISOString().split("T")[0]
+                      : ""
+                  }
+                  onChange={(e) =>
+                    handleDateRangeChange("start", e.target.value)
+                  }
                 />
               </div>
               <div className="space-y-1">
@@ -356,9 +377,12 @@ export function SearchFilters({
                 <Input
                   id="date-end"
                   type="date"
-                  value={filters.dateRange?.end ? 
-                    filters.dateRange.end.toISOString().split('T')[0] : ''}
-                  onChange={(e) => handleDateRangeChange('end', e.target.value)}
+                  value={
+                    filters.dateRange?.end
+                      ? filters.dateRange.end.toISOString().split("T")[0]
+                      : ""
+                  }
+                  onChange={(e) => handleDateRangeChange("end", e.target.value)}
                 />
               </div>
             </div>
@@ -369,11 +393,11 @@ export function SearchFilters({
             <Label className="text-sm text-gray-600">Schnellauswahl:</Label>
             <div className="flex flex-wrap gap-2">
               {[
-                { label: 'Heute', days: 0 },
-                { label: 'Diese Woche', days: 7 },
-                { label: 'Dieser Monat', days: 30 },
-                { label: 'Dieses Jahr', days: 365 },
-              ].map(({ label, days }) => (
+                {label: "Heute", days: 0},
+                {label: "Diese Woche", days: 7},
+                {label: "Dieser Monat", days: 30},
+                {label: "Dieses Jahr", days: 365},
+              ].map(({label, days}) => (
                 <Button
                   key={label}
                   variant="outline"
@@ -382,7 +406,7 @@ export function SearchFilters({
                     const start = new Date();
                     start.setDate(start.getDate() - days);
                     updateFilters({
-                      dateRange: { start, end: new Date() }
+                      dateRange: {start, end: new Date()},
                     });
                   }}
                   className="flex items-center gap-2"
@@ -411,18 +435,19 @@ export function SearchFilters({
                 filters.rating ? 1 : 0,
                 filters.dateRange ? 1 : 0,
                 filters.isFavorite !== undefined ? 1 : 0,
-                filters.hasContent !== undefined ? 1 : 0
-              ].reduce((a, b) => a + b, 0)} Filter aktiv
+                filters.hasContent !== undefined ? 1 : 0,
+              ].reduce((a, b) => a + b, 0)}{" "}
+              Filter aktiv
             </span>
           </div>
-          
+
           <div className="flex flex-wrap gap-1">
-            {filters.type?.map(type => (
+            {filters.type?.map((type) => (
               <Badge key={type} variant="outline" className="text-xs">
-                {typeOptions.find(t => t.value === type)?.label}
+                {typeOptions.find((t) => t.value === type)?.label}
               </Badge>
             ))}
-            {filters.tags?.map(tag => (
+            {filters.tags?.map((tag) => (
               <Badge key={tag} variant="outline" className="text-xs">
                 #{tag}
               </Badge>
@@ -444,7 +469,7 @@ export function SearchFilters({
             )}
             {filters.hasContent !== undefined && (
               <Badge variant="outline" className="text-xs">
-                {filters.hasContent ? 'Mit Inhalt' : 'Ohne Inhalt'}
+                {filters.hasContent ? "Mit Inhalt" : "Ohne Inhalt"}
               </Badge>
             )}
             {filters.dateRange && (

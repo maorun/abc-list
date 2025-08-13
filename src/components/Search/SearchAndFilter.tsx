@@ -1,25 +1,20 @@
-import React, { useState } from 'react';
-import { SearchIcon, X, Filter, Heart, Clock, Tag, Star } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { useSearch } from '@/hooks/useSearch';
-import { SearchResults } from './SearchResults';
-import { SearchFilters } from './SearchFilters';
-import { SearchHistory } from './SearchHistory';
-import { SmartCollections } from './SmartCollections';
-import { TagManager } from './TagManager';
+import React, {useState} from "react";
+import {SearchIcon, X, Filter, Heart, Clock, Tag, Star} from "lucide-react";
+import {Button} from "@/components/ui/button";
+import {Input} from "@/components/ui/input";
+import {useSearch} from "@/hooks/useSearch";
+import {SearchResults} from "./SearchResults";
+import {SearchFilters} from "./SearchFilters";
+import {SearchHistory} from "./SearchHistory";
+import {SmartCollections} from "./SmartCollections";
+import {TagManager} from "./TagManager";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/ui/tabs';
+} from "@/components/ui/dialog";
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 
 export function SearchAndFilter() {
   const {
@@ -41,12 +36,12 @@ export function SearchAndFilter() {
     generateTagSuggestions,
     addTag,
     removeTag,
-    toggleFavorite
+    toggleFavorite,
   } = useSearch();
 
   const [showFilters, setShowFilters] = useState(false);
   const [showTagManager, setShowTagManager] = useState(false);
-  const [activeTab, setActiveTab] = useState('search');
+  const [activeTab, setActiveTab] = useState("search");
 
   // Handle search form submission
   const handleSearch = (e: React.FormEvent) => {
@@ -56,7 +51,7 @@ export function SearchAndFilter() {
 
   // Handle query input change
   const handleQueryChange = (value: string) => {
-    updateFilters({ query: value });
+    updateFilters({query: value});
     if (!value.trim()) {
       clearResults();
     }
@@ -70,8 +65,8 @@ export function SearchAndFilter() {
 
   // Handle history item click
   const handleHistoryClick = (query: string) => {
-    updateFilters({ query });
-    search({ ...filters, query });
+    updateFilters({query});
+    search({...filters, query});
   };
 
   return (
@@ -86,14 +81,14 @@ export function SearchAndFilter() {
               <Input
                 type="text"
                 placeholder="Durchsuche alle Listen, Wörter und Inhalte..."
-                value={filters.query || ''}
+                value={filters.query || ""}
                 onChange={(e) => handleQueryChange(e.target.value)}
                 className="pl-10 pr-10"
               />
               {filters.query && (
                 <button
                   type="button"
-                  onClick={() => handleQueryChange('')}
+                  onClick={() => handleQueryChange("")}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                 >
                   <X className="h-4 w-4" />
@@ -112,21 +107,22 @@ export function SearchAndFilter() {
             >
               <Filter className="h-4 w-4" />
               Filter
-              {(filters.tags?.length || 0) + 
-               (filters.type?.length || 0) + 
-               (filters.category ? 1 : 0) + 
-               (filters.rating ? 1 : 0) + 
-               (filters.isFavorite !== undefined ? 1 : 0) > 0 && (
+              {(filters.tags?.length || 0) +
+                (filters.type?.length || 0) +
+                (filters.category ? 1 : 0) +
+                (filters.rating ? 1 : 0) +
+                (filters.isFavorite !== undefined ? 1 : 0) >
+                0 && (
                 <span className="bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  {(filters.tags?.length || 0) + 
-                   (filters.type?.length || 0) + 
-                   (filters.category ? 1 : 0) + 
-                   (filters.rating ? 1 : 0) + 
-                   (filters.isFavorite !== undefined ? 1 : 0)}
+                  {(filters.tags?.length || 0) +
+                    (filters.type?.length || 0) +
+                    (filters.category ? 1 : 0) +
+                    (filters.rating ? 1 : 0) +
+                    (filters.isFavorite !== undefined ? 1 : 0)}
                 </span>
               )}
             </Button>
-            
+
             <Button
               variant="outline"
               size="sm"
@@ -137,12 +133,17 @@ export function SearchAndFilter() {
               Tags
             </Button>
 
-            {(hasSearched || Object.keys(filters).some(key => 
-              key !== 'query' && filters[key as keyof typeof filters] !== undefined && 
-              filters[key as keyof typeof filters] !== '' && 
-              (Array.isArray(filters[key as keyof typeof filters]) ? 
-                (filters[key as keyof typeof filters] as unknown[]).length > 0 : true)
-            )) && (
+            {(hasSearched ||
+              Object.keys(filters).some(
+                (key) =>
+                  key !== "query" &&
+                  filters[key as keyof typeof filters] !== undefined &&
+                  filters[key as keyof typeof filters] !== "" &&
+                  (Array.isArray(filters[key as keyof typeof filters])
+                    ? (filters[key as keyof typeof filters] as unknown[])
+                        .length > 0
+                    : true),
+              )) && (
               <Button
                 variant="outline"
                 size="sm"
@@ -171,13 +172,11 @@ export function SearchAndFilter() {
         {hasSearched && (
           <div className="mt-4 flex items-center justify-between text-sm text-gray-600">
             <span>
-              {isLoading ? 'Suche läuft...' : `${totalResults} Ergebnisse gefunden`}
+              {isLoading
+                ? "Suche läuft..."
+                : `${totalResults} Ergebnisse gefunden`}
             </span>
-            {totalResults > 0 && (
-              <span>
-                Sortiert nach Relevanz
-              </span>
-            )}
+            {totalResults > 0 && <span>Sortiert nach Relevanz</span>}
           </div>
         )}
       </div>
@@ -195,19 +194,19 @@ export function SearchAndFilter() {
               </span>
             )}
           </TabsTrigger>
-          
+
           <TabsTrigger value="collections" className="flex items-center gap-2">
             <Star className="h-4 w-4" />
             <span className="hidden sm:inline">Sammlungen</span>
             <span className="sm:hidden">Smart</span>
           </TabsTrigger>
-          
+
           <TabsTrigger value="history" className="flex items-center gap-2">
             <Clock className="h-4 w-4" />
             <span className="hidden sm:inline">Verlauf</span>
             <span className="sm:hidden">Verlauf</span>
           </TabsTrigger>
-          
+
           <TabsTrigger value="favorites" className="flex items-center gap-2">
             <Heart className="h-4 w-4" />
             <span className="hidden sm:inline">Favoriten</span>
@@ -239,17 +238,19 @@ export function SearchAndFilter() {
               <div className="mt-6 space-y-2">
                 <p className="text-xs text-gray-400">Beispielsuchen:</p>
                 <div className="flex flex-wrap gap-2 justify-center">
-                  {['Tiere', 'Mathematik', 'Computer', 'Geschichte'].map(example => (
-                    <Button
-                      key={example}
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleHistoryClick(example)}
-                      className="text-xs"
-                    >
-                      {example}
-                    </Button>
-                  ))}
+                  {["Tiere", "Mathematik", "Computer", "Geschichte"].map(
+                    (example) => (
+                      <Button
+                        key={example}
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleHistoryClick(example)}
+                        className="text-xs"
+                      >
+                        {example}
+                      </Button>
+                    ),
+                  )}
                 </div>
               </div>
             </div>
@@ -263,9 +264,9 @@ export function SearchAndFilter() {
             onRemoveTag={removeTag}
             onToggleFavorite={toggleFavorite}
             onSearchQuery={(query) => {
-              updateFilters({ query });
-              search({ ...filters, query });
-              setActiveTab('search');
+              updateFilters({query});
+              search({...filters, query});
+              setActiveTab("search");
             }}
           />
         </TabsContent>
@@ -275,7 +276,7 @@ export function SearchAndFilter() {
             history={searchHistory}
             onHistoryClick={handleHistoryClick}
             onClearHistory={clearSearchHistory}
-            onSwitchToSearch={() => setActiveTab('search')}
+            onSwitchToSearch={() => setActiveTab("search")}
           />
         </TabsContent>
 
@@ -301,8 +302,8 @@ export function SearchAndFilter() {
           <TagManager
             allTags={allTags}
             popularTags={popularTags}
-            onAddTag={addTag}
-            onRemoveTag={removeTag}
+            _onAddTag={addTag}
+            _onRemoveTag={removeTag}
             generateSuggestions={generateTagSuggestions}
           />
         </DialogContent>

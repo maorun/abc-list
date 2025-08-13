@@ -1,8 +1,8 @@
-import React from 'react';
-import { Clock, Search, Trash2, TrendingUp } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { SearchHistory as SearchHistoryType } from '@/lib/searchService';
+import React from "react";
+import {Clock, Search, Trash2, TrendingUp} from "lucide-react";
+import {Button} from "@/components/ui/button";
+import {Badge} from "@/components/ui/badge";
+import {SearchHistory as SearchHistoryType} from "@/lib/searchService";
 
 interface SearchHistoryProps {
   history: SearchHistoryType[];
@@ -11,11 +11,11 @@ interface SearchHistoryProps {
   onSwitchToSearch: () => void;
 }
 
-export function SearchHistory({ 
-  history, 
-  onHistoryClick, 
-  onClearHistory, 
-  onSwitchToSearch 
+export function SearchHistory({
+  history,
+  onHistoryClick,
+  onClearHistory,
+  onSwitchToSearch,
 }: SearchHistoryProps) {
   const formatTimeAgo = (timestamp: number) => {
     const now = Date.now();
@@ -24,18 +24,18 @@ export function SearchHistory({
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-    if (minutes < 1) return 'Gerade eben';
+    if (minutes < 1) return "Gerade eben";
     if (minutes < 60) return `vor ${minutes} Min`;
     if (hours < 24) return `vor ${hours} Std`;
-    if (days < 7) return `vor ${days} Tag${days > 1 ? 'en' : ''}`;
-    
-    return new Date(timestamp).toLocaleDateString('de-DE');
+    if (days < 7) return `vor ${days} Tag${days > 1 ? "en" : ""}`;
+
+    return new Date(timestamp).toLocaleDateString("de-DE");
   };
 
   const getFrequentQueries = () => {
     const queryCount = new Map<string, number>();
-    
-    history.forEach(item => {
+
+    history.forEach((item) => {
       const query = item.query.toLowerCase().trim();
       if (query.length > 1) {
         queryCount.set(query, (queryCount.get(query) || 0) + 1);
@@ -46,7 +46,7 @@ export function SearchHistory({
       .filter(([_, count]) => count > 1)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 10)
-      .map(([query, count]) => ({ query, count }));
+      .map(([query, count]) => ({query, count}));
   };
 
   const handleQueryClick = (query: string) => {
@@ -63,7 +63,8 @@ export function SearchHistory({
         <Clock className="h-12 w-12 mx-auto mb-4 text-gray-300" />
         <h3 className="text-lg font-medium mb-2">Noch keine Suchverlauf</h3>
         <p className="text-sm">
-          Deine Suchanfragen werden hier gespeichert, um dir häufige Begriffe anzuzeigen
+          Deine Suchanfragen werden hier gespeichert, um dir häufige Begriffe
+          anzuzeigen
         </p>
       </div>
     );
@@ -92,9 +93,9 @@ export function SearchHistory({
             <TrendingUp className="h-4 w-4 text-orange-500" />
             <h3 className="font-medium text-gray-700">Häufige Suchanfragen</h3>
           </div>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {frequentQueries.map(({ query, count }) => (
+            {frequentQueries.map(({query, count}) => (
               <button
                 key={query}
                 onClick={() => handleQueryClick(query)}
@@ -106,7 +107,10 @@ export function SearchHistory({
                     {query}
                   </span>
                 </div>
-                <Badge variant="secondary" className="bg-orange-200 text-orange-800">
+                <Badge
+                  variant="secondary"
+                  className="bg-orange-200 text-orange-800"
+                >
                   {count}x
                 </Badge>
               </button>
@@ -121,7 +125,7 @@ export function SearchHistory({
           <Clock className="h-4 w-4 text-blue-500" />
           <h3 className="font-medium text-gray-700">Letzte Suchanfragen</h3>
         </div>
-        
+
         <div className="space-y-2">
           {recentHistory.map((item, index) => (
             <button
@@ -146,7 +150,7 @@ export function SearchHistory({
                   </div>
                 </div>
               </div>
-              
+
               {item.resultCount > 0 && (
                 <Badge variant="outline" className="ml-2">
                   {item.resultCount}
@@ -161,8 +165,13 @@ export function SearchHistory({
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <h4 className="font-medium text-blue-800 mb-3">💡 Suchtipps</h4>
         <div className="space-y-2 text-sm text-blue-700">
-          <p>• Verwende Anführungszeichen für exakte Suchen: "Mathematik Formeln"</p>
-          <p>• Nutze Tags um nach Kategorien zu suchen: #Lernen oder #Prüfung</p>
+          <p>
+            • Verwende Anführungszeichen für exakte Suchen: &quot;Mathematik
+            Formeln&quot;
+          </p>
+          <p>
+            • Nutze Tags um nach Kategorien zu suchen: #Lernen oder #Prüfung
+          </p>
           <p>• Kombiniere Filter für präzisere Ergebnisse</p>
           <p>• Häufige Begriffe werden automatisch vorgeschlagen</p>
         </div>
@@ -179,21 +188,24 @@ export function SearchHistory({
               </div>
               <div className="text-gray-600">Suchanfragen</div>
             </div>
-            
+
             <div className="text-center">
               <div className="text-lg font-semibold text-gray-900">
-                {new Set(history.map(h => h.query.toLowerCase())).size}
+                {new Set(history.map((h) => h.query.toLowerCase())).size}
               </div>
               <div className="text-gray-600">Eindeutige Begriffe</div>
             </div>
-            
+
             <div className="text-center">
               <div className="text-lg font-semibold text-gray-900">
-                {Math.round(history.reduce((sum, h) => sum + h.resultCount, 0) / history.length)}
+                {Math.round(
+                  history.reduce((sum, h) => sum + h.resultCount, 0) /
+                    history.length,
+                )}
               </div>
               <div className="text-gray-600">⌀ Ergebnisse</div>
             </div>
-            
+
             <div className="text-center">
               <div className="text-lg font-semibold text-gray-900">
                 {frequentQueries.length}

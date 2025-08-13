@@ -1,22 +1,22 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { 
-  Heart, 
-  Tag, 
-  Calendar, 
-  Star, 
+import React, {useState} from "react";
+import {useNavigate} from "react-router-dom";
+import {
+  Heart,
+  Tag,
+  Calendar,
+  Star,
   ChevronRight,
   List,
   PenTool,
   Image,
   BookOpen,
   Plus,
-  X
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { SearchResult } from '@/lib/searchService';
-import { Input } from '@/components/ui/input';
+  X,
+} from "lucide-react";
+import {Button} from "@/components/ui/button";
+import {Badge} from "@/components/ui/badge";
+import {SearchResult} from "@/lib/searchService";
+import {Input} from "@/components/ui/input";
 
 interface SearchResultsProps {
   results: SearchResult[];
@@ -28,14 +28,14 @@ interface SearchResultsProps {
   emptyDescription?: string;
 }
 
-export function SearchResults({ 
-  results, 
-  isLoading, 
-  onAddTag, 
-  onRemoveTag, 
+export function SearchResults({
+  results,
+  isLoading,
+  onAddTag,
+  onRemoveTag,
   onToggleFavorite,
   emptyMessage = "Keine Ergebnisse gefunden",
-  emptyDescription = "Versuche andere Suchbegriffe oder filter"
+  emptyDescription = "Versuche andere Suchbegriffe oder filter",
 }: SearchResultsProps) {
   const navigate = useNavigate();
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
@@ -52,21 +52,21 @@ export function SearchResults({
   };
 
   const handleNavigateToItem = (result: SearchResult) => {
-    const { item } = result;
-    
+    const {item} = result;
+
     switch (item.type) {
-      case 'abc-list':
+      case "abc-list":
         navigate(`/list/${encodeURIComponent(item.metadata.name)}`);
         break;
-      case 'kawa':
+      case "kawa":
         navigate(`/kawa/${encodeURIComponent(item.metadata.name)}`);
         break;
-      case 'kaga':
+      case "kaga":
         navigate(`/kaga/${encodeURIComponent(item.metadata.name)}`);
         break;
-      case 'word':
+      case "word":
         if (item.parentId) {
-          const listName = item.parentId.replace('abc-list-', '');
+          const listName = item.parentId.replace("abc-list-", "");
           navigate(`/list/${encodeURIComponent(listName)}`);
         }
         break;
@@ -77,7 +77,7 @@ export function SearchResults({
     const tag = newTags[itemId]?.trim();
     if (tag) {
       onAddTag(itemId, tag);
-      setNewTags(prev => ({ ...prev, [itemId]: '' }));
+      setNewTags((prev) => ({...prev, [itemId]: ""}));
     }
   };
 
@@ -88,13 +88,13 @@ export function SearchResults({
 
   const getTypeIcon = (type: string) => {
     switch (type) {
-      case 'abc-list':
+      case "abc-list":
         return <List className="h-4 w-4" />;
-      case 'kawa':
+      case "kawa":
         return <PenTool className="h-4 w-4" />;
-      case 'kaga':
+      case "kaga":
         return <Image className="h-4 w-4" />;
-      case 'word':
+      case "word":
         return <BookOpen className="h-4 w-4" />;
       default:
         return <List className="h-4 w-4" />;
@@ -103,14 +103,14 @@ export function SearchResults({
 
   const getTypeLabel = (type: string) => {
     switch (type) {
-      case 'abc-list':
-        return 'ABC-Liste';
-      case 'kawa':
-        return 'KaWa';
-      case 'kaga':
-        return 'KaGa';
-      case 'word':
-        return 'Wort';
+      case "abc-list":
+        return "ABC-Liste";
+      case "kawa":
+        return "KaWa";
+      case "kaga":
+        return "KaGa";
+      case "word":
+        return "Wort";
       default:
         return type;
     }
@@ -118,16 +118,16 @@ export function SearchResults({
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case 'abc-list':
-        return 'bg-blue-100 text-blue-800';
-      case 'kawa':
-        return 'bg-green-100 text-green-800';
-      case 'kaga':
-        return 'bg-purple-100 text-purple-800';
-      case 'word':
-        return 'bg-yellow-100 text-yellow-800';
+      case "abc-list":
+        return "bg-blue-100 text-blue-800";
+      case "kawa":
+        return "bg-green-100 text-green-800";
+      case "kaga":
+        return "bg-purple-100 text-purple-800";
+      case "word":
+        return "bg-yellow-100 text-yellow-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
@@ -168,26 +168,35 @@ export function SearchResults({
   return (
     <div className="space-y-4">
       {results.map((result) => {
-        const { item } = result;
+        const {item} = result;
         const isExpanded = expandedItems.has(item.id);
-        const isWord = item.type === 'word';
-        
+        const isWord = item.type === "word";
+
         return (
           <div
             key={item.id}
             className="bg-white rounded-lg border hover:shadow-md transition-shadow duration-200"
           >
             {/* Main content */}
-            <div 
+            <div
               className="p-4 cursor-pointer"
               onClick={() => handleNavigateToItem(result)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  handleNavigateToItem(result);
+                }
+              }}
+              role="button"
+              tabIndex={0}
+              aria-label={`Navigiere zu ${item.title}`}
             >
               <div className="flex items-start gap-3">
                 {/* Type icon */}
                 <div className={`p-2 rounded-lg ${getTypeColor(item.type)}`}>
                   {getTypeIcon(item.type)}
                 </div>
-                
+
                 {/* Content */}
                 <div className="flex-1 min-w-0">
                   {/* Title and metadata */}
@@ -203,24 +212,27 @@ export function SearchResults({
                       </h3>
                       {item.parentId && (
                         <p className="text-sm text-gray-500 truncate">
-                          in {item.parentId.replace(/^(abc-list|kawa|kaga)-/, '')}
+                          in{" "}
+                          {item.parentId.replace(/^(abc-list|kawa|kaga)-/, "")}
                         </p>
                       )}
                     </div>
-                    
+
                     {/* Actions */}
                     <div className="flex items-center gap-1">
                       <button
                         onClick={(e) => handleToggleFavorite(item.id, e)}
                         className={`p-1 rounded ${
-                          item.metadata.isFavorite 
-                            ? 'text-red-500 hover:text-red-600' 
-                            : 'text-gray-400 hover:text-red-500'
+                          item.metadata.isFavorite
+                            ? "text-red-500 hover:text-red-600"
+                            : "text-gray-400 hover:text-red-500"
                         }`}
                       >
-                        <Heart className={`h-4 w-4 ${item.metadata.isFavorite ? 'fill-current' : ''}`} />
+                        <Heart
+                          className={`h-4 w-4 ${item.metadata.isFavorite ? "fill-current" : ""}`}
+                        />
                       </button>
-                      
+
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -228,10 +240,10 @@ export function SearchResults({
                         }}
                         className="p-1 text-gray-400 hover:text-gray-600"
                       >
-                        <ChevronRight 
+                        <ChevronRight
                           className={`h-4 w-4 transition-transform ${
-                            isExpanded ? 'rotate-90' : ''
-                          }`} 
+                            isExpanded ? "rotate-90" : ""
+                          }`}
                         />
                       </button>
                     </div>
@@ -239,20 +251,23 @@ export function SearchResults({
 
                   {/* Type and score badges */}
                   <div className="flex flex-wrap items-center gap-2 mb-2">
-                    <Badge variant="secondary" className={getTypeColor(item.type)}>
+                    <Badge
+                      variant="secondary"
+                      className={getTypeColor(item.type)}
+                    >
                       {getTypeLabel(item.type)}
                     </Badge>
-                    
+
                     {result.score > 0.8 && (
                       <Badge variant="outline" className="text-green-600">
                         <Star className="h-3 w-3 mr-1" />
                         Hohe Relevanz
                       </Badge>
                     )}
-                    
+
                     {item.metadata.rating && (
                       <Badge variant="outline">
-                        {'★'.repeat(item.metadata.rating)}
+                        {"★".repeat(item.metadata.rating)}
                       </Badge>
                     )}
                   </div>
@@ -261,9 +276,9 @@ export function SearchResults({
                   {item.tags.length > 0 && (
                     <div className="flex flex-wrap gap-1 mb-2">
                       {item.tags.map((tag) => (
-                        <Badge 
-                          key={tag} 
-                          variant="outline" 
+                        <Badge
+                          key={tag}
+                          variant="outline"
                           className="text-xs bg-blue-50 text-blue-700 border-blue-200"
                         >
                           <Tag className="h-3 w-3 mr-1" />
@@ -277,10 +292,10 @@ export function SearchResults({
                   {result.highlights.length > 0 && (
                     <div className="space-y-1">
                       {result.highlights.slice(0, 2).map((highlight, index) => (
-                        <p 
+                        <p
                           key={index}
                           className="text-sm text-gray-600"
-                          dangerouslySetInnerHTML={{ __html: highlight }}
+                          dangerouslySetInnerHTML={{__html: highlight}}
                         />
                       ))}
                     </div>
@@ -292,16 +307,23 @@ export function SearchResults({
                       {item.metadata.created && (
                         <div className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
-                          Erstellt: {new Date(item.metadata.created).toLocaleDateString('de-DE')}
+                          Erstellt:{" "}
+                          {new Date(item.metadata.created).toLocaleDateString(
+                            "de-DE",
+                          )}
                         </div>
                       )}
-                      {item.metadata.lastModified && 
-                       item.metadata.lastModified !== item.metadata.created && (
-                        <div className="flex items-center gap-1">
-                          <Calendar className="h-3 w-3" />
-                          Geändert: {new Date(item.metadata.lastModified).toLocaleDateString('de-DE')}
-                        </div>
-                      )}
+                      {item.metadata.lastModified &&
+                        item.metadata.lastModified !==
+                          item.metadata.created && (
+                          <div className="flex items-center gap-1">
+                            <Calendar className="h-3 w-3" />
+                            Geändert:{" "}
+                            {new Date(
+                              item.metadata.lastModified,
+                            ).toLocaleDateString("de-DE")}
+                          </div>
+                        )}
                     </div>
                   )}
                 </div>
@@ -315,12 +337,14 @@ export function SearchResults({
                   {/* Additional highlights */}
                   {result.highlights.length > 2 && (
                     <div className="space-y-1">
-                      <h4 className="text-sm font-medium text-gray-700">Weitere Treffer:</h4>
+                      <h4 className="text-sm font-medium text-gray-700">
+                        Weitere Treffer:
+                      </h4>
                       {result.highlights.slice(2).map((highlight, index) => (
-                        <p 
+                        <p
                           key={index + 2}
                           className="text-sm text-gray-600"
-                          dangerouslySetInnerHTML={{ __html: highlight }}
+                          dangerouslySetInnerHTML={{__html: highlight}}
                         />
                       ))}
                     </div>
@@ -328,12 +352,14 @@ export function SearchResults({
 
                   {/* Tag management */}
                   <div className="space-y-2">
-                    <h4 className="text-sm font-medium text-gray-700">Tags verwalten:</h4>
-                    
+                    <h4 className="text-sm font-medium text-gray-700">
+                      Tags verwalten:
+                    </h4>
+
                     {/* Existing tags */}
                     <div className="flex flex-wrap gap-1">
                       {item.tags.map((tag) => (
-                        <Badge 
+                        <Badge
                           key={tag}
                           variant="secondary"
                           className="flex items-center gap-1"
@@ -357,13 +383,15 @@ export function SearchResults({
                       <Input
                         type="text"
                         placeholder="Neuen Tag hinzufügen..."
-                        value={newTags[item.id] || ''}
-                        onChange={(e) => setNewTags(prev => ({ 
-                          ...prev, 
-                          [item.id]: e.target.value 
-                        }))}
+                        value={newTags[item.id] || ""}
+                        onChange={(e) =>
+                          setNewTags((prev) => ({
+                            ...prev,
+                            [item.id]: e.target.value,
+                          }))
+                        }
                         onKeyPress={(e) => {
-                          if (e.key === 'Enter') {
+                          if (e.key === "Enter") {
                             handleAddTag(item.id);
                           }
                         }}

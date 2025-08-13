@@ -1,9 +1,13 @@
-import { SearchableItem, ListMetadata, WordWithExplanation } from "@/components/List/types";
+import {
+  SearchableItem,
+  ListMetadata,
+  WordWithExplanation,
+} from "@/components/List/types";
 
 export interface SearchFilters {
   query?: string;
   tags?: string[];
-  type?: ('abc-list' | 'kawa' | 'kaga' | 'word')[];
+  type?: ("abc-list" | "kawa" | "kaga" | "word")[];
   category?: string;
   rating?: number;
   dateRange?: {
@@ -40,6 +44,14 @@ class SearchService {
     return SearchService.instance;
   }
 
+  // Method for testing - reset instance
+  static resetForTesting(): void {
+    if (SearchService.instance) {
+      SearchService.instance.searchIndex.clear();
+      SearchService.instance.lastIndexUpdate = 0;
+    }
+  }
+
   /**
    * Updates the search index with current data from localStorage
    */
@@ -56,7 +68,10 @@ class SearchService {
    */
   private ensureIndexUpdated(): void {
     // Update index if it's empty or older than 30 seconds
-    if (this.searchIndex.size === 0 || Date.now() - this.lastIndexUpdate > 30000) {
+    if (
+      this.searchIndex.size === 0 ||
+      Date.now() - this.lastIndexUpdate > 30000
+    ) {
       this.updateIndex();
     }
   }
@@ -70,23 +85,25 @@ class SearchService {
       if (!abcListsStr) return;
 
       const abcLists: string[] = JSON.parse(abcListsStr);
-      
-      abcLists.forEach(listName => {
+
+      abcLists.forEach((listName) => {
         // Index the list itself
-        const listMetadata = this.getListMetadata(listName, 'abc-list');
+        const listMetadata = this.getListMetadata(listName, "abc-list");
         const listItem: SearchableItem = {
           id: `abc-list-${listName}`,
-          type: 'abc-list',
+          type: "abc-list",
           title: listName,
-          content: listMetadata.description || '',
+          content: listMetadata.description || "",
           tags: listMetadata.tags || [],
-          metadata: listMetadata
+          metadata: listMetadata,
         };
         this.searchIndex.set(listItem.id, listItem);
 
         // Index words in each letter
-        const alphabet = Array.from({ length: 26 }, (_, i) => String.fromCharCode(97 + i));
-        alphabet.forEach(letter => {
+        const alphabet = Array.from({length: 26}, (_, i) =>
+          String.fromCharCode(97 + i),
+        );
+        alphabet.forEach((letter) => {
           const storageKey = `abcList-${listName}:${letter}`;
           const wordsStr = localStorage.getItem(storageKey);
           if (wordsStr) {
@@ -95,13 +112,13 @@ class SearchService {
               words.forEach((word, index) => {
                 const wordItem: SearchableItem = {
                   id: `word-${listName}-${letter}-${index}`,
-                  type: 'word',
+                  type: "word",
                   title: word.text,
-                  content: word.explanation || '',
+                  content: word.explanation || "",
                   tags: word.tags || [],
-                  metadata: { ...listMetadata, type: 'abc-list' },
+                  metadata: {...listMetadata, type: "abc-list"},
                   parentId: `abc-list-${listName}`,
-                  letterContext: letter.toUpperCase()
+                  letterContext: letter.toUpperCase(),
                 };
                 this.searchIndex.set(wordItem.id, wordItem);
               });
@@ -126,15 +143,18 @@ class SearchService {
 
       const kawas = JSON.parse(kawasStr);
       if (Array.isArray(kawas)) {
-        kawas.forEach(kawa => {
-          const kawaMetadata = this.getListMetadata(kawa.key || kawa.text, 'kawa');
+        kawas.forEach((kawa) => {
+          const kawaMetadata = this.getListMetadata(
+            kawa.key || kawa.text,
+            "kawa",
+          );
           const kawaItem: SearchableItem = {
             id: `kawa-${kawa.key}`,
-            type: 'kawa',
+            type: "kawa",
             title: kawa.text || kawa.key,
-            content: '',
+            content: "",
             tags: kawaMetadata.tags || [],
-            metadata: kawaMetadata
+            metadata: kawaMetadata,
           };
           this.searchIndex.set(kawaItem.id, kawaItem);
         });
@@ -154,15 +174,18 @@ class SearchService {
 
       const kagas = JSON.parse(kagasStr);
       if (Array.isArray(kagas)) {
-        kagas.forEach(kaga => {
-          const kagaMetadata = this.getListMetadata(kaga.key || kaga.text, 'kaga');
+        kagas.forEach((kaga) => {
+          const kagaMetadata = this.getListMetadata(
+            kaga.key || kaga.text,
+            "kaga",
+          );
           const kagaItem: SearchableItem = {
             id: `kaga-${kaga.key}`,
-            type: 'kaga',
+            type: "kaga",
             title: kaga.text || kaga.key,
-            content: '',
+            content: "",
             tags: kagaMetadata.tags || [],
-            metadata: kagaMetadata
+            metadata: kagaMetadata,
           };
           this.searchIndex.set(kagaItem.id, kagaItem);
         });
@@ -175,10 +198,13 @@ class SearchService {
   /**
    * Get or create metadata for a list
    */
-  private getListMetadata(name: string, type: 'abc-list' | 'kawa' | 'kaga'): ListMetadata {
+  private getListMetadata(
+    name: string,
+    type: "abc-list" | "kawa" | "kaga",
+  ): ListMetadata {
     const metadataKey = `metadata-${type}-${name}`;
     const metadataStr = localStorage.getItem(metadataKey);
-    
+
     if (metadataStr) {
       try {
         return JSON.parse(metadataStr);
@@ -194,7 +220,7 @@ class SearchService {
       lastModified: new Date().toISOString(),
       type,
       tags: [],
-      isFavorite: false
+      isFavorite: false,
     };
 
     localStorage.setItem(metadataKey, JSON.stringify(metadata));
@@ -207,13 +233,13 @@ class SearchService {
   search(filters: SearchFilters): SearchResult[] {
     this.ensureIndexUpdated();
 
-    let results: SearchResult[] = [];
-    
+    const results: SearchResult[] = [];
+
     for (const item of this.searchIndex.values()) {
       const score = this.calculateRelevanceScore(item, filters);
       if (score > 0) {
         const highlights = this.generateHighlights(item, filters.query);
-        results.push({ item, score, highlights });
+        results.push({item, score, highlights});
       }
     }
 
@@ -231,7 +257,10 @@ class SearchService {
   /**
    * Calculate relevance score for an item against filters
    */
-  private calculateRelevanceScore(item: SearchableItem, filters: SearchFilters): number {
+  private calculateRelevanceScore(
+    item: SearchableItem,
+    filters: SearchFilters,
+  ): number {
     let score = 0;
 
     // Type filter
@@ -264,7 +293,9 @@ class SearchService {
 
     // Date range filter
     if (filters.dateRange) {
-      const itemDate = new Date(item.metadata.created || item.metadata.lastModified || 0);
+      const itemDate = new Date(
+        item.metadata.created || item.metadata.lastModified || 0,
+      );
       if (filters.dateRange.start && itemDate < filters.dateRange.start) {
         return 0;
       }
@@ -275,10 +306,10 @@ class SearchService {
 
     // Tag filter
     if (filters.tags && filters.tags.length > 0) {
-      const hasMatchingTag = filters.tags.some(tag => 
-        item.tags.some(itemTag => 
-          itemTag.toLowerCase().includes(tag.toLowerCase())
-        )
+      const hasMatchingTag = filters.tags.some((tag) =>
+        item.tags.some((itemTag) =>
+          itemTag.toLowerCase().includes(tag.toLowerCase()),
+        ),
       );
       if (!hasMatchingTag) {
         return 0;
@@ -291,7 +322,9 @@ class SearchService {
       const query = filters.query.toLowerCase();
       const titleMatch = item.title.toLowerCase().includes(query);
       const contentMatch = item.content.toLowerCase().includes(query);
-      const tagMatch = item.tags.some(tag => tag.toLowerCase().includes(query));
+      const tagMatch = item.tags.some((tag) =>
+        tag.toLowerCase().includes(query),
+      );
 
       if (!titleMatch && !contentMatch && !tagMatch) {
         return 0;
@@ -323,13 +356,15 @@ class SearchService {
 
     // Boost recent items
     if (item.metadata.lastModified) {
-      const daysSinceModified = (Date.now() - new Date(item.metadata.lastModified).getTime()) / (1000 * 60 * 60 * 24);
+      const daysSinceModified =
+        (Date.now() - new Date(item.metadata.lastModified).getTime()) /
+        (1000 * 60 * 60 * 24);
       if (daysSinceModified < 7) {
         score += 0.1;
       }
     }
 
-    return Math.min(score, 1.0); // Cap at 1.0
+    return score; // Don't cap score to allow proper ranking
   }
 
   /**
@@ -340,13 +375,16 @@ class SearchService {
 
     if (!query) {
       if (item.content) {
-        highlights.push(item.content.substring(0, 100) + (item.content.length > 100 ? '...' : ''));
+        highlights.push(
+          item.content.substring(0, 100) +
+            (item.content.length > 100 ? "..." : ""),
+        );
       }
       return highlights;
     }
 
     const queryLower = query.toLowerCase();
-    
+
     // Check title
     if (item.title.toLowerCase().includes(queryLower)) {
       highlights.push(this.highlightText(item.title, query));
@@ -359,9 +397,13 @@ class SearchService {
     }
 
     // Check tags
-    const matchingTags = item.tags.filter(tag => tag.toLowerCase().includes(queryLower));
+    const matchingTags = item.tags.filter((tag) =>
+      tag.toLowerCase().includes(queryLower),
+    );
     if (matchingTags.length > 0) {
-      highlights.push(`Tags: ${matchingTags.map(tag => this.highlightText(tag, query)).join(', ')}`);
+      highlights.push(
+        `Tags: ${matchingTags.map((tag) => this.highlightText(tag, query)).join(", ")}`,
+      );
     }
 
     return highlights;
@@ -374,16 +416,16 @@ class SearchService {
     const queryLower = query.toLowerCase();
     const textLower = text.toLowerCase();
     const index = textLower.indexOf(queryLower);
-    
+
     if (index === -1) return text.substring(0, maxLength);
 
     const start = Math.max(0, index - 50);
     const end = Math.min(text.length, start + maxLength);
-    
+
     let snippet = text.substring(start, end);
-    if (start > 0) snippet = '...' + snippet;
-    if (end < text.length) snippet = snippet + '...';
-    
+    if (start > 0) snippet = "..." + snippet;
+    if (end < text.length) snippet = snippet + "...";
+
     return snippet;
   }
 
@@ -391,8 +433,8 @@ class SearchService {
    * Highlight query terms in text
    */
   private highlightText(text: string, query: string): string {
-    const regex = new RegExp(`(${query})`, 'gi');
-    return text.replace(regex, '<mark>$1</mark>');
+    const regex = new RegExp(`(${query})`, "gi");
+    return text.replace(regex, "<mark>$1</mark>");
   }
 
   /**
@@ -416,15 +458,15 @@ class SearchService {
   private addToSearchHistory(query: string, resultCount: number): void {
     try {
       let history = this.getSearchHistory();
-      
+
       // Remove duplicate if exists
-      history = history.filter(item => item.query !== query);
-      
+      history = history.filter((item) => item.query !== query);
+
       // Add new entry at the beginning
       history.unshift({
         query,
         timestamp: Date.now(),
-        resultCount
+        resultCount,
       });
 
       // Limit history size
@@ -451,9 +493,9 @@ class SearchService {
   getAllTags(): string[] {
     this.ensureIndexUpdated();
     const tagsSet = new Set<string>();
-    
+
     for (const item of this.searchIndex.values()) {
-      item.tags.forEach(tag => tagsSet.add(tag));
+      item.tags.forEach((tag) => tagsSet.add(tag));
     }
 
     return Array.from(tagsSet).sort();
@@ -465,7 +507,7 @@ class SearchService {
   getAllCategories(): string[] {
     this.ensureIndexUpdated();
     const categoriesSet = new Set<string>();
-    
+
     for (const item of this.searchIndex.values()) {
       if (item.metadata.category) {
         categoriesSet.add(item.metadata.category);
@@ -481,12 +523,16 @@ class SearchService {
   updateMetadata(itemId: string, metadata: Partial<ListMetadata>): void {
     const item = this.searchIndex.get(itemId);
     if (item) {
-      item.metadata = { ...item.metadata, ...metadata, lastModified: new Date().toISOString() };
-      
+      item.metadata = {
+        ...item.metadata,
+        ...metadata,
+        lastModified: new Date().toISOString(),
+      };
+
       // Save to localStorage
       const metadataKey = `metadata-${item.type}-${item.metadata.name}`;
       localStorage.setItem(metadataKey, JSON.stringify(item.metadata));
-      
+
       // Update index
       this.searchIndex.set(itemId, item);
     }
@@ -499,7 +545,7 @@ class SearchService {
     const item = this.searchIndex.get(itemId);
     if (item) {
       const newFavoriteStatus = !item.metadata.isFavorite;
-      this.updateMetadata(itemId, { isFavorite: newFavoriteStatus });
+      this.updateMetadata(itemId, {isFavorite: newFavoriteStatus});
       return newFavoriteStatus;
     }
     return false;
@@ -515,7 +561,7 @@ class SearchService {
       if (!currentTags.includes(tag)) {
         const newTags = [...currentTags, tag];
         item.tags = newTags;
-        this.updateMetadata(itemId, { tags: newTags });
+        this.updateMetadata(itemId, {tags: newTags});
       }
     }
   }
@@ -526,11 +572,12 @@ class SearchService {
   removeTag(itemId: string, tag: string): void {
     const item = this.searchIndex.get(itemId);
     if (item) {
-      const newTags = (item.tags || []).filter(t => t !== tag);
+      const newTags = (item.tags || []).filter((t) => t !== tag);
       item.tags = newTags;
-      this.updateMetadata(itemId, { tags: newTags });
+      this.updateMetadata(itemId, {tags: newTags});
     }
   }
 }
 
+export {SearchService};
 export const searchService = SearchService.getInstance();
