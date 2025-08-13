@@ -24,8 +24,9 @@ jobs:
       - name: Check for forbidden 'any' type usage
         run: |
           echo "🔍 Checking for forbidden 'any' type usage..."
-          # Search for 'any' type usage but exclude comments and legitimate uses
-          if grep -r "\b: any\b\|\<any\>\s*[\[\(]" src --include="*.ts" --include="*.tsx"; then
+          # Search for 'any' type usage but exclude test files and legitimate uses
+          # Test files are allowed to use expect.any() utilities
+          if grep -r "\b: any\b\|\<any\>\s*[\[\(]" src --include="*.ts" --include="*.tsx" --exclude="*.test.ts" --exclude="*.test.tsx"; then
             echo "❌ ERROR: 'any' type usage found. This violates TypeScript guidelines."
             echo "Please use proper type annotations instead of 'any'."
             exit 1
