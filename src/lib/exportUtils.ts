@@ -214,7 +214,7 @@ export class ExportUtils {
 
   static parseCSVFile(file: File): Promise<CSVRow[]> {
     return new Promise((resolve, reject) => {
-      Papa.parse(file, {
+      Papa.parse<Record<string, unknown>>(file, {
         header: true,
         skipEmptyLines: true,
         encoding: "utf-8",
@@ -227,11 +227,11 @@ export class ExportUtils {
           try {
             // Validate and transform the data using Zod schema
             const validatedRows: CSVRow[] = [];
-            const rawData = results.data as unknown[];
+            const rawData = results.data;
 
             // Check if we have any data and required columns exist
             if (rawData.length > 0) {
-              const firstRow = rawData[0] as Record<string, unknown>;
+              const firstRow = rawData[0];
               if (!("Letter" in firstRow) || !("Word" in firstRow)) {
                 reject(
                   new Error(

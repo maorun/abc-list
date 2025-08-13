@@ -20,8 +20,11 @@ export default tseslint.config(
       "jsx-a11y": jsxA11y,
     },
     languageOptions: {
+      parser: tseslint.parser,
       parserOptions: {
         ecmaFeatures: { jsx: true },
+        project: "./tsconfig.json",
+        tsconfigRootDir: import.meta.dirname,
       },
       globals: {
         ...globals.browser,
@@ -34,6 +37,19 @@ export default tseslint.config(
       ...reactHooks.configs.recommended.rules,
       ...jsxA11y.configs.recommended.rules,
       "react/react-in-jsx-scope": "off",
+      
+      // Enforce copilot-instructions.md guidelines - Strictly forbid 'any' type
+      "@typescript-eslint/no-explicit-any": "error",
+      
+      // Additional strict TypeScript rules
+      "@typescript-eslint/no-unnecessary-type-assertion": "error",
+      "@typescript-eslint/no-unused-vars": ["error", { 
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_" 
+      }],
+      
+      // React best practices (following function extraction pattern from copilot-instructions.md)
+      "react-hooks/exhaustive-deps": "error"
     },
     settings: {
       react: {
