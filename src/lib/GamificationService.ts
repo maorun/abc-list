@@ -3,7 +3,6 @@ import {
   GamificationAchievement,
   Challenge,
   Badge,
-  UserStatistics,
   LeaderboardEntry,
   ACTIVITY_POINTS,
   GAMIFICATION_ACHIEVEMENTS,
@@ -17,18 +16,23 @@ import {
   isStreakBroken,
   getWeekStartDate,
   getMonthStartDate,
-} from './gamification';
+} from "./gamification";
 
 export class GamificationService {
-  private static instance: GamificationService;
+  private static instance: GamificationService | undefined;
   private profile: GamificationProfile | null = null;
-  private eventListeners: Array<(event: string, data: any) => void> = [];
+  private eventListeners: Array<(event: string, data: unknown) => void> = [];
 
   static getInstance(): GamificationService {
     if (!GamificationService.instance) {
       GamificationService.instance = new GamificationService();
     }
     return GamificationService.instance;
+  }
+
+  // For testing only - reset singleton instance
+  static resetInstance(): void {
+    GamificationService.instance = undefined;
   }
 
   constructor() {
@@ -57,8 +61,8 @@ export class GamificationService {
       streak: {
         currentStreak: 0,
         longestStreak: 0,
-        lastActivityDate: '',
-        streakStartDate: '',
+        lastActivityDate: "",
+        streakStartDate: "",
       },
       badges: [],
       achievements: [],
@@ -73,7 +77,7 @@ export class GamificationService {
         basarTrades: 0,
         totalActiveDays: 0,
         averageWordsPerList: 0,
-        favoriteActivity: 'learning',
+        favoriteActivity: "learning",
       },
       lastUpdated: new Date().toISOString(),
     };
@@ -82,7 +86,10 @@ export class GamificationService {
 
   private saveProfile(): void {
     if (this.profile) {
-      localStorage.setItem(GAMIFICATION_STORAGE_KEYS.PROFILE, JSON.stringify(this.profile));
+      localStorage.setItem(
+        GAMIFICATION_STORAGE_KEYS.PROFILE,
+        JSON.stringify(this.profile),
+      );
     }
   }
 
@@ -91,7 +98,7 @@ export class GamificationService {
   }
 
   // Activity Tracking
-  trackActivity(activityType: keyof typeof ACTIVITY_POINTS, metadata?: any): void {
+  trackActivity(activityType: keyof typeof ACTIVITY_POINTS): void {
     if (!this.profile) return;
 
     const activity = ACTIVITY_POINTS[activityType];
@@ -102,7 +109,7 @@ export class GamificationService {
     this.profile.experience += activity.points;
 
     // Update statistics
-    this.updateStatistics(activityType, metadata);
+    this.updateStatistics(activityType);
 
     // Update streak for daily activities
     this.updateDailyStreak();
@@ -121,38 +128,42 @@ export class GamificationService {
     this.saveProfile();
 
     // Notify listeners
-    this.emitEvent('activity_tracked', { activityType, activity, profile: this.profile });
+    this.emitEvent("activity_tracked", {
+      activityType,
+      activity,
+      profile: this.profile,
+    });
   }
 
-  private updateStatistics(activityType: string, metadata?: any): void {
+  private updateStatistics(activityType: string): void {
     if (!this.profile) return;
 
     const stats = this.profile.statistics;
 
     switch (activityType) {
-      case 'list_created':
+      case "list_created":
         stats.listsCreated++;
         break;
-      case 'word_added':
+      case "word_added":
         stats.wordsAdded++;
         // Update average words per list
         if (stats.listsCreated > 0) {
           stats.averageWordsPerList = stats.wordsAdded / stats.listsCreated;
         }
         break;
-      case 'kawa_created':
+      case "kawa_created":
         stats.kawasCreated++;
         break;
-      case 'kaga_created':
+      case "kaga_created":
         stats.kagasCreated++;
         break;
-      case 'slf_game_played':
+      case "slf_game_played":
         stats.slfGamesPlayed++;
         break;
-      case 'sokrates_session':
+      case "sokrates_session":
         stats.sokratesSessions++;
         break;
-      case 'basar_trade':
+      case "basar_trade":
         stats.basarTrades++;
         break;
     }
@@ -172,7 +183,7 @@ export class GamificationService {
       social: stats.basarTrades,
     };
 
-    let maxActivity = 'learning';
+    let maxActivity = "learning";
     let maxCount = activities.learning;
 
     Object.entries(activities).forEach(([activity, count]) => {
@@ -198,6 +209,13 @@ export class GamificationService {
       this.profile.streak.lastActivityDate = today;
       this.profile.streak.streakStartDate = today;
       this.profile.statistics.totalActiveDays = 1;
+
+      // Check for new longest streak
+      if (
+        this.profile.streak.currentStreak > this.profile.streak.longestStreak
+      ) {
+        this.profile.streak.longestStreak = this.profile.streak.currentStreak;
+      }
       return;
     }
 
@@ -213,7 +231,9 @@ export class GamificationService {
       this.profile.statistics.totalActiveDays++;
 
       // Check for new longest streak
-      if (this.profile.streak.currentStreak > this.profile.streak.longestStreak) {
+      if (
+        this.profile.streak.currentStreak > this.profile.streak.longestStreak
+      ) {
         this.profile.streak.longestStreak = this.profile.streak.currentStreak;
       }
 
@@ -225,13 +245,19 @@ export class GamificationService {
       this.profile.streak.lastActivityDate = today;
       this.profile.streak.streakStartDate = today;
       this.profile.statistics.totalActiveDays++;
+
+      // Check for new longest streak (though unlikely for a reset)
+      if (
+        this.profile.streak.currentStreak > this.profile.streak.longestStreak
+      ) {
+        this.profile.streak.longestStreak = this.profile.streak.currentStreak;
+      }
     }
   }
 
   private checkAndUpdateStreak(): void {
     if (!this.profile || !this.profile.streak.lastActivityDate) return;
 
-    const today = getTodayDateString();
     const lastActivity = this.profile.streak.lastActivityDate;
 
     // If streak is broken, reset it
@@ -249,8 +275,11 @@ export class GamificationService {
 
     milestones.forEach((milestone) => {
       if (streak === milestone) {
-        this.trackActivity('streak_milestone');
-        this.emitEvent('streak_milestone', { streak: milestone, profile: this.profile });
+        this.trackActivity("streak_milestone");
+        this.emitEvent("streak_milestone", {
+          streak: milestone,
+          profile: this.profile,
+        });
       }
     });
   }
@@ -264,14 +293,18 @@ export class GamificationService {
 
     if (newLevel > oldLevel) {
       this.profile.level = newLevel;
-      this.profile.experienceToNextLevel = calculateExperienceToNextLevel(this.profile.experience);
+      this.profile.experienceToNextLevel = calculateExperienceToNextLevel(
+        this.profile.experience,
+      );
 
       // Award level-up bonus
       this.profile.totalPoints += newLevel * 10;
 
-      this.emitEvent('level_up', { oldLevel, newLevel, profile: this.profile });
+      this.emitEvent("level_up", {oldLevel, newLevel, profile: this.profile});
     } else {
-      this.profile.experienceToNextLevel = calculateExperienceToNextLevel(this.profile.experience);
+      this.profile.experienceToNextLevel = calculateExperienceToNextLevel(
+        this.profile.experience,
+      );
     }
   }
 
@@ -291,85 +324,91 @@ export class GamificationService {
   }
 
   private isAchievementUnlocked(achievementId: string): boolean {
-    return this.profile?.achievements.some((a) => a.id === achievementId) || false;
+    return (
+      this.profile?.achievements.some((a) => a.id === achievementId) || false
+    );
   }
 
   private isAchievementEarned(achievement: GamificationAchievement): boolean {
     if (!this.profile) return false;
 
-    const { type, value } = achievement.requirement;
+    const {type, value} = achievement.requirement;
     const stats = this.profile.statistics;
 
     switch (type) {
-      case 'listsCreated':
+      case "listsCreated":
         return stats.listsCreated >= value;
-      case 'wordsAdded':
+      case "wordsAdded":
         return stats.wordsAdded >= value;
-      case 'kawasCreated':
+      case "kawasCreated":
         return stats.kawasCreated >= value;
-      case 'kagasCreated':
+      case "kagasCreated":
         return stats.kagasCreated >= value;
-      case 'slfGamesPlayed':
+      case "slfGamesPlayed":
         return stats.slfGamesPlayed >= value;
-      case 'sokratesSessions':
+      case "sokratesSessions":
         return stats.sokratesSessions >= value;
-      case 'basarTrades':
+      case "basarTrades":
         return stats.basarTrades >= value;
-      case 'currentStreak':
+      case "currentStreak":
         return this.profile.streak.currentStreak >= value;
-      case 'level':
+      case "level":
         return this.profile.level >= value;
-      case 'totalPoints':
+      case "totalPoints":
         return this.profile.totalPoints >= value;
-      case 'combined_creative':
-        return (stats.kawasCreated + stats.kagasCreated) >= value;
+      case "combined_creative":
+        return stats.kawasCreated + stats.kagasCreated >= value;
       default:
         return false;
     }
   }
 
-  private updateAchievementProgress(achievement: GamificationAchievement): void {
+  private updateAchievementProgress(
+    achievement: GamificationAchievement,
+  ): void {
     if (!this.profile) return;
 
-    const existingAchievement = this.profile.achievements.find((a) => a.id === achievement.id);
+    const existingAchievement = this.profile.achievements.find(
+      (a) => a.id === achievement.id,
+    );
     if (existingAchievement) return;
 
-    const { type, value } = achievement.requirement;
+    const {type, value} = achievement.requirement;
     const stats = this.profile.statistics;
     let progress = 0;
 
     switch (type) {
-      case 'listsCreated':
+      case "listsCreated":
         progress = stats.listsCreated;
         break;
-      case 'wordsAdded':
+      case "wordsAdded":
         progress = stats.wordsAdded;
         break;
-      case 'kawasCreated':
+      case "kawasCreated":
         progress = stats.kawasCreated;
         break;
-      case 'kagasCreated':
+      case "kagasCreated":
         progress = stats.kagasCreated;
         break;
-      case 'slfGamesPlayed':
+      case "slfGamesPlayed":
         progress = stats.slfGamesPlayed;
         break;
-      case 'sokratesSessions':
+      case "sokratesSessions":
         progress = stats.sokratesSessions;
         break;
-      case 'basarTrades':
+      case "basarTrades":
         progress = stats.basarTrades;
         break;
-      case 'currentStreak':
+      case "currentStreak":
         progress = this.profile.streak.currentStreak;
         break;
-      case 'level':
+      case "level":
         progress = this.profile.level;
         break;
-      case 'totalPoints':
+      case "totalPoints":
         progress = this.profile.totalPoints;
         break;
-      case 'combined_creative':
+      case "combined_creative":
         progress = stats.kawasCreated + stats.kagasCreated;
         break;
     }
@@ -381,7 +420,9 @@ export class GamificationService {
     };
 
     // Remove existing and add updated
-    this.profile.achievements = this.profile.achievements.filter((a) => a.id !== achievement.id);
+    this.profile.achievements = this.profile.achievements.filter(
+      (a) => a.id !== achievement.id,
+    );
     this.profile.achievements.push(achievementWithProgress);
   }
 
@@ -395,7 +436,9 @@ export class GamificationService {
     };
 
     // Remove from progress tracking and add as earned
-    this.profile.achievements = this.profile.achievements.filter((a) => a.id !== achievement.id);
+    this.profile.achievements = this.profile.achievements.filter(
+      (a) => a.id !== achievement.id,
+    );
     this.profile.achievements.push(unlockedAchievement);
 
     // Award points
@@ -403,7 +446,7 @@ export class GamificationService {
     this.profile.experience += achievement.points;
 
     // Award badge if special achievement
-    if (achievement.rarity === 'legendary' || achievement.rarity === 'epic') {
+    if (achievement.rarity === "legendary" || achievement.rarity === "epic") {
       const badge: Badge = {
         id: `badge_${achievement.id}`,
         name: achievement.name,
@@ -415,18 +458,21 @@ export class GamificationService {
       this.profile.badges.push(badge);
     }
 
-    this.emitEvent('achievement_unlocked', { achievement: unlockedAchievement, profile: this.profile });
+    this.emitEvent("achievement_unlocked", {
+      achievement: unlockedAchievement,
+      profile: this.profile,
+    });
   }
 
   // Challenge System
   private generateChallenges(): Challenge[] {
     const challenges: Challenge[] = [];
-    const now = new Date();
 
     // Weekly challenge
-    const weeklyTemplate = WEEKLY_CHALLENGE_TEMPLATES[
-      Math.floor(Math.random() * WEEKLY_CHALLENGE_TEMPLATES.length)
-    ];
+    const weeklyTemplate =
+      WEEKLY_CHALLENGE_TEMPLATES[
+        Math.floor(Math.random() * WEEKLY_CHALLENGE_TEMPLATES.length)
+      ];
     const weekStart = getWeekStartDate();
     const weekEnd = new Date(weekStart);
     weekEnd.setDate(weekEnd.getDate() + 6);
@@ -435,11 +481,11 @@ export class GamificationService {
       id: `weekly_${Date.now()}`,
       name: weeklyTemplate.name,
       description: weeklyTemplate.description,
-      type: 'weekly',
+      type: "weekly",
       target: weeklyTemplate.target,
       progress: 0,
       startDate: weekStart,
-      endDate: weekEnd.toISOString().split('T')[0],
+      endDate: weekEnd.toISOString().split("T")[0],
       reward: weeklyTemplate.reward,
       activity: weeklyTemplate.activity,
       icon: weeklyTemplate.icon,
@@ -447,9 +493,10 @@ export class GamificationService {
     });
 
     // Monthly challenge
-    const monthlyTemplate = MONTHLY_CHALLENGE_TEMPLATES[
-      Math.floor(Math.random() * MONTHLY_CHALLENGE_TEMPLATES.length)
-    ];
+    const monthlyTemplate =
+      MONTHLY_CHALLENGE_TEMPLATES[
+        Math.floor(Math.random() * MONTHLY_CHALLENGE_TEMPLATES.length)
+      ];
     const monthStart = getMonthStartDate();
     const monthEnd = new Date(monthStart);
     monthEnd.setMonth(monthEnd.getMonth() + 1);
@@ -459,11 +506,11 @@ export class GamificationService {
       id: `monthly_${Date.now()}`,
       name: monthlyTemplate.name,
       description: monthlyTemplate.description,
-      type: 'monthly',
+      type: "monthly",
       target: monthlyTemplate.target,
       progress: 0,
       startDate: monthStart,
-      endDate: monthEnd.toISOString().split('T')[0],
+      endDate: monthEnd.toISOString().split("T")[0],
       reward: monthlyTemplate.reward,
       activity: monthlyTemplate.activity,
       icon: monthlyTemplate.icon,
@@ -504,35 +551,39 @@ export class GamificationService {
       let shouldUpdate = false;
 
       switch (challenge.activity) {
-        case 'wordsAdded':
-          shouldUpdate = activityType === 'word_added';
+        case "wordsAdded":
+          shouldUpdate = activityType === "word_added";
           break;
-        case 'listsCreated':
-          shouldUpdate = activityType === 'list_created';
+        case "listsCreated":
+          shouldUpdate = activityType === "list_created";
           break;
-        case 'creativesCreated':
-          shouldUpdate = activityType === 'kawa_created' || activityType === 'kaga_created';
+        case "creativesCreated":
+          shouldUpdate =
+            activityType === "kawa_created" || activityType === "kaga_created";
           break;
-        case 'slfGamesPlayed':
-          shouldUpdate = activityType === 'slf_game_played';
+        case "slfGamesPlayed":
+          shouldUpdate = activityType === "slf_game_played";
           break;
-        case 'basarTrades':
-          shouldUpdate = activityType === 'basar_trade';
+        case "basarTrades":
+          shouldUpdate = activityType === "basar_trade";
           break;
-        case 'dailyStreak':
-          shouldUpdate = activityType === 'daily_login';
+        case "dailyStreak":
+          shouldUpdate = activityType === "daily_login";
           break;
       }
 
       if (shouldUpdate) {
         challenge.progress++;
-        
+
         if (challenge.progress >= challenge.target) {
           challenge.completed = true;
           this.profile!.totalPoints += challenge.reward;
           this.profile!.experience += challenge.reward;
-          this.trackActivity('challenge_completed');
-          this.emitEvent('challenge_completed', { challenge, profile: this.profile });
+          this.trackActivity("challenge_completed");
+          this.emitEvent("challenge_completed", {
+            challenge,
+            profile: this.profile,
+          });
         }
       }
     });
@@ -547,7 +598,7 @@ export class GamificationService {
     const entries: LeaderboardEntry[] = [
       {
         userId: this.profile.id,
-        username: 'Du',
+        username: "Du",
         value: this.getMetricValue(metric),
         rank: 1,
         level: this.profile.level,
@@ -563,31 +614,33 @@ export class GamificationService {
         value: Math.max(0, this.getMetricValue(metric) - Math.random() * 100),
         rank: i,
         level: Math.max(1, this.profile.level - Math.floor(Math.random() * 3)),
-        badge: ['🎯', '⭐', '🏆', '💎'][Math.floor(Math.random() * 4)],
+        badge: ["🎯", "⭐", "🏆", "💎"][Math.floor(Math.random() * 4)],
       });
     }
 
-    return entries.sort((a, b) => b.value - a.value).map((entry, index) => ({
-      ...entry,
-      rank: index + 1,
-    }));
+    return entries
+      .sort((a, b) => b.value - a.value)
+      .map((entry, index) => ({
+        ...entry,
+        rank: index + 1,
+      }));
   }
 
   private getMetricValue(metric: string): number {
     if (!this.profile) return 0;
 
     switch (metric) {
-      case 'totalPoints':
+      case "totalPoints":
         return this.profile.totalPoints;
-      case 'level':
+      case "level":
         return this.profile.level;
-      case 'currentStreak':
+      case "currentStreak":
         return this.profile.streak.currentStreak;
-      case 'listsCreated':
+      case "listsCreated":
         return this.profile.statistics.listsCreated;
-      case 'wordsAdded':
+      case "wordsAdded":
         return this.profile.statistics.wordsAdded;
-      case 'basarTrades':
+      case "basarTrades":
         return this.profile.statistics.basarTrades;
       default:
         return 0;
@@ -596,37 +649,42 @@ export class GamificationService {
 
   private getTopBadge(): Badge | undefined {
     if (!this.profile) return undefined;
-    return this.profile.badges
-      .sort((a, b) => {
-        const rarityOrder = { legendary: 4, epic: 3, rare: 2, common: 1 };
-        return rarityOrder[b.rarity] - rarityOrder[a.rarity];
-      })[0];
+    return this.profile.badges.sort((a, b) => {
+      const rarityOrder = {legendary: 4, epic: 3, rare: 2, common: 1};
+      return rarityOrder[b.rarity] - rarityOrder[a.rarity];
+    })[0];
   }
 
   // Event System
-  addEventListener(callback: (event: string, data: any) => void): void {
+  addEventListener(callback: (event: string, data: unknown) => void): void {
     this.eventListeners.push(callback);
   }
 
-  removeEventListener(callback: (event: string, data: any) => void): void {
-    this.eventListeners = this.eventListeners.filter((listener) => listener !== callback);
+  removeEventListener(callback: (event: string, data: unknown) => void): void {
+    this.eventListeners = this.eventListeners.filter(
+      (listener) => listener !== callback,
+    );
   }
 
-  private emitEvent(event: string, data: any): void {
+  private emitEvent(event: string, data: unknown): void {
     this.eventListeners.forEach((listener) => {
       try {
         listener(event, data);
       } catch (error) {
-        console.error('Error in gamification event listener:', error);
+        console.error("Error in gamification event listener:", error);
       }
     });
   }
 
   // Utility Methods
-  getAchievementProgress(achievementId: string): { progress: number; target: number } | null {
+  getAchievementProgress(
+    achievementId: string,
+  ): {progress: number; target: number} | null {
     if (!this.profile) return null;
 
-    const achievement = this.profile.achievements.find((a) => a.id === achievementId);
+    const achievement = this.profile.achievements.find(
+      (a) => a.id === achievementId,
+    );
     if (!achievement) return null;
 
     return {
@@ -656,7 +714,7 @@ export class GamificationService {
   }
 
   // Export data for debugging
-  exportData(): any {
+  exportData(): {profile: GamificationProfile | null; timestamp: string} {
     return {
       profile: this.profile,
       timestamp: new Date().toISOString(),

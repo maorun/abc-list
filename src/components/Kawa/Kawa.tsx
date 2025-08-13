@@ -31,10 +31,10 @@ export function Kawa() {
       const newKawas = [...kawas, newKawa];
       setKawas(newKawas);
       updateStorage(newKawas);
-      
+
       // Track gamification activity
       trackKawaCreated(newKawa.key);
-      
+
       navigate(`/kawa/${newKawa.key}`, {state: {item: newKawa}});
     }
   };

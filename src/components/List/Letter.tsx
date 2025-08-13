@@ -41,10 +41,10 @@ const handleAddWordAction = (
     localStorage.setItem(storageKey, JSON.stringify(newWords));
     setNewWord("");
     setIsModalOpen(false);
-    
+
     // Track gamification activity
     if (trackWordAdded) {
-      const listName = storageKey.split('-')[1]?.split(':')[0] || 'Unknown';
+      const listName = storageKey.split("-")[1]?.split(":")[0] || "Unknown";
       trackWordAdded(newWord, listName);
     }
   }

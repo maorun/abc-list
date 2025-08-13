@@ -8,6 +8,14 @@ const handleIndicatorClick = (onClick?: () => void) => () => {
   if (onClick) onClick();
 };
 
+const handleKeyDown =
+  (onClick?: () => void) => (event: React.KeyboardEvent) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      if (onClick) onClick();
+    }
+  };
+
 export function GamificationStatusIndicator({onClick}: {onClick?: () => void}) {
   const [profile, setProfile] = useState<GamificationProfile | null>(null);
   const [showLevelUp, setShowLevelUp] = useState(false);
@@ -20,15 +28,15 @@ export function GamificationStatusIndicator({onClick}: {onClick?: () => void}) {
     setProfile(currentProfile);
 
     // Listen for gamification events
-    const handleEvent = (event: string, data: any) => {
-      if (event === 'level_up') {
+    const handleEvent = (event: string) => {
+      if (event === "level_up") {
         setShowLevelUp(true);
         setTimeout(() => setShowLevelUp(false), 3000);
-      } else if (event === 'achievement_unlocked') {
+      } else if (event === "achievement_unlocked") {
         setShowAchievement(true);
         setTimeout(() => setShowAchievement(false), 3000);
       }
-      
+
       // Update profile
       const updatedProfile = gamificationService.getProfile();
       setProfile(updatedProfile);
@@ -42,23 +50,25 @@ export function GamificationStatusIndicator({onClick}: {onClick?: () => void}) {
   }, [gamificationService]);
 
   const clickHandler = handleIndicatorClick(onClick);
+  const keyDownHandler = handleKeyDown(onClick);
 
   if (!profile) {
     return null;
   }
 
   return (
-    <div 
+    <div
       className="flex items-center gap-2 cursor-pointer transition-all hover:scale-105"
       onClick={clickHandler}
+      onKeyDown={keyDownHandler}
       role="button"
       tabIndex={0}
       aria-label={`Level ${profile.level}, ${profile.totalPoints} Punkte, ${profile.streak.currentStreak} Tage Streak`}
     >
       {/* Level indicator */}
-      <Badge 
-        variant="outline" 
-        className={`text-xs transition-all ${showLevelUp ? 'animate-pulse bg-yellow-100' : ''}`}
+      <Badge
+        variant="outline"
+        className={`text-xs transition-all ${showLevelUp ? "animate-pulse bg-yellow-100" : ""}`}
       >
         Level {profile.level}
       </Badge>

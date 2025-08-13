@@ -16,47 +16,61 @@ import {
   GamificationProfile,
   GamificationAchievement,
   Challenge,
-  Badge as GamificationBadge,
   LeaderboardEntry,
   LEADERBOARD_TYPES,
 } from "../../lib/gamification";
 
 // Extract handlers outside component to prevent recreation
-const handleTabChange = (setActiveTab: (tab: string) => void) => (value: string) => {
-  setActiveTab(value);
-};
+const handleTabChange =
+  (setActiveTab: (tab: string) => void) => (value: string) => {
+    setActiveTab(value);
+  };
 
-const handleAchievementClick = (
-  achievement: GamificationAchievement,
-  setSelectedAchievement: (achievement: GamificationAchievement | null) => void,
-  setShowAchievementModal: (show: boolean) => void,
-) => () => {
-  setSelectedAchievement(achievement);
-  setShowAchievementModal(true);
-};
+const handleAchievementClick =
+  (
+    achievement: GamificationAchievement,
+    setSelectedAchievement: (
+      achievement: GamificationAchievement | null,
+    ) => void,
+    setShowAchievementModal: (show: boolean) => void,
+  ) =>
+  () => {
+    setSelectedAchievement(achievement);
+    setShowAchievementModal(true);
+  };
 
-const handleCloseModal = (
-  setShowAchievementModal: (show: boolean) => void,
-  setSelectedAchievement: (achievement: GamificationAchievement | null) => void,
-) => () => {
-  setShowAchievementModal(false);
-  setSelectedAchievement(null);
-};
+const handleCloseModal =
+  (
+    setShowAchievementModal: (show: boolean) => void,
+    setSelectedAchievement: (
+      achievement: GamificationAchievement | null,
+    ) => void,
+  ) =>
+  () => {
+    setShowAchievementModal(false);
+    setSelectedAchievement(null);
+  };
 
-const handleLeaderboardRefresh = (
-  activeLeaderboard: string,
-  setLeaderboardData: (data: LeaderboardEntry[]) => void,
-  gamificationService: GamificationService,
-) => () => {
-  const data = gamificationService.generateLeaderboard(activeLeaderboard);
-  setLeaderboardData(data);
-};
+const handleLeaderboardRefresh =
+  (
+    activeLeaderboard: string,
+    setLeaderboardData: (data: LeaderboardEntry[]) => void,
+    gamificationService: GamificationService,
+  ) =>
+  () => {
+    const data = gamificationService.generateLeaderboard(activeLeaderboard);
+    setLeaderboardData(data);
+  };
 
 // Level progress component
 function LevelProgress({profile}: {profile: GamificationProfile}) {
-  const progressPercentage = profile.experienceToNextLevel > 0
-    ? ((profile.experience - (Math.pow(profile.level - 1, 2) * 100)) / (Math.pow(profile.level, 2) * 100 - Math.pow(profile.level - 1, 2) * 100)) * 100
-    : 100;
+  const progressPercentage =
+    profile.experienceToNextLevel > 0
+      ? ((profile.experience - Math.pow(profile.level - 1, 2) * 100) /
+          (Math.pow(profile.level, 2) * 100 -
+            Math.pow(profile.level - 1, 2) * 100)) *
+        100
+      : 100;
 
   return (
     <Card className="mb-6">
@@ -68,12 +82,14 @@ function LevelProgress({profile}: {profile: GamificationProfile}) {
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
-          <Progress value={Math.max(0, Math.min(100, progressPercentage))} className="w-full" />
+          <Progress
+            value={Math.max(0, Math.min(100, progressPercentage))}
+            className="w-full"
+          />
           <p className="text-sm text-gray-600">
-            {profile.experienceToNextLevel > 0 
+            {profile.experienceToNextLevel > 0
               ? `${profile.experienceToNextLevel} XP bis Level ${profile.level + 1}`
-              : 'Maximales Level erreicht!'
-            }
+              : "Maximales Level erreicht!"}
           </p>
         </div>
       </CardContent>
@@ -113,14 +129,14 @@ function StatisticsOverview({profile}: {profile: GamificationProfile}) {
   const stats = profile.statistics;
 
   const statItems = [
-    {label: 'ABC-Listen', value: stats.listsCreated, icon: '📚'},
-    {label: 'Begriffe', value: stats.wordsAdded, icon: '📝'},
-    {label: 'KaWas', value: stats.kawasCreated, icon: '🎨'},
-    {label: 'KaGas', value: stats.kagasCreated, icon: '🖼️'},
-    {label: 'Spiele', value: stats.slfGamesPlayed, icon: '🎮'},
-    {label: 'Sokrates', value: stats.sokratesSessions, icon: '🎓'},
-    {label: 'Handel', value: stats.basarTrades, icon: '🤝'},
-    {label: 'Aktive Tage', value: stats.totalActiveDays, icon: '📅'},
+    {label: "ABC-Listen", value: stats.listsCreated, icon: "📚"},
+    {label: "Begriffe", value: stats.wordsAdded, icon: "📝"},
+    {label: "KaWas", value: stats.kawasCreated, icon: "🎨"},
+    {label: "KaGas", value: stats.kagasCreated, icon: "🖼️"},
+    {label: "Spiele", value: stats.slfGamesPlayed, icon: "🎮"},
+    {label: "Sokrates", value: stats.sokratesSessions, icon: "🎓"},
+    {label: "Handel", value: stats.basarTrades, icon: "🤝"},
+    {label: "Aktive Tage", value: stats.totalActiveDays, icon: "📅"},
   ];
 
   return (
@@ -140,11 +156,14 @@ function StatisticsOverview({profile}: {profile: GamificationProfile}) {
         </div>
         <div className="mt-4 text-center">
           <Badge variant="outline">
-            Lieblings-Aktivität: {
-              stats.favoriteActivity === 'learning' ? '📚 Lernen' :
-              stats.favoriteActivity === 'creativity' ? '🎨 Kreativität' :
-              stats.favoriteActivity === 'gaming' ? '🎮 Spielen' : '🤝 Social'
-            }
+            Lieblings-Aktivität:{" "}
+            {stats.favoriteActivity === "learning"
+              ? "📚 Lernen"
+              : stats.favoriteActivity === "creativity"
+                ? "🎨 Kreativität"
+                : stats.favoriteActivity === "gaming"
+                  ? "🎮 Spielen"
+                  : "🤝 Social"}
           </Badge>
         </div>
       </CardContent>
@@ -166,27 +185,29 @@ function AchievementCard({
   const progressPercentage = (progress / target) * 100;
 
   const rarityColors = {
-    common: 'bg-gray-100 border-gray-300',
-    rare: 'bg-blue-100 border-blue-300',
-    epic: 'bg-purple-100 border-purple-300',
-    legendary: 'bg-yellow-100 border-yellow-300',
+    common: "bg-gray-100 border-gray-300",
+    rare: "bg-blue-100 border-blue-300",
+    epic: "bg-purple-100 border-purple-300",
+    legendary: "bg-yellow-100 border-yellow-300",
   };
 
   return (
-    <Card 
+    <Card
       className={`cursor-pointer transition-all hover:shadow-md ${
-        isEarned ? rarityColors[achievement.rarity] : 'bg-gray-50 opacity-70'
+        isEarned ? rarityColors[achievement.rarity] : "bg-gray-50 opacity-70"
       }`}
       onClick={onClick}
     >
       <CardContent className="p-4">
         <div className="text-center">
-          <div className={`text-3xl mb-2 ${isEarned ? '' : 'grayscale'}`}>
+          <div className={`text-3xl mb-2 ${isEarned ? "" : "grayscale"}`}>
             {achievement.icon}
           </div>
           <h3 className="font-semibold text-sm mb-1">{achievement.name}</h3>
-          <p className="text-xs text-gray-600 mb-2">{achievement.description}</p>
-          
+          <p className="text-xs text-gray-600 mb-2">
+            {achievement.description}
+          </p>
+
           {!isEarned && (
             <div className="space-y-1">
               <Progress value={progressPercentage} className="w-full h-2" />
@@ -195,7 +216,7 @@ function AchievementCard({
               </p>
             </div>
           )}
-          
+
           {isEarned && (
             <Badge variant="secondary" className="text-xs">
               +{achievement.points} Punkte
@@ -215,30 +236,39 @@ function ChallengeCard({challenge}: {challenge: Challenge}) {
   const daysLeft = Math.max(0, Math.ceil(timeLeft / (1000 * 60 * 60 * 24)));
 
   return (
-    <Card className={isCompleted ? 'bg-green-50 border-green-200' : ''}>
+    <Card className={isCompleted ? "bg-green-50 border-green-200" : ""}>
       <CardContent className="p-4">
         <div className="flex items-start gap-3">
           <div className="text-2xl">{challenge.icon}</div>
           <div className="flex-1">
             <h3 className="font-semibold text-sm mb-1">{challenge.name}</h3>
-            <p className="text-xs text-gray-600 mb-2">{challenge.description}</p>
-            
+            <p className="text-xs text-gray-600 mb-2">
+              {challenge.description}
+            </p>
+
             {!isCompleted && (
               <div className="space-y-2">
                 <Progress value={progressPercentage} className="w-full h-2" />
                 <div className="flex justify-between text-xs">
-                  <span>{challenge.progress} / {challenge.target}</span>
+                  <span>
+                    {challenge.progress} / {challenge.target}
+                  </span>
                   <span>{daysLeft} Tag(e) übrig</span>
                 </div>
               </div>
             )}
-            
+
             <div className="flex justify-between items-center mt-2">
-              <Badge variant={challenge.type === 'weekly' ? 'default' : 'secondary'} className="text-xs">
-                {challenge.type === 'weekly' ? 'Wöchentlich' : 'Monatlich'}
+              <Badge
+                variant={challenge.type === "weekly" ? "default" : "secondary"}
+                className="text-xs"
+              >
+                {challenge.type === "weekly" ? "Wöchentlich" : "Monatlich"}
               </Badge>
               <Badge variant="outline" className="text-xs">
-                {isCompleted ? '✓ Abgeschlossen' : `+${challenge.reward} Punkte`}
+                {isCompleted
+                  ? "✓ Abgeschlossen"
+                  : `+${challenge.reward} Punkte`}
               </Badge>
             </div>
           </div>
@@ -258,7 +288,9 @@ function LeaderboardView({
   leaderboardData: LeaderboardEntry[];
   onRefresh: () => void;
 }) {
-  const leaderboardType = LEADERBOARD_TYPES.find((lt) => lt.id === activeLeaderboard);
+  const leaderboardType = LEADERBOARD_TYPES.find(
+    (lt) => lt.id === activeLeaderboard,
+  );
 
   return (
     <div className="space-y-4">
@@ -270,19 +302,32 @@ function LeaderboardView({
           🔄 Aktualisieren
         </Button>
       </div>
-      
+
       <div className="space-y-2">
         {leaderboardData.map((entry) => (
-          <Card key={entry.userId} className={entry.userId.startsWith('gp_') ? 'bg-blue-50 border-blue-200' : ''}>
+          <Card
+            key={entry.userId}
+            className={
+              entry.userId.startsWith("gp_") ? "bg-blue-50 border-blue-200" : ""
+            }
+          >
             <CardContent className="p-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="text-lg font-bold min-w-[30px]">
-                    {entry.rank === 1 ? '🥇' : entry.rank === 2 ? '🥈' : entry.rank === 3 ? '🥉' : `#${entry.rank}`}
+                    {entry.rank === 1
+                      ? "🥇"
+                      : entry.rank === 2
+                        ? "🥈"
+                        : entry.rank === 3
+                          ? "🥉"
+                          : `#${entry.rank}`}
                   </div>
                   <div>
                     <div className="font-semibold">{entry.username}</div>
-                    <div className="text-sm text-gray-600">Level {entry.level}</div>
+                    <div className="text-sm text-gray-600">
+                      Level {entry.level}
+                    </div>
                   </div>
                 </div>
                 <div className="text-right">
@@ -300,11 +345,14 @@ function LeaderboardView({
 
 export function GamificationDashboard() {
   const [profile, setProfile] = useState<GamificationProfile | null>(null);
-  const [activeTab, setActiveTab] = useState('overview');
-  const [selectedAchievement, setSelectedAchievement] = useState<GamificationAchievement | null>(null);
+  const [activeTab, setActiveTab] = useState("overview");
+  const [selectedAchievement, setSelectedAchievement] =
+    useState<GamificationAchievement | null>(null);
   const [showAchievementModal, setShowAchievementModal] = useState(false);
-  const [activeLeaderboard, setActiveLeaderboard] = useState('points');
-  const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([]);
+  const [activeLeaderboard, setActiveLeaderboard] = useState("points");
+  const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>(
+    [],
+  );
 
   const gamificationService = GamificationService.getInstance();
 
@@ -335,15 +383,28 @@ export function GamificationDashboard() {
   // Create stable handlers
   const tabChangeHandler = handleTabChange(setActiveTab);
   const achievementClickHandler = (achievement: GamificationAchievement) =>
-    handleAchievementClick(achievement, setSelectedAchievement, setShowAchievementModal)();
-  const closeModalHandler = handleCloseModal(setShowAchievementModal, setSelectedAchievement);
-  const refreshLeaderboardHandler = handleLeaderboardRefresh(activeLeaderboard, setLeaderboardData, gamificationService);
+    handleAchievementClick(
+      achievement,
+      setSelectedAchievement,
+      setShowAchievementModal,
+    )();
+  const closeModalHandler = handleCloseModal(
+    setShowAchievementModal,
+    setSelectedAchievement,
+  );
+  const refreshLeaderboardHandler = handleLeaderboardRefresh(
+    activeLeaderboard,
+    setLeaderboardData,
+    gamificationService,
+  );
 
   return (
     <div className="p-4 max-w-6xl mx-auto">
       <div className="mb-6 text-center">
         <h1 className="text-3xl font-bold mb-2">🏆 Gamification Dashboard</h1>
-        <p className="text-gray-600">Verfolge deinen Lernfortschritt und sammle Erfolge!</p>
+        <p className="text-gray-600">
+          Verfolge deinen Lernfortschritt und sammle Erfolge!
+        </p>
       </div>
 
       <LevelProgress profile={profile} />
@@ -362,16 +423,20 @@ export function GamificationDashboard() {
 
         <TabsContent value="overview" className="space-y-6">
           <div>
-            <h2 className="text-xl font-semibold mb-4">🎯 Aktuelle Challenges</h2>
+            <h2 className="text-xl font-semibold mb-4">
+              🎯 Aktuelle Challenges
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {activeChallenges.map((challenge) => (
                 <ChallengeCard key={challenge.id} challenge={challenge} />
               ))}
             </div>
-            
+
             {completedChallenges.length > 0 && (
               <div className="mt-6">
-                <h3 className="text-lg font-semibold mb-3">✅ Abgeschlossene Challenges</h3>
+                <h3 className="text-lg font-semibold mb-3">
+                  ✅ Abgeschlossene Challenges
+                </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {completedChallenges.slice(0, 4).map((challenge) => (
                     <ChallengeCard key={challenge.id} challenge={challenge} />
@@ -384,7 +449,9 @@ export function GamificationDashboard() {
 
         <TabsContent value="achievements" className="space-y-6">
           <div>
-            <h2 className="text-xl font-semibold mb-4">🏅 Erfolge ({earnedAchievements.length})</h2>
+            <h2 className="text-xl font-semibold mb-4">
+              🏅 Erfolge ({earnedAchievements.length})
+            </h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
               {earnedAchievements.map((achievement) => (
                 <AchievementCard
@@ -417,7 +484,7 @@ export function GamificationDashboard() {
             {LEADERBOARD_TYPES.map((type) => (
               <Button
                 key={type.id}
-                variant={activeLeaderboard === type.id ? 'default' : 'outline'}
+                variant={activeLeaderboard === type.id ? "default" : "outline"}
                 size="sm"
                 onClick={() => setActiveLeaderboard(type.id)}
               >
@@ -425,7 +492,7 @@ export function GamificationDashboard() {
               </Button>
             ))}
           </div>
-          
+
           <LeaderboardView
             activeLeaderboard={activeLeaderboard}
             leaderboardData={leaderboardData}
@@ -446,7 +513,7 @@ export function GamificationDashboard() {
               {selectedAchievement?.description}
             </DialogDescription>
           </DialogHeader>
-          
+
           {selectedAchievement && (
             <div className="space-y-4">
               <div className="text-center">
@@ -454,32 +521,42 @@ export function GamificationDashboard() {
                   {selectedAchievement.category}
                 </Badge>
                 <div className="text-sm text-gray-600">
-                  Seltenheit: <Badge variant="outline">{selectedAchievement.rarity}</Badge>
+                  Seltenheit:{" "}
+                  <Badge variant="outline">{selectedAchievement.rarity}</Badge>
                 </div>
               </div>
-              
+
               <div className="text-center">
                 <div className="text-lg font-semibold">
                   +{selectedAchievement.points} Punkte
                 </div>
                 {selectedAchievement.dateEarned && (
                   <div className="text-sm text-gray-600">
-                    Erhalten am: {new Date(selectedAchievement.dateEarned).toLocaleDateString('de-DE')}
+                    Erhalten am:{" "}
+                    {new Date(
+                      selectedAchievement.dateEarned,
+                    ).toLocaleDateString("de-DE")}
                   </div>
                 )}
               </div>
-              
-              {!selectedAchievement.dateEarned && selectedAchievement.progress !== undefined && (
-                <div className="space-y-2">
-                  <Progress 
-                    value={(selectedAchievement.progress / selectedAchievement.requirement.value) * 100} 
-                    className="w-full"
-                  />
-                  <div className="text-center text-sm">
-                    {selectedAchievement.progress} / {selectedAchievement.requirement.value}
+
+              {!selectedAchievement.dateEarned &&
+                selectedAchievement.progress !== undefined && (
+                  <div className="space-y-2">
+                    <Progress
+                      value={
+                        (selectedAchievement.progress /
+                          selectedAchievement.requirement.value) *
+                        100
+                      }
+                      className="w-full"
+                    />
+                    <div className="text-center text-sm">
+                      {selectedAchievement.progress} /{" "}
+                      {selectedAchievement.requirement.value}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
             </div>
           )}
         </DialogContent>

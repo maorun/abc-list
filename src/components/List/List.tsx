@@ -59,10 +59,10 @@ export function List() {
       const newData = [...data, newItem];
       setData(newData);
       updateStorage(newData);
-      
+
       // Track gamification activity
       trackListCreated(newItem);
-      
+
       showAbcList(newItem);
     }
   };

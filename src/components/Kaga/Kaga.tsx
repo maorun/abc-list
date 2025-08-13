@@ -31,10 +31,10 @@ export function Kaga() {
       const newKagas = [...kagas, newKaga];
       setKagas(newKagas);
       updateStorage(newKagas);
-      
+
       // Track gamification activity
       trackKagaCreated(newKaga.key);
-      
+
       navigate(`/kaga/${newKaga.key}`, {state: {item: newKaga}});
     }
   };
