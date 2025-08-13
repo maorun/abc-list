@@ -3,6 +3,19 @@ import {render} from "@testing-library/react";
 import {vi} from "vitest";
 import {Letter} from "./Letter";
 
+// Mock useGamification hook to prevent gamification tracking during testing
+vi.mock("@/hooks/useGamification", () => ({
+  useGamification: () => ({
+    trackWordAdded: vi.fn(),
+    trackListCreated: vi.fn(),
+    trackKawaCreated: vi.fn(),
+    trackKagaCreated: vi.fn(),
+    trackStadtLandFlussGame: vi.fn(),
+    trackSokratesSession: vi.fn(),
+    trackBasarTrade: vi.fn(),
+  }),
+}));
+
 // Mock localStorage
 const localStorageMock = (() => {
   let store: {[key: string]: string} = {};

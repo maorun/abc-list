@@ -1,5 +1,6 @@
 import React, {useState, useEffect, useMemo} from "react";
 import {SavedWord, WordWithExplanation} from "./SavedWord";
+import {useGamification} from "@/hooks/useGamification";
 import {
   Dialog,
   DialogContent,
@@ -26,6 +27,7 @@ const handleAddWordAction = (
   setWords: (words: WordWithExplanation[]) => void,
   setNewWord: (word: string) => void,
   setIsModalOpen: (open: boolean) => void,
+  trackWordAdded?: (word: string, listName: string) => void,
 ) => {
   if (newWord && !words.some((w) => w.text === newWord)) {
     const newWordObj: WordWithExplanation = {
@@ -39,6 +41,12 @@ const handleAddWordAction = (
     localStorage.setItem(storageKey, JSON.stringify(newWords));
     setNewWord("");
     setIsModalOpen(false);
+
+    // Track gamification activity
+    if (trackWordAdded) {
+      const listName = storageKey.split("-")[1]?.split(":")[0] || "Unknown";
+      trackWordAdded(newWord, listName);
+    }
   }
 };
 
@@ -50,6 +58,7 @@ const handleKeyDownAction = (
   setWords: (words: WordWithExplanation[]) => void,
   setNewWord: (word: string) => void,
   setIsModalOpen: (open: boolean) => void,
+  trackWordAdded?: (word: string, listName: string) => void,
 ) => {
   if (e.key === "Enter" && newWord.trim()) {
     e.preventDefault();
@@ -60,6 +69,7 @@ const handleKeyDownAction = (
       setWords,
       setNewWord,
       setIsModalOpen,
+      trackWordAdded,
     );
   }
 };
@@ -122,6 +132,7 @@ export const Letter = React.memo(
     const [isVoiceOpen, setIsVoiceOpen] = useState(false);
     const [words, setWords] = useState<WordWithExplanation[]>([]);
     const [newWord, setNewWord] = useState("");
+    const {trackWordAdded} = useGamification();
 
     // Use useMemo for storage key to prevent recreation on every render
     const storageKey = useMemo(() => {
@@ -172,6 +183,7 @@ export const Letter = React.memo(
         setWords,
         setNewWord,
         setIsModalOpen,
+        trackWordAdded,
       );
 
     const handleKeyDown = (e: React.KeyboardEvent) =>
@@ -183,6 +195,7 @@ export const Letter = React.memo(
         setWords,
         setNewWord,
         setIsModalOpen,
+        trackWordAdded,
       );
 
     const handleDeleteWord = (wordToDelete: string) =>
@@ -212,6 +225,7 @@ export const Letter = React.memo(
         setWords,
         setNewWord,
         setIsModalOpen,
+        trackWordAdded,
       );
       setIsVoiceOpen(false);
     };

@@ -749,3 +749,227 @@ const handleRating = (rating: number) =>
 - Apply `upgradeWordData()` when loading legacy data
 - Follow notification permission best practices
 - Implement responsive design with mobile-first approach
+
+## Gamification System
+
+### Overview
+The gamification system transforms ABC-List from simple self-assessment into an engaging, achievement-driven platform that encourages daily use and feature exploration. It seamlessly integrates with all existing features while maintaining the app's educational focus.
+
+### Core Implementation
+
+**Service Architecture (`src/lib/GamificationService.ts`)**
+- Singleton service managing all gamification state and logic
+- Event-driven system for real-time UI updates
+- localStorage persistence with backwards compatibility
+- Automatic daily activity tracking and streak management
+
+**Activity Tracking Integration**
+```typescript
+// Automatic tracking across all app features
+trackListCreated("My New List");     // +10 points + achievement bonuses
+trackWordAdded("Achievement");       // +2 points  
+trackKawaCreated("DOCKER");         // +15 points + achievement bonuses
+trackKagaCreated("Solar System");   // +20 points + achievement bonuses
+trackStadtLandFlussGame();          // +5 points per game
+trackSokratesSession();             // +8 points per session
+trackBasarTrade();                  // +12 points per trade
+```
+
+**UI Components (`src/components/Gamification/`)**
+- **GamificationDashboard**: Tabbed interface with Overview, Achievements, and Leaderboard
+- **GamificationStatusIndicator**: Live status showing level, points, and streak in navigation
+- Mobile-first responsive design with touch-friendly interactions
+
+### Achievement System (15 Achievements across 5 Categories)
+
+**Learning Category:**
+- First ABC-List creation (20 points, common)
+- List Master: 10 ABC-Lists (100 points, rare)
+- Word Collector: 100 terms (200 points, epic)
+- Vocabulary Legend: 1000 terms (1000 points, legendary)
+- Game Enthusiast: 10 Stadt-Land-Fluss games (80 points, common)
+
+**Creativity Category:**
+- Creative Mind: First KaWa (30 points, common)
+- Visual Artist: First KaGa (40 points, common)
+- Creative Genius: 25 combined KaWas + KaGas (300 points, epic)
+
+**Dedication Category:**
+- Daily Learner: 7-day streak (150 points, rare)
+- Streak Master: 30-day streak (500 points, epic)
+- Unstoppable: 100-day streak (1500 points, legendary)
+
+**Social Category:**
+- First Trader: First Basar trade (25 points, common)
+- Merchant King: 100 Basar trades (800 points, legendary)
+
+**Mastery Category:**
+- Sokrates Student: 50 Sokrates sessions (250 points, rare)
+- Wisdom Seeker: Reach Level 10 (400 points, epic)
+
+### Level & Experience System
+
+**Progressive Formula:**
+- Level N requires N² × 100 experience points
+- Level 1→2: 100 XP, Level 2→3: 400 XP, Level 3→4: 900 XP
+- Visual progress bars showing XP needed for next level
+- Level-up notifications with bonus point awards
+
+**Point Economy:**
+- Daily login: 3 points
+- Word addition: 2 points
+- ABC-List creation: 10 points + achievement bonuses
+- KaWa creation: 15 points + achievement bonuses
+- KaGa creation: 20 points + achievement bonuses
+- Achievement bonuses: 20-1500 points based on rarity
+
+### Daily Streak System
+
+**Smart Tracking Logic:**
+- Automatic daily activity detection
+- Visual streak indicators (🔥) in navigation
+- Current and longest streak counters
+- Streak milestone achievements at 7, 30, and 100 days
+- Intelligent reset logic for missed days
+
+### Challenge System
+
+**Weekly Challenges:**
+- Lern-Streak: Stay active for 7 consecutive days (150 points)
+- Wort-Sprint: Collect 50 new terms (120 points)
+- Spiel-Woche: Play 15 Stadt-Land-Fluss rounds (80 points)
+- Kreativ-Schub: Create 5 KaWas or KaGas (200 points)
+
+**Monthly Challenges:**
+- Vokabular-Boost: Collect 200 new terms (400 points)
+- Listen-Marathon: Create 15 ABC-Lists (300 points)
+- Allrounder: Use all app features 5 times each (500 points)
+- Meister-Modus: Complete 20 Sokrates sessions (450 points)
+
+### Leaderboard System
+
+**Multiple Ranking Metrics:**
+- Total Points: Overall gamification score
+- Level: Current experience-based level
+- Current Streak: Active learning streak
+- Lists Created: Total ABC-Lists authored
+- Words Collected: Total vocabulary gathered
+- Trading Activity: Basar engagement
+
+**Mock Competitor System:**
+- Realistic competitor profiles with badges and achievements
+- Dynamic ranking updates
+- Refresh functionality for competitive elements
+
+### Integration Requirements
+
+**Activity Tracking Integration:**
+All feature components automatically track relevant activities:
+- List creation/word addition in ABC-Lists
+- KaWa/KaGa creation in creative modules
+- Stadt-Land-Fluss games and Sokrates sessions
+- Basar trading activities
+
+**useGamification Hook (`src/hooks/useGamification.ts`):**
+```typescript
+const {
+  trackListCreated,
+  trackWordAdded,
+  trackKawaCreated,
+  trackKagaCreated,
+  trackStadtLandFlussGame,
+  trackSokratesSession,
+  trackBasarTrade,
+  gamificationService
+} = useGamification();
+```
+
+**Data Architecture:**
+- Event-driven updates via listener pattern
+- localStorage persistence with GAMIFICATION_STORAGE_KEYS
+- Backwards compatibility with existing user data
+- Automatic data migration for legacy profiles
+
+### Testing Requirements
+
+**Comprehensive Test Coverage (`src/lib/GamificationService.test.ts`):**
+- Activity tracking accuracy across all features
+- Achievement unlock conditions and progress calculation
+- Streak logic with edge cases and timezone handling
+- Level progression and XP calculations
+- Challenge generation and completion detection
+- Event system and listener management
+- Data persistence and profile management
+
+**Test Isolation Patterns:**
+```typescript
+beforeEach(() => {
+  localStorage.clear();
+  GamificationService.resetInstance(); // Reset singleton for test isolation
+  gamificationService = GamificationService.getInstance();
+});
+```
+
+**Mock Integration for Component Tests:**
+```typescript
+// Mock useGamification hook to prevent interference
+vi.mock("@/hooks/useGamification", () => ({
+  useGamification: () => ({
+    trackWordAdded: vi.fn(),
+    trackListCreated: vi.fn(),
+    // ... other tracking methods
+  }),
+}));
+```
+
+### Development Guidelines
+
+**When Adding New Features:**
+1. Integrate activity tracking calls at appropriate points
+2. Add new achievement types if feature warrants recognition
+3. Update challenge templates if feature supports competitive goals
+4. Test gamification integration doesn't interfere with core functionality
+5. Ensure mobile-responsive design for any gamification UI
+
+**Function Extraction Pattern:**
+All gamification components follow the function extraction pattern:
+```typescript
+// Extract handlers outside component to prevent recreation
+const handleAchievementClick = (achievement, setSelectedAchievement) => () => {
+  setSelectedAchievement(achievement);
+};
+
+// Inside component - create stable references
+const achievementClick = handleAchievementClick(achievement, setSelectedAchievement);
+```
+
+**Performance Considerations:**
+- Event batching for localStorage operations
+- Memoized calculations for level and achievement computations
+- Lazy loading of gamification components
+- Function extraction prevents React rerender loops
+
+### Mobile-First Implementation
+
+**Responsive Design Requirements:**
+- Touch-friendly achievement cards and progress indicators
+- Responsive charts for mobile viewports (375px width)
+- Status indicator optimization for small screens
+- Hamburger menu integration for gamification dashboard access
+
+**Component Patterns:**
+```jsx
+// Mobile-first gamification status
+
+```
+
+### Accessibility Standards
+
+**Implementation Requirements:**
+- Keyboard navigation support for all interactive elements
+- ARIA labels for achievement progress and status indicators
+- Screen reader compatibility for level and streak announcements
+- High contrast mode support for achievement rarity indicators
+- Focus management in modal dialogs and tabbed interfaces
+
+The gamification system successfully enhances user engagement while maintaining ABC-List's educational mission and technical quality standards.
