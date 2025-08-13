@@ -4,6 +4,7 @@ import {toast} from "sonner";
 import {NewStringItem} from "../NewStringItem";
 import {Button} from "../ui/button";
 import {ExportUtils} from "@/lib/exportUtils";
+import {useGamification} from "@/hooks/useGamification";
 import {
   Dialog,
   DialogContent,
@@ -21,6 +22,7 @@ export function List() {
   const [showBulkImportModal, setShowBulkImportModal] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const navigate = useNavigate();
+  const {trackListCreated} = useGamification();
 
   useEffect(() => {
     const storedData = localStorage.getItem(cacheKey);
@@ -57,6 +59,10 @@ export function List() {
       const newData = [...data, newItem];
       setData(newData);
       updateStorage(newData);
+
+      // Track gamification activity
+      trackListCreated(newItem);
+
       showAbcList(newItem);
     }
   };

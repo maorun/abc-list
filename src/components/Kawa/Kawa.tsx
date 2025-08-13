@@ -3,6 +3,7 @@ import {useNavigate} from "react-router-dom";
 import {NewStringItem, NewItemWithSaveKey} from "../NewStringItem";
 import {DeleteConfirm} from "../DeleteConfirm";
 import {Button} from "../ui/button";
+import {useGamification} from "@/hooks/useGamification";
 
 const KAWA_STORAGE_KEY = "Kawas";
 
@@ -12,6 +13,7 @@ export function Kawa() {
     NewItemWithSaveKey | undefined
   >(undefined);
   const navigate = useNavigate();
+  const {trackKawaCreated} = useGamification();
 
   useEffect(() => {
     const storedKawas = localStorage.getItem(KAWA_STORAGE_KEY);
@@ -29,6 +31,10 @@ export function Kawa() {
       const newKawas = [...kawas, newKawa];
       setKawas(newKawas);
       updateStorage(newKawas);
+
+      // Track gamification activity
+      trackKawaCreated(newKawa.key);
+
       navigate(`/kawa/${newKawa.key}`, {state: {item: newKawa}});
     }
   };

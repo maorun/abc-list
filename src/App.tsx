@@ -43,6 +43,8 @@ import {StadtLandFlussGame} from "./components/StadtLandFluss/StadtLandFlussGame
 import {Analytics} from "./components/Analytics/Analytics";
 import {SokratesCheck} from "./components/SokratesCheck/SokratesCheck";
 import {Basar} from "./components/Basar/Basar";
+import {GamificationDashboard} from "./components/Gamification/GamificationDashboard";
+import {GamificationStatusIndicator} from "./components/Gamification/GamificationStatusIndicator";
 
 // Extract navigation items to prevent recreation on every render
 const navigationItems = [
@@ -61,6 +63,11 @@ const navigationItems = [
   {to: "/slf", label: "Stadt-Land-Fluss", description: "Lernspiel spielen"},
   {to: "/basar", label: "Basar", description: "Listen teilen und entdecken"},
   {to: "/sokrates", label: "Sokrates-Check", description: "Lernerfolg prüfen"},
+  {
+    to: "/gamification",
+    label: "Erfolge",
+    description: "Gamification Dashboard",
+  },
   {
     to: "/analytics",
     label: "Analytics",
@@ -205,6 +212,7 @@ function Navigation() {
 
             {/* Offline and sync status icons in navigation */}
             <div className="flex items-center gap-2">
+              <GamificationStatusIndicator />
               <OfflineStatusIcon />
               <SyncStatusIcon />
             </div>
@@ -244,6 +252,7 @@ function AppContent() {
             <Route path="/slf/:game" element={<StadtLandFlussGame />} />
             <Route path="/basar" element={<Basar />} />
             <Route path="/sokrates" element={<SokratesCheck />} />
+            <Route path="/gamification" element={<GamificationDashboard />} />
             <Route path="/analytics" element={<Analytics />} />
           </Routes>
         </div>
