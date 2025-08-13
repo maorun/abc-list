@@ -114,14 +114,14 @@ export class GamificationService {
     // Update streak for daily activities
     this.updateDailyStreak();
 
-    // Check level progression
-    this.updateLevel();
-
-    // Check achievements
+    // Check achievements first (before level calculation)
     this.checkAchievements();
 
     // Update challenges
     this.updateChallengeProgress(activityType);
+
+    // Check level progression last (after all experience is added)
+    this.updateLevel();
 
     // Update last activity
     this.profile.lastUpdated = new Date().toISOString();
@@ -293,19 +293,18 @@ export class GamificationService {
 
     if (newLevel > oldLevel) {
       this.profile.level = newLevel;
-      this.profile.experienceToNextLevel = calculateExperienceToNextLevel(
-        this.profile.experience,
-      );
 
-      // Award level-up bonus
-      this.profile.totalPoints += newLevel * 10;
+      // Award level-up bonus only to totalPoints, not experience
+      const levelBonus = newLevel * 10;
+      this.profile.totalPoints += levelBonus;
 
       this.emitEvent("level_up", {oldLevel, newLevel, profile: this.profile});
-    } else {
-      this.profile.experienceToNextLevel = calculateExperienceToNextLevel(
-        this.profile.experience,
-      );
     }
+
+    // Always recalculate experienceToNextLevel
+    this.profile.experienceToNextLevel = calculateExperienceToNextLevel(
+      this.profile.experience,
+    );
   }
 
   // Achievement System
@@ -325,7 +324,9 @@ export class GamificationService {
 
   private isAchievementUnlocked(achievementId: string): boolean {
     return (
-      this.profile?.achievements.some((a) => a.id === achievementId) || false
+      this.profile?.achievements.some(
+        (a) => a.id === achievementId && a.dateEarned,
+      ) || false
     );
   }
 
@@ -371,7 +372,9 @@ export class GamificationService {
     const existingAchievement = this.profile.achievements.find(
       (a) => a.id === achievement.id,
     );
-    if (existingAchievement) return;
+
+    // Skip if already earned (has dateEarned)
+    if (existingAchievement && existingAchievement.dateEarned) return;
 
     const {type, value} = achievement.requirement;
     const stats = this.profile.statistics;

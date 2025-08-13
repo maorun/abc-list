@@ -330,7 +330,7 @@ describe("GamificationService", () => {
       expect(leaderboard).toHaveLength(5);
       expect(leaderboard[0].username).toBe("Du");
       expect(leaderboard[0].rank).toBe(1);
-      expect(leaderboard[0].value).toBe(12); // 10 + 2 points
+      expect(leaderboard[0].value).toBe(32); // 10 + 2 + 20 (first_list achievement)
     });
 
     it("should generate leaderboard for different metrics", () => {
