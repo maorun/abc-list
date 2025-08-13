@@ -45,10 +45,16 @@ import {SokratesCheck} from "./components/SokratesCheck/SokratesCheck";
 import {Basar} from "./components/Basar/Basar";
 import {GamificationDashboard} from "./components/Gamification/GamificationDashboard";
 import {GamificationStatusIndicator} from "./components/Gamification/GamificationStatusIndicator";
+import {SearchAndFilter} from "./components/Search/SearchAndFilter";
 
 // Extract navigation items to prevent recreation on every render
 const navigationItems = [
   {to: "/", label: "Listen", description: "ABC-Listen erstellen und verwalten"},
+  {
+    to: "/search",
+    label: "Suchen",
+    description: "Umfassende Suche und Filter",
+  },
   {
     to: "/link",
     label: "Verknüpfen",
@@ -243,6 +249,7 @@ function AppContent() {
             <Route path="/list/:item" element={<ListItem />} />
             <Route path="/multi-list" element={<MultiColumnList />} />
             <Route path="/multi-list/:item" element={<MultiColumnListItem />} />
+            <Route path="/search" element={<SearchAndFilter />} />
             <Route path="/link" element={<LinkLists />} />
             <Route path="/kawa" element={<Kawa />} />
             <Route path="/kawa/:key" element={<KawaItem />} />
