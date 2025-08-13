@@ -191,21 +191,41 @@ This cycle continues until your code both passes all tests and has no linting er
 
 ### Pre-commit Validation
 
-**Always run these commands before committing to ensure CI passes:**
+**CRITICAL: Always run the comprehensive validation before committing:**
 
-1. **Complete validation pipeline (required for CI):**
+1. **Automated validation script (RECOMMENDED):**
+   ```bash
+   npm run validate:copilot
+   ```
+   - Runs all checks automatically with colored output
+   - Enforces the mandatory Test→Code→Lint workflow
+   - Validates TypeScript strict mode compliance
+   - Checks for forbidden 'any' type usage
+   - Checks for forbidden ESLint disable comments
+   - Verifies build success and output
+   - Total time: ~25-35 seconds with comprehensive reporting
+
+2. **Manual validation pipeline (if script unavailable):**
    ```bash
    npm run test && npm run build && npm run lint && npm run format:check
    ```
    - Total time: ~15-20 seconds. NEVER CANCEL. Set timeout to 60+ seconds.
    - All commands must pass for CI to succeed
 
-2. **CI Pipeline runs:**
-   - Test job: Runs `npm test`
-   - Lint job: Runs `npm run lint` 
-   - Prettier job: Runs `npm run format:check`
-   - Build job: Runs `npm run build`
-   - Uses Node.js 22.x on Ubuntu
+3. **Enhanced CI Pipeline Features:**
+   - **Code Quality Enforcement**: Automatically detects and prevents 'any' type usage
+   - **ESLint Disable Prevention**: Blocks commits with ESLint disable comments
+   - **TypeScript Strict Mode**: Enforces strict compilation with enhanced flags
+   - **Mandatory Workflow Validation**: Ensures Test→Code→Lint sequence is followed
+   - **Build Output Verification**: Validates dist directory and critical files
+   - **Documentation Check**: Warns when new features lack documentation updates
+
+4. **CI Pipeline Jobs:**
+   - **Code Quality Checks**: Forbidden patterns, TypeScript strict mode
+   - **Build Validation**: Production build verification with output checks
+   - **Coverage Validation**: Test coverage generation and reporting  
+   - **Documentation Validation**: New feature documentation requirements (PR only)
+   - **Complete Pipeline**: Final validation with comprehensive reporting
 
 ## Project Structure
 
@@ -258,16 +278,29 @@ This cycle continues until your code both passes all tests and has no linting er
 
 ### Code Quality Requirements
 - All TypeScript code must pass strict type checking without `any` types
+- **AUTOMATED ENFORCEMENT**: CI pipeline automatically detects and blocks 'any' usage
 - Use proper type annotations for function parameters and return values
 - Define interfaces for all data structures, especially those used in multiple components
 - Avoid type assertions (`as`) unless absolutely necessary with proper justification
 - **STRICTLY FORBIDDEN: Never use ESLint disable comments** (e.g., `// eslint-disable-next-line`)
+  - **AUTOMATED ENFORCEMENT**: CI pipeline automatically detects and blocks ESLint disable comments
   - Instead of disabling ESLint rules, fix the underlying issue by:
     - Adding proper dependencies to useEffect hooks
     - Using useCallback to stabilize function references 
     - Moving pure functions outside components to avoid unnecessary re-creation
     - Restructuring code to follow React best practices
   - ESLint rules exist for good reasons and should not be suppressed
+
+### Enhanced TypeScript Configuration
+The project now uses enhanced TypeScript strict mode with additional flags:
+- `noImplicitAny: true` - Prevents implicit any types
+- `strictNullChecks: true` - Strict null checking
+- `strictFunctionTypes: true` - Strict function type checking
+- `noImplicitReturns: true` - Ensures all code paths return a value
+- `noImplicitThis: true` - Prevents implicit this types
+- `noUnusedLocals: true` - Detects unused local variables
+- `noUnusedParameters: true` - Detects unused parameters
+- `exactOptionalPropertyTypes: true` - Strict optional property handling
 
 ### Function Extraction Pattern for Production Performance
 **CRITICAL: Use this pattern to prevent production rerender loops and optimize React.memo performance**

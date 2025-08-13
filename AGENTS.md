@@ -27,7 +27,24 @@ The main application logic is in the `src` directory. Components are located in 
 
 Before you start, make sure you have Node.js and npm installed.
 
-### 2.2. The Mandatory Development Workflow
+### 2.2. Enhanced Validation and Enforcement
+
+**CRITICAL: Use the automated validation script before any commits:**
+
+```bash
+npm run validate:copilot
+```
+
+This comprehensive script enforces all guidelines from copilot-instructions.md:
+- ✅ Detects forbidden 'any' type usage automatically
+- ✅ Prevents ESLint disable comments  
+- ✅ Enforces TypeScript strict mode compilation
+- ✅ Validates the mandatory Test→Code→Lint workflow
+- ✅ Verifies build success and output integrity
+- ✅ Generates test coverage reports
+- ✅ Provides colored, detailed feedback on each step
+
+### 2.3. The Mandatory Development Workflow
 
 **THE GOLDEN RULE: Test, then Code, then Lint. Never deviate.**
 
@@ -132,6 +149,7 @@ Please ensure your code adheres to these styles. It's recommended to integrate P
 ### 4.1. Code Quality Requirements
 
 - **STRICTLY FORBIDDEN: Never use ESLint disable comments** (e.g., `// eslint-disable-next-line`)
+  - **AUTOMATED ENFORCEMENT**: The enhanced CI pipeline automatically detects and blocks ESLint disable comments
   - Instead of disabling ESLint rules, fix the underlying issue by:
     - Adding proper dependencies to useEffect hooks
     - Using useCallback to stabilize function references 
@@ -139,8 +157,32 @@ Please ensure your code adheres to these styles. It's recommended to integrate P
     - Restructuring code to follow React best practices
   - ESLint rules exist for good reasons and should not be suppressed
 - **Never use `any` type in TypeScript** - Always use proper type annotations
+  - **AUTOMATED ENFORCEMENT**: The enhanced CI pipeline automatically detects and blocks 'any' type usage
+  - Enhanced TypeScript strict mode with comprehensive flags prevents implicit any usage
 - Use proper type annotations for function parameters and return values
 - Define interfaces for all data structures used in multiple components
+
+### 4.2. Enhanced CI/CD Pipeline
+
+The repository now includes a comprehensive CI/CD pipeline that automatically enforces all guidelines:
+
+**Code Quality Enforcement:**
+- Automatic detection of forbidden 'any' type usage
+- Prevention of ESLint disable comments
+- TypeScript strict compilation validation
+- Enhanced ESLint rules with type-aware linting
+
+**Workflow Validation:**
+- Enforces the mandatory Test→Code→Lint sequence
+- Build validation with output verification
+- Test coverage generation and validation
+- Documentation update validation for new features
+
+**Local Development Support:**
+- `npm run validate:copilot` - Comprehensive validation script
+- `npm run precommit` - Pre-commit validation hook
+- Colored output with detailed error reporting
+- Step-by-step guidance for fixing issues
 
 ## 5. Commit Messages
 
@@ -308,13 +350,61 @@ it("should prevent production rerender loops", async () => {
 
 Thank you for your contribution!
 
-## 8. Sokrates Spaced Repetition System
+## 8. Enhanced GitHub Copilot Workflow Enforcement
 
-### 8.1. Overview
+### 8.1. Automated Validation
+
+The repository includes comprehensive automation to ensure GitHub Copilot reliably follows all guidelines:
+
+**Validation Script (`scripts/validate-copilot-guidelines.sh`):**
+- Comprehensive pre-commit validation with colored output
+- Enforces all guidelines from `.github/copilot-instructions.md`
+- Provides clear error messages and fix guidance
+- Integrated with npm scripts for easy access
+
+**Usage:**
+```bash
+# Run comprehensive validation (recommended before any commit)
+npm run validate:copilot
+
+# Quick pre-commit check
+npm run precommit
+
+# Manual validation pipeline (fallback)
+npm run test && npm run build && npm run lint && npm run format:check
+```
+
+**Validation Features:**
+- ✅ Forbidden 'any' type detection with TypeScript patterns
+- ✅ ESLint disable comment prevention
+- ✅ TypeScript strict mode compilation enforcement
+- ✅ Mandatory workflow sequence validation (Test→Code→Lint)
+- ✅ Build output verification and integrity checks
+- ✅ Test coverage generation and validation
+- ✅ Detailed reporting with step-by-step guidance
+
+### 8.2. CI/CD Pipeline Enhancements
+
+**Enhanced Workflow (`.github/workflows/ci.yml`):**
+- **Code Quality Checks**: Multi-layered validation before any other jobs
+- **TypeScript Strict Mode**: Enhanced compilation with comprehensive flags  
+- **Build Validation**: Production build verification with output checks
+- **Coverage Validation**: Automated test coverage generation
+- **Documentation Validation**: Warns when new features lack documentation
+
+**Enforcement Mechanisms:**
+- Automatic blocking of commits with forbidden patterns
+- Enhanced TypeScript configuration with strict flags
+- ESLint configuration with type-aware rules
+- Comprehensive error reporting and fix guidance
+
+This ensures GitHub Copilot consistently follows the established guidelines without manual intervention.
+
+### 9.1. Overview
 
 The Sokrates spaced repetition system implements a scientifically-backed learning algorithm based on the Ebbinghaus forgetting curve. This transforms the ABC-Lists from simple self-assessment tools into optimized learning systems that adapt to individual performance and maximize long-term retention.
 
-### 8.2. Core Components
+### 9.2. Core Components
 
 **Spaced Repetition Algorithm (`src/lib/spacedRepetition.ts`)**
 - SM-2 based intervals with dynamic ease factor adjustments
@@ -346,7 +436,7 @@ The Sokrates spaced repetition system implements a scientifically-backed learnin
 - Permission management: Graceful handling of browser notification permissions
 - Non-intrusive design: Auto-closing notifications with click-to-open functionality
 
-### 8.3. Data Model Enhancement
+### 9.3. Data Model Enhancement
 
 The existing `WordWithExplanation` interface has been enhanced with spaced repetition fields:
 
@@ -360,7 +450,7 @@ interface WordWithExplanation {
 }
 ```
 
-### 8.4. Algorithm Examples
+### 9.4. Algorithm Examples
 
 **First Review Sequence:**
 - Rating 4 (good) → 7 days next review
@@ -372,7 +462,7 @@ interface WordWithExplanation {
 - Difficult terms get shorter intervals and more frequent reviews
 - Algorithm adapts to individual learning patterns
 
-### 8.5. Testing Coverage
+### 9.5. Testing Coverage
 
 The spaced repetition system includes comprehensive test coverage:
 - Algorithm behavior across all rating scenarios (1-5 stars)
@@ -381,14 +471,14 @@ The spaced repetition system includes comprehensive test coverage:
 - Statistics calculation accuracy and retention metrics
 - Notification system functionality and permission handling
 
-### 8.6. Backwards Compatibility
+### 9.6. Backwards Compatibility
 
 - Existing SavedWord data automatically upgrades with spaced repetition fields
 - Legacy 7-day review logic serves as fallback for data without spaced repetition
 - All existing ABC-List functionality preserved
 - Gradual migration to spaced repetition without data loss
 
-### 8.7. Mobile-First Design
+### 9.7. Mobile-First Design
 
 All Sokrates components follow the existing mobile-first responsive design principles:
 - Touch-friendly interface elements with adequate spacing

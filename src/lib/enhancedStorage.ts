@@ -100,11 +100,13 @@ export class EnhancedPWAStorage {
       if (this.db) {
         const transaction = this.db.transaction([storeName], "readonly");
         const store = transaction.objectStore(storeName);
-        const result = (await new Promise((resolve, reject) => {
-          const request = store.get(key);
-          request.onsuccess = () => resolve(request.result);
-          request.onerror = () => reject(request.error);
-        })) as StorageItem;
+        const result = await new Promise<StorageItem | undefined>(
+          (resolve, reject) => {
+            const request = store.get(key);
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+          },
+        );
 
         if (result) {
           return result.data;
@@ -184,11 +186,11 @@ export class EnhancedPWAStorage {
       if (this.db) {
         const transaction = this.db.transaction([storeName], "readonly");
         const store = transaction.objectStore(storeName);
-        const items = (await new Promise((resolve, reject) => {
+        const items = await new Promise<StorageItem[]>((resolve, reject) => {
           const request = store.getAll();
           request.onsuccess = () => resolve(request.result);
           request.onerror = () => reject(request.error);
-        })) as StorageItem[];
+        });
 
         const result: Record<string, unknown> = {};
         items.forEach((item) => {
@@ -277,11 +279,13 @@ export class EnhancedPWAStorage {
           );
           const store = transaction.objectStore(item.storeName);
 
-          const existingItem = (await new Promise((resolve) => {
-            const request = store.get(item.id.split("_")[1]); // Extract original key
-            request.onsuccess = () => resolve(request.result);
-            request.onerror = () => resolve(null);
-          })) as StorageItem;
+          const existingItem = await new Promise<StorageItem | null>(
+            (resolve) => {
+              const request = store.get(item.id.split("_")[1]); // Extract original key
+              request.onsuccess = () => resolve(request.result);
+              request.onerror = () => resolve(null);
+            },
+          );
 
           if (existingItem) {
             existingItem.syncStatus = "synced";
