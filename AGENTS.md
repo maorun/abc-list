@@ -12,6 +12,7 @@ ABC-List implements Vera F. Birkenbihl's learning methodology with multiple lear
 - **KaGa (Graphical Associations)**: Visual learning with drawing tools and graphical elements
 - **Stadt-Land-Fluss**: Quick knowledge retrieval game training with customizable categories and timer-based rounds
 - **Sokrates Check**: Scientifically-backed spaced repetition system for optimal learning retention using the Ebbinghaus forgetting curve
+- **Gamification System**: Comprehensive achievement and motivation system with daily streaks, challenges, levels, and leaderboards
 
 **Key Technical Features:**
 - Mobile-first responsive design with hamburger navigation
