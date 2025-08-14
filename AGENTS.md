@@ -14,6 +14,7 @@ ABC-List implements Vera F. Birkenbihl's learning methodology with multiple lear
 - **Sokrates Check**: Scientifically-backed spaced repetition system for optimal learning retention using the Ebbinghaus forgetting curve
 - **Gamification System**: Comprehensive achievement and motivation system with daily streaks, challenges, levels, and leaderboards
 - **Search & Tagging System**: Intelligent full-text search with automated tagging, smart collections, and advanced filtering across all content types
+- **Community Hub**: Collaborative learning platform with user profiles, mentoring system, peer reviews, community challenges, and success stories
 
 **Key Technical Features:**
 - Mobile-first responsive design with hamburger navigation
@@ -669,3 +670,186 @@ it("should suggest educational tags for German content", () => {
 - Apply `taggingService.generateSuggestions()` for automatic tagging
 - Follow mobile-first responsive design principles
 - Implement proper error handling for search edge cases
+
+## 11. Community Hub System
+
+### 11.1. Overview
+
+The Community Hub transforms ABC-List into a collaborative learning platform while maintaining its educational focus. It provides a centralized space for knowledge sharing, mentoring, and peer collaboration through five core features: user profiles, intelligent mentoring system, community challenges, peer review system, and success stories.
+
+### 11.2. Core Components
+
+**CommunityService (`src/lib/CommunityService.ts`)**
+- Singleton service managing all community data with localStorage persistence
+- Event-driven system for real-time UI updates
+- Integration with existing Gamification and Basar systems
+- Comprehensive error handling and graceful fallbacks
+
+**Community Components (`src/components/Community/`)**
+- **Community.tsx**: Main tabbed interface with mobile-first responsive design
+- **UserProfile.tsx**: Profile creation and management with expertise areas
+- **MentorshipManager.tsx**: Mentor finding and mentorship request workflows
+- **CommunityChallenge.tsx**: Challenge participation and progress tracking
+- **PeerReview.tsx**: Comprehensive review system for Basar contributions
+- **FeaturedUsers.tsx**: Success stories and community inspiration
+
+### 11.3. Data Models
+
+**Core Interfaces:**
+```typescript
+interface CommunityProfile {
+  userId: string;
+  displayName: string;
+  bio: string;
+  expertise: UserExpertise[];
+  mentorAvailable: boolean;
+  menteeInterested: boolean;
+  reputation: number;
+  contributionCount: number;
+}
+
+interface MentorshipConnection {
+  id: string;
+  mentorId: string;
+  menteeId: string;
+  expertiseArea: string;
+  status: "pending" | "active" | "completed" | "cancelled";
+  sessionCount: number;
+  rating?: number;
+}
+
+interface PeerReview {
+  id: string;
+  reviewerId: string;
+  itemId: string;
+  itemType: "abc-list" | "kawa" | "kaga";
+  rating: number; // 1-5 stars
+  categories: {
+    accuracy: number;
+    usefulness: number;
+    clarity: number;
+    creativity: number;
+  };
+  comment: string;
+  helpfulnessRating: number;
+}
+```
+
+### 11.4. Expertise Areas
+
+**German Academic Subjects:**
+The system includes 25+ predefined expertise areas matching the German educational context:
+- STEM: Mathematik, Physik, Chemie, Biologie, Informatik, Technik, Ingenieurwesen
+- Languages: Deutsch, Englisch, Französisch, Spanisch
+- Humanities: Geschichte, Geographie, Politik, Philosophie, Rechtswissenschaft
+- Social Sciences: Psychologie, Pädagogik, Wirtschaft
+- Arts: Kunst, Musik
+- Applied: Sport, Medizin, Naturwissenschaften, Geisteswissenschaften
+
+### 11.5. Integration Points
+
+**Gamification Integration:**
+- Activity tracking for peer reviews and success story submissions
+- Community challenge completion rewards
+- Reputation system integration with existing achievement system
+- Mentorship participation badges and recognition
+
+**Navigation Integration:**
+- New "Community" tab in main navigation with Users icon
+- Deep linking support for community profiles and challenges
+- Mobile-responsive tabbed interface with touch-friendly controls
+
+**Data Persistence:**
+- localStorage integration with COMMUNITY_STORAGE_KEYS
+- Event-driven updates for real-time UI synchronization
+- Backwards compatibility with existing user data and profiles
+- Graceful error handling for localStorage and JSON parsing issues
+
+### 11.6. Mobile-First Implementation
+
+**Responsive Design Requirements:**
+- Touch-friendly interface with minimum 44px touch targets
+- Responsive profile cards and challenge layouts for mobile viewports
+- Collapsible sections and expandable content for small screens
+- Optimized form layouts for profile creation and mentorship requests
+
+**Component Patterns:**
+```jsx
+// Mobile-first community profile layout
+<div className="flex flex-col gap-4">
+  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+    <h2 className="text-2xl font-bold">Community Profil</h2>
+    <div className="flex flex-col sm:flex-row gap-2">
+      <Button className="w-full sm:w-auto">Profil bearbeiten</Button>
+      <Button className="w-full sm:w-auto">Mentor werden</Button>
+    </div>
+  </div>
+</div>
+```
+
+### 11.7. Testing Requirements
+
+**Comprehensive Test Coverage (`src/lib/CommunityService.test.ts`):**
+- Singleton pattern management and instance isolation
+- User profile CRUD operations with validation
+- Mentorship request workflows and status tracking
+- Community challenge participation logic
+- Peer review submission and retrieval with category scoring
+- Success story management and featured user selection
+- Event system functionality and listener management
+- Error handling for localStorage failures and JSON parsing errors
+
+**Test Isolation Patterns:**
+```typescript
+beforeEach(() => {
+  localStorage.clear();
+  CommunityService.resetInstance(); // Reset singleton for test isolation
+  communityService = CommunityService.getInstance();
+});
+```
+
+**Integration Testing:**
+- Community data persistence across browser sessions
+- Integration with existing Gamification and Basar systems
+- Mobile responsiveness and touch interaction validation
+- Backwards compatibility with existing user profiles
+
+### 11.8. Performance Optimization
+
+**Function Extraction Applied:**
+All Community Hub components follow the function extraction pattern to prevent production rerenders:
+
+```typescript
+// Extracted handlers prevent recreation on every render
+const handleProfileUpdateAction = (
+  profileData: Partial<CommunityProfile>,
+  setProfile: (profile: CommunityProfile) => void,
+  onSuccess: () => void
+) => () => {
+  const communityService = CommunityService.getInstance();
+  communityService.updateUserProfile(profileData);
+  setProfile(communityService.getUserProfile()!);
+  onSuccess();
+};
+
+// Inside component - create stable references
+const handleProfileUpdate = () => 
+  handleProfileUpdateAction(profileData, setProfile, onSuccess)();
+```
+
+### 11.9. Development Guidelines
+
+**When Working with Community Features:**
+1. Always test singleton instance management and data persistence
+2. Verify mobile responsiveness of all community interfaces
+3. Ensure integration with existing gamification and content systems
+4. Follow function extraction pattern for all event handlers
+5. Add comprehensive test coverage for new community features
+6. Test error handling for localStorage and network failures
+
+**Common Patterns:**
+- Use `CommunityService.getInstance()` for all community operations
+- Apply function extraction pattern to prevent React rerender loops
+- Follow mobile-first responsive design principles
+- Implement proper error boundaries and fallback states
+- Ensure backwards compatibility with existing data structures

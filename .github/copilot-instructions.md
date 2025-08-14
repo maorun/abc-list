@@ -187,6 +187,40 @@ ABC-List is a React/TypeScript/Vite web application implementing Vera F. Birkenb
   - Verify favorites persistence across sessions
   - Test favorites integration with search filters
 
+### 9. Community Hub System
+- Navigate to "Community" tab to access the community features
+- Test user profile creation and management:
+  - Click "Profil erstellen" to create a new community profile
+  - Enter display name, bio, and select expertise areas from German academic subjects
+  - Set mentoring availability preferences (mentor available, seeking mentorship)
+  - Verify profile data persistence and reputation tracking
+- Test mentoring system:
+  - Navigate to "Mentoring" tab within Community Hub
+  - Browse available mentors and filter by expertise areas
+  - Send mentoring requests with optional personalized messages
+  - Verify mentorship status tracking (pending, active, completed)
+  - Test mentor response workflows and session management
+- Test community challenges:
+  - Navigate to "Challenges" tab to view active community challenges
+  - Filter challenges by type (learning, creation, collaboration, review) and difficulty
+  - Participate in challenges and track progress with visual indicators
+  - Verify gamification integration with challenge completion rewards
+- Test peer review system:
+  - Navigate to "Bewertungen" tab to access the peer review interface
+  - Submit reviews for Basar contributions with 5-star ratings and category scoring
+  - Test review categories: accuracy, usefulness, clarity, creativity
+  - Verify review moderation system and helpfulness voting
+  - Check integration with existing Basar system for enhanced content quality
+- Test success stories and featured users:
+  - Navigate to "Erfolgsgeschichten" tab to view community achievements
+  - Submit personal success stories with before/after learning journeys
+  - Verify featured user highlighting and community inspiration features
+  - Test story moderation and community engagement features
+- Test community data persistence:
+  - Verify all community data persists across browser sessions
+  - Test data synchronization with existing gamification and content systems
+  - Check backwards compatibility with existing user profiles and achievements
+
 ## CI/CD Requirements
 
 ### The Mandatory Development Workflow
@@ -269,6 +303,7 @@ This cycle continues until your code both passes all tests and has no linting er
 ```
 /src
   /components          # React components organized by feature
+    /Community        # Community Hub components (profiles, mentoring, peer reviews)
     /Kaga             # KaGa (graphical associations) components
     /Kawa             # KaWa (word associations) components
     /List             # ABC-List components
@@ -277,6 +312,7 @@ This cycle continues until your code both passes all tests and has no linting er
     /SokratesCheck    # Spaced repetition system components
     /StadtLandFluss   # Stadt-Land-Fluss game components
   /lib                # Utility libraries and algorithms
+    CommunityService.ts # Community data management and mentoring system
     notifications.ts  # Browser notification system
     searchService.ts  # Full-text search and indexing engine
     spacedRepetition.ts # Spaced repetition algorithm implementation
@@ -1226,3 +1262,209 @@ const achievementClick = handleAchievementClick(achievement, setSelectedAchievem
 - Focus management in modal dialogs and tabbed interfaces
 
 The gamification system successfully enhances user engagement while maintaining ABC-List's educational mission and technical quality standards.
+
+## Community Hub System
+
+### Overview
+The Community Hub transforms ABC-List into a collaborative learning platform while maintaining its educational focus and technical excellence standards. It provides a centralized space for knowledge sharing, mentoring, and peer collaboration through five core features that seamlessly integrate with existing systems.
+
+### Core Implementation
+
+**CommunityService (`src/lib/CommunityService.ts`)**
+- Singleton service managing all community data with localStorage persistence
+- Event-driven system for real-time UI updates
+- Integration with existing Gamification and Basar systems for cohesive experience
+- Comprehensive error handling and graceful fallbacks for production stability
+
+**Community Components (`src/components/Community/`)**
+- **Community**: Main tabbed interface with Overview, Profile, Mentoring, Challenges, Reviews, and Success Stories
+- **UserProfile**: Rich profile creation with 25+ German academic expertise areas and mentoring preferences
+- **MentorshipManager**: Intelligent mentor matching based on expertise areas with request workflows
+- **CommunityChallenge**: Gamified collaborative challenges extending existing achievement system
+- **PeerReview**: Comprehensive review system for Basar contributions with detailed category ratings
+- **FeaturedUsers**: Community inspiration through shared learning journeys and achievements
+
+### Data Model Enhancement
+
+Enhanced interfaces for comprehensive community functionality:
+
+```typescript
+interface CommunityProfile {
+  userId: string;
+  displayName: string;
+  bio: string;
+  expertise: UserExpertise[];
+  mentorAvailable: boolean;
+  menteeInterested: boolean;
+  joinDate: string;
+  lastActive: string;
+  reputation: number;
+  contributionCount: number;
+  helpfulReviews: number;
+}
+
+interface MentorshipConnection {
+  id: string;
+  mentorId: string;
+  menteeId: string;
+  expertiseArea: string;
+  status: "pending" | "active" | "completed" | "cancelled";
+  requestDate: string;
+  sessionCount: number;
+  rating?: number;
+}
+
+interface PeerReview {
+  id: string;
+  reviewerId: string;
+  itemId: string;
+  itemType: "abc-list" | "kawa" | "kaga";
+  rating: number; // 1-5 stars
+  comment: string;
+  categories: {
+    accuracy: number;
+    usefulness: number;
+    clarity: number;
+    creativity: number;
+  };
+  helpfulnessRating: number;
+  timestamp: string;
+  status: "pending" | "published" | "flagged";
+}
+```
+
+### Testing Requirements
+
+**Comprehensive Test Coverage (`src/lib/CommunityService.test.ts`):**
+- Singleton pattern management with proper instance isolation
+- User profile CRUD operations with validation and error handling
+- Mentorship request workflows and status tracking
+- Community challenge participation logic and progress tracking
+- Peer review submission and retrieval with category scoring
+- Success story management and featured user selection
+- Event system functionality and listener management
+- Data persistence and profile management across sessions
+
+**Test Isolation Patterns:**
+```typescript
+beforeEach(() => {
+  localStorage.clear();
+  CommunityService.resetInstance(); // Reset singleton for test isolation
+  communityService = CommunityService.getInstance();
+});
+```
+
+**Integration Testing:**
+```typescript
+// Test community data persistence
+it("should persist community data across browser sessions", () => {
+  const profile = communityService.createUserProfile(profileData);
+  expect(localStorage.getItem(COMMUNITY_STORAGE_KEYS.USER_PROFILE)).toBeTruthy();
+});
+
+// Test mentorship workflow
+it("should handle complete mentorship request workflow", () => {
+  const request = communityService.requestMentorship(mentorId, expertiseArea);
+  expect(request.status).toBe("pending");
+});
+```
+
+### Mobile-First Implementation
+
+**Responsive Design Requirements:**
+- Touch-friendly interface with minimum 44px touch targets for mobile interaction
+- Responsive profile cards and challenge layouts optimized for mobile viewports (375px width)
+- Collapsible sections and expandable content for efficient space usage on small screens
+- Mobile-optimized form layouts for profile creation and mentorship requests
+
+**Component Patterns:**
+```jsx
+// Mobile-first community interface
+
+```
+
+### Performance Optimization
+
+**Function Extraction Applied:**
+All Community Hub components follow the function extraction pattern to prevent production rerenders:
+
+```typescript
+// Extracted handlers prevent recreation on every render
+const handleMentorshipRequestAction = (
+  mentorId: string,
+  expertiseArea: string,
+  message: string,
+  onSuccess: () => void,
+  onError: (error: string) => void
+) => () => {
+  try {
+    const communityService = CommunityService.getInstance();
+    communityService.requestMentorship(mentorId, expertiseArea, message);
+    onSuccess();
+  } catch (error) {
+    onError(error instanceof Error ? error.message : 'Unknown error');
+  }
+};
+
+// Inside component - create stable references
+const handleMentorshipRequest = () => 
+  handleMentorshipRequestAction(mentorId, area, message, onSuccess, onError)();
+```
+
+### Integration Points
+
+**Gamification Integration:**
+- Activity tracking for peer reviews and success story submissions
+- Community challenge completion rewards integrated with existing point system
+- Reputation system synchronized with gamification achievements
+- Mentorship participation badges and community recognition
+
+**Navigation Integration:**
+- New "Community" tab in main navigation with Users icon
+- Deep linking support for community profiles, challenges, and mentorships
+- Mobile-responsive hamburger menu integration for community access
+
+**Basar Integration:**
+- Peer review system seamlessly integrated with existing Basar contribution system
+- Enhanced content quality through community-driven review process
+- Review-based reputation building for contributors
+
+**Data Persistence:**
+- localStorage integration with COMMUNITY_STORAGE_KEYS for consistent data management
+- Event-driven updates for real-time UI synchronization across components
+- Backwards compatibility with existing user data and profiles
+- Automatic migration and graceful handling of legacy data structures
+
+### Development Guidelines
+
+**When Working with Community Features:**
+1. Always test singleton instance management and data persistence across sessions
+2. Verify mobile responsiveness of all community interfaces with touch interaction testing
+3. Ensure seamless integration with existing gamification and content systems
+4. Follow function extraction pattern for all event handlers to prevent rerenders
+5. Add comprehensive test coverage for new community features including edge cases
+6. Test error handling for localStorage failures and network connectivity issues
+
+**Common Patterns:**
+- Use `CommunityService.getInstance()` for all community data operations
+- Apply function extraction pattern consistently to prevent React rerender loops
+- Follow mobile-first responsive design principles with touch-friendly controls
+- Implement proper error boundaries and fallback states for production stability
+- Ensure backwards compatibility and graceful upgrades for existing data
+
+**Performance Considerations:**
+- Event batching for localStorage operations to prevent excessive writes
+- Lazy loading of community data and profiles for optimal initial load times
+- Function extraction applied throughout to maintain React.memo effectiveness
+- Efficient state management with minimal re-renders through stable references
+
+### Accessibility Standards
+
+**Implementation Requirements:**
+- Keyboard navigation support for all interactive community elements
+- ARIA labels for mentorship status, review ratings, and challenge progress
+- Screen reader compatibility for community announcements and notifications
+- High contrast mode support for all community interface elements
+- Focus management in modal dialogs and tabbed community interfaces
+
+The Community Hub successfully transforms ABC-List into a collaborative learning platform while preserving its core educational mission and maintaining the highest technical quality standards.
