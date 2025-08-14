@@ -8,10 +8,6 @@ import {
   CommunityService,
   COMMUNITY_STORAGE_KEYS,
   CommunityProfile,
-  MentorshipConnection,
-  CommunityChallenge,
-  PeerReview,
-  SuccessStory,
 } from "../lib/CommunityService";
 
 // Mock localStorage
@@ -166,28 +162,42 @@ describe("CommunityService", () => {
     beforeEach(() => {
       userProfile = communityService.createUserProfile({
         displayName: "Mentee User",
-        expertise: [{area: "Mathematik", level: "Beginner", verified: false, endorsements: 0}],
+        expertise: [
+          {
+            area: "Mathematik",
+            level: "Beginner",
+            verified: false,
+            endorsements: 0,
+          },
+        ],
         menteeInterested: true,
       });
     });
 
     it("should find mentors for expertise area", () => {
       const mentors = communityService.findMentors("Mathematik");
-      
+
       expect(mentors).toHaveLength(2);
       expect(mentors[0].displayName).toBe("Dr. Maria Schmidt");
       expect(mentors[1].displayName).toBe("Prof. Andreas Weber");
-      expect(mentors.every(m => m.mentorAvailable)).toBe(true);
-      expect(mentors.every(m => 
-        m.expertise.some(exp => exp.area === "Mathematik" && exp.level === "Expert")
-      )).toBe(true);
+      expect(mentors.every((m) => m.mentorAvailable)).toBe(true);
+      expect(
+        mentors.every((m) =>
+          m.expertise.some(
+            (exp) => exp.area === "Mathematik" && exp.level === "Expert",
+          ),
+        ),
+      ).toBe(true);
     });
 
     it("should request mentorship", () => {
       const mentorId = "mentor_1";
       const expertiseArea = "Mathematik";
 
-      const mentorship = communityService.requestMentorship(mentorId, expertiseArea);
+      const mentorship = communityService.requestMentorship(
+        mentorId,
+        expertiseArea,
+      );
 
       expect(mentorship.mentorId).toBe(mentorId);
       expect(mentorship.menteeId).toBe(userProfile.userId);
@@ -213,8 +223,14 @@ describe("CommunityService", () => {
     });
 
     it("should retrieve mentorships from localStorage", () => {
-      const mentorship1 = communityService.requestMentorship("mentor_1", "Mathematik");
-      const mentorship2 = communityService.requestMentorship("mentor_2", "Physik");
+      const mentorship1 = communityService.requestMentorship(
+        "mentor_1",
+        "Mathematik",
+      );
+      const mentorship2 = communityService.requestMentorship(
+        "mentor_2",
+        "Physik",
+      );
 
       const mentorships = communityService.getMentorships();
       expect(mentorships).toHaveLength(2);
@@ -245,11 +261,11 @@ describe("CommunityService", () => {
 
     it("should return default challenges when none exist", () => {
       const challenges = communityService.getCommunityCharges();
-      
+
       expect(challenges).toHaveLength(2);
       expect(challenges[0].title).toBe("Wochenend-Lernchallenge");
       expect(challenges[1].title).toBe("Community-Reviewer");
-      expect(challenges.every(c => c.status === "active")).toBe(true);
+      expect(challenges.every((c) => c.status === "active")).toBe(true);
     });
 
     it("should participate in challenge", () => {
@@ -259,8 +275,8 @@ describe("CommunityService", () => {
       communityService.participateInChallenge(challengeId);
 
       const updatedChallenges = communityService.getCommunityCharges();
-      const challenge = updatedChallenges.find(c => c.id === challengeId);
-      
+      const challenge = updatedChallenges.find((c) => c.id === challengeId);
+
       expect(challenge!.participants).toContain(userProfile.userId);
     });
 
@@ -272,15 +288,17 @@ describe("CommunityService", () => {
       communityService.participateInChallenge(challengeId); // Try to participate again
 
       const updatedChallenges = communityService.getCommunityCharges();
-      const challenge = updatedChallenges.find(c => c.id === challengeId);
-      
-      expect(challenge!.participants.filter(p => p === userProfile.userId)).toHaveLength(1);
+      const challenge = updatedChallenges.find((c) => c.id === challengeId);
+
+      expect(
+        challenge!.participants.filter((p) => p === userProfile.userId),
+      ).toHaveLength(1);
     });
 
     it("should handle participation without user profile", () => {
       CommunityService.resetInstance();
       const newService = CommunityService.getInstance();
-      
+
       expect(() => {
         newService.participateInChallenge("challenge_1");
       }).not.toThrow(); // Should fail silently
@@ -374,11 +392,17 @@ describe("CommunityService", () => {
         categories: {accuracy: 5, usefulness: 5, clarity: 5, creativity: 5},
       });
 
-      const item1Reviews = communityService.getReviewsForItem("item-1", "abc-list");
+      const item1Reviews = communityService.getReviewsForItem(
+        "item-1",
+        "abc-list",
+      );
       expect(item1Reviews).toHaveLength(1);
       expect(item1Reviews[0].itemId).toBe("item-1");
 
-      const item2Reviews = communityService.getReviewsForItem("item-2", "abc-list");
+      const item2Reviews = communityService.getReviewsForItem(
+        "item-2",
+        "abc-list",
+      );
       expect(item2Reviews).toHaveLength(1);
       expect(item2Reviews[0].itemId).toBe("item-2");
     });
@@ -387,7 +411,10 @@ describe("CommunityService", () => {
       const reviews = communityService.getReviews();
       expect(reviews).toEqual([]);
 
-      const itemReviews = communityService.getReviewsForItem("non-existent", "abc-list");
+      const itemReviews = communityService.getReviewsForItem(
+        "non-existent",
+        "abc-list",
+      );
       expect(itemReviews).toEqual([]);
     });
 
@@ -426,7 +453,9 @@ describe("CommunityService", () => {
       expect(story.story).toBe("This is my amazing learning story...");
       expect(story.achievements).toEqual(["Passed exam", "Learned new skills"]);
       expect(story.beforeAfter.before).toBe("I knew nothing about the subject");
-      expect(story.beforeAfter.after).toBe("Now I'm confident and knowledgeable");
+      expect(story.beforeAfter.after).toBe(
+        "Now I'm confident and knowledgeable",
+      );
       expect(story.likes).toBe(0);
       expect(story.featured).toBe(false);
       expect(typeof story.id).toBe("string");
@@ -470,7 +499,10 @@ describe("CommunityService", () => {
       const stories = communityService.getSuccessStories();
       stories[0].featured = true;
       stories[0].likes = 10;
-      localStorage.setItem(COMMUNITY_STORAGE_KEYS.STORIES, JSON.stringify(stories));
+      localStorage.setItem(
+        COMMUNITY_STORAGE_KEYS.STORIES,
+        JSON.stringify(stories),
+      );
 
       const featuredStories = communityService.getFeaturedStories();
       expect(featuredStories).toHaveLength(1);
@@ -492,7 +524,7 @@ describe("CommunityService", () => {
       communityService.likeStory(story.id);
 
       const updatedStories = communityService.getSuccessStories();
-      const updatedStory = updatedStories.find(s => s.id === story.id);
+      const updatedStory = updatedStories.find((s) => s.id === story.id);
       expect(updatedStory!.likes).toBe(1);
     });
 
@@ -558,10 +590,6 @@ describe("CommunityService", () => {
     });
 
     it("should track gamification activity for reviews", () => {
-      const mockGamificationService = {
-        trackCustomActivity: vi.fn(),
-      };
-
       // We can't easily mock the singleton, but we can verify the service
       // would call trackCustomActivity through integration
       const review = communityService.submitReview({

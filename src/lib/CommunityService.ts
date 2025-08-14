@@ -91,7 +91,7 @@ export interface SuccessStory {
 // Storage keys for community data
 export const COMMUNITY_STORAGE_KEYS = {
   PROFILES: "community_profiles",
-  MENTORSHIPS: "community_mentorships", 
+  MENTORSHIPS: "community_mentorships",
   CHALLENGES: "community_challenges",
   REVIEWS: "community_reviews",
   STORIES: "community_stories",
@@ -104,7 +104,7 @@ export const COMMUNITY_STORAGE_KEYS = {
  */
 export const EXPERTISE_AREAS = [
   "Mathematik",
-  "Physik", 
+  "Physik",
   "Chemie",
   "Biologie",
   "Geschichte",
@@ -130,7 +130,7 @@ export const EXPERTISE_AREAS = [
   "Rechtswissenschaft",
 ] as const;
 
-export type ExpertiseArea = typeof EXPERTISE_AREAS[number];
+export type ExpertiseArea = (typeof EXPERTISE_AREAS)[number];
 
 /**
  * CommunityService - Singleton service managing all community features
@@ -153,7 +153,7 @@ export class CommunityService {
   }
 
   public static resetInstance(): void {
-    CommunityService.instance = null as any;
+    (CommunityService.instance as CommunityService | undefined) = undefined;
   }
 
   // Event system for real-time UI updates
@@ -180,7 +180,9 @@ export class CommunityService {
     }
   }
 
-  public createUserProfile(profileData: Partial<CommunityProfile>): CommunityProfile {
+  public createUserProfile(
+    profileData: Partial<CommunityProfile>,
+  ): CommunityProfile {
     const profile: CommunityProfile = {
       userId: this.generateId(),
       displayName: profileData.displayName || "Anonymous User",
@@ -260,7 +262,9 @@ export class CommunityService {
 
   public getMentorships(): MentorshipConnection[] {
     try {
-      const mentorships = localStorage.getItem(COMMUNITY_STORAGE_KEYS.MENTORSHIPS);
+      const mentorships = localStorage.getItem(
+        COMMUNITY_STORAGE_KEYS.MENTORSHIPS,
+      );
       return mentorships ? JSON.parse(mentorships) : [];
     } catch (error) {
       console.error("Failed to load mentorships:", error);
@@ -271,7 +275,9 @@ export class CommunityService {
   // Community Challenges
   public getCommunityCharges(): CommunityChallenge[] {
     try {
-      const challenges = localStorage.getItem(COMMUNITY_STORAGE_KEYS.CHALLENGES);
+      const challenges = localStorage.getItem(
+        COMMUNITY_STORAGE_KEYS.CHALLENGES,
+      );
       return challenges ? JSON.parse(challenges) : this.getDefaultChallenges();
     } catch (error) {
       console.error("Failed to load community challenges:", error);
@@ -297,7 +303,9 @@ export class CommunityService {
   }
 
   // Peer Review System
-  public submitReview(reviewData: Omit<PeerReview, "id" | "timestamp" | "status">): PeerReview {
+  public submitReview(
+    reviewData: Omit<PeerReview, "id" | "timestamp" | "status">,
+  ): PeerReview {
     const review: PeerReview = {
       ...reviewData,
       id: this.generateId(),
@@ -308,11 +316,14 @@ export class CommunityService {
 
     const reviews = this.getReviews();
     reviews.push(review);
-    localStorage.setItem(COMMUNITY_STORAGE_KEYS.REVIEWS, JSON.stringify(reviews));
+    localStorage.setItem(
+      COMMUNITY_STORAGE_KEYS.REVIEWS,
+      JSON.stringify(reviews),
+    );
 
     // Track review activity for gamification
     this.gamificationService.trackCustomActivity("peer_review_submitted", 15);
-    
+
     this.notifyListeners();
     return review;
   }
@@ -334,7 +345,9 @@ export class CommunityService {
   }
 
   // Success Stories
-  public submitSuccessStory(storyData: Omit<SuccessStory, "id" | "timestamp" | "likes" | "featured">): SuccessStory {
+  public submitSuccessStory(
+    storyData: Omit<SuccessStory, "id" | "timestamp" | "likes" | "featured">,
+  ): SuccessStory {
     const story: SuccessStory = {
       ...storyData,
       id: this.generateId(),
@@ -345,11 +358,14 @@ export class CommunityService {
 
     const stories = this.getSuccessStories();
     stories.push(story);
-    localStorage.setItem(COMMUNITY_STORAGE_KEYS.STORIES, JSON.stringify(stories));
+    localStorage.setItem(
+      COMMUNITY_STORAGE_KEYS.STORIES,
+      JSON.stringify(stories),
+    );
 
     // Track story submission for gamification
     this.gamificationService.trackCustomActivity("success_story_shared", 25);
-    
+
     this.notifyListeners();
     return story;
   }
@@ -373,10 +389,13 @@ export class CommunityService {
   public likeStory(storyId: string): void {
     const stories = this.getSuccessStories();
     const story = stories.find((s) => s.id === storyId);
-    
+
     if (story) {
       story.likes += 1;
-      localStorage.setItem(COMMUNITY_STORAGE_KEYS.STORIES, JSON.stringify(stories));
+      localStorage.setItem(
+        COMMUNITY_STORAGE_KEYS.STORIES,
+        JSON.stringify(stories),
+      );
       this.notifyListeners();
     }
   }
@@ -410,7 +429,7 @@ export class CommunityService {
         helpfulReviews: 23,
       },
       {
-        userId: "mentor_2", 
+        userId: "mentor_2",
         displayName: "Prof. Andreas Weber",
         bio: `Universitätsprofessor für ${expertiseArea}. Betreut gerne motivierte Lernende bei ihrer Weiterentwicklung.`,
         expertise: [
@@ -442,7 +461,8 @@ export class CommunityService {
       {
         id: "challenge_1",
         title: "Wochenend-Lernchallenge",
-        description: "Erstelle 5 neue ABC-Listen zu verschiedenen Themen und sammle dabei mindestens 50 neue Begriffe.",
+        description:
+          "Erstelle 5 neue ABC-Listen zu verschiedenen Themen und sammle dabei mindestens 50 neue Begriffe.",
         type: "learning",
         difficulty: "medium",
         points: 200,
@@ -456,7 +476,8 @@ export class CommunityService {
       {
         id: "challenge_2",
         title: "Community-Reviewer",
-        description: "Bewerte 10 Basar-Beiträge und hilf der Community mit konstruktivem Feedback.",
+        description:
+          "Bewerte 10 Basar-Beiträge und hilf der Community mit konstruktivem Feedback.",
         type: "review",
         difficulty: "easy",
         points: 150,
@@ -464,7 +485,10 @@ export class CommunityService {
         endDate: weekFromNow.toISOString(),
         participants: [],
         winners: [],
-        requirements: ["10 Bewertungen abgeben", "Konstruktives Feedback schreiben"],
+        requirements: [
+          "10 Bewertungen abgeben",
+          "Konstruktives Feedback schreiben",
+        ],
         status: "active",
       },
     ];

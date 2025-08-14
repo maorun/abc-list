@@ -5,7 +5,13 @@
 
 import React, {useState, useEffect} from "react";
 import {Button} from "../ui/button";
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "../ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
 import {Badge} from "../ui/badge";
 import {
   Dialog,
@@ -30,9 +36,7 @@ import {
   Star,
   ThumbsUp,
   Edit,
-  Eye,
   Award,
-  Filter,
   CheckCircle,
 } from "lucide-react";
 import {
@@ -46,44 +50,56 @@ interface PeerReviewProps {
 }
 
 // Extract handlers outside component to prevent recreation on every render
-const handleSubmitReviewAction = (
-  reviewData: {
-    itemId: string;
-    itemType: string;
-    rating: number;
-    comment: string;
-    categories: {
-      accuracy: number;
-      usefulness: number;
-      clarity: number;
-      creativity: number;
-    };
-  },
-  userProfile: CommunityProfile,
-  setShowReviewDialog: (show: boolean) => void,
-  resetForm: () => void,
-) => () => {
-  const communityService = CommunityService.getInstance();
-  
-  communityService.submitReview({
-    ...reviewData,
-    reviewerId: userProfile.userId,
-  });
-  
-  setShowReviewDialog(false);
-  resetForm();
-};
+const handleSubmitReviewAction =
+  (
+    reviewData: {
+      itemId: string;
+      itemType: string;
+      rating: number;
+      comment: string;
+      categories: {
+        accuracy: number;
+        usefulness: number;
+        clarity: number;
+        creativity: number;
+      };
+    },
+    userProfile: CommunityProfile,
+    setShowReviewDialog: (show: boolean) => void,
+    resetForm: () => void,
+  ) =>
+  () => {
+    const communityService = CommunityService.getInstance();
 
-const handleRatingChangeAction = (
-  category: string,
-  setCategories: (categories: any) => void,
-  categories: any,
-) => (rating: number) => {
-  setCategories({
-    ...categories,
-    [category]: rating,
-  });
-};
+    communityService.submitReview({
+      ...reviewData,
+      reviewerId: userProfile.userId,
+    });
+
+    setShowReviewDialog(false);
+    resetForm();
+  };
+
+// Review categories interface for type safety
+interface ReviewCategories {
+  accuracy: number;
+  usefulness: number;
+  clarity: number;
+  creativity: number;
+}
+
+const handleRatingChangeAction =
+  (
+    category: string,
+    setCategories: (categories: ReviewCategories) => void,
+    categories: ReviewCategories,
+  ) =>
+  (rating: number) => {
+    setCategories({
+      ...categories,
+      [category]: rating,
+    });
+  };
 
 // Star rating component
 function StarRating({
@@ -129,7 +145,9 @@ function ReviewForm({
   onClose: () => void;
 }) {
   const [itemId, setItemId] = useState("");
-  const [itemType, setItemType] = useState<"abc-list" | "kawa" | "kaga">("abc-list");
+  const [itemType, setItemType] = useState<"abc-list" | "kawa" | "kaga">(
+    "abc-list",
+  );
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [categories, setCategories] = useState({
@@ -169,8 +187,11 @@ function ReviewForm({
   const handleCategoryRating = (category: string) =>
     handleRatingChangeAction(category, setCategories, categories);
 
-  const canSubmit = itemId.trim() && rating > 0 && comment.trim() &&
-    Object.values(categories).every(c => c > 0);
+  const canSubmit =
+    itemId.trim() &&
+    rating > 0 &&
+    comment.trim() &&
+    Object.values(categories).every((c) => c > 0);
 
   return (
     <div className="space-y-6">
@@ -178,7 +199,12 @@ function ReviewForm({
       <div className="space-y-4">
         <div>
           <Label htmlFor="itemType">Beitragstyp</Label>
-          <Select value={itemType} onValueChange={(value) => setItemType(value as any)}>
+          <Select
+            value={itemType}
+            onValueChange={(value) =>
+              setItemType(value as "abc-list" | "kawa" | "kaga")
+            }
+          >
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
@@ -214,7 +240,7 @@ function ReviewForm({
       {/* Category Ratings */}
       <div className="space-y-4">
         <Label>Detailbewertung</Label>
-        
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <Label className="text-sm">Genauigkeit</Label>
@@ -228,7 +254,7 @@ function ReviewForm({
               </span>
             </div>
           </div>
-          
+
           <div>
             <Label className="text-sm">Nützlichkeit</Label>
             <div className="flex items-center gap-2 mt-1">
@@ -241,7 +267,7 @@ function ReviewForm({
               </span>
             </div>
           </div>
-          
+
           <div>
             <Label className="text-sm">Klarheit</Label>
             <div className="flex items-center gap-2 mt-1">
@@ -254,7 +280,7 @@ function ReviewForm({
               </span>
             </div>
           </div>
-          
+
           <div>
             <Label className="text-sm">Kreativität</Label>
             <div className="flex items-center gap-2 mt-1">
@@ -320,15 +346,20 @@ export function PeerReview({userProfile}: PeerReviewProps) {
   const filteredAndSortedReviews = reviews
     .filter((review) => {
       if (filterType === "all") return true;
-      if (filterType === "mine") return userProfile ? review.reviewerId === userProfile.userId : false;
+      if (filterType === "mine")
+        return userProfile ? review.reviewerId === userProfile.userId : false;
       return review.itemType === filterType;
     })
     .sort((a, b) => {
       switch (sortBy) {
         case "newest":
-          return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
+          return (
+            new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+          );
         case "oldest":
-          return new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime();
+          return (
+            new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+          );
         case "rating_high":
           return b.rating - a.rating;
         case "rating_low":
@@ -349,7 +380,8 @@ export function PeerReview({userProfile}: PeerReviewProps) {
             Peer-Review System
           </CardTitle>
           <CardDescription>
-            Erstelle zuerst ein Community-Profil, um Reviews zu schreiben und zu lesen
+            Erstelle zuerst ein Community-Profil, um Reviews zu schreiben und zu
+            lesen
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -357,8 +389,8 @@ export function PeerReview({userProfile}: PeerReviewProps) {
             <MessageCircle className="h-16 w-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium mb-2">Profil erforderlich</h3>
             <p className="text-gray-600">
-              Um Reviews zu schreiben und die Qualität von Basar-Beiträgen zu verbessern,
-              benötigst du ein Community-Profil.
+              Um Reviews zu schreiben und die Qualität von Basar-Beiträgen zu
+              verbessern, benötigst du ein Community-Profil.
             </p>
           </div>
         </CardContent>
@@ -366,19 +398,25 @@ export function PeerReview({userProfile}: PeerReviewProps) {
     );
   }
 
-  const userReviews = reviews.filter(r => r.reviewerId === userProfile.userId);
-  const averageRating = userReviews.length > 0 
-    ? userReviews.reduce((sum, r) => sum + r.rating, 0) / userReviews.length 
-    : 0;
+  const userReviews = reviews.filter(
+    (r) => r.reviewerId === userProfile.userId,
+  );
+  const averageRating =
+    userReviews.length > 0
+      ? userReviews.reduce((sum, r) => sum + r.rating, 0) / userReviews.length
+      : 0;
 
   return (
     <div className="space-y-6">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Peer-Review System</h2>
+          <h2 className="text-2xl font-bold text-gray-900">
+            Peer-Review System
+          </h2>
           <p className="text-gray-600 mt-1">
-            Bewerte Basar-Beiträge und hilf der Community mit konstruktivem Feedback
+            Bewerte Basar-Beiträge und hilf der Community mit konstruktivem
+            Feedback
           </p>
         </div>
         <Dialog open={showReviewDialog} onOpenChange={setShowReviewDialog}>
@@ -410,7 +448,9 @@ export function PeerReview({userProfile}: PeerReviewProps) {
             <div className="flex items-center">
               <Edit className="h-8 w-8 text-blue-500 mr-3" />
               <div>
-                <p className="text-sm font-medium text-gray-600">Meine Reviews</p>
+                <p className="text-sm font-medium text-gray-600">
+                  Meine Reviews
+                </p>
                 <p className="text-2xl font-bold">{userReviews.length}</p>
               </div>
             </div>
@@ -432,8 +472,12 @@ export function PeerReview({userProfile}: PeerReviewProps) {
             <div className="flex items-center">
               <ThumbsUp className="h-8 w-8 text-green-500 mr-3" />
               <div>
-                <p className="text-sm font-medium text-gray-600">Hilfreiche Reviews</p>
-                <p className="text-2xl font-bold">{userProfile.helpfulReviews}</p>
+                <p className="text-sm font-medium text-gray-600">
+                  Hilfreiche Reviews
+                </p>
+                <p className="text-2xl font-bold">
+                  {userProfile.helpfulReviews}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -477,8 +521,12 @@ export function PeerReview({userProfile}: PeerReviewProps) {
             <SelectContent>
               <SelectItem value="newest">Neueste zuerst</SelectItem>
               <SelectItem value="oldest">Älteste zuerst</SelectItem>
-              <SelectItem value="rating_high">Bewertung (hoch-niedrig)</SelectItem>
-              <SelectItem value="rating_low">Bewertung (niedrig-hoch)</SelectItem>
+              <SelectItem value="rating_high">
+                Bewertung (hoch-niedrig)
+              </SelectItem>
+              <SelectItem value="rating_low">
+                Bewertung (niedrig-hoch)
+              </SelectItem>
               <SelectItem value="helpful">Hilfreichste zuerst</SelectItem>
             </SelectContent>
           </Select>
@@ -491,7 +539,9 @@ export function PeerReview({userProfile}: PeerReviewProps) {
           <Card>
             <CardContent className="text-center py-8">
               <MessageCircle className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium mb-2">Keine Reviews gefunden</h3>
+              <h3 className="text-lg font-medium mb-2">
+                Keine Reviews gefunden
+              </h3>
               <p className="text-gray-600">
                 {filterType === "all"
                   ? "Noch keine Reviews vorhanden. Sei der Erste und schreibe ein Review!"
@@ -506,11 +556,15 @@ export function PeerReview({userProfile}: PeerReviewProps) {
                 <div className="flex justify-between items-start">
                   <div>
                     <CardTitle className="text-lg">
-                      Review für {review.itemType === "abc-list" ? "ABC-Liste" : 
-                                 review.itemType === "kawa" ? "KaWa" : "KaGa"}
+                      Review für{" "}
+                      {review.itemType === "abc-list"
+                        ? "ABC-Liste"
+                        : review.itemType === "kawa"
+                          ? "KaWa"
+                          : "KaGa"}
                     </CardTitle>
                     <CardDescription>
-                      Von User {review.reviewerId.slice(-6)} • {" "}
+                      Von User {review.reviewerId.slice(-6)} •{" "}
                       {new Date(review.timestamp).toLocaleDateString("de-DE")}
                     </CardDescription>
                   </div>
@@ -532,27 +586,47 @@ export function PeerReview({userProfile}: PeerReviewProps) {
                   {/* Category Ratings */}
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg">
                     <div className="text-center">
-                      <p className="text-xs font-medium text-gray-600 mb-1">Genauigkeit</p>
+                      <p className="text-xs font-medium text-gray-600 mb-1">
+                        Genauigkeit
+                      </p>
                       <div className="flex justify-center">
-                        <StarRating rating={review.categories.accuracy} readonly />
+                        <StarRating
+                          rating={review.categories.accuracy}
+                          readonly
+                        />
                       </div>
                     </div>
                     <div className="text-center">
-                      <p className="text-xs font-medium text-gray-600 mb-1">Nützlichkeit</p>
+                      <p className="text-xs font-medium text-gray-600 mb-1">
+                        Nützlichkeit
+                      </p>
                       <div className="flex justify-center">
-                        <StarRating rating={review.categories.usefulness} readonly />
+                        <StarRating
+                          rating={review.categories.usefulness}
+                          readonly
+                        />
                       </div>
                     </div>
                     <div className="text-center">
-                      <p className="text-xs font-medium text-gray-600 mb-1">Klarheit</p>
+                      <p className="text-xs font-medium text-gray-600 mb-1">
+                        Klarheit
+                      </p>
                       <div className="flex justify-center">
-                        <StarRating rating={review.categories.clarity} readonly />
+                        <StarRating
+                          rating={review.categories.clarity}
+                          readonly
+                        />
                       </div>
                     </div>
                     <div className="text-center">
-                      <p className="text-xs font-medium text-gray-600 mb-1">Kreativität</p>
+                      <p className="text-xs font-medium text-gray-600 mb-1">
+                        Kreativität
+                      </p>
                       <div className="flex justify-center">
-                        <StarRating rating={review.categories.creativity} readonly />
+                        <StarRating
+                          rating={review.categories.creativity}
+                          readonly
+                        />
                       </div>
                     </div>
                   </div>
@@ -573,8 +647,8 @@ export function PeerReview({userProfile}: PeerReviewProps) {
                         review.status === "published"
                           ? "default"
                           : review.status === "pending"
-                          ? "secondary"
-                          : "destructive"
+                            ? "secondary"
+                            : "destructive"
                       }
                     >
                       {review.status === "published" && (

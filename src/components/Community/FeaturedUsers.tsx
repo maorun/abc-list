@@ -5,7 +5,13 @@
 
 import React, {useState} from "react";
 import {Button} from "../ui/button";
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "../ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
 import {Badge} from "../ui/badge";
 import {
   Dialog,
@@ -22,12 +28,10 @@ import {
   Trophy,
   Star,
   Heart,
-  Share,
   Plus,
   Award,
   TrendingUp,
   Users,
-  BookOpen,
 } from "lucide-react";
 import {
   CommunityService,
@@ -41,61 +45,68 @@ interface FeaturedUsersProps {
 }
 
 // Extract handlers outside component to prevent recreation on every render
-const handleSubmitStoryAction = (
-  storyData: {
-    title: string;
-    story: string;
-    achievements: string[];
-    before: string;
-    after: string;
-  },
-  userProfile: CommunityProfile,
-  setShowStoryDialog: (show: boolean) => void,
-  resetForm: () => void,
-) => () => {
-  const communityService = CommunityService.getInstance();
-  
-  communityService.submitSuccessStory({
-    userId: userProfile.userId,
-    title: storyData.title,
-    story: storyData.story,
-    achievements: storyData.achievements,
-    beforeAfter: {
-      before: storyData.before,
-      after: storyData.after,
+const handleSubmitStoryAction =
+  (
+    storyData: {
+      title: string;
+      story: string;
+      achievements: string[];
+      before: string;
+      after: string;
     },
-  });
-  
-  setShowStoryDialog(false);
-  resetForm();
-};
+    userProfile: CommunityProfile,
+    setShowStoryDialog: (show: boolean) => void,
+    resetForm: () => void,
+  ) =>
+  () => {
+    const communityService = CommunityService.getInstance();
 
-const handleLikeStoryAction = (
-  storyId: string,
-  communityService: CommunityService,
-) => () => {
-  communityService.likeStory(storyId);
-};
+    communityService.submitSuccessStory({
+      userId: userProfile.userId,
+      title: storyData.title,
+      story: storyData.story,
+      achievements: storyData.achievements,
+      beforeAfter: {
+        before: storyData.before,
+        after: storyData.after,
+      },
+    });
 
-const handleAddAchievementAction = (
-  newAchievement: string,
-  achievements: string[],
-  setAchievements: (achievements: string[]) => void,
-  setNewAchievement: (achievement: string) => void,
-) => () => {
-  if (newAchievement.trim() && !achievements.includes(newAchievement.trim())) {
-    setAchievements([...achievements, newAchievement.trim()]);
-    setNewAchievement("");
-  }
-};
+    setShowStoryDialog(false);
+    resetForm();
+  };
 
-const handleRemoveAchievementAction = (
-  achievement: string,
-  achievements: string[],
-  setAchievements: (achievements: string[]) => void,
-) => () => {
-  setAchievements(achievements.filter(a => a !== achievement));
-};
+const handleLikeStoryAction =
+  (storyId: string, communityService: CommunityService) => () => {
+    communityService.likeStory(storyId);
+  };
+
+const handleAddAchievementAction =
+  (
+    newAchievement: string,
+    achievements: string[],
+    setAchievements: (achievements: string[]) => void,
+    setNewAchievement: (achievement: string) => void,
+  ) =>
+  () => {
+    if (
+      newAchievement.trim() &&
+      !achievements.includes(newAchievement.trim())
+    ) {
+      setAchievements([...achievements, newAchievement.trim()]);
+      setNewAchievement("");
+    }
+  };
+
+const handleRemoveAchievementAction =
+  (
+    achievement: string,
+    achievements: string[],
+    setAchievements: (achievements: string[]) => void,
+  ) =>
+  () => {
+    setAchievements(achievements.filter((a) => a !== achievement));
+  };
 
 // Success story form component
 function StoryForm({
@@ -145,7 +156,8 @@ function StoryForm({
   const handleRemoveAchievement = (achievement: string) =>
     handleRemoveAchievementAction(achievement, achievements, setAchievements)();
 
-  const canSubmit = title.trim() && story.trim() && before.trim() && after.trim();
+  const canSubmit =
+    title.trim() && story.trim() && before.trim() && after.trim();
 
   return (
     <div className="space-y-6">
@@ -206,13 +218,21 @@ function StoryForm({
             placeholder="z.B. 'Physik-Prüfung bestanden'"
             onKeyPress={(e) => e.key === "Enter" && handleAddAchievement()}
           />
-          <Button type="button" onClick={handleAddAchievement} disabled={!newAchievement.trim()}>
+          <Button
+            type="button"
+            onClick={handleAddAchievement}
+            disabled={!newAchievement.trim()}
+          >
             <Plus className="h-4 w-4" />
           </Button>
         </div>
         <div className="flex flex-wrap gap-2 mt-2">
           {achievements.map((achievement) => (
-            <Badge key={achievement} variant="secondary" className="flex items-center gap-1">
+            <Badge
+              key={achievement}
+              variant="secondary"
+              className="flex items-center gap-1"
+            >
               {achievement}
               <button
                 type="button"
@@ -239,7 +259,10 @@ function StoryForm({
   );
 }
 
-export function FeaturedUsers({featuredStories, userProfile}: FeaturedUsersProps) {
+export function FeaturedUsers({
+  featuredStories,
+  userProfile,
+}: FeaturedUsersProps) {
   const [showStoryDialog, setShowStoryDialog] = useState(false);
   const [selectedStory, setSelectedStory] = useState<SuccessStory | null>(null);
   const [showStoryDetails, setShowStoryDetails] = useState(false);
@@ -252,7 +275,10 @@ export function FeaturedUsers({featuredStories, userProfile}: FeaturedUsersProps
 
   const allStories = communityService.getSuccessStories();
   const recentStories = allStories
-    .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+    .sort(
+      (a, b) =>
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+    )
     .slice(0, 6);
 
   if (!userProfile) {
@@ -264,7 +290,8 @@ export function FeaturedUsers({featuredStories, userProfile}: FeaturedUsersProps
             Erfolgsgeschichten
           </CardTitle>
           <CardDescription>
-            Erstelle zuerst ein Community-Profil, um Erfolgsgeschichten zu teilen
+            Erstelle zuerst ein Community-Profil, um Erfolgsgeschichten zu
+            teilen
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -272,8 +299,8 @@ export function FeaturedUsers({featuredStories, userProfile}: FeaturedUsersProps
             <Trophy className="h-16 w-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium mb-2">Profil erforderlich</h3>
             <p className="text-gray-600">
-              Um deine eigenen Erfolgsgeschichten zu teilen und andere zu inspirieren,
-              benötigst du ein Community-Profil.
+              Um deine eigenen Erfolgsgeschichten zu teilen und andere zu
+              inspirieren, benötigst du ein Community-Profil.
             </p>
           </div>
         </CardContent>
@@ -286,7 +313,9 @@ export function FeaturedUsers({featuredStories, userProfile}: FeaturedUsersProps
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Erfolgsgeschichten</h2>
+          <h2 className="text-2xl font-bold text-gray-900">
+            Erfolgsgeschichten
+          </h2>
           <p className="text-gray-600 mt-1">
             Lass dich von anderen inspirieren und teile deine eigenen Erfolge
           </p>
@@ -328,7 +357,7 @@ export function FeaturedUsers({featuredStories, userProfile}: FeaturedUsersProps
                     <div>
                       <CardTitle className="text-lg">{story.title}</CardTitle>
                       <CardDescription>
-                        Von User {story.userId.slice(-6)} • {" "}
+                        Von User {story.userId.slice(-6)} •{" "}
                         {new Date(story.timestamp).toLocaleDateString("de-DE")}
                       </CardDescription>
                     </div>
@@ -341,15 +370,21 @@ export function FeaturedUsers({featuredStories, userProfile}: FeaturedUsersProps
                 <CardContent>
                   <div className="space-y-4">
                     <p className="text-gray-700 line-clamp-3">{story.story}</p>
-                    
+
                     {/* Achievements */}
                     {story.achievements.length > 0 && (
                       <div className="flex flex-wrap gap-1">
-                        {story.achievements.slice(0, 3).map((achievement, index) => (
-                          <Badge key={index} variant="outline" className="text-xs">
-                            {achievement}
-                          </Badge>
-                        ))}
+                        {story.achievements
+                          .slice(0, 3)
+                          .map((achievement, index) => (
+                            <Badge
+                              key={index}
+                              variant="outline"
+                              className="text-xs"
+                            >
+                              {achievement}
+                            </Badge>
+                          ))}
                         {story.achievements.length > 3 && (
                           <Badge variant="outline" className="text-xs">
                             +{story.achievements.length - 3} weitere
@@ -394,14 +429,17 @@ export function FeaturedUsers({featuredStories, userProfile}: FeaturedUsersProps
           <TrendingUp className="h-5 w-5 mr-2 text-blue-500" />
           Neueste Geschichten
         </h3>
-        
+
         {recentStories.length === 0 ? (
           <Card>
             <CardContent className="text-center py-8">
               <Trophy className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium mb-2">Noch keine Geschichten</h3>
+              <h3 className="text-lg font-medium mb-2">
+                Noch keine Geschichten
+              </h3>
               <p className="text-gray-600 mb-4">
-                Sei der Erste und teile deine Erfolgsgeschichte mit der Community!
+                Sei der Erste und teile deine Erfolgsgeschichte mit der
+                Community!
               </p>
               <Button onClick={() => setShowStoryDialog(true)}>
                 <Plus className="h-4 w-4 mr-2" />
@@ -416,14 +454,16 @@ export function FeaturedUsers({featuredStories, userProfile}: FeaturedUsersProps
                 <CardHeader>
                   <CardTitle className="text-base">{story.title}</CardTitle>
                   <CardDescription>
-                    User {story.userId.slice(-6)} • {" "}
+                    User {story.userId.slice(-6)} •{" "}
                     {new Date(story.timestamp).toLocaleDateString("de-DE")}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    <p className="text-sm text-gray-700 line-clamp-2">{story.story}</p>
-                    
+                    <p className="text-sm text-gray-700 line-clamp-2">
+                      {story.story}
+                    </p>
+
                     {/* Quick Stats */}
                     <div className="flex justify-between items-center text-xs text-gray-500">
                       <div className="flex items-center gap-2">
@@ -480,28 +520,35 @@ export function FeaturedUsers({featuredStories, userProfile}: FeaturedUsersProps
           <DialogHeader>
             <DialogTitle>{selectedStory?.title}</DialogTitle>
             <DialogDescription>
-              Von User {selectedStory?.userId.slice(-6)} • {" "}
-              {selectedStory && new Date(selectedStory.timestamp).toLocaleDateString("de-DE")}
+              Von User {selectedStory?.userId.slice(-6)} •{" "}
+              {selectedStory &&
+                new Date(selectedStory.timestamp).toLocaleDateString("de-DE")}
             </DialogDescription>
           </DialogHeader>
-          
+
           {selectedStory && (
             <div className="space-y-6">
               {/* Full Story */}
               <div>
                 <h4 className="font-medium mb-2">Die Geschichte</h4>
-                <p className="text-gray-700 whitespace-pre-wrap">{selectedStory.story}</p>
+                <p className="text-gray-700 whitespace-pre-wrap">
+                  {selectedStory.story}
+                </p>
               </div>
 
               {/* Before/After */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="p-4 bg-red-50 rounded-lg">
                   <h4 className="font-medium mb-2 text-red-700">Vorher</h4>
-                  <p className="text-sm text-red-600">{selectedStory.beforeAfter.before}</p>
+                  <p className="text-sm text-red-600">
+                    {selectedStory.beforeAfter.before}
+                  </p>
                 </div>
                 <div className="p-4 bg-green-50 rounded-lg">
                   <h4 className="font-medium mb-2 text-green-700">Nachher</h4>
-                  <p className="text-sm text-green-600">{selectedStory.beforeAfter.after}</p>
+                  <p className="text-sm text-green-600">
+                    {selectedStory.beforeAfter.after}
+                  </p>
                 </div>
               </div>
 
@@ -537,7 +584,10 @@ export function FeaturedUsers({featuredStories, userProfile}: FeaturedUsersProps
                     </Badge>
                   )}
                 </div>
-                <Button variant="outline" onClick={() => setShowStoryDetails(false)}>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowStoryDetails(false)}
+                >
                   Schließen
                 </Button>
               </div>
@@ -560,7 +610,9 @@ export function FeaturedUsers({featuredStories, userProfile}: FeaturedUsersProps
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
             <div>
-              <div className="text-2xl font-bold text-blue-600">{allStories.length}</div>
+              <div className="text-2xl font-bold text-blue-600">
+                {allStories.length}
+              </div>
               <div className="text-sm text-gray-600">Geteilte Geschichten</div>
             </div>
             <div>
@@ -571,7 +623,10 @@ export function FeaturedUsers({featuredStories, userProfile}: FeaturedUsersProps
             </div>
             <div>
               <div className="text-2xl font-bold text-purple-600">
-                {allStories.reduce((sum, story) => sum + story.achievements.length, 0)}
+                {allStories.reduce(
+                  (sum, story) => sum + story.achievements.length,
+                  0,
+                )}
               </div>
               <div className="text-sm text-gray-600">Erreichte Ziele</div>
             </div>

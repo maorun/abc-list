@@ -6,10 +6,28 @@
 import React, {useState, useEffect} from "react";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "../ui/tabs";
 import {Button} from "../ui/button";
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "../ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
 import {Badge} from "../ui/badge";
-import {Users, Award, MessageCircle, Star, Trophy, BookOpen} from "lucide-react";
-import {CommunityService, CommunityProfile, CommunityChallenge, SuccessStory} from "../../lib/CommunityService";
+import {
+  Users,
+  Award,
+  MessageCircle,
+  Star,
+  Trophy,
+  BookOpen,
+} from "lucide-react";
+import {
+  CommunityService,
+  CommunityProfile,
+  CommunityChallenge,
+  SuccessStory,
+} from "../../lib/CommunityService";
 import {UserProfile} from "./UserProfile";
 import {MentorshipManager} from "./MentorshipManager";
 import {CommunityChallenge as ChallengeComponent} from "./CommunityChallenge";
@@ -24,11 +42,10 @@ const handleTabChangeAction = (
   setActiveTab(value);
 };
 
-const handleCreateProfileAction = (
-  setShowCreateProfile: (show: boolean) => void,
-) => () => {
-  setShowCreateProfile(true);
-};
+const handleCreateProfileAction =
+  (setShowCreateProfile: (show: boolean) => void) => () => {
+    setShowCreateProfile(true);
+  };
 
 export function Community() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -59,7 +76,8 @@ export function Community() {
   }, [communityService]);
 
   // Create stable handler references
-  const handleTabChange = (value: string) => handleTabChangeAction(value, setActiveTab);
+  const handleTabChange = (value: string) =>
+    handleTabChangeAction(value, setActiveTab);
   const handleCreateProfile = handleCreateProfileAction(setShowCreateProfile);
 
   const {userProfile, challenges, featuredStories} = communityData;
@@ -71,7 +89,8 @@ export function Community() {
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Community Hub</h1>
           <p className="text-gray-600 mt-2">
-            Verbinde dich mit anderen Lernenden, teile Wissen und wachse gemeinsam
+            Verbinde dich mit anderen Lernenden, teile Wissen und wachse
+            gemeinsam
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
@@ -92,7 +111,9 @@ export function Community() {
               <div className="flex items-center">
                 <Trophy className="h-8 w-8 text-yellow-500 mr-3" />
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Reputation</p>
+                  <p className="text-sm font-medium text-gray-600">
+                    Reputation
+                  </p>
                   <p className="text-2xl font-bold">{userProfile.reputation}</p>
                 </div>
               </div>
@@ -104,7 +125,9 @@ export function Community() {
                 <BookOpen className="h-8 w-8 text-blue-500 mr-3" />
                 <div>
                   <p className="text-sm font-medium text-gray-600">Beiträge</p>
-                  <p className="text-2xl font-bold">{userProfile.contributionCount}</p>
+                  <p className="text-2xl font-bold">
+                    {userProfile.contributionCount}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -114,8 +137,12 @@ export function Community() {
               <div className="flex items-center">
                 <MessageCircle className="h-8 w-8 text-green-500 mr-3" />
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Hilfreiche Reviews</p>
-                  <p className="text-2xl font-bold">{userProfile.helpfulReviews}</p>
+                  <p className="text-sm font-medium text-gray-600">
+                    Hilfreiche Reviews
+                  </p>
+                  <p className="text-2xl font-bold">
+                    {userProfile.helpfulReviews}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -125,8 +152,12 @@ export function Community() {
               <div className="flex items-center">
                 <Star className="h-8 w-8 text-purple-500 mr-3" />
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Expertise-Bereiche</p>
-                  <p className="text-2xl font-bold">{userProfile.expertise.length}</p>
+                  <p className="text-sm font-medium text-gray-600">
+                    Expertise-Bereiche
+                  </p>
+                  <p className="text-2xl font-bold">
+                    {userProfile.expertise.length}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -135,7 +166,11 @@ export function Community() {
       )}
 
       {/* Main Tabbed Interface */}
-      <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+      <Tabs
+        value={activeTab}
+        onValueChange={handleTabChange}
+        className="w-full"
+      >
         <TabsList className="grid w-full grid-cols-2 sm:grid-cols-6 gap-1">
           <TabsTrigger value="overview" className="text-xs sm:text-sm">
             Übersicht
@@ -181,8 +216,8 @@ export function Community() {
                             challenge.difficulty === "easy"
                               ? "secondary"
                               : challenge.difficulty === "medium"
-                              ? "default"
-                              : "destructive"
+                                ? "default"
+                                : "destructive"
                           }
                         >
                           {challenge.difficulty}
@@ -289,7 +324,10 @@ export function Community() {
         </TabsContent>
 
         <TabsContent value="challenges" className="mt-6">
-          <ChallengeComponent challenges={challenges} userProfile={userProfile} />
+          <ChallengeComponent
+            challenges={challenges}
+            userProfile={userProfile}
+          />
         </TabsContent>
 
         <TabsContent value="reviews" className="mt-6">

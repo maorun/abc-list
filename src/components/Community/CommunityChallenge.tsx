@@ -5,7 +5,13 @@
 
 import React, {useState} from "react";
 import {Button} from "../ui/button";
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "../ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
 import {Badge} from "../ui/badge";
 import {Progress} from "../ui/progress";
 import {
@@ -20,9 +26,7 @@ import {
   Trophy,
   Calendar,
   Users,
-  Target,
   Clock,
-  Award,
   Star,
   CheckCircle,
   Play,
@@ -39,21 +43,21 @@ interface CommunityChallengeProps {
 }
 
 // Extract handlers outside component to prevent recreation on every render
-const handleParticipateAction = (
-  challengeId: string,
-  communityService: CommunityService,
-) => () => {
-  communityService.participateInChallenge(challengeId);
-};
+const handleParticipateAction =
+  (challengeId: string, communityService: CommunityService) => () => {
+    communityService.participateInChallenge(challengeId);
+  };
 
-const handleViewDetailsAction = (
-  challenge: Challenge,
-  setSelectedChallenge: (challenge: Challenge | null) => void,
-  setShowDetails: (show: boolean) => void,
-) => () => {
-  setSelectedChallenge(challenge);
-  setShowDetails(true);
-};
+const handleViewDetailsAction =
+  (
+    challenge: Challenge,
+    setSelectedChallenge: (challenge: Challenge | null) => void,
+    setShowDetails: (show: boolean) => void,
+  ) =>
+  () => {
+    setSelectedChallenge(challenge);
+    setShowDetails(true);
+  };
 
 // Challenge detail modal component
 function ChallengeDetails({
@@ -75,7 +79,10 @@ function ChallengeDetails({
       (1000 * 60 * 60 * 24),
   );
 
-  const handleParticipate = handleParticipateAction(challenge.id, communityService);
+  const handleParticipate = handleParticipateAction(
+    challenge.id,
+    communityService,
+  );
 
   return (
     <div className="space-y-6">
@@ -89,8 +96,8 @@ function ChallengeDetails({
                 challenge.difficulty === "easy"
                   ? "secondary"
                   : challenge.difficulty === "medium"
-                  ? "default"
-                  : "destructive"
+                    ? "default"
+                    : "destructive"
               }
             >
               {challenge.difficulty === "easy" && "Einfach"}
@@ -108,8 +115,8 @@ function ChallengeDetails({
                 challenge.status === "active"
                   ? "default"
                   : challenge.status === "upcoming"
-                  ? "secondary"
-                  : "outline"
+                    ? "secondary"
+                    : "outline"
               }
             >
               {challenge.status === "active" && "Aktiv"}
@@ -119,7 +126,9 @@ function ChallengeDetails({
           </div>
         </div>
         <div className="text-right">
-          <div className="text-2xl font-bold text-blue-600">{challenge.points}</div>
+          <div className="text-2xl font-bold text-blue-600">
+            {challenge.points}
+          </div>
           <div className="text-sm text-gray-500">Punkte</div>
         </div>
       </div>
@@ -151,8 +160,12 @@ function ChallengeDetails({
             Zeitrahmen
           </h4>
           <div className="text-sm text-gray-600">
-            <p>Start: {new Date(challenge.startDate).toLocaleDateString("de-DE")}</p>
-            <p>Ende: {new Date(challenge.endDate).toLocaleDateString("de-DE")}</p>
+            <p>
+              Start: {new Date(challenge.startDate).toLocaleDateString("de-DE")}
+            </p>
+            <p>
+              Ende: {new Date(challenge.endDate).toLocaleDateString("de-DE")}
+            </p>
             {daysRemaining > 0 && (
               <p className="text-blue-600 font-medium mt-1">
                 Noch {daysRemaining} Tag{daysRemaining !== 1 ? "e" : ""}
@@ -205,8 +218,13 @@ function ChallengeDetails({
   );
 }
 
-export function CommunityChallenge({challenges, userProfile}: CommunityChallengeProps) {
-  const [selectedChallenge, setSelectedChallenge] = useState<Challenge | null>(null);
+export function CommunityChallenge({
+  challenges,
+  userProfile,
+}: CommunityChallengeProps) {
+  const [selectedChallenge, setSelectedChallenge] = useState<Challenge | null>(
+    null,
+  );
   const [showDetails, setShowDetails] = useState(false);
   const [activeFilter, setActiveFilter] = useState<string>("all");
 
@@ -217,7 +235,9 @@ export function CommunityChallenge({challenges, userProfile}: CommunityChallenge
     if (activeFilter === "all") return true;
     if (activeFilter === "active") return challenge.status === "active";
     if (activeFilter === "participating") {
-      return userProfile ? challenge.participants.includes(userProfile.userId) : false;
+      return userProfile
+        ? challenge.participants.includes(userProfile.userId)
+        : false;
     }
     return challenge.type === activeFilter;
   });
@@ -243,8 +263,8 @@ export function CommunityChallenge({challenges, userProfile}: CommunityChallenge
             <Trophy className="h-16 w-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium mb-2">Profil erforderlich</h3>
             <p className="text-gray-600">
-              Um an Community-Challenges teilzunehmen und Punkte zu sammeln, benötigst du
-              ein Community-Profil.
+              Um an Community-Challenges teilzunehmen und Punkte zu sammeln,
+              benötigst du ein Community-Profil.
             </p>
           </div>
         </CardContent>
@@ -257,9 +277,12 @@ export function CommunityChallenge({challenges, userProfile}: CommunityChallenge
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Community-Challenges</h2>
+          <h2 className="text-2xl font-bold text-gray-900">
+            Community-Challenges
+          </h2>
           <p className="text-gray-600 mt-1">
-            Nimm an Challenges teil, sammle Punkte und konkurriere mit anderen Lernenden
+            Nimm an Challenges teil, sammle Punkte und konkurriere mit anderen
+            Lernenden
           </p>
         </div>
       </div>
@@ -313,17 +336,33 @@ export function CommunityChallenge({challenges, userProfile}: CommunityChallenge
       {/* Challenges Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {filteredChallenges.map((challenge) => {
-          const isParticipating = challenge.participants.includes(userProfile.userId);
+          const isParticipating = challenge.participants.includes(
+            userProfile.userId,
+          );
           const daysRemaining = Math.ceil(
             (new Date(challenge.endDate).getTime() - new Date().getTime()) /
               (1000 * 60 * 60 * 24),
           );
-          const progressPercent = challenge.status === "completed" ? 100 : 
-            Math.max(0, Math.min(100, ((new Date().getTime() - new Date(challenge.startDate).getTime()) / 
-            (new Date(challenge.endDate).getTime() - new Date(challenge.startDate).getTime())) * 100));
+          const progressPercent =
+            challenge.status === "completed"
+              ? 100
+              : Math.max(
+                  0,
+                  Math.min(
+                    100,
+                    ((new Date().getTime() -
+                      new Date(challenge.startDate).getTime()) /
+                      (new Date(challenge.endDate).getTime() -
+                        new Date(challenge.startDate).getTime())) *
+                      100,
+                  ),
+                );
 
           return (
-            <Card key={challenge.id} className={isParticipating ? "border-blue-500" : ""}>
+            <Card
+              key={challenge.id}
+              className={isParticipating ? "border-blue-500" : ""}
+            >
               <CardHeader>
                 <div className="flex justify-between items-start">
                   <div>
@@ -334,8 +373,8 @@ export function CommunityChallenge({challenges, userProfile}: CommunityChallenge
                           challenge.difficulty === "easy"
                             ? "secondary"
                             : challenge.difficulty === "medium"
-                            ? "default"
-                            : "destructive"
+                              ? "default"
+                              : "destructive"
                         }
                       >
                         {challenge.difficulty === "easy" && "Einfach"}
@@ -407,8 +446,8 @@ export function CommunityChallenge({challenges, userProfile}: CommunityChallenge
                         challenge.status === "active"
                           ? "default"
                           : challenge.status === "upcoming"
-                          ? "secondary"
-                          : "outline"
+                            ? "secondary"
+                            : "outline"
                       }
                     >
                       {challenge.status === "active" && "Aktiv"}
@@ -450,7 +489,10 @@ export function CommunityChallenge({challenges, userProfile}: CommunityChallenge
                     {challenge.status === "active" && (
                       <Button
                         size="sm"
-                        onClick={handleParticipateAction(challenge.id, communityService)}
+                        onClick={handleParticipateAction(
+                          challenge.id,
+                          communityService,
+                        )}
                         disabled={isParticipating}
                         variant={isParticipating ? "secondary" : "default"}
                       >
@@ -480,7 +522,9 @@ export function CommunityChallenge({challenges, userProfile}: CommunityChallenge
         <Card>
           <CardContent className="text-center py-8">
             <Trophy className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium mb-2">Keine Challenges gefunden</h3>
+            <h3 className="text-lg font-medium mb-2">
+              Keine Challenges gefunden
+            </h3>
             <p className="text-gray-600">
               {activeFilter === "all"
                 ? "Derzeit sind keine Challenges verfügbar."

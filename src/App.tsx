@@ -69,7 +69,11 @@ const navigationItems = [
   },
   {to: "/slf", label: "Stadt-Land-Fluss", description: "Lernspiel spielen"},
   {to: "/basar", label: "Basar", description: "Listen teilen und entdecken"},
-  {to: "/community", label: "Community", description: "Community Hub und Mentoring"},
+  {
+    to: "/community",
+    label: "Community",
+    description: "Community Hub und Mentoring",
+  },
   {to: "/sokrates", label: "Sokrates-Check", description: "Lernerfolg prüfen"},
   {
     to: "/gamification",

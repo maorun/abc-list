@@ -5,7 +5,13 @@
 
 import React, {useState} from "react";
 import {Button} from "../ui/button";
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "../ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
 import {
   Dialog,
   DialogContent,
@@ -52,56 +58,69 @@ interface UserProfileProps {
 }
 
 // Extract handlers outside component to prevent recreation on every render
-const handleSaveProfileAction = (
-  profileData: Partial<CommunityProfile>,
-  userProfile: CommunityProfile | null,
-  setShowCreateProfile: (show: boolean) => void,
-  setShowEditProfile: (show: boolean) => void,
-) => () => {
-  const communityService = CommunityService.getInstance();
-  
-  if (userProfile) {
-    communityService.updateUserProfile(profileData);
-    setShowEditProfile(false);
-  } else {
-    communityService.createUserProfile(profileData);
-    setShowCreateProfile(false);
-  }
-};
+const handleSaveProfileAction =
+  (
+    profileData: Partial<CommunityProfile>,
+    userProfile: CommunityProfile | null,
+    setShowCreateProfile: (show: boolean) => void,
+    setShowEditProfile: (show: boolean) => void,
+  ) =>
+  () => {
+    const communityService = CommunityService.getInstance();
 
-const handleAddExpertiseAction = (
-  newExpertise: UserExpertise,
-  expertise: UserExpertise[],
-  setExpertise: (expertise: UserExpertise[]) => void,
-  setShowAddExpertise: (show: boolean) => void,
-) => () => {
-  if (newExpertise.area && !expertise.some(e => e.area === newExpertise.area)) {
-    setExpertise([...expertise, newExpertise]);
-    setShowAddExpertise(false);
-  }
-};
+    if (userProfile) {
+      communityService.updateUserProfile(profileData);
+      setShowEditProfile(false);
+    } else {
+      communityService.createUserProfile(profileData);
+      setShowCreateProfile(false);
+    }
+  };
 
-const handleRemoveExpertiseAction = (
-  area: string,
-  expertise: UserExpertise[],
-  setExpertise: (expertise: UserExpertise[]) => void,
-) => () => {
-  setExpertise(expertise.filter(e => e.area !== area));
-};
+const handleAddExpertiseAction =
+  (
+    newExpertise: UserExpertise,
+    expertise: UserExpertise[],
+    setExpertise: (expertise: UserExpertise[]) => void,
+    setShowAddExpertise: (show: boolean) => void,
+  ) =>
+  () => {
+    if (
+      newExpertise.area &&
+      !expertise.some((e) => e.area === newExpertise.area)
+    ) {
+      setExpertise([...expertise, newExpertise]);
+      setShowAddExpertise(false);
+    }
+  };
 
-const handleMentorToggleAction = (
-  mentorAvailable: boolean,
-  setMentorAvailable: (available: boolean) => void,
-) => (checked: boolean) => {
-  setMentorAvailable(checked);
-};
+const handleRemoveExpertiseAction =
+  (
+    area: string,
+    expertise: UserExpertise[],
+    setExpertise: (expertise: UserExpertise[]) => void,
+  ) =>
+  () => {
+    setExpertise(expertise.filter((e) => e.area !== area));
+  };
 
-const handleMenteeToggleAction = (
-  menteeInterested: boolean,
-  setMenteeInterested: (interested: boolean) => void,
-) => (checked: boolean) => {
-  setMenteeInterested(checked);
-};
+const handleMentorToggleAction =
+  (
+    mentorAvailable: boolean,
+    setMentorAvailable: (available: boolean) => void,
+  ) =>
+  (checked: boolean) => {
+    setMentorAvailable(checked);
+  };
+
+const handleMenteeToggleAction =
+  (
+    menteeInterested: boolean,
+    setMenteeInterested: (interested: boolean) => void,
+  ) =>
+  (checked: boolean) => {
+    setMenteeInterested(checked);
+  };
 
 // Profile creation/edit form component
 function ProfileForm({
@@ -111,7 +130,9 @@ function ProfileForm({
   userProfile: CommunityProfile | null;
   onClose: () => void;
 }) {
-  const [displayName, setDisplayName] = useState(userProfile?.displayName || "");
+  const [displayName, setDisplayName] = useState(
+    userProfile?.displayName || "",
+  );
   const [bio, setBio] = useState(userProfile?.bio || "");
   const [expertise, setExpertise] = useState<UserExpertise[]>(
     userProfile?.expertise || [],
@@ -123,7 +144,9 @@ function ProfileForm({
     userProfile?.menteeInterested || false,
   );
   const [showAddExpertise, setShowAddExpertise] = useState(false);
-  const [newExpertiseArea, setNewExpertiseArea] = useState<ExpertiseArea | "">("");
+  const [newExpertiseArea, setNewExpertiseArea] = useState<ExpertiseArea | "">(
+    "",
+  );
   const [newExpertiseLevel, setNewExpertiseLevel] = useState<
     "Beginner" | "Intermediate" | "Advanced" | "Expert"
   >("Beginner");
@@ -211,7 +234,11 @@ function ProfileForm({
 
         <div className="flex flex-wrap gap-2">
           {expertise.map((exp) => (
-            <Badge key={exp.area} variant="secondary" className="flex items-center gap-1">
+            <Badge
+              key={exp.area}
+              variant="secondary"
+              className="flex items-center gap-1"
+            >
               {exp.area} ({exp.level})
               {exp.verified && <Shield className="h-3 w-3 text-green-500" />}
               <button
@@ -233,7 +260,9 @@ function ProfileForm({
                   <Label htmlFor="expertiseArea">Fachbereich</Label>
                   <Select
                     value={newExpertiseArea}
-                    onValueChange={(value) => setNewExpertiseArea(value as ExpertiseArea)}
+                    onValueChange={(value) =>
+                      setNewExpertiseArea(value as ExpertiseArea)
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Wähle einen Bereich" />
@@ -253,7 +282,11 @@ function ProfileForm({
                     value={newExpertiseLevel}
                     onValueChange={(value) =>
                       setNewExpertiseLevel(
-                        value as "Beginner" | "Intermediate" | "Advanced" | "Expert",
+                        value as
+                          | "Beginner"
+                          | "Intermediate"
+                          | "Advanced"
+                          | "Expert",
                       )
                     }
                   >
@@ -262,7 +295,9 @@ function ProfileForm({
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Beginner">Anfänger</SelectItem>
-                      <SelectItem value="Intermediate">Fortgeschritten</SelectItem>
+                      <SelectItem value="Intermediate">
+                        Fortgeschritten
+                      </SelectItem>
                       <SelectItem value="Advanced">Erfahren</SelectItem>
                       <SelectItem value="Expert">Experte</SelectItem>
                     </SelectContent>
@@ -311,7 +346,9 @@ function ProfileForm({
           </div>
           <div className="flex items-center justify-between">
             <div>
-              <Label htmlFor="menteeInterested">An Mentoring interessiert</Label>
+              <Label htmlFor="menteeInterested">
+                An Mentoring interessiert
+              </Label>
               <p className="text-sm text-gray-600">
                 Ich suche einen Mentor für meine Lernziele
               </p>
@@ -364,10 +401,13 @@ export function UserProfile({
         <CardContent>
           <div className="text-center py-8">
             <User className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium mb-2">Noch kein Profil erstellt</h3>
+            <h3 className="text-lg font-medium mb-2">
+              Noch kein Profil erstellt
+            </h3>
             <p className="text-gray-600 mb-4">
-              Erstelle dein Community-Profil, um mit anderen Lernenden in Kontakt zu treten,
-              Mentoren zu finden oder selbst zum Mentor zu werden.
+              Erstelle dein Community-Profil, um mit anderen Lernenden in
+              Kontakt zu treten, Mentoren zu finden oder selbst zum Mentor zu
+              werden.
             </p>
             <Button onClick={() => setShowCreateProfile(true)}>
               <User className="h-4 w-4 mr-2" />
@@ -412,7 +452,8 @@ export function UserProfile({
                 {userProfile.displayName}
               </CardTitle>
               <CardDescription>
-                Mitglied seit {new Date(userProfile.joinDate).toLocaleDateString("de-DE")}
+                Mitglied seit{" "}
+                {new Date(userProfile.joinDate).toLocaleDateString("de-DE")}
               </CardDescription>
             </div>
             <Dialog open={showEditProfile} onOpenChange={setShowEditProfile}>
@@ -426,7 +467,8 @@ export function UserProfile({
                 <DialogHeader>
                   <DialogTitle>Profil bearbeiten</DialogTitle>
                   <DialogDescription>
-                    Aktualisiere deine Profilinformationen und Expertise-Bereiche
+                    Aktualisiere deine Profilinformationen und
+                    Expertise-Bereiche
                   </DialogDescription>
                 </DialogHeader>
                 <ProfileForm
@@ -452,9 +494,15 @@ export function UserProfile({
               <Label>Expertise-Bereiche</Label>
               <div className="flex flex-wrap gap-2 mt-2">
                 {userProfile.expertise.map((exp) => (
-                  <Badge key={exp.area} variant="secondary" className="flex items-center gap-1">
+                  <Badge
+                    key={exp.area}
+                    variant="secondary"
+                    className="flex items-center gap-1"
+                  >
                     {exp.area} ({exp.level})
-                    {exp.verified && <Shield className="h-3 w-3 text-green-500" />}
+                    {exp.verified && (
+                      <Shield className="h-3 w-3 text-green-500" />
+                    )}
                     {exp.endorsements > 0 && (
                       <span className="text-xs">({exp.endorsements} ⭐)</span>
                     )}
@@ -468,13 +516,17 @@ export function UserProfile({
               <div className="flex items-center gap-2">
                 <BookOpen className="h-4 w-4 text-blue-500" />
                 <span className="text-sm">
-                  {userProfile.mentorAvailable ? "Mentor verfügbar" : "Nicht als Mentor verfügbar"}
+                  {userProfile.mentorAvailable
+                    ? "Mentor verfügbar"
+                    : "Nicht als Mentor verfügbar"}
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <Star className="h-4 w-4 text-yellow-500" />
                 <span className="text-sm">
-                  {userProfile.menteeInterested ? "Sucht Mentor" : "Sucht aktuell keinen Mentor"}
+                  {userProfile.menteeInterested
+                    ? "Sucht Mentor"
+                    : "Sucht aktuell keinen Mentor"}
                 </span>
               </div>
             </div>
@@ -501,7 +553,9 @@ export function UserProfile({
               <BookOpen className="h-8 w-8 text-blue-500 mr-3" />
               <div>
                 <p className="text-sm font-medium text-gray-600">Beiträge</p>
-                <p className="text-2xl font-bold">{userProfile.contributionCount}</p>
+                <p className="text-2xl font-bold">
+                  {userProfile.contributionCount}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -511,8 +565,12 @@ export function UserProfile({
             <div className="flex items-center">
               <Star className="h-8 w-8 text-green-500 mr-3" />
               <div>
-                <p className="text-sm font-medium text-gray-600">Hilfreiche Reviews</p>
-                <p className="text-2xl font-bold">{userProfile.helpfulReviews}</p>
+                <p className="text-sm font-medium text-gray-600">
+                  Hilfreiche Reviews
+                </p>
+                <p className="text-2xl font-bold">
+                  {userProfile.helpfulReviews}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -529,7 +587,8 @@ export function UserProfile({
         </CardHeader>
         <CardContent>
           <p className="text-gray-600">
-            Zuletzt aktiv: {new Date(userProfile.lastActive).toLocaleString("de-DE")}
+            Zuletzt aktiv:{" "}
+            {new Date(userProfile.lastActive).toLocaleString("de-DE")}
           </p>
         </CardContent>
       </Card>

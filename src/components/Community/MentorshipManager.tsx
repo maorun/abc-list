@@ -5,7 +5,13 @@
 
 import React, {useState, useEffect} from "react";
 import {Button} from "../ui/button";
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "../ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
 import {Badge} from "../ui/badge";
 import {
   Dialog,
@@ -29,9 +35,6 @@ import {
   Star,
   MessageCircle,
   Send,
-  Check,
-  X,
-  Clock,
   Award,
   BookOpen,
   Shield,
@@ -40,7 +43,6 @@ import {
   CommunityService,
   CommunityProfile,
   MentorshipConnection,
-  ExpertiseArea,
 } from "../../lib/CommunityService";
 
 interface MentorshipManagerProps {
@@ -48,40 +50,48 @@ interface MentorshipManagerProps {
 }
 
 // Extract handlers outside component to prevent recreation on every render
-const handleRequestMentorshipAction = (
-  mentorId: string,
-  expertiseArea: string,
-  message: string,
-  setShowRequestDialog: (show: boolean) => void,
-  setRequestMessage: (message: string) => void,
-) => () => {
-  const communityService = CommunityService.getInstance();
-  try {
-    communityService.requestMentorship(mentorId, expertiseArea);
-    setShowRequestDialog(false);
-    setRequestMessage("");
-  } catch (error) {
-    console.error("Failed to request mentorship:", error);
-  }
-};
+const handleRequestMentorshipAction =
+  (
+    mentorId: string,
+    expertiseArea: string,
+    message: string,
+    setShowRequestDialog: (show: boolean) => void,
+    setRequestMessage: (message: string) => void,
+  ) =>
+  () => {
+    const communityService = CommunityService.getInstance();
+    try {
+      communityService.requestMentorship(mentorId, expertiseArea);
+      setShowRequestDialog(false);
+      setRequestMessage("");
+    } catch (error) {
+      console.error("Failed to request mentorship:", error);
+    }
+  };
 
-const handleFindMentorsAction = (
-  selectedArea: string,
-  setAvailableMentors: (mentors: CommunityProfile[]) => void,
-) => () => {
-  if (!selectedArea) return;
-  
-  const communityService = CommunityService.getInstance();
-  const mentors = communityService.findMentors(selectedArea);
-  setAvailableMentors(mentors);
-};
+const handleFindMentorsAction =
+  (
+    selectedArea: string,
+    setAvailableMentors: (mentors: CommunityProfile[]) => void,
+  ) =>
+  () => {
+    if (!selectedArea) return;
+
+    const communityService = CommunityService.getInstance();
+    const mentors = communityService.findMentors(selectedArea);
+    setAvailableMentors(mentors);
+  };
 
 export function MentorshipManager({userProfile}: MentorshipManagerProps) {
   const [mentorships, setMentorships] = useState<MentorshipConnection[]>([]);
-  const [availableMentors, setAvailableMentors] = useState<CommunityProfile[]>([]);
+  const [availableMentors, setAvailableMentors] = useState<CommunityProfile[]>(
+    [],
+  );
   const [selectedArea, setSelectedArea] = useState<string>("");
   const [showRequestDialog, setShowRequestDialog] = useState(false);
-  const [selectedMentor, setSelectedMentor] = useState<CommunityProfile | null>(null);
+  const [selectedMentor, setSelectedMentor] = useState<CommunityProfile | null>(
+    null,
+  );
   const [requestMessage, setRequestMessage] = useState("");
 
   const communityService = CommunityService.getInstance();
@@ -100,8 +110,11 @@ export function MentorshipManager({userProfile}: MentorshipManagerProps) {
   }, [communityService]);
 
   // Create stable handler references
-  const handleFindMentors = handleFindMentorsAction(selectedArea, setAvailableMentors);
-  
+  const handleFindMentors = handleFindMentorsAction(
+    selectedArea,
+    setAvailableMentors,
+  );
+
   const handleRequestMentorship = (mentorId: string, expertiseArea: string) =>
     handleRequestMentorshipAction(
       mentorId,
@@ -120,7 +133,8 @@ export function MentorshipManager({userProfile}: MentorshipManagerProps) {
             Mentoring System
           </CardTitle>
           <CardDescription>
-            Erstelle zuerst ein Community-Profil, um das Mentoring-System zu nutzen
+            Erstelle zuerst ein Community-Profil, um das Mentoring-System zu
+            nutzen
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -128,8 +142,8 @@ export function MentorshipManager({userProfile}: MentorshipManagerProps) {
             <Users className="h-16 w-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium mb-2">Profil erforderlich</h3>
             <p className="text-gray-600">
-              Um Mentoren zu finden oder selbst als Mentor zu agieren, benötigst du ein
-              Community-Profil mit deinen Expertise-Bereichen.
+              Um Mentoren zu finden oder selbst als Mentor zu agieren, benötigst
+              du ein Community-Profil mit deinen Expertise-Bereichen.
             </p>
           </div>
         </CardContent>
@@ -138,7 +152,8 @@ export function MentorshipManager({userProfile}: MentorshipManagerProps) {
   }
 
   const userMentorships = mentorships.filter(
-    (m) => m.mentorId === userProfile.userId || m.menteeId === userProfile.userId,
+    (m) =>
+      m.mentorId === userProfile.userId || m.menteeId === userProfile.userId,
   );
 
   const userExpertiseAreas = userProfile.expertise.map((exp) => exp.area);
@@ -150,7 +165,8 @@ export function MentorshipManager({userProfile}: MentorshipManagerProps) {
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Mentoring System</h2>
           <p className="text-gray-600 mt-1">
-            Verbinde dich mit erfahrenen Mentoren oder teile dein Wissen mit anderen
+            Verbinde dich mit erfahrenen Mentoren oder teile dein Wissen mit
+            anderen
           </p>
         </div>
       </div>
@@ -174,7 +190,10 @@ export function MentorshipManager({userProfile}: MentorshipManagerProps) {
                   <div className="flex justify-between items-start mb-2">
                     <div>
                       <h4 className="font-medium">
-                        {mentorship.mentorId === userProfile.userId ? "Mentee" : "Mentor"}:{" "}
+                        {mentorship.mentorId === userProfile.userId
+                          ? "Mentee"
+                          : "Mentor"}
+                        :{" "}
                         {mentorship.mentorId === userProfile.userId
                           ? `User ${mentorship.menteeId.slice(-6)}`
                           : `User ${mentorship.mentorId.slice(-6)}`}
@@ -188,8 +207,8 @@ export function MentorshipManager({userProfile}: MentorshipManagerProps) {
                         mentorship.status === "active"
                           ? "default"
                           : mentorship.status === "pending"
-                          ? "secondary"
-                          : "outline"
+                            ? "secondary"
+                            : "outline"
                       }
                     >
                       {mentorship.status === "active" && "Aktiv"}
@@ -204,7 +223,10 @@ export function MentorshipManager({userProfile}: MentorshipManagerProps) {
                       {mentorship.sessionCount !== 1 ? "s" : ""}
                     </span>
                     <span>
-                      Seit {new Date(mentorship.requestDate).toLocaleDateString("de-DE")}
+                      Seit{" "}
+                      {new Date(mentorship.requestDate).toLocaleDateString(
+                        "de-DE",
+                      )}
                     </span>
                   </div>
                 </div>
@@ -258,7 +280,9 @@ export function MentorshipManager({userProfile}: MentorshipManagerProps) {
               {/* Available Mentors */}
               {availableMentors.length > 0 && (
                 <div className="space-y-3">
-                  <h4 className="font-medium">Verfügbare Mentoren in {selectedArea}</h4>
+                  <h4 className="font-medium">
+                    Verfügbare Mentoren in {selectedArea}
+                  </h4>
                   {availableMentors.map((mentor) => (
                     <div key={mentor.userId} className="border rounded-lg p-4">
                       <div className="flex justify-between items-start mb-3">
@@ -269,9 +293,14 @@ export function MentorshipManager({userProfile}: MentorshipManagerProps) {
                               <Shield className="h-4 w-4 text-green-500 ml-1" />
                             )}
                           </h5>
-                          <p className="text-sm text-gray-600 mt-1">{mentor.bio}</p>
+                          <p className="text-sm text-gray-600 mt-1">
+                            {mentor.bio}
+                          </p>
                         </div>
-                        <Dialog open={showRequestDialog} onOpenChange={setShowRequestDialog}>
+                        <Dialog
+                          open={showRequestDialog}
+                          onOpenChange={setShowRequestDialog}
+                        >
                           <DialogTrigger asChild>
                             <Button
                               size="sm"
@@ -285,16 +314,21 @@ export function MentorshipManager({userProfile}: MentorshipManagerProps) {
                             <DialogHeader>
                               <DialogTitle>Mentorship-Anfrage</DialogTitle>
                               <DialogDescription>
-                                Sende eine Mentorship-Anfrage an {selectedMentor?.displayName}
+                                Sende eine Mentorship-Anfrage an{" "}
+                                {selectedMentor?.displayName}
                               </DialogDescription>
                             </DialogHeader>
                             <div className="space-y-4">
                               <div>
-                                <Label htmlFor="requestMessage">Nachricht (optional)</Label>
+                                <Label htmlFor="requestMessage">
+                                  Nachricht (optional)
+                                </Label>
                                 <Textarea
                                   id="requestMessage"
                                   value={requestMessage}
-                                  onChange={(e) => setRequestMessage(e.target.value)}
+                                  onChange={(e) =>
+                                    setRequestMessage(e.target.value)
+                                  }
                                   placeholder="Beschreibe deine Lernziele und warum du dich für diesen Mentor interessierst..."
                                   rows={4}
                                 />
@@ -328,10 +362,16 @@ export function MentorshipManager({userProfile}: MentorshipManagerProps) {
                         {mentor.expertise
                           .filter((exp) => exp.area === selectedArea)
                           .map((exp) => (
-                            <Badge key={exp.area} variant="secondary" className="text-xs">
+                            <Badge
+                              key={exp.area}
+                              variant="secondary"
+                              className="text-xs"
+                            >
                               {exp.level}
                               {exp.endorsements > 0 && (
-                                <span className="ml-1">({exp.endorsements} ⭐)</span>
+                                <span className="ml-1">
+                                  ({exp.endorsements} ⭐)
+                                </span>
                               )}
                             </Badge>
                           ))}
@@ -377,15 +417,20 @@ export function MentorshipManager({userProfile}: MentorshipManagerProps) {
             <div className="space-y-4">
               <div className="flex flex-wrap gap-2">
                 {userProfile.expertise.map((exp) => (
-                  <Badge key={exp.area} variant="default" className="flex items-center gap-1">
+                  <Badge
+                    key={exp.area}
+                    variant="default"
+                    className="flex items-center gap-1"
+                  >
                     {exp.area} ({exp.level})
                     {exp.verified && <Shield className="h-3 w-3 text-white" />}
                   </Badge>
                 ))}
               </div>
               <p className="text-sm text-gray-600">
-                Andere Nutzer können dich als Mentor in diesen Bereichen finden und kontaktieren.
-                Du erhältst Benachrichtigungen über neue Mentorship-Anfragen.
+                Andere Nutzer können dich als Mentor in diesen Bereichen finden
+                und kontaktieren. Du erhältst Benachrichtigungen über neue
+                Mentorship-Anfragen.
               </p>
             </div>
           </CardContent>
@@ -407,7 +452,8 @@ export function MentorshipManager({userProfile}: MentorshipManagerProps) {
                 <BookOpen className="h-12 w-12 text-blue-500 mx-auto mb-3" />
                 <h4 className="font-medium mb-2">Als Mentee</h4>
                 <p className="text-sm text-gray-600">
-                  Finde erfahrene Mentoren, die dir bei deinen Lernzielen helfen können
+                  Finde erfahrene Mentoren, die dir bei deinen Lernzielen helfen
+                  können
                 </p>
               </div>
               <div className="text-center p-4 border rounded-lg">
