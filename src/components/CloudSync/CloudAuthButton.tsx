@@ -12,10 +12,11 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import { Alert, AlertDescription } from "../ui/alert";
+import { User as SupabaseUser } from '@supabase/supabase-js';
 
 // Extract handler functions outside component to prevent recreation
 const handleSignInAction = (
-  signInWithGoogle: () => Promise<{ user: any; error: Error | null }>,
+  signInWithGoogle: () => Promise<{ user: SupabaseUser | null; error: Error | null }>,
   setIsSigningIn: (value: boolean) => void,
   clearError: () => void
 ) => async () => {
