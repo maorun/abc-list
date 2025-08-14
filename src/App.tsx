@@ -19,6 +19,7 @@ import {
 import {AccessibilityProvider} from "./contexts/AccessibilityContext";
 import {AccessibilityToolbar} from "./components/AccessibilityToolbar";
 import {PWAProvider} from "./contexts/PWAContext";
+import {CloudSyncProvider} from "./contexts/CloudSyncContext";
 import {PWAInstallPrompt} from "./components/PWAInstallPrompt";
 import {
   OfflineStatusIndicator,
@@ -47,6 +48,9 @@ import {GamificationDashboard} from "./components/Gamification/GamificationDashb
 import {GamificationStatusIndicator} from "./components/Gamification/GamificationStatusIndicator";
 import {SearchAndFilter} from "./components/Search/SearchAndFilter";
 import {Community} from "./components/Community/Community";
+import {CloudAuthButton} from "./components/CloudSync/CloudAuthButton";
+import {CloudBackupManager} from "./components/CloudSync/CloudBackupManager";
+import {CloudSyncStatusIndicator, CloudSyncStatusIcon} from "./components/CloudSync/CloudSyncStatusIndicator";
 
 // Extract navigation items to prevent recreation on every render
 const navigationItems = [
@@ -224,9 +228,12 @@ function Navigation() {
 
             {/* Offline and sync status icons in navigation */}
             <div className="flex items-center gap-2">
+              <CloudBackupManager />
+              <CloudAuthButton />
               <GamificationStatusIndicator />
               <OfflineStatusIcon />
               <SyncStatusIcon />
+              <CloudSyncStatusIcon />
             </div>
           </div>
         </div>
@@ -274,6 +281,7 @@ function AppContent() {
       <AccessibilityToolbar />
       <PWAInstallPrompt />
       <SyncStatusIndicator />
+      <CloudSyncStatusIndicator />
       <Toaster />
     </div>
   );
@@ -282,11 +290,13 @@ function AppContent() {
 function App() {
   return (
     <PWAProvider>
-      <AccessibilityProvider>
-        <Router>
-          <AppContent />
-        </Router>
-      </AccessibilityProvider>
+      <CloudSyncProvider>
+        <AccessibilityProvider>
+          <Router>
+            <AppContent />
+          </Router>
+        </AccessibilityProvider>
+      </CloudSyncProvider>
     </PWAProvider>
   );
 }
