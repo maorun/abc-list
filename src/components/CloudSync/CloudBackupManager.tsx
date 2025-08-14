@@ -3,7 +3,6 @@ import {
   Save,
   Download,
   Upload,
-  Trash2,
   FileArchive,
   Calendar,
   HardDrive,

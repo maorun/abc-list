@@ -5,13 +5,11 @@ import {
   RefreshCw,
   AlertTriangle,
   CheckCircle,
-  Clock,
   Wifi,
   WifiOff,
 } from "lucide-react";
 import {useCloudSyncStatus} from "../../contexts/CloudSyncContext";
 import {Button} from "../ui/button";
-import {Badge} from "../ui/badge";
 import {
   Dialog,
   DialogContent,

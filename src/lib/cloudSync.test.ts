@@ -1,12 +1,4 @@
-import {
-  describe,
-  it,
-  expect,
-  beforeEach,
-  vi,
-  beforeAll,
-  afterEach,
-} from "vitest";
+import {describe, it, expect, vi} from "vitest";
 
 // Mock environment first
 Object.defineProperty(import.meta, "env", {
@@ -50,7 +42,7 @@ vi.mock("@supabase/supabase-js", () => ({
 }));
 
 // Now import after mocking
-import {CloudSyncService, SyncConflict, BackupMetadata} from "./cloudSync";
+import {CloudSyncService} from "./cloudSync";
 
 // Simple integration test to verify the cloud sync service can be instantiated
 describe("CloudSyncService Integration", () => {

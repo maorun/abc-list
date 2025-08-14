@@ -8,7 +8,7 @@ import {
   RealtimeChannel,
   RealtimePostgresChangesPayload,
 } from "@supabase/supabase-js";
-import {SyncQueueItem, StorageItem} from "./enhancedStorage";
+import {StorageItem} from "./enhancedStorage";
 
 // Environment variables for Supabase configuration
 const SUPABASE_URL =
@@ -669,7 +669,7 @@ export class CloudSyncService {
           "basar",
         ];
 
-        for (const storeName of storeNames) {
+        for (const _storeName of storeNames) {
           // This would integrate with the existing EnhancedPWAStorage
           // to get local data and sync it to cloud
         }
