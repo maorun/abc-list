@@ -50,7 +50,10 @@ import {SearchAndFilter} from "./components/Search/SearchAndFilter";
 import {Community} from "./components/Community/Community";
 import {CloudAuthButton} from "./components/CloudSync/CloudAuthButton";
 import {CloudBackupManager} from "./components/CloudSync/CloudBackupManager";
-import {CloudSyncStatusIndicator, CloudSyncStatusIcon} from "./components/CloudSync/CloudSyncStatusIndicator";
+import {
+  CloudSyncStatusIndicator,
+  CloudSyncStatusIcon,
+} from "./components/CloudSync/CloudSyncStatusIndicator";
 
 // Extract navigation items to prevent recreation on every render
 const navigationItems = [

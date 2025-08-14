@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { LogIn, LogOut, Cloud, User, Settings, Shield } from "lucide-react";
-import { useCloudAuth } from "../../contexts/CloudSyncContext";
-import { Button } from "../ui/button";
+import React, {useState} from "react";
+import {LogIn, LogOut, Cloud, User, Settings, Shield} from "lucide-react";
+import {useCloudAuth} from "../../contexts/CloudSyncContext";
+import {Button} from "../ui/button";
 import {
   Dialog,
   DialogContent,
@@ -11,67 +11,87 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
-import { Alert, AlertDescription } from "../ui/alert";
-import { User as SupabaseUser } from '@supabase/supabase-js';
+import {Alert, AlertDescription} from "../ui/alert";
+import {User as SupabaseUser} from "@supabase/supabase-js";
 
 // Extract handler functions outside component to prevent recreation
-const handleSignInAction = (
-  signInWithGoogle: () => Promise<{ user: SupabaseUser | null; error: Error | null }>,
-  setIsSigningIn: (value: boolean) => void,
-  clearError: () => void
-) => async () => {
-  try {
-    setIsSigningIn(true);
-    clearError();
-    const result = await signInWithGoogle();
-    
-    if (result.error) {
-      console.error("Sign in failed:", result.error);
-    }
-  } catch (error) {
-    console.error("Sign in error:", error);
-  } finally {
-    setIsSigningIn(false);
-  }
-};
+const handleSignInAction =
+  (
+    signInWithGoogle: () => Promise<{
+      user: SupabaseUser | null;
+      error: Error | null;
+    }>,
+    setIsSigningIn: (value: boolean) => void,
+    clearError: () => void,
+  ) =>
+  async () => {
+    try {
+      setIsSigningIn(true);
+      clearError();
+      const result = await signInWithGoogle();
 
-const handleSignOutAction = (
-  signOut: () => Promise<{ error: Error | null }>,
-  setIsSigningOut: (value: boolean) => void,
-  clearError: () => void
-) => async () => {
-  try {
-    setIsSigningOut(true);
-    clearError();
-    const result = await signOut();
-    
-    if (result.error) {
-      console.error("Sign out failed:", result.error);
+      if (result.error) {
+        console.error("Sign in failed:", result.error);
+      }
+    } catch (error) {
+      console.error("Sign in error:", error);
+    } finally {
+      setIsSigningIn(false);
     }
-  } catch (error) {
-    console.error("Sign out error:", error);
-  } finally {
-    setIsSigningOut(false);
-  }
-};
+  };
 
-const handleDialogCloseAction = (
-  setShowDialog: (value: boolean) => void,
-  clearError: () => void
-) => () => {
-  setShowDialog(false);
-  clearError();
-};
+const handleSignOutAction =
+  (
+    signOut: () => Promise<{error: Error | null}>,
+    setIsSigningOut: (value: boolean) => void,
+    clearError: () => void,
+  ) =>
+  async () => {
+    try {
+      setIsSigningOut(true);
+      clearError();
+      const result = await signOut();
+
+      if (result.error) {
+        console.error("Sign out failed:", result.error);
+      }
+    } catch (error) {
+      console.error("Sign out error:", error);
+    } finally {
+      setIsSigningOut(false);
+    }
+  };
+
+const handleDialogCloseAction =
+  (setShowDialog: (value: boolean) => void, clearError: () => void) => () => {
+    setShowDialog(false);
+    clearError();
+  };
 
 export function CloudAuthButton() {
-  const { user, isAuthenticated, signInWithGoogle, signOut, lastError, clearError } = useCloudAuth();
+  const {
+    user,
+    isAuthenticated,
+    signInWithGoogle,
+    signOut,
+    lastError,
+    clearError,
+  } = useCloudAuth();
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
 
   // Create stable handler references
-  const handleSignIn = handleSignInAction(signInWithGoogle, setIsSigningIn, clearError);
-  const handleSignOut = handleSignOutAction(signOut, setIsSigningOut, clearError);
+  const handleSignIn = handleSignInAction(
+    signInWithGoogle,
+    setIsSigningIn,
+    clearError,
+  );
+  const handleSignOut = handleSignOutAction(
+    signOut,
+    setIsSigningOut,
+    clearError,
+  );
   const handleDialogClose = handleDialogCloseAction(setShowDialog, clearError);
 
   if (isAuthenticated && user) {
@@ -86,12 +106,12 @@ export function CloudAuthButton() {
           >
             <User className="h-4 w-4" />
             <span className="hidden sm:inline">
-              {user.email?.split('@')[0] || 'Cloud'}
+              {user.email?.split("@")[0] || "Cloud"}
             </span>
             <Cloud className="h-3 w-3 text-green-600" />
           </Button>
         </DialogTrigger>
-        
+
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
@@ -118,9 +138,7 @@ export function CloudAuthButton() {
 
             {lastError && (
               <Alert variant="destructive">
-                <AlertDescription>
-                  {lastError.message}
-                </AlertDescription>
+                <AlertDescription>{lastError.message}</AlertDescription>
               </Alert>
             )}
 
@@ -198,7 +216,7 @@ export function CloudAuthButton() {
           <span className="hidden sm:inline">Cloud-Sync</span>
         </Button>
       </DialogTrigger>
-      
+
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -206,7 +224,8 @@ export function CloudAuthButton() {
             Cloud-Synchronisation
           </DialogTitle>
           <DialogDescription>
-            Synchronisieren Sie Ihre ABC-Listen, KaWa und KaGa geräteübergreifend.
+            Synchronisieren Sie Ihre ABC-Listen, KaWa und KaGa
+            geräteübergreifend.
           </DialogDescription>
         </DialogHeader>
 
@@ -224,17 +243,15 @@ export function CloudAuthButton() {
 
           {lastError && (
             <Alert variant="destructive">
-              <AlertDescription>
-                {lastError.message}
-              </AlertDescription>
+              <AlertDescription>{lastError.message}</AlertDescription>
             </Alert>
           )}
 
           <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
             <p className="text-sm text-blue-800">
               <Shield className="h-4 w-4 inline mr-2" />
-              Ihre Daten werden verschlüsselt übertragen und gespeichert. 
-              Sie behalten die volle Kontrolle über Ihre Daten.
+              Ihre Daten werden verschlüsselt übertragen und gespeichert. Sie
+              behalten die volle Kontrolle über Ihre Daten.
             </p>
           </div>
         </div>

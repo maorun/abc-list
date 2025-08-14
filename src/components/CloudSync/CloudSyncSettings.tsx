@@ -1,17 +1,17 @@
 import React from "react";
-import { 
-  Settings, 
-  RefreshCw, 
-  AlertTriangle, 
-  Shield, 
+import {
+  Settings,
+  RefreshCw,
+  AlertTriangle,
+  Shield,
   Clock,
   Smartphone,
   Laptop,
-  Globe
+  Globe,
 } from "lucide-react";
-import { useCloudSync } from "../../contexts/CloudSyncContext";
-import { CloudSyncConfig } from "../../lib/cloudSync";
-import { Button } from "../ui/button";
+import {useCloudSync} from "../../contexts/CloudSyncContext";
+import {CloudSyncConfig} from "../../lib/cloudSync";
+import {Button} from "../ui/button";
 import {
   Dialog,
   DialogContent,
@@ -20,8 +20,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
-import { Label } from "../ui/label";
-import { Switch } from "../ui/switch";
+import {Label} from "../ui/label";
+import {Switch} from "../ui/switch";
 import {
   Select,
   SelectContent,
@@ -29,39 +29,56 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { Badge } from "../ui/badge";
+import {Badge} from "../ui/badge";
 
 // Extract handler functions outside component to prevent recreation
-const handleConfigUpdateAction = (
-  updateConfig: (config: Partial<CloudSyncConfig>) => void,
-  field: keyof CloudSyncConfig,
-  value: CloudSyncConfig[keyof CloudSyncConfig]
-) => () => {
-  updateConfig({ [field]: value });
-};
+const handleConfigUpdateAction =
+  (
+    updateConfig: (config: Partial<CloudSyncConfig>) => void,
+    field: keyof CloudSyncConfig,
+    value: CloudSyncConfig[keyof CloudSyncConfig],
+  ) =>
+  () => {
+    updateConfig({[field]: value});
+  };
 
-const handleIntervalChangeAction = (
-  updateConfig: (config: Partial<CloudSyncConfig>) => void
-) => (value: string) => {
-  const interval = parseInt(value) * 1000; // Convert seconds to milliseconds
-  updateConfig({ syncInterval: interval });
-};
+const handleIntervalChangeAction =
+  (updateConfig: (config: Partial<CloudSyncConfig>) => void) =>
+  (value: string) => {
+    const interval = parseInt(value) * 1000; // Convert seconds to milliseconds
+    updateConfig({syncInterval: interval});
+  };
 
-const handleConflictResolutionChangeAction = (
-  updateConfig: (config: Partial<CloudSyncConfig>) => void
-) => (value: string) => {
-  updateConfig({ conflictResolution: value as CloudSyncConfig['conflictResolution'] });
-};
+const handleConflictResolutionChangeAction =
+  (updateConfig: (config: Partial<CloudSyncConfig>) => void) =>
+  (value: string) => {
+    updateConfig({
+      conflictResolution: value as CloudSyncConfig["conflictResolution"],
+    });
+  };
 
 export function CloudSyncSettings() {
-  const { isAuthenticated, config, updateConfig } = useCloudSync();
+  const {isAuthenticated, config, updateConfig} = useCloudSync();
 
   // Create stable handler references
-  const handleAutoSyncToggle = handleConfigUpdateAction(updateConfig, 'autoSync', !config.autoSync);
-  const handleRealtimeToggle = handleConfigUpdateAction(updateConfig, 'enableRealtime', !config.enableRealtime);
-  const handleBackupToggle = handleConfigUpdateAction(updateConfig, 'enableBackup', !config.enableBackup);
+  const handleAutoSyncToggle = handleConfigUpdateAction(
+    updateConfig,
+    "autoSync",
+    !config.autoSync,
+  );
+  const handleRealtimeToggle = handleConfigUpdateAction(
+    updateConfig,
+    "enableRealtime",
+    !config.enableRealtime,
+  );
+  const handleBackupToggle = handleConfigUpdateAction(
+    updateConfig,
+    "enableBackup",
+    !config.enableBackup,
+  );
   const handleIntervalChange = handleIntervalChangeAction(updateConfig);
-  const handleConflictResolutionChange = handleConflictResolutionChangeAction(updateConfig);
+  const handleConflictResolutionChange =
+    handleConflictResolutionChangeAction(updateConfig);
 
   if (!isAuthenticated) {
     return (
@@ -88,7 +105,8 @@ export function CloudSyncSettings() {
             Cloud-Sync Einstellungen
           </DialogTitle>
           <DialogDescription>
-            Konfigurieren Sie Ihre Cloud-Synchronisation nach Ihren Bedürfnissen.
+            Konfigurieren Sie Ihre Cloud-Synchronisation nach Ihren
+            Bedürfnissen.
           </DialogDescription>
         </DialogHeader>
 
@@ -123,7 +141,9 @@ export function CloudSyncSettings() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="15">15 Sekunden (Sehr häufig)</SelectItem>
+                    <SelectItem value="15">
+                      15 Sekunden (Sehr häufig)
+                    </SelectItem>
                     <SelectItem value="30">30 Sekunden (Standard)</SelectItem>
                     <SelectItem value="60">1 Minute</SelectItem>
                     <SelectItem value="300">5 Minuten</SelectItem>
@@ -191,8 +211,12 @@ export function CloudSyncSettings() {
                   <div className="flex items-center gap-2">
                     <Laptop className="h-4 w-4" />
                     <div>
-                      <p className="font-medium">Lokale Änderungen bevorzugen</p>
-                      <p className="text-xs text-gray-600">Dieses Gerät hat Vorrang</p>
+                      <p className="font-medium">
+                        Lokale Änderungen bevorzugen
+                      </p>
+                      <p className="text-xs text-gray-600">
+                        Dieses Gerät hat Vorrang
+                      </p>
                     </div>
                   </div>
                 </SelectItem>
@@ -200,8 +224,12 @@ export function CloudSyncSettings() {
                   <div className="flex items-center gap-2">
                     <Smartphone className="h-4 w-4" />
                     <div>
-                      <p className="font-medium">Remote-Änderungen bevorzugen</p>
-                      <p className="text-xs text-gray-600">Andere Geräte haben Vorrang</p>
+                      <p className="font-medium">
+                        Remote-Änderungen bevorzugen
+                      </p>
+                      <p className="text-xs text-gray-600">
+                        Andere Geräte haben Vorrang
+                      </p>
                     </div>
                   </div>
                 </SelectItem>
@@ -210,7 +238,9 @@ export function CloudSyncSettings() {
                     <RefreshCw className="h-4 w-4" />
                     <div>
                       <p className="font-medium">Automatisch zusammenführen</p>
-                      <p className="text-xs text-gray-600">Intelligente Kombination</p>
+                      <p className="text-xs text-gray-600">
+                        Intelligente Kombination
+                      </p>
                     </div>
                   </div>
                 </SelectItem>
@@ -219,7 +249,9 @@ export function CloudSyncSettings() {
                     <AlertTriangle className="h-4 w-4" />
                     <div>
                       <p className="font-medium">Manuell entscheiden</p>
-                      <p className="text-xs text-gray-600">Bei jedem Konflikt fragen</p>
+                      <p className="text-xs text-gray-600">
+                        Bei jedem Konflikt fragen
+                      </p>
                     </div>
                   </div>
                 </SelectItem>

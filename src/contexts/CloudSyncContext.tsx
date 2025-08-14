@@ -6,7 +6,7 @@ import React, {
   ReactNode,
   useCallback,
 } from "react";
-import { User } from '@supabase/supabase-js';
+import {User} from "@supabase/supabase-js";
 import {
   CloudSyncService,
   cloudSyncService,
@@ -20,8 +20,8 @@ interface CloudSyncContextType {
   // Authentication
   user: User | null;
   isAuthenticated: boolean;
-  signInWithGoogle: () => Promise<{ user: User | null; error: Error | null }>;
-  signOut: () => Promise<{ error: Error | null }>;
+  signInWithGoogle: () => Promise<{user: User | null; error: Error | null}>;
+  signOut: () => Promise<{error: Error | null}>;
 
   // Sync status
   isSyncing: boolean;
@@ -33,7 +33,10 @@ interface CloudSyncContextType {
   updateConfig: (newConfig: Partial<CloudSyncConfig>) => void;
 
   // Sync operations
-  syncData: (storeName: string, data: Record<string, unknown>) => Promise<SyncStats>;
+  syncData: (
+    storeName: string,
+    data: Record<string, unknown>,
+  ) => Promise<SyncStats>;
   syncFromCloud: (storeName: string) => Promise<Record<string, unknown>>;
 
   // Backup operations
@@ -50,29 +53,31 @@ interface CloudSyncContextType {
   clearError: () => void;
 }
 
-const CloudSyncContext = createContext<CloudSyncContextType | undefined>(undefined);
+const CloudSyncContext = createContext<CloudSyncContextType | undefined>(
+  undefined,
+);
 
 interface CloudSyncProviderProps {
   children: ReactNode;
 }
 
-export function CloudSyncProvider({ children }: CloudSyncProviderProps) {
+export function CloudSyncProvider({children}: CloudSyncProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
   const [lastSyncStats, setLastSyncStats] = useState<SyncStats | null>(null);
   const [pendingConflicts, setPendingConflicts] = useState<SyncConflict[]>([]);
-  
+
   // Handle case where cloudSyncService might not be available (e.g., during tests)
   const getDefaultConfig = (): CloudSyncConfig => ({
     autoSync: true,
     syncInterval: 30000,
-    conflictResolution: 'merge',
+    conflictResolution: "merge",
     enableBackup: true,
     enableRealtime: true,
   });
-  
+
   const [config, setConfig] = useState<CloudSyncConfig>(
-    cloudSyncService?.getConfig() || getDefaultConfig()
+    cloudSyncService?.getConfig() || getDefaultConfig(),
   );
   const [lastError, setLastError] = useState<Error | null>(null);
 
@@ -81,28 +86,28 @@ export function CloudSyncProvider({ children }: CloudSyncProviderProps) {
     if (!cloudSyncService) return;
 
     // Auth state listener
-    cloudSyncService.addEventListener('authStateChanged', (newUser) => {
+    cloudSyncService.addEventListener("authStateChanged", (newUser) => {
       setUser(newUser);
     });
 
     // Sync event listeners
-    cloudSyncService.addEventListener('syncStarted', () => {
+    cloudSyncService.addEventListener("syncStarted", () => {
       setIsSyncing(true);
       setLastError(null);
     });
 
-    cloudSyncService.addEventListener('syncCompleted', (stats) => {
+    cloudSyncService.addEventListener("syncCompleted", (stats) => {
       setIsSyncing(false);
       setLastSyncStats(stats);
     });
 
-    cloudSyncService.addEventListener('syncError', (error) => {
+    cloudSyncService.addEventListener("syncError", (error) => {
       setIsSyncing(false);
       setLastError(error);
     });
 
-    cloudSyncService.addEventListener('conflictDetected', (conflict) => {
-      setPendingConflicts(prev => [...prev, conflict]);
+    cloudSyncService.addEventListener("conflictDetected", (conflict) => {
+      setPendingConflicts((prev) => [...prev, conflict]);
     });
 
     // Set initial user state
@@ -111,20 +116,20 @@ export function CloudSyncProvider({ children }: CloudSyncProviderProps) {
     // Cleanup function
     return () => {
       if (!cloudSyncService) return;
-      cloudSyncService.removeEventListener('authStateChanged');
-      cloudSyncService.removeEventListener('syncStarted');
-      cloudSyncService.removeEventListener('syncCompleted');
-      cloudSyncService.removeEventListener('syncError');
-      cloudSyncService.removeEventListener('conflictDetected');
+      cloudSyncService.removeEventListener("authStateChanged");
+      cloudSyncService.removeEventListener("syncStarted");
+      cloudSyncService.removeEventListener("syncCompleted");
+      cloudSyncService.removeEventListener("syncError");
+      cloudSyncService.removeEventListener("conflictDetected");
     };
   }, []);
 
   // Authentication methods
   const signInWithGoogle = useCallback(async () => {
     if (!cloudSyncService) {
-      const err = new Error('Cloud sync service not available');
+      const err = new Error("Cloud sync service not available");
       setLastError(err);
-      return { user: null, error: err };
+      return {user: null, error: err};
     }
 
     try {
@@ -133,15 +138,15 @@ export function CloudSyncProvider({ children }: CloudSyncProviderProps) {
     } catch (error) {
       const err = error as Error;
       setLastError(err);
-      return { user: null, error: err };
+      return {user: null, error: err};
     }
   }, []);
 
   const signOut = useCallback(async () => {
     if (!cloudSyncService) {
-      const err = new Error('Cloud sync service not available');
+      const err = new Error("Cloud sync service not available");
       setLastError(err);
-      return { error: err };
+      return {error: err};
     }
 
     try {
@@ -150,14 +155,14 @@ export function CloudSyncProvider({ children }: CloudSyncProviderProps) {
     } catch (error) {
       const err = error as Error;
       setLastError(err);
-      return { error: err };
+      return {error: err};
     }
   }, []);
 
   // Configuration management
   const updateConfig = useCallback((newConfig: Partial<CloudSyncConfig>) => {
     if (!cloudSyncService) {
-      setLastError(new Error('Cloud sync service not available'));
+      setLastError(new Error("Cloud sync service not available"));
       return;
     }
 
@@ -171,49 +176,53 @@ export function CloudSyncProvider({ children }: CloudSyncProviderProps) {
   }, []);
 
   // Sync operations
-  const syncData = useCallback(async (
-    storeName: string, 
-    data: Record<string, unknown>
-  ): Promise<SyncStats> => {
-    if (!cloudSyncService) {
-      const err = new Error('Cloud sync service not available');
-      setLastError(err);
-      throw err;
-    }
+  const syncData = useCallback(
+    async (
+      storeName: string,
+      data: Record<string, unknown>,
+    ): Promise<SyncStats> => {
+      if (!cloudSyncService) {
+        const err = new Error("Cloud sync service not available");
+        setLastError(err);
+        throw err;
+      }
 
-    try {
-      setLastError(null);
-      return await cloudSyncService.syncDataToCloud(storeName, data);
-    } catch (error) {
-      const err = error as Error;
-      setLastError(err);
-      throw err;
-    }
-  }, []);
+      try {
+        setLastError(null);
+        return await cloudSyncService.syncDataToCloud(storeName, data);
+      } catch (error) {
+        const err = error as Error;
+        setLastError(err);
+        throw err;
+      }
+    },
+    [],
+  );
 
-  const syncFromCloud = useCallback(async (
-    storeName: string
-  ): Promise<Record<string, unknown>> => {
-    if (!cloudSyncService) {
-      const err = new Error('Cloud sync service not available');
-      setLastError(err);
-      throw err;
-    }
+  const syncFromCloud = useCallback(
+    async (storeName: string): Promise<Record<string, unknown>> => {
+      if (!cloudSyncService) {
+        const err = new Error("Cloud sync service not available");
+        setLastError(err);
+        throw err;
+      }
 
-    try {
-      setLastError(null);
-      return await cloudSyncService.syncDataFromCloud(storeName);
-    } catch (error) {
-      const err = error as Error;
-      setLastError(err);
-      throw err;
-    }
-  }, []);
+      try {
+        setLastError(null);
+        return await cloudSyncService.syncDataFromCloud(storeName);
+      } catch (error) {
+        const err = error as Error;
+        setLastError(err);
+        throw err;
+      }
+    },
+    [],
+  );
 
   // Backup operations
   const createBackup = useCallback(async (): Promise<BackupMetadata> => {
     if (!cloudSyncService) {
-      const err = new Error('Cloud sync service not available');
+      const err = new Error("Cloud sync service not available");
       setLastError(err);
       throw err;
     }
@@ -230,7 +239,7 @@ export function CloudSyncProvider({ children }: CloudSyncProviderProps) {
 
   const restoreBackup = useCallback(async (backupId: string): Promise<void> => {
     if (!cloudSyncService) {
-      const err = new Error('Cloud sync service not available');
+      const err = new Error("Cloud sync service not available");
       setLastError(err);
       throw err;
     }
@@ -247,7 +256,7 @@ export function CloudSyncProvider({ children }: CloudSyncProviderProps) {
 
   const listBackups = useCallback(async (): Promise<BackupMetadata[]> => {
     if (!cloudSyncService) {
-      const err = new Error('Cloud sync service not available');
+      const err = new Error("Cloud sync service not available");
       setLastError(err);
       throw err;
     }
@@ -265,7 +274,7 @@ export function CloudSyncProvider({ children }: CloudSyncProviderProps) {
   // Privacy operations
   const deleteAllData = useCallback(async (): Promise<void> => {
     if (!cloudSyncService) {
-      const err = new Error('Cloud sync service not available');
+      const err = new Error("Cloud sync service not available");
       setLastError(err);
       throw err;
     }
@@ -282,7 +291,7 @@ export function CloudSyncProvider({ children }: CloudSyncProviderProps) {
 
   const exportData = useCallback(async (): Promise<Record<string, unknown>> => {
     if (!cloudSyncService) {
-      const err = new Error('Cloud sync service not available');
+      const err = new Error("Cloud sync service not available");
       setLastError(err);
       throw err;
     }
@@ -354,8 +363,15 @@ export function useCloudSync(): CloudSyncContextType {
 
 // Hook for authentication only
 export function useCloudAuth() {
-  const { user, isAuthenticated, signInWithGoogle, signOut, lastError, clearError } = useCloudSync();
-  
+  const {
+    user,
+    isAuthenticated,
+    signInWithGoogle,
+    signOut,
+    lastError,
+    clearError,
+  } = useCloudSync();
+
   return {
     user,
     isAuthenticated,
@@ -368,8 +384,9 @@ export function useCloudAuth() {
 
 // Hook for sync status monitoring
 export function useCloudSyncStatus() {
-  const { isSyncing, lastSyncStats, pendingConflicts, lastError } = useCloudSync();
-  
+  const {isSyncing, lastSyncStats, pendingConflicts, lastError} =
+    useCloudSync();
+
   return {
     isSyncing,
     lastSyncStats,
@@ -381,15 +398,15 @@ export function useCloudSyncStatus() {
 
 // Hook for backup management
 export function useCloudBackup() {
-  const { 
-    isAuthenticated, 
-    createBackup, 
-    restoreBackup, 
-    listBackups, 
-    lastError, 
-    clearError 
+  const {
+    isAuthenticated,
+    createBackup,
+    restoreBackup,
+    listBackups,
+    lastError,
+    clearError,
   } = useCloudSync();
-  
+
   return {
     isAuthenticated,
     createBackup,
@@ -402,14 +419,9 @@ export function useCloudBackup() {
 
 // Hook for privacy and data management
 export function useCloudPrivacy() {
-  const { 
-    isAuthenticated, 
-    deleteAllData, 
-    exportData, 
-    lastError, 
-    clearError 
-  } = useCloudSync();
-  
+  const {isAuthenticated, deleteAllData, exportData, lastError, clearError} =
+    useCloudSync();
+
   return {
     isAuthenticated,
     deleteAllData,
@@ -424,12 +436,12 @@ export function useCloudEnhancedStorage<T>(
   storeName: string,
   key: string,
   defaultValue: T,
-  autoSync = true
+  autoSync = true,
 ): [T, (value: T) => Promise<void>, boolean, Error | null] {
   const [data, setData] = useState<T>(defaultValue);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const { isAuthenticated, syncData, syncFromCloud } = useCloudSync();
+  const {isAuthenticated, syncData, syncFromCloud} = useCloudSync();
 
   // Load data on mount
   useEffect(() => {
@@ -455,7 +467,7 @@ export function useCloudEnhancedStorage<T>(
       } catch (err) {
         console.error(`[useCloudEnhancedStorage] Failed to load ${key}:`, err);
         setError(err as Error);
-        
+
         // Fallback to localStorage on error
         try {
           const stored = localStorage.getItem(key);
@@ -463,7 +475,10 @@ export function useCloudEnhancedStorage<T>(
             setData(JSON.parse(stored));
           }
         } catch (localErr) {
-          console.error(`[useCloudEnhancedStorage] localStorage fallback failed:`, localErr);
+          console.error(
+            `[useCloudEnhancedStorage] localStorage fallback failed:`,
+            localErr,
+          );
         }
       } finally {
         setIsLoading(false);
@@ -478,19 +493,19 @@ export function useCloudEnhancedStorage<T>(
     async (value: T) => {
       try {
         setError(null);
-        
+
         // Always save to localStorage first for immediate update
         localStorage.setItem(key, JSON.stringify(value));
         setData(value);
 
         // Sync to cloud if authenticated and auto-sync is enabled
         if (isAuthenticated && autoSync) {
-          await syncData(storeName, { [key]: value });
+          await syncData(storeName, {[key]: value});
         }
       } catch (err) {
         console.error(`[useCloudEnhancedStorage] Failed to save ${key}:`, err);
         setError(err as Error);
-        
+
         // Even if cloud sync fails, the localStorage save should have succeeded
         // so the data state is still updated
       }

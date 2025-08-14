@@ -1,17 +1,17 @@
-import React, { useState } from "react";
-import { 
-  Cloud, 
-  CloudOff, 
-  RefreshCw, 
-  AlertTriangle, 
-  CheckCircle, 
-  Clock, 
-  Wifi, 
-  WifiOff 
+import React, {useState} from "react";
+import {
+  Cloud,
+  CloudOff,
+  RefreshCw,
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  Wifi,
+  WifiOff,
 } from "lucide-react";
-import { useCloudSyncStatus } from "../../contexts/CloudSyncContext";
-import { Button } from "../ui/button";
-import { Badge } from "../ui/badge";
+import {useCloudSyncStatus} from "../../contexts/CloudSyncContext";
+import {Button} from "../ui/button";
+import {Badge} from "../ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -20,7 +20,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
-import { Progress } from "../ui/progress";
+import {Progress} from "../ui/progress";
 
 // Extract icon components to prevent re-renders
 const SyncIcon = <RefreshCw className="h-3 w-3 mr-1 animate-spin" />;
@@ -29,20 +29,19 @@ const CloudErrorIcon = <CloudOff className="h-3 w-3 mr-1 text-red-600" />;
 const ConflictIcon = <AlertTriangle className="h-3 w-3 mr-1 text-orange-600" />;
 
 // Extract handler functions outside component
-const handleStatusDialogAction = (
-  setShowStatusDialog: (value: boolean) => void
-) => () => {
-  setShowStatusDialog(true);
-};
+const handleStatusDialogAction =
+  (setShowStatusDialog: (value: boolean) => void) => () => {
+    setShowStatusDialog(true);
+  };
 
-const handleCloseDialogAction = (
-  setShowStatusDialog: (value: boolean) => void
-) => () => {
-  setShowStatusDialog(false);
-};
+const handleCloseDialogAction =
+  (setShowStatusDialog: (value: boolean) => void) => () => {
+    setShowStatusDialog(false);
+  };
 
 export function CloudSyncStatusIndicator() {
-  const { isSyncing, lastSyncStats, pendingConflicts, hasConflicts, lastError } = useCloudSyncStatus();
+  const {isSyncing, lastSyncStats, pendingConflicts, hasConflicts, lastError} =
+    useCloudSyncStatus();
   const [showStatusDialog, setShowStatusDialog] = useState(false);
 
   // Create stable handler references
@@ -71,7 +70,7 @@ export function CloudSyncStatusIndicator() {
 
     if (hasConflicts) {
       return {
-        label: `${pendingConflicts.length} Konflikt${pendingConflicts.length > 1 ? 'e' : ''}`,
+        label: `${pendingConflicts.length} Konflikt${pendingConflicts.length > 1 ? "e" : ""}`,
         icon: ConflictIcon,
         variant: "secondary" as const,
         description: "Konflikte müssen gelöst werden",
@@ -161,27 +160,36 @@ export function CloudSyncStatusIndicator() {
               <div className="grid grid-cols-2 gap-3 text-sm">
                 <div className="p-2 bg-green-50 rounded border border-green-200">
                   <p className="font-medium text-green-900">Synchronisiert</p>
-                  <p className="text-green-700">{lastSyncStats.syncedItems} Elemente</p>
+                  <p className="text-green-700">
+                    {lastSyncStats.syncedItems} Elemente
+                  </p>
                 </div>
                 <div className="p-2 bg-blue-50 rounded border border-blue-200">
                   <p className="font-medium text-blue-900">Gesamt</p>
-                  <p className="text-blue-700">{lastSyncStats.totalItems} Elemente</p>
+                  <p className="text-blue-700">
+                    {lastSyncStats.totalItems} Elemente
+                  </p>
                 </div>
                 {lastSyncStats.conflictedItems > 0 && (
                   <div className="p-2 bg-orange-50 rounded border border-orange-200">
                     <p className="font-medium text-orange-900">Konflikte</p>
-                    <p className="text-orange-700">{lastSyncStats.conflictedItems} Elemente</p>
+                    <p className="text-orange-700">
+                      {lastSyncStats.conflictedItems} Elemente
+                    </p>
                   </div>
                 )}
                 {lastSyncStats.errorItems > 0 && (
                   <div className="p-2 bg-red-50 rounded border border-red-200">
                     <p className="font-medium text-red-900">Fehler</p>
-                    <p className="text-red-700">{lastSyncStats.errorItems} Elemente</p>
+                    <p className="text-red-700">
+                      {lastSyncStats.errorItems} Elemente
+                    </p>
                   </div>
                 )}
               </div>
               <p className="text-xs text-gray-500">
-                Dauer: {lastSyncStats.duration}ms • {new Date(lastSyncStats.timestamp).toLocaleString()}
+                Dauer: {lastSyncStats.duration}ms •{" "}
+                {new Date(lastSyncStats.timestamp).toLocaleString()}
               </p>
             </div>
           )}
@@ -203,9 +211,11 @@ export function CloudSyncStatusIndicator() {
                       {conflict.storeName}: {conflict.localData.id}
                     </p>
                     <p className="text-xs text-orange-700">
-                      {conflict.conflictType === 'update_conflict' ? 'Aktualisierungskonflikt' :
-                       conflict.conflictType === 'delete_conflict' ? 'Löschkonflikt' :
-                       'Schema-Konflikt'}
+                      {conflict.conflictType === "update_conflict"
+                        ? "Aktualisierungskonflikt"
+                        : conflict.conflictType === "delete_conflict"
+                          ? "Löschkonflikt"
+                          : "Schema-Konflikt"}
                     </p>
                   </div>
                 ))}
@@ -254,9 +264,7 @@ export function CloudSyncStatusIndicator() {
         </div>
 
         <div className="flex justify-end">
-          <Button onClick={handleCloseDialog}>
-            Schließen
-          </Button>
+          <Button onClick={handleCloseDialog}>Schließen</Button>
         </div>
       </DialogContent>
     </Dialog>
@@ -265,7 +273,8 @@ export function CloudSyncStatusIndicator() {
 
 // Mini status indicator for navigation bar
 export function CloudSyncStatusIcon() {
-  const { isSyncing, hasConflicts, lastError, lastSyncStats } = useCloudSyncStatus();
+  const {isSyncing, hasConflicts, lastError, lastSyncStats} =
+    useCloudSyncStatus();
 
   // Don't show if no sync activity
   if (!isSyncing && !hasConflicts && !lastError && !lastSyncStats) {

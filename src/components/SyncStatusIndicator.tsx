@@ -34,9 +34,16 @@ export function SyncStatusIndicator() {
   const handleMigrate = handleMigrateAction(migrateData);
 
   // Determine primary sync status (local vs cloud)
-  const hasCloudSync = cloudSyncStatus.isSyncing || cloudSyncStatus.lastSyncStats || cloudSyncStatus.hasConflicts;
-  const primaryHasPendingChanges = hasCloudSync ? cloudSyncStatus.isSyncing : hasPendingChanges;
-  const primarySyncQueueSize = hasCloudSync ? (cloudSyncStatus.pendingConflicts?.length || 0) : syncQueueSize;
+  const hasCloudSync =
+    cloudSyncStatus.isSyncing ||
+    cloudSyncStatus.lastSyncStats ||
+    cloudSyncStatus.hasConflicts;
+  const primaryHasPendingChanges = hasCloudSync
+    ? cloudSyncStatus.isSyncing
+    : hasPendingChanges;
+  const primarySyncQueueSize = hasCloudSync
+    ? cloudSyncStatus.pendingConflicts?.length || 0
+    : syncQueueSize;
 
   // Don't show if everything is synced and online
   if (!primaryHasPendingChanges && isOnline && !hasCloudSync) {
@@ -61,15 +68,16 @@ export function SyncStatusIndicator() {
 
           <div className="flex-1">
             <h4 className="text-sm font-medium text-slate-900">
-              {isOnline ? 
-                (hasCloudSync ? "Cloud-Synchronisation" : "Synchronisation") : 
-                "Offline-Modus"
-              }
+              {isOnline
+                ? hasCloudSync
+                  ? "Cloud-Synchronisation"
+                  : "Synchronisation"
+                : "Offline-Modus"}
             </h4>
             <p className="text-xs text-slate-600">
               {primaryHasPendingChanges
-                ? hasCloudSync 
-                  ? cloudSyncStatus.isSyncing 
+                ? hasCloudSync
+                  ? cloudSyncStatus.isSyncing
                     ? "Cloud-Sync läuft..."
                     : `${primarySyncQueueSize} Konflikt${primarySyncQueueSize > 1 ? "e" : ""} ausstehend`
                   : `${primarySyncQueueSize} Änderung${primarySyncQueueSize > 1 ? "en" : ""} ausstehend`
@@ -79,17 +87,19 @@ export function SyncStatusIndicator() {
             </p>
           </div>
 
-          {isOnline && primaryHasPendingChanges && !cloudSyncStatus.isSyncing && (
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={handleForceSync}
-              className="text-xs"
-            >
-              {RefreshIcon}
-              Sync
-            </Button>
-          )}
+          {isOnline &&
+            primaryHasPendingChanges &&
+            !cloudSyncStatus.isSyncing && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleForceSync}
+                className="text-xs"
+              >
+                {RefreshIcon}
+                Sync
+              </Button>
+            )}
         </div>
 
         {/* Migration button - only show initially for local sync */}
@@ -116,10 +126,13 @@ export function SyncStatusIcon() {
   const cloudSyncStatus = useCloudSyncStatus();
 
   // Determine if cloud sync is active
-  const hasCloudSync = cloudSyncStatus.isSyncing || cloudSyncStatus.lastSyncStats || cloudSyncStatus.hasConflicts;
-  const primaryHasPendingChanges = hasCloudSync ? 
-    (cloudSyncStatus.isSyncing || cloudSyncStatus.hasConflicts) : 
-    hasPendingChanges;
+  const hasCloudSync =
+    cloudSyncStatus.isSyncing ||
+    cloudSyncStatus.lastSyncStats ||
+    cloudSyncStatus.hasConflicts;
+  const primaryHasPendingChanges = hasCloudSync
+    ? cloudSyncStatus.isSyncing || cloudSyncStatus.hasConflicts
+    : hasPendingChanges;
 
   if (!primaryHasPendingChanges && isOnline && !hasCloudSync) {
     return null;
@@ -148,7 +161,9 @@ export function SyncStatusIcon() {
         ) : (
           <Cloud
             className="h-4 w-4 text-green-600"
-            aria-label={hasCloudSync ? "Cloud synchronisiert" : "Synchronisiert"}
+            aria-label={
+              hasCloudSync ? "Cloud synchronisiert" : "Synchronisiert"
+            }
           />
         )
       ) : (
