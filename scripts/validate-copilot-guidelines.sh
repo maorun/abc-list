@@ -30,7 +30,8 @@ print_status() {
 
 # Check 1: Forbidden 'any' type usage
 print_status "INFO" "Checking for forbidden 'any' type usage..."
-if grep -r "\b: any\b\|\<any\>\s*[\[\(]" src --include="*.ts" --include="*.tsx" 2>/dev/null; then
+# Exclude test files since they legitimately use expect.any() utilities
+if grep -r "\b: any\b\|\<any\>\s*[\[\(]" src --include="*.ts" --include="*.tsx" --exclude="*.test.ts" --exclude="*.test.tsx" 2>/dev/null; then
     print_status "ERROR" "'any' type usage found. This violates TypeScript guidelines."
     echo "Please use proper type annotations instead of 'any'."
     exit 1

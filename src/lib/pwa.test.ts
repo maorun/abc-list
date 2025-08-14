@@ -140,16 +140,20 @@ describe("PWA Functionality", () => {
   describe("Push Notification Scheduling", () => {
     it("should schedule push notifications", async () => {
       // Mock Notification permission correctly for this test
-      Object.defineProperty(window.Notification, "permission", {
-        value: "granted",
+      Object.defineProperty(global, "Notification", {
+        value: {
+          permission: "granted",
+          requestPermission: vi.fn(() => Promise.resolve("granted")),
+        },
         writable: true,
       });
 
       // Enable both basic and push notifications in settings
+      // Use quiet hours that won't interfere with testing (no quiet hours)
       saveNotificationSettings({
         enabled: true,
         frequency: "daily",
-        quietHours: {start: 22, end: 8},
+        quietHours: {start: 23, end: 23}, // No quiet hours (same start and end)
         maxNotifications: 3,
       });
 
@@ -157,7 +161,7 @@ describe("PWA Functionality", () => {
         enabled: true,
         pushEnabled: true,
         frequency: "daily",
-        quietHours: {start: 22, end: 8},
+        quietHours: {start: 23, end: 23}, // No quiet hours (same start and end)
         maxNotifications: 3,
       });
 
