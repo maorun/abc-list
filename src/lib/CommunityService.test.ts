@@ -260,7 +260,7 @@ describe("CommunityService", () => {
     });
 
     it("should return default challenges when none exist", () => {
-      const challenges = communityService.getCommunityCharges();
+      const challenges = communityService.getCommunityChallenges();
 
       expect(challenges).toHaveLength(2);
       expect(challenges[0].title).toBe("Wochenend-Lernchallenge");
@@ -269,25 +269,25 @@ describe("CommunityService", () => {
     });
 
     it("should participate in challenge", () => {
-      const challenges = communityService.getCommunityCharges();
+      const challenges = communityService.getCommunityChallenges();
       const challengeId = challenges[0].id;
 
       communityService.participateInChallenge(challengeId);
 
-      const updatedChallenges = communityService.getCommunityCharges();
+      const updatedChallenges = communityService.getCommunityChallenges();
       const challenge = updatedChallenges.find((c) => c.id === challengeId);
 
       expect(challenge!.participants).toContain(userProfile.userId);
     });
 
     it("should not add duplicate participants", () => {
-      const challenges = communityService.getCommunityCharges();
+      const challenges = communityService.getCommunityChallenges();
       const challengeId = challenges[0].id;
 
       communityService.participateInChallenge(challengeId);
       communityService.participateInChallenge(challengeId); // Try to participate again
 
-      const updatedChallenges = communityService.getCommunityCharges();
+      const updatedChallenges = communityService.getCommunityChallenges();
       const challenge = updatedChallenges.find((c) => c.id === challengeId);
 
       expect(
@@ -306,7 +306,7 @@ describe("CommunityService", () => {
 
     it("should handle JSON parsing errors for challenges", () => {
       localStorage.setItem(COMMUNITY_STORAGE_KEYS.CHALLENGES, "invalid json");
-      const challenges = communityService.getCommunityCharges();
+      const challenges = communityService.getCommunityChallenges();
       expect(challenges).toHaveLength(2); // Should return default challenges
     });
   });

@@ -273,7 +273,7 @@ export class CommunityService {
   }
 
   // Community Challenges
-  public getCommunityCharges(): CommunityChallenge[] {
+  public getCommunityChallenges(): CommunityChallenge[] {
     try {
       const challenges = localStorage.getItem(
         COMMUNITY_STORAGE_KEYS.CHALLENGES,
@@ -286,7 +286,7 @@ export class CommunityService {
   }
 
   public participateInChallenge(challengeId: string): void {
-    const challenges = this.getCommunityCharges();
+    const challenges = this.getCommunityChallenges();
     const challenge = challenges.find((c) => c.id === challengeId);
     const userProfile = this.getUserProfile();
 

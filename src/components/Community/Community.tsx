@@ -62,7 +62,7 @@ export function Community() {
     const loadCommunityData = () => {
       setCommunityData({
         userProfile: communityService.getUserProfile(),
-        challenges: communityService.getCommunityCharges(),
+        challenges: communityService.getCommunityChallenges(),
         featuredStories: communityService.getFeaturedStories(),
       });
     };
