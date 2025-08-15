@@ -1,7 +1,15 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import {Button} from "@/components/ui/button";
 import {useAccessibility} from "@/contexts/AccessibilityContext";
-import {Eye, EyeOff, Plus, Minus, Settings, Keyboard} from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  Plus,
+  Minus,
+  Settings,
+  Keyboard,
+  GripVertical,
+} from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -10,17 +18,240 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
+// Extracted drag helper functions following function extraction pattern
+const clampPosition = (value: number, min: number, max: number): number => {
+  return Math.min(Math.max(value, min), max);
+};
+
+const getMousePosition = (e: MouseEvent): {x: number; y: number} => {
+  return {
+    x: e.clientX,
+    y: e.clientY,
+  };
+};
+
+const getTouchPosition = (e: TouchEvent): {x: number; y: number} => {
+  const touch = e.touches[0];
+  return {
+    x: touch.clientX,
+    y: touch.clientY,
+  };
+};
+
+const handleMouseDownAction =
+  (
+    setIsDragging: (dragging: boolean) => void,
+    setDragStart: (pos: {
+      x: number;
+      y: number;
+      toolbarX: number;
+      toolbarY: number;
+    }) => void,
+    toolbarPosition: {x: number; y: number},
+  ) =>
+  (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+    const mousePos = getMousePosition(e.nativeEvent);
+    setDragStart({
+      x: mousePos.x,
+      y: mousePos.y,
+      toolbarX: toolbarPosition.x,
+      toolbarY: toolbarPosition.y,
+    });
+  };
+
+const handleTouchStartAction =
+  (
+    setIsDragging: (dragging: boolean) => void,
+    setDragStart: (pos: {
+      x: number;
+      y: number;
+      toolbarX: number;
+      toolbarY: number;
+    }) => void,
+    toolbarPosition: {x: number; y: number},
+  ) =>
+  (e: React.TouchEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+    const touchPos = getTouchPosition(e.nativeEvent);
+    setDragStart({
+      x: touchPos.x,
+      y: touchPos.y,
+      toolbarX: toolbarPosition.x,
+      toolbarY: toolbarPosition.y,
+    });
+  };
+
+const createMouseMoveHandler =
+  (
+    isDragging: boolean,
+    dragStart: {
+      x: number;
+      y: number;
+      toolbarX: number;
+      toolbarY: number;
+    } | null,
+    updateToolbarPosition: (x: number, y: number) => void,
+  ) =>
+  (e: MouseEvent) => {
+    if (!isDragging || !dragStart) return;
+
+    const mousePos = getMousePosition(e);
+    const deltaX = mousePos.x - dragStart.x;
+    const deltaY = mousePos.y - dragStart.y;
+
+    // Calculate new position from bottom-right
+    const newX = clampPosition(
+      dragStart.toolbarX - deltaX,
+      16,
+      window.innerWidth - 200,
+    );
+    const newY = clampPosition(
+      dragStart.toolbarY + deltaY,
+      16,
+      window.innerHeight - 300,
+    );
+
+    updateToolbarPosition(newX, newY);
+  };
+
+const createTouchMoveHandler =
+  (
+    isDragging: boolean,
+    dragStart: {
+      x: number;
+      y: number;
+      toolbarX: number;
+      toolbarY: number;
+    } | null,
+    updateToolbarPosition: (x: number, y: number) => void,
+  ) =>
+  (e: TouchEvent) => {
+    if (!isDragging || !dragStart) return;
+
+    e.preventDefault();
+    const touchPos = getTouchPosition(e);
+    const deltaX = touchPos.x - dragStart.x;
+    const deltaY = touchPos.y - dragStart.y;
+
+    // Calculate new position from bottom-right
+    const newX = clampPosition(
+      dragStart.toolbarX - deltaX,
+      16,
+      window.innerWidth - 200,
+    );
+    const newY = clampPosition(
+      dragStart.toolbarY + deltaY,
+      16,
+      window.innerHeight - 300,
+    );
+
+    updateToolbarPosition(newX, newY);
+  };
+
+const createEndDragHandler =
+  (
+    setIsDragging: (dragging: boolean) => void,
+    setDragStart: (pos: null) => void,
+  ) =>
+  () => {
+    setIsDragging(false);
+    setDragStart(null);
+  };
+
 export function AccessibilityToolbar() {
-  const {settings, toggleHighContrast, increaseFontSize, decreaseFontSize} =
-    useAccessibility();
+  const {
+    settings,
+    toggleHighContrast,
+    increaseFontSize,
+    decreaseFontSize,
+    updateToolbarPosition,
+  } = useAccessibility();
+
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState<{
+    x: number;
+    y: number;
+    toolbarX: number;
+    toolbarY: number;
+  } | null>(null);
+
+  // Create stable event handlers using extracted functions
+  const handleMouseDown = handleMouseDownAction(
+    setIsDragging,
+    setDragStart,
+    settings.toolbarPosition,
+  );
+  const handleTouchStart = handleTouchStartAction(
+    setIsDragging,
+    setDragStart,
+    settings.toolbarPosition,
+  );
+  const endDrag = createEndDragHandler(setIsDragging, setDragStart);
+
+  // Set up global event listeners for drag operations
+  useEffect(() => {
+    const handleMouseMove = createMouseMoveHandler(
+      isDragging,
+      dragStart,
+      updateToolbarPosition,
+    );
+    const handleTouchMove = createTouchMoveHandler(
+      isDragging,
+      dragStart,
+      updateToolbarPosition,
+    );
+
+    if (isDragging) {
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", endDrag);
+      document.addEventListener("touchmove", handleTouchMove, {passive: false});
+      document.addEventListener("touchend", endDrag);
+
+      return () => {
+        document.removeEventListener("mousemove", handleMouseMove);
+        document.removeEventListener("mouseup", endDrag);
+        document.removeEventListener("touchmove", handleTouchMove);
+        document.removeEventListener("touchend", endDrag);
+      };
+    }
+
+    // Return undefined when not dragging (satisfies all code paths return value)
+    return undefined;
+  }, [isDragging, dragStart, updateToolbarPosition, endDrag]);
+
+  // Calculate position styles
+  const toolbarStyle = {
+    position: "fixed" as const,
+    right: `${settings.toolbarPosition.x}px`,
+    bottom: `${settings.toolbarPosition.y}px`,
+    zIndex: 50,
+    cursor: isDragging ? "grabbing" : "grab",
+    userSelect: "none" as const,
+    touchAction: "none",
+  };
 
   return (
     <div
-      className="fixed bottom-4 right-4 z-50 bg-card border border-border rounded-lg shadow-lg p-2"
+      style={toolbarStyle}
+      className="bg-card border border-border rounded-lg shadow-lg p-2"
       role="toolbar"
       aria-label="Barrierefreiheit-Einstellungen"
     >
       <div className="flex flex-col gap-2">
+        {/* Drag handle */}
+        <button
+          type="button"
+          className="flex justify-center cursor-grab active:cursor-grabbing p-1 hover:bg-gray-100 rounded border-none bg-transparent"
+          onMouseDown={handleMouseDown}
+          onTouchStart={handleTouchStart}
+          aria-label="Toolbar verschieben"
+          title="Ziehen zum Verschieben"
+        >
+          <GripVertical className="h-3 w-3 text-gray-400" />
+        </button>
         <Button
           variant="outline"
           size="sm"

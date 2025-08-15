@@ -4,6 +4,10 @@ interface AccessibilitySettings {
   highContrast: boolean;
   fontSize: "small" | "medium" | "large";
   reducedMotion: boolean;
+  toolbarPosition: {
+    x: number;
+    y: number;
+  };
 }
 
 interface AccessibilityContextType {
@@ -12,12 +16,17 @@ interface AccessibilityContextType {
   toggleHighContrast: () => void;
   increaseFontSize: () => void;
   decreaseFontSize: () => void;
+  updateToolbarPosition: (x: number, y: number) => void;
 }
 
 const defaultSettings: AccessibilitySettings = {
   highContrast: false,
   fontSize: "medium",
   reducedMotion: false,
+  toolbarPosition: {
+    x: 16, // 16px from right (equivalent to right-4 in Tailwind)
+    y: 16, // 16px from bottom (equivalent to bottom-4 in Tailwind)
+  },
 };
 
 const AccessibilityContext = createContext<
@@ -66,6 +75,12 @@ export function AccessibilityProvider({children}: {children: ReactNode}) {
     updateSettings({fontSize: sizes[nextIndex]});
   };
 
+  const updateToolbarPosition = (x: number, y: number) => {
+    updateSettings({
+      toolbarPosition: {x, y},
+    });
+  };
+
   // Apply settings on mount
   React.useEffect(() => {
     applySettingsToDocument(settings);
@@ -79,6 +94,7 @@ export function AccessibilityProvider({children}: {children: ReactNode}) {
         toggleHighContrast,
         increaseFontSize,
         decreaseFontSize,
+        updateToolbarPosition,
       }}
     >
       {children}
