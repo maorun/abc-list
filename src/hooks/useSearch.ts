@@ -80,22 +80,6 @@ export function useSearch(): UseSearchResult {
     mostUsed: [] as SearchResult[],
   });
 
-  // Load initial data
-  useEffect(() => {
-    loadSearchHistory();
-    loadTagsAndCategories();
-    loadSmartCollections();
-  }, [loadSearchHistory, loadTagsAndCategories, loadSmartCollections]);
-
-  // Update smart collections when search index changes
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      loadSmartCollections();
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, [results, loadSmartCollections]);
-
   const loadSearchHistory = useCallback(() => {
     setSearchHistory(searchService.getSearchHistory());
   }, []);
@@ -153,6 +137,22 @@ export function useSearch(): UseSearchResult {
       mostUsed: mostUsedResults.slice(0, 10),
     });
   }, []);
+
+  // Load initial data
+  useEffect(() => {
+    loadSearchHistory();
+    loadTagsAndCategories();
+    loadSmartCollections();
+  }, [loadSearchHistory, loadTagsAndCategories, loadSmartCollections]);
+
+  // Update smart collections when search index changes
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      loadSmartCollections();
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [results, loadSmartCollections]);
 
   const search = useCallback(
     async (searchFilters: SearchFilters) => {
