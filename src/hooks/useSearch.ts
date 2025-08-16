@@ -253,7 +253,7 @@ export function useSearch(): UseSearchResult {
 
   // Auto-search when filters change (debounced)
   useEffect(() => {
-    if (hasSearched) {
+    if (hasSearched || (filters.query && filters.query.trim().length > 0)) {
       const timer = setTimeout(() => {
         search(filters);
       }, 300); // 300ms debounce
