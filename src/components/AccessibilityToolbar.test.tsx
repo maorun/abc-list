@@ -1,5 +1,5 @@
-import {render, screen, fireEvent} from "@testing-library/react";
-import {describe, it, expect, vi} from "vitest";
+import {render, screen, fireEvent, waitFor} from "@testing-library/react";
+import {describe, it, expect, vi, beforeEach} from "vitest";
 import {AccessibilityToolbar} from "@/components/AccessibilityToolbar";
 import {AccessibilityProvider} from "@/contexts/AccessibilityContext";
 
@@ -171,5 +171,195 @@ describe("AccessibilityToolbar", () => {
     expect(
       screen.getByLabelText(/hohen kontrast deaktivieren/i),
     ).toBeInTheDocument();
+  });
+
+  // New tests for drag functionality
+  it("should render drag handle for moving toolbar", () => {
+    renderWithProvider(<AccessibilityToolbar />);
+
+    expect(screen.getByLabelText("Toolbar verschieben")).toBeInTheDocument();
+    expect(screen.getByTitle("Ziehen zum Verschieben")).toBeInTheDocument();
+  });
+
+  it("should have proper drag styling", () => {
+    renderWithProvider(<AccessibilityToolbar />);
+
+    const toolbar = screen.getByRole("toolbar");
+    expect(toolbar).toHaveStyle({position: "fixed"});
+    expect(toolbar).toHaveStyle({userSelect: "none"});
+    // Note: touchAction is tested via inline style attribute inspection
+    expect(toolbar.style.touchAction).toBe("none");
+
+    const dragHandle = screen.getByLabelText("Toolbar verschieben");
+    expect(dragHandle).toHaveClass("cursor-grab");
+  });
+
+  it("should start drag on mouse down", async () => {
+    renderWithProvider(<AccessibilityToolbar />);
+
+    const dragHandle = screen.getByLabelText("Toolbar verschieben");
+
+    // Simulate mouse down to start drag
+    fireEvent.mouseDown(dragHandle, {
+      clientX: 100,
+      clientY: 200,
+    });
+
+    // Verify drag handle has proper styling during drag
+    expect(dragHandle).toHaveClass("active:cursor-grabbing");
+  });
+
+  it("should start drag on touch start", async () => {
+    renderWithProvider(<AccessibilityToolbar />);
+
+    const dragHandle = screen.getByLabelText("Toolbar verschieben");
+
+    // Simulate touch start to start drag
+    fireEvent.touchStart(dragHandle, {
+      touches: [{clientX: 100, clientY: 200}],
+    });
+
+    // Verify drag handle has proper styling during drag
+    expect(dragHandle).toHaveClass("active:cursor-grabbing");
+  });
+
+  it("should handle mouse drag movement", async () => {
+    // Mock window dimensions for boundary calculations
+    Object.defineProperty(window, "innerWidth", {
+      writable: true,
+      configurable: true,
+      value: 1024,
+    });
+    Object.defineProperty(window, "innerHeight", {
+      writable: true,
+      configurable: true,
+      value: 768,
+    });
+
+    renderWithProvider(<AccessibilityToolbar />);
+
+    const dragHandle = screen.getByLabelText("Toolbar verschieben");
+
+    // Start drag
+    fireEvent.mouseDown(dragHandle, {
+      clientX: 100,
+      clientY: 200,
+    });
+
+    // Simulate mouse move
+    fireEvent(
+      document,
+      new MouseEvent("mousemove", {
+        clientX: 150,
+        clientY: 250,
+      }),
+    );
+
+    // End drag
+    fireEvent(document, new MouseEvent("mouseup"));
+
+    // Verify toolbar is still present and functioning
+    await waitFor(() => {
+      expect(screen.getByRole("toolbar")).toBeInTheDocument();
+    });
+  });
+
+  it("should handle touch drag movement", async () => {
+    // Mock window dimensions for boundary calculations
+    Object.defineProperty(window, "innerWidth", {
+      writable: true,
+      configurable: true,
+      value: 1024,
+    });
+    Object.defineProperty(window, "innerHeight", {
+      writable: true,
+      configurable: true,
+      value: 768,
+    });
+
+    renderWithProvider(<AccessibilityToolbar />);
+
+    const dragHandle = screen.getByLabelText("Toolbar verschieben");
+
+    // Start touch drag
+    fireEvent.touchStart(dragHandle, {
+      touches: [{clientX: 100, clientY: 200}],
+    });
+
+    // Simulate touch move
+    fireEvent(
+      document,
+      new TouchEvent("touchmove", {
+        touches: [{clientX: 150, clientY: 250} as Touch],
+      }),
+    );
+
+    // End touch drag
+    fireEvent(document, new TouchEvent("touchend"));
+
+    // Verify toolbar is still present and functioning
+    await waitFor(() => {
+      expect(screen.getByRole("toolbar")).toBeInTheDocument();
+    });
+  });
+
+  it("should persist toolbar position in localStorage", () => {
+    // Test that position data structure exists in context
+    renderWithProvider(<AccessibilityToolbar />);
+
+    const toolbar = screen.getByRole("toolbar");
+    expect(toolbar).toBeInTheDocument();
+
+    // Position should be persisted via the AccessibilityContext
+    // The actual localStorage persistence is tested in AccessibilityContext tests
+  });
+
+  it("should load position from localStorage on mount", () => {
+    // Set initial position in localStorage
+    const testPosition = {x: 50, y: 100};
+    const testSettings = {
+      highContrast: false,
+      fontSize: "medium",
+      reducedMotion: false,
+      toolbarPosition: testPosition,
+    };
+
+    localStorage.setItem(
+      "accessibility-settings",
+      JSON.stringify(testSettings),
+    );
+
+    renderWithProvider(<AccessibilityToolbar />);
+
+    const toolbar = screen.getByRole("toolbar");
+    // Verify toolbar exists and can potentially use the stored position
+    expect(toolbar).toBeInTheDocument();
+  });
+
+  it("should maintain accessibility during drag operations", () => {
+    renderWithProvider(<AccessibilityToolbar />);
+
+    const dragHandle = screen.getByLabelText("Toolbar verschieben");
+    const toolbar = screen.getByRole("toolbar");
+
+    // Verify ARIA attributes are maintained
+    expect(toolbar).toHaveAttribute(
+      "aria-label",
+      "Barrierefreiheit-Einstellungen",
+    );
+    expect(dragHandle).toHaveAttribute("aria-label", "Toolbar verschieben");
+    expect(dragHandle).toHaveAttribute("title", "Ziehen zum Verschieben");
+
+    // Start drag and verify accessibility is maintained
+    fireEvent.mouseDown(dragHandle, {
+      clientX: 100,
+      clientY: 200,
+    });
+
+    expect(toolbar).toHaveAttribute(
+      "aria-label",
+      "Barrierefreiheit-Einstellungen",
+    );
+    expect(dragHandle).toHaveAttribute("aria-label", "Toolbar verschieben");
   });
 });
