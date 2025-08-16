@@ -1,4 +1,4 @@
-import {useState, useEffect, useCallback} from "react";
+import {useState, useEffect, useCallback, useMemo} from "react";
 import {
   searchService,
   SearchFilters,
@@ -251,16 +251,23 @@ export function useSearch(): UseSearchResult {
     [filters, hasSearched, search, loadSmartCollections],
   );
 
+  // Memoize auto-search condition to optimize performance
+  const shouldAutoSearch = useMemo(() => {
+    const trimmedQuery = filters.query?.trim() || "";
+    // Only auto-search if user has searched before OR query has 2+ characters
+    return hasSearched || trimmedQuery.length >= 2;
+  }, [hasSearched, filters.query]);
+
   // Auto-search when filters change (debounced)
   useEffect(() => {
-    if (hasSearched) {
+    if (shouldAutoSearch) {
       const timer = setTimeout(() => {
         search(filters);
       }, 300); // 300ms debounce
 
       return () => clearTimeout(timer);
     }
-  }, [filters, hasSearched, search]);
+  }, [filters, shouldAutoSearch, search]);
 
   return {
     // Search state
