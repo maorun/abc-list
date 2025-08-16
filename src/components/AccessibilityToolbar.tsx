@@ -109,7 +109,7 @@ const createMouseMoveHandler =
       window.innerWidth - 200,
     );
     const newY = clampPosition(
-      dragStart.toolbarY + deltaY,
+      dragStart.toolbarY - deltaY,
       16,
       window.innerHeight - 300,
     );
@@ -143,7 +143,7 @@ const createTouchMoveHandler =
       window.innerWidth - 200,
     );
     const newY = clampPosition(
-      dragStart.toolbarY + deltaY,
+      dragStart.toolbarY - deltaY,
       16,
       window.innerHeight - 300,
     );
