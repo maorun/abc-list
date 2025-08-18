@@ -13,20 +13,8 @@ import {Basar} from "./Basar";
 import {BasarService} from "./BasarService";
 import * as useUnifiedProfileModule from "../../hooks/useUnifiedProfile";
 
-// Mock the unified profile hook
-vi.mock("../../hooks/useUnifiedProfile", () => ({
-  useUnifiedProfile: () => ({
-    profile: {
-      id: "test-user-1",
-      displayName: "Test User",
-      trading: {
-        points: 150,
-        level: 2,
-      },
-    },
-    createProfile: vi.fn(),
-  }),
-}));
+// Mock the unified profile hook module
+vi.mock("../../hooks/useUnifiedProfile");
 
 // Mock the BasarService
 vi.mock("./BasarService");
@@ -62,6 +50,46 @@ const renderBasar = () => {
     </BrowserRouter>,
   );
 };
+
+const createMockUnifiedProfile = () => ({
+  profile: {
+    id: "test-user-1",
+    displayName: "Test User",
+    joinDate: "2024-01-01",
+    lastActive: "2024-01-01",
+    auth: {
+      provider: "manual" as const,
+      lastLogin: "2024-01-01",
+      isVerified: false,
+    },
+    community: {
+      bio: "",
+      expertise: [],
+      mentorAvailable: false,
+      menteeInterested: false,
+      reputation: 0,
+      contributionCount: 0,
+      helpfulReviews: 0,
+    },
+    trading: {
+      points: 150,
+      level: 2,
+      tradesCompleted: 0,
+      termsContributed: 0,
+      averageRating: 0,
+      achievements: [],
+      tradingHistory: [],
+    },
+    version: 1,
+    migrated: false,
+  },
+  isLoading: false,
+  isAuthenticated: true,
+  createProfile: vi.fn(),
+  updateProfile: vi.fn(),
+  signInWithGoogle: vi.fn(),
+  signOut: vi.fn(),
+});
 
 describe("Basar", () => {
   beforeEach(() => {
@@ -164,6 +192,11 @@ describe("Basar", () => {
   });
 
   it("displays marketplace terms when available", () => {
+    // Mock unified profile for marketplace access
+    vi.spyOn(useUnifiedProfileModule, "useUnifiedProfile").mockReturnValue(
+      createMockUnifiedProfile(),
+    );
+
     const mockUser = {
       id: "user1",
       name: "Test User",
@@ -205,6 +238,11 @@ describe("Basar", () => {
   });
 
   it("filters terms by search input", async () => {
+    // Mock unified profile for marketplace access
+    vi.spyOn(useUnifiedProfileModule, "useUnifiedProfile").mockReturnValue(
+      createMockUnifiedProfile(),
+    );
+
     const mockUser = {
       id: "user1",
       name: "Test User",
@@ -273,6 +311,11 @@ describe("Basar", () => {
   });
 
   it("switches between marketplace and profile tabs", () => {
+    // Mock unified profile for marketplace access
+    vi.spyOn(useUnifiedProfileModule, "useUnifiedProfile").mockReturnValue(
+      createMockUnifiedProfile(),
+    );
+
     const mockUser = {
       id: "user1",
       name: "Test User",
@@ -297,6 +340,8 @@ describe("Basar", () => {
     const profileButton = screen.getByText("👤 Profil");
     fireEvent.click(profileButton);
 
-    expect(screen.getByText("📊 Übersicht")).toBeInTheDocument();
+    // Check that we're now in the profile view (profile view should show more elements)
+    expect(screen.getAllByText("Test User")).toHaveLength(2); // Header + profile
+    expect(screen.getByText(/Mitglied seit/)).toBeInTheDocument();
   });
 });

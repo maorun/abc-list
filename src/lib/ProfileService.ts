@@ -11,6 +11,7 @@ import {
   AuthChangeEvent,
   Session,
 } from "@supabase/supabase-js";
+import {v4 as uuidv4} from "uuid";
 import {
   UnifiedUserProfile,
   CreateProfileData,
@@ -30,7 +31,7 @@ export class ProfileService {
   private static instance: ProfileService | null = null;
   private supabaseClient: SupabaseClient | null = null;
   private currentUser: User | null = null;
-  private listeners: Array<() => void> = [];
+  private listeners: Set<() => void> = new Set();
 
   private constructor() {
     this.initializeSupabase();
@@ -189,9 +190,40 @@ export class ProfileService {
       const profile = localStorage.getItem(
         UNIFIED_PROFILE_STORAGE_KEYS.USER_PROFILE,
       );
-      return profile ? JSON.parse(profile) : null;
+      if (!profile) {
+        return null;
+      }
+
+      const parsedProfile = JSON.parse(profile);
+
+      // Validate basic profile structure
+      if (
+        !parsedProfile ||
+        typeof parsedProfile !== "object" ||
+        !parsedProfile.id
+      ) {
+        console.error(
+          "Profile data validation failed: Missing required fields",
+        );
+        localStorage.removeItem(UNIFIED_PROFILE_STORAGE_KEYS.USER_PROFILE);
+        return null;
+      }
+
+      return parsedProfile;
     } catch (error) {
-      console.error("Failed to load unified profile:", error);
+      if (error instanceof SyntaxError) {
+        console.error(
+          "Profile data corruption detected: Invalid JSON format",
+          error.message,
+        );
+        // Clear corrupted data to prevent further issues
+        localStorage.removeItem(UNIFIED_PROFILE_STORAGE_KEYS.USER_PROFILE);
+      } else {
+        console.error(
+          "Failed to load unified profile due to storage error:",
+          error,
+        );
+      }
       return null;
     }
   }
@@ -359,8 +391,31 @@ export class ProfileService {
   private getLegacyCommunityProfile(): LegacyCommunityProfile | null {
     try {
       const profile = localStorage.getItem(COMMUNITY_STORAGE_KEYS.USER_PROFILE);
-      return profile ? JSON.parse(profile) : null;
-    } catch {
+      if (!profile) {
+        return null;
+      }
+
+      const parsedProfile = JSON.parse(profile);
+
+      // Validate basic structure
+      if (!parsedProfile || typeof parsedProfile !== "object") {
+        console.warn(
+          "Legacy community profile validation failed: Invalid structure",
+        );
+        return null;
+      }
+
+      return parsedProfile;
+    } catch (error) {
+      if (error instanceof SyntaxError) {
+        console.warn(
+          "Legacy community profile data corruption detected:",
+          error.message,
+        );
+        // Don't remove legacy data as it might be recoverable
+      } else {
+        console.error("Failed to load legacy community profile:", error);
+      }
       return null;
     }
   }
@@ -377,12 +432,28 @@ export class ProfileService {
       if (!users) return null;
 
       const userProfiles = JSON.parse(users);
+
+      // Validate array structure
+      if (!Array.isArray(userProfiles)) {
+        console.warn("Legacy basar profiles validation failed: Expected array");
+        return null;
+      }
+
       return (
         userProfiles.find(
-          (user: LegacyBasarProfile) => user.id === currentUserId,
+          (user: LegacyBasarProfile) => user && user.id === currentUserId,
         ) || null
       );
-    } catch {
+    } catch (error) {
+      if (error instanceof SyntaxError) {
+        console.warn(
+          "Legacy basar profile data corruption detected:",
+          error.message,
+        );
+        // Don't remove legacy data as it might be recoverable
+      } else {
+        console.error("Failed to load legacy basar profile:", error);
+      }
       return null;
     }
   }
@@ -391,14 +462,14 @@ export class ProfileService {
    * Add event listener for profile changes
    */
   public addListener(listener: () => void): void {
-    this.listeners.push(listener);
+    this.listeners.add(listener);
   }
 
   /**
    * Remove event listener
    */
   public removeListener(listener: () => void): void {
-    this.listeners = this.listeners.filter((l) => l !== listener);
+    this.listeners.delete(listener);
   }
 
   /**
@@ -409,10 +480,10 @@ export class ProfileService {
   }
 
   /**
-   * Generate unique ID for profiles
+   * Generate unique ID for profiles using UUID for better collision resistance
    */
   private generateId(): string {
-    return `user_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+    return `user_${uuidv4()}`;
   }
 
   /**

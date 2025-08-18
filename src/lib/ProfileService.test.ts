@@ -344,8 +344,12 @@ describe("ProfileService", () => {
       const profile2 = newService.createUnifiedProfile({displayName: "User 2"});
 
       expect(profile1.id).not.toBe(profile2.id);
-      expect(profile1.id).toMatch(/^user_\d+_\w+$/);
-      expect(profile2.id).toMatch(/^user_\d+_\w+$/);
+      expect(profile1.id).toMatch(
+        /^user_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
+      );
+      expect(profile2.id).toMatch(
+        /^user_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
+      );
     });
   });
 });
