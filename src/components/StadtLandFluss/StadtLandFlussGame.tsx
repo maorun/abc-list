@@ -1,6 +1,13 @@
 import React, {useState, useEffect, useCallback, useRef} from "react";
-import {useParams} from "react-router-dom";
+import {useParams, useNavigate} from "react-router-dom";
 import {toast} from "sonner";
+
+// Extract handler action outside component
+const handleBackToStadtLandFlussAction = (
+  navigate: ReturnType<typeof useNavigate>,
+) => {
+  navigate("/slf");
+};
 
 // Default categories for Stadt-Land-Fluss
 const DEFAULT_CATEGORIES = [
@@ -36,6 +43,7 @@ interface GameData {
 
 export function StadtLandFlussGame() {
   const {game} = useParams<{game: string}>();
+  const navigate = useNavigate();
   const [gameData, setGameData] = useState<GameData>({
     categories: DEFAULT_CATEGORIES,
     currentLetter: "",
@@ -50,6 +58,12 @@ export function StadtLandFlussGame() {
   const [newCategory, setNewCategory] = useState("");
   const timerIntervalRef = useRef<number | null>(null);
   const endRoundCalledRef = useRef(false);
+
+  // Create stable back navigation handler using useCallback
+  const backToStadtLandFluss = useCallback(
+    () => handleBackToStadtLandFlussAction(navigate),
+    [navigate],
+  );
 
   const loadGameData = useCallback(() => {
     const cacheKey = "slf-" + game;
@@ -251,8 +265,18 @@ export function StadtLandFlussGame() {
 
   return (
     <div className="p-4 max-w-4xl mx-auto">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Stadt-Land-Fluss: {game}</h1>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
+          <button
+            onClick={backToStadtLandFluss}
+            className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded flex items-center justify-center gap-2 mb-2 sm:mb-0 w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+            title="Zurück zur Stadt-Land-Fluss Übersicht"
+            aria-label="Zurück zur Stadt-Land-Fluss Übersicht"
+          >
+            <span className="flex items-center">←</span> Zurück zu Spielen
+          </button>
+          <h1 className="text-3xl font-bold">Stadt-Land-Fluss: {game}</h1>
+        </div>
         <div className="text-xl font-bold text-blue-600">
           Gesamtpunkte: {gameData.totalScore}
         </div>
