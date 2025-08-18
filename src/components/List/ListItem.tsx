@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useCallback} from "react";
 import {useParams, useNavigate} from "react-router-dom";
 import {toast} from "sonner";
 import {usePrompt} from "@/components/ui/prompt-dialog";
@@ -296,8 +296,8 @@ const createImportWizard = async (
   setTimeout(() => createImportWizard(remainingTerms, cacheKey, prompt), 100);
 };
 
-// Extract handler function for back navigation outside component
-const handleBackToLists = (navigate: ReturnType<typeof useNavigate>) => () => {
+// Extract handler action outside component
+const handleBackToListsAction = (navigate: ReturnType<typeof useNavigate>) => {
   navigate("/");
 };
 
@@ -310,6 +310,12 @@ export function ListItem() {
   const [exportedData, setExportedData] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const {prompt, PromptComponent} = usePrompt();
+
+  // Create stable back navigation handler using useCallback
+  const backToLists = useCallback(
+    () => handleBackToListsAction(navigate),
+    [navigate],
+  );
 
   // Compute derived state directly instead of using useEffect
   const cacheKey = getCacheKey(item);
@@ -362,20 +368,17 @@ export function ListItem() {
     terms: Array<{letter: string; word: WordWithExplanation}>,
   ) => createImportWizard(terms, cacheKey, prompt);
 
-  // Create stable back navigation handler reference
-  const backToLists = handleBackToLists(navigate);
-
   return (
     <div className="p-4">
       <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4 mb-2 md:mb-0">
           <button
             onClick={backToLists}
-            className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded flex items-center gap-2 mb-2 sm:mb-0 w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+            className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded flex items-center justify-center gap-2 mb-2 sm:mb-0 w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
             title="Zurück zur Listen-Übersicht"
             aria-label="Zurück zur ABC-Listen Übersicht"
           >
-            ← Zurück zu Listen
+            <span className="flex items-center">←</span> Zurück zu Listen
           </button>
           <h1 className="text-3xl font-bold">ABC-Liste für {item}</h1>
         </div>

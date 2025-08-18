@@ -5,8 +5,8 @@ import {usePrompt} from "@/components/ui/prompt-dialog";
 import {Button} from "../ui/button";
 import {KagaTemplates, KagaTemplate} from "./KagaTemplates";
 
-// Extract handler function for back navigation outside component
-const handleBackToKagas = (navigate: ReturnType<typeof useNavigate>) => () => {
+// Extract handler action outside component
+const handleBackToKagasAction = (navigate: ReturnType<typeof useNavigate>) => {
   navigate("/kaga");
 };
 
@@ -89,8 +89,11 @@ export function KagaItem() {
   });
   const {prompt, PromptComponent} = usePrompt();
 
-  // Create stable back navigation handler reference
-  const backToKagas = handleBackToKagas(navigate);
+  // Create stable back navigation handler using useCallback
+  const backToKagas = useCallback(
+    () => handleBackToKagasAction(navigate),
+    [navigate],
+  );
 
   useEffect(() => {
     if (item) {
@@ -576,9 +579,9 @@ export function KagaItem() {
       <div className="p-4 text-center">
         <button
           onClick={backToKagas}
-          className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mb-4 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+          className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded flex items-center justify-center gap-2 mb-4 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
         >
-          ← Zurück zu KaGas
+          <span className="flex items-center">←</span> Zurück zu KaGas
         </button>
         <div>KaGa nicht gefunden. Bitte gehe zurück zur Übersicht.</div>
       </div>
@@ -590,11 +593,11 @@ export function KagaItem() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4 mb-4">
         <button
           onClick={backToKagas}
-          className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded flex items-center gap-2 mb-2 sm:mb-0 w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+          className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded flex items-center justify-center gap-2 mb-2 sm:mb-0 w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
           title="Zurück zur KaGa-Übersicht"
           aria-label="Zurück zur KaGa Übersicht"
         >
-          ← Zurück zu KaGas
+          <span className="flex items-center">←</span> Zurück zu KaGas
         </button>
         <h1 className="text-3xl font-bold text-center sm:text-left">
           KaGa für &quot;{item.text}&quot;
