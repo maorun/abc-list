@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {useParams} from "react-router-dom";
+import {useParams, useNavigate} from "react-router-dom";
 import {toast} from "sonner";
 import {usePrompt} from "@/components/ui/prompt-dialog";
 import {Letter} from "./Letter";
@@ -296,8 +296,14 @@ const createImportWizard = async (
   setTimeout(() => createImportWizard(remainingTerms, cacheKey, prompt), 100);
 };
 
+// Extract handler function for back navigation outside component
+const handleBackToLists = (navigate: ReturnType<typeof useNavigate>) => () => {
+  navigate("/");
+};
+
 export function ListItem() {
   const {item} = useParams<{item: string}>();
+  const navigate = useNavigate();
   const [showExportModal, setShowExportModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
   const [importData, setImportData] = useState("");
@@ -356,12 +362,23 @@ export function ListItem() {
     terms: Array<{letter: string; word: WordWithExplanation}>,
   ) => createImportWizard(terms, cacheKey, prompt);
 
+  // Create stable back navigation handler reference
+  const backToLists = handleBackToLists(navigate);
+
   return (
     <div className="p-4">
       <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4">
-        <h1 className="text-3xl font-bold mb-2 md:mb-0">
-          ABC-Liste für {item}
-        </h1>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4 mb-2 md:mb-0">
+          <button
+            onClick={backToLists}
+            className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded flex items-center gap-2 mb-2 sm:mb-0 w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+            title="Zurück zur Listen-Übersicht"
+            aria-label="Zurück zur ABC-Listen Übersicht"
+          >
+            ← Zurück zu Listen
+          </button>
+          <h1 className="text-3xl font-bold">ABC-Liste für {item}</h1>
+        </div>
         <div className="flex gap-2 flex-wrap">
           <div className="relative group">
             <button

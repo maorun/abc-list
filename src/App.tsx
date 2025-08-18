@@ -115,7 +115,9 @@ const NavButton = React.memo(function NavButton({
     <NavLink to={to} onClick={onClick}>
       <Button
         variant={isActive ? "secondary" : "ghost"}
-        className="w-full justify-start text-white hover:text-slate-900 sm:w-auto sm:justify-center"
+        className={`w-full justify-start hover:text-slate-900 sm:w-auto sm:justify-center ${
+          isActive ? "text-black" : "text-white"
+        }`}
         aria-label={`${children} - ${description}`}
         aria-current={isActive ? "page" : undefined}
       >
@@ -139,7 +141,11 @@ function Navigation() {
   const currentPath = location.pathname;
 
   return (
-    <nav className="bg-blue-800" role="navigation" aria-label="Hauptnavigation">
+    <nav
+      className="bg-blue-800 sticky top-0 z-50"
+      role="navigation"
+      aria-label="Hauptnavigation"
+    >
       {/* Skip navigation link */}
       <a
         href="#main-content"

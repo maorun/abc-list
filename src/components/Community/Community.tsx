@@ -95,7 +95,11 @@ export function Community() {
         </div>
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
           {!userProfile && (
-            <Button onClick={handleCreateProfile} className="w-full sm:w-auto">
+            <Button
+              onClick={handleCreateProfile}
+              className="w-full sm:w-auto min-h-[44px] px-4 py-2"
+              size="default"
+            >
               <Users className="h-4 w-4 mr-2" />
               Profil erstellen
             </Button>
@@ -171,23 +175,41 @@ export function Community() {
         onValueChange={handleTabChange}
         className="w-full"
       >
-        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-6 gap-1">
-          <TabsTrigger value="overview" className="text-xs sm:text-sm">
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-1 h-auto p-1">
+          <TabsTrigger
+            value="overview"
+            className="text-xs sm:text-sm min-h-[44px] px-2 py-2"
+          >
             Übersicht
           </TabsTrigger>
-          <TabsTrigger value="profile" className="text-xs sm:text-sm">
+          <TabsTrigger
+            value="profile"
+            className="text-xs sm:text-sm min-h-[44px] px-2 py-2"
+          >
             Profil
           </TabsTrigger>
-          <TabsTrigger value="mentoring" className="text-xs sm:text-sm">
+          <TabsTrigger
+            value="mentoring"
+            className="text-xs sm:text-sm min-h-[44px] px-2 py-2"
+          >
             Mentoring
           </TabsTrigger>
-          <TabsTrigger value="challenges" className="text-xs sm:text-sm">
+          <TabsTrigger
+            value="challenges"
+            className="text-xs sm:text-sm min-h-[44px] px-2 py-2"
+          >
             Challenges
           </TabsTrigger>
-          <TabsTrigger value="reviews" className="text-xs sm:text-sm">
+          <TabsTrigger
+            value="reviews"
+            className="text-xs sm:text-sm min-h-[44px] px-2 py-2"
+          >
             Reviews
           </TabsTrigger>
-          <TabsTrigger value="featured" className="text-xs sm:text-sm">
+          <TabsTrigger
+            value="featured"
+            className="text-xs sm:text-sm min-h-[44px] px-2 py-2"
+          >
             Erfolgsgeschichten
           </TabsTrigger>
         </TabsList>
