@@ -3,10 +3,14 @@
  * Consolidates Community and Basar profile functionality with Google login
  */
 
-import React, { useState } from "react";
-import { useUnifiedProfile } from "../../hooks/useUnifiedProfile";
-import { CreateProfileData, UpdateProfileData, UserExpertise } from "../../types/profile";
-import { EXPERTISE_AREAS } from "../../lib/CommunityService";
+import React, {useState} from "react";
+import {useUnifiedProfile} from "../../hooks/useUnifiedProfile";
+import {
+  CreateProfileData,
+  UpdateProfileData,
+  UserExpertise,
+} from "../../types/profile";
+import {EXPERTISE_AREAS} from "../../lib/CommunityService";
 import {
   Card,
   CardContent,
@@ -14,12 +18,12 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import { Textarea } from "../ui/textarea";
-import { Switch } from "../ui/switch";
-import { Badge } from "../ui/badge";
+import {Button} from "../ui/button";
+import {Input} from "../ui/input";
+import {Label} from "../ui/label";
+import {Textarea} from "../ui/textarea";
+import {Switch} from "../ui/switch";
+import {Badge} from "../ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -47,7 +51,7 @@ import {
   MessageCircle,
   Award,
 } from "lucide-react";
-import { toast } from "sonner";
+import {toast} from "sonner";
 
 interface UnifiedUserProfileProps {
   showCreateProfile?: boolean;
@@ -56,7 +60,7 @@ interface UnifiedUserProfileProps {
 
 // Extracted handlers to prevent recreation on every render
 const handleGoogleSignInAction = async (
-  signInWithGoogle: () => Promise<{ success: boolean; error?: string }>,
+  signInWithGoogle: () => Promise<{success: boolean; error?: string}>,
 ) => {
   const result = await signInWithGoogle();
   if (result.success) {
@@ -66,9 +70,7 @@ const handleGoogleSignInAction = async (
   }
 };
 
-const handleSignOutAction = async (
-  signOut: () => Promise<void>,
-) => {
+const handleSignOutAction = async (signOut: () => Promise<void>) => {
   await signOut();
   toast.success("Erfolgreich abgemeldet");
 };
@@ -85,7 +87,7 @@ export function UnifiedUserProfile({
     signInWithGoogle,
     signOut,
   } = useUnifiedProfile();
-  
+
   const [showEditProfile, setShowEditProfile] = useState(false);
 
   if (isLoading) {
@@ -124,13 +126,13 @@ export function UnifiedUserProfile({
               Erstelle dein Profil, um alle Funktionen von ABC-List zu nutzen:
               Community-Features, Mentoring und den Basar
             </p>
-            
+
             <div className="space-y-3">
               <Button onClick={handleGoogleSignIn} className="w-full">
                 <Mail className="h-4 w-4 mr-2" />
                 Mit Google anmelden
               </Button>
-              
+
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
                   <span className="w-full border-t" />
@@ -141,9 +143,9 @@ export function UnifiedUserProfile({
                   </span>
                 </div>
               </div>
-              
-              <Button 
-                variant="outline" 
+
+              <Button
+                variant="outline"
                 onClick={() => setShowCreateProfile?.(true)}
                 className="w-full"
               >
@@ -199,7 +201,8 @@ export function UnifiedUserProfile({
               <CardDescription className="flex items-center gap-4">
                 <span className="flex items-center">
                   <Calendar className="h-4 w-4 mr-1" />
-                  Mitglied seit {new Date(profile.joinDate).toLocaleDateString("de-DE")}
+                  Mitglied seit{" "}
+                  {new Date(profile.joinDate).toLocaleDateString("de-DE")}
                 </span>
                 {profile.auth.email && (
                   <span className="flex items-center">
@@ -228,13 +231,13 @@ export function UnifiedUserProfile({
                     profile={profile}
                     onClose={() => setShowEditProfile(false)}
                     onSave={(data) => {
-                      updateProfile({ id: profile.id, ...data });
+                      updateProfile({id: profile.id, ...data});
                       setShowEditProfile(false);
                     }}
                   />
                 </DialogContent>
               </Dialog>
-              
+
               {profile.auth.provider === "google" && (
                 <Button variant="outline" size="sm" onClick={handleSignOut}>
                   Abmelden
@@ -251,7 +254,7 @@ export function UnifiedUserProfile({
                 <Users className="h-4 w-4 mr-2" />
                 Community
               </h3>
-              
+
               {profile.community.bio && (
                 <div>
                   <Label>Über mich</Label>
@@ -268,7 +271,9 @@ export function UnifiedUserProfile({
                     </Badge>
                   ))}
                   {profile.community.expertise.length === 0 && (
-                    <p className="text-gray-500 text-sm">Keine Expertise-Bereiche angegeben</p>
+                    <p className="text-gray-500 text-sm">
+                      Keine Expertise-Bereiche angegeben
+                    </p>
                   )}
                 </div>
               </div>
@@ -287,13 +292,25 @@ export function UnifiedUserProfile({
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
                   <span>Mentor verfügbar</span>
-                  <Badge variant={profile.community.mentorAvailable ? "default" : "secondary"}>
+                  <Badge
+                    variant={
+                      profile.community.mentorAvailable
+                        ? "default"
+                        : "secondary"
+                    }
+                  >
                     {profile.community.mentorAvailable ? "Ja" : "Nein"}
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span>Sucht Mentoring</span>
-                  <Badge variant={profile.community.menteeInterested ? "default" : "secondary"}>
+                  <Badge
+                    variant={
+                      profile.community.menteeInterested
+                        ? "default"
+                        : "secondary"
+                    }
+                  >
                     {profile.community.menteeInterested ? "Ja" : "Nein"}
                   </Badge>
                 </div>
@@ -336,20 +353,26 @@ export function UnifiedUserProfile({
               {profile.trading.averageRating > 0 && (
                 <div className="flex items-center">
                   <Star className="h-4 w-4 mr-2 text-yellow-500" />
-                  <span>{profile.trading.averageRating.toFixed(1)} ⭐ Bewertung</span>
+                  <span>
+                    {profile.trading.averageRating.toFixed(1)} ⭐ Bewertung
+                  </span>
                 </div>
               )}
 
               <div>
                 <Label>Errungenschaften</Label>
                 <div className="flex flex-wrap gap-2 mt-2">
-                  {profile.trading.achievements.slice(0, 3).map((achievement) => (
-                    <Badge key={achievement.id} variant="outline">
-                      {achievement.icon} {achievement.name}
-                    </Badge>
-                  ))}
+                  {profile.trading.achievements
+                    .slice(0, 3)
+                    .map((achievement) => (
+                      <Badge key={achievement.id} variant="outline">
+                        {achievement.icon} {achievement.name}
+                      </Badge>
+                    ))}
                   {profile.trading.achievements.length === 0 && (
-                    <p className="text-gray-500 text-sm">Noch keine Errungenschaften</p>
+                    <p className="text-gray-500 text-sm">
+                      Noch keine Errungenschaften
+                    </p>
                   )}
                 </div>
               </div>
@@ -367,30 +390,39 @@ function ProfileForm({
   onClose,
   onSave,
 }: {
-  profile: any;
+  profile: UnifiedUserProfile | null;
   onClose: () => void;
   onSave: (data: CreateProfileData | UpdateProfileData) => void;
 }) {
   const isEditing = profile !== null;
   const [displayName, setDisplayName] = useState(profile?.displayName || "");
   const [bio, setBio] = useState(profile?.community?.bio || "");
-  const [expertise, setExpertise] = useState<UserExpertise[]>(profile?.community?.expertise || []);
-  const [mentorAvailable, setMentorAvailable] = useState(profile?.community?.mentorAvailable || false);
-  const [menteeInterested, setMenteeInterested] = useState(profile?.community?.menteeInterested || false);
+  const [expertise, setExpertise] = useState<UserExpertise[]>(
+    profile?.community?.expertise || [],
+  );
+  const [mentorAvailable, setMentorAvailable] = useState(
+    profile?.community?.mentorAvailable || false,
+  );
+  const [menteeInterested, setMenteeInterested] = useState(
+    profile?.community?.menteeInterested || false,
+  );
 
   const handleAddExpertise = (area: string, level: string) => {
-    if (expertise.some(exp => exp.area === area)) return;
-    
-    setExpertise([...expertise, {
-      area,
-      level: level as "Beginner" | "Intermediate" | "Advanced" | "Expert",
-      verified: false,
-      endorsements: 0,
-    }]);
+    if (expertise.some((exp) => exp.area === area)) return;
+
+    setExpertise([
+      ...expertise,
+      {
+        area,
+        level: level as "Beginner" | "Intermediate" | "Advanced" | "Expert",
+        verified: false,
+        endorsements: 0,
+      },
+    ]);
   };
 
   const handleRemoveExpertise = (area: string) => {
-    setExpertise(expertise.filter(exp => exp.area !== area));
+    setExpertise(expertise.filter((exp) => exp.area !== area));
   };
 
   const handleSave = () => {
@@ -439,8 +471,13 @@ function ProfileForm({
         <Label>Expertise-Bereiche</Label>
         <div className="space-y-2">
           {expertise.map((exp) => (
-            <div key={exp.area} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-              <span>{exp.area} ({exp.level})</span>
+            <div
+              key={exp.area}
+              className="flex items-center justify-between p-2 bg-gray-50 rounded"
+            >
+              <span>
+                {exp.area} ({exp.level})
+              </span>
               <Button
                 variant="ghost"
                 size="sm"
@@ -453,13 +490,16 @@ function ProfileForm({
         </div>
 
         <div className="flex gap-2">
-          <Select onValueChange={(area) => handleAddExpertise(area, "Beginner")}>
+          <Select
+            onValueChange={(area) => handleAddExpertise(area, "Beginner")}
+          >
             <SelectTrigger className="flex-1">
               <SelectValue placeholder="Expertise-Bereich hinzufügen" />
             </SelectTrigger>
             <SelectContent>
-              {EXPERTISE_AREAS.filter(area => !expertise.some(exp => exp.area === area))
-                .map((area) => (
+              {EXPERTISE_AREAS.filter(
+                (area) => !expertise.some((exp) => exp.area === area),
+              ).map((area) => (
                 <SelectItem key={area} value={area}>
                   {area}
                 </SelectItem>

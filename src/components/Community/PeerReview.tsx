@@ -43,7 +43,7 @@ import {
   CommunityService,
   PeerReview as Review,
 } from "../../lib/CommunityService";
-import { UnifiedUserProfile } from "../../types/profile";
+import {UnifiedUserProfile} from "../../types/profile";
 
 interface PeerReviewProps {
   userProfile: UnifiedUserProfile | null;
@@ -398,9 +398,7 @@ export function PeerReview({userProfile}: PeerReviewProps) {
     );
   }
 
-  const userReviews = reviews.filter(
-    (r) => r.reviewerId === userProfile.id,
-  );
+  const userReviews = reviews.filter((r) => r.reviewerId === userProfile.id);
   const averageRating =
     userReviews.length > 0
       ? userReviews.reduce((sum, r) => sum + r.rating, 0) / userReviews.length
@@ -488,7 +486,9 @@ export function PeerReview({userProfile}: PeerReviewProps) {
               <Award className="h-8 w-8 text-purple-500 mr-3" />
               <div>
                 <p className="text-sm font-medium text-gray-600">Reputation</p>
-                <p className="text-2xl font-bold">{userProfile.community.reputation}</p>
+                <p className="text-2xl font-bold">
+                  {userProfile.community.reputation}
+                </p>
               </div>
             </div>
           </CardContent>

@@ -35,7 +35,7 @@ import {
   CommunityService,
   CommunityChallenge as Challenge,
 } from "../../lib/CommunityService";
-import { UnifiedUserProfile } from "../../types/profile";
+import {UnifiedUserProfile} from "../../types/profile";
 
 interface CommunityChallengeProps {
   challenges: Challenge[];

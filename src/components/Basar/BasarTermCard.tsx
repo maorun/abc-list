@@ -14,7 +14,7 @@ import {Label} from "../ui/label";
 import {Textarea} from "../ui/textarea";
 import {MarketplaceTerm} from "./types";
 import {BasarService} from "./BasarService";
-import { UnifiedUserProfile } from "../../types/profile";
+import {UnifiedUserProfile} from "../../types/profile";
 
 interface BasarTermCardProps {
   term: MarketplaceTerm;
@@ -37,7 +37,8 @@ export function BasarTermCard({
 
   const existingRating = basarService.getUserRating(term.id, currentUser.id);
   const canBuy =
-    currentUser.trading.points >= term.price && term.sellerId !== currentUser.id;
+    currentUser.trading.points >= term.price &&
+    term.sellerId !== currentUser.id;
   const isOwnTerm = term.sellerId === currentUser.id;
 
   const handleOpenRating = () => {
@@ -192,7 +193,8 @@ export function BasarTermCard({
 
           {!canBuy && !isOwnTerm && (
             <div className="mt-2 text-xs text-red-500 text-center w-full">
-              Sie benötigen {term.price - currentUser.trading.points} weitere Punkte
+              Sie benötigen {term.price - currentUser.trading.points} weitere
+              Punkte
             </div>
           )}
         </CardFooter>

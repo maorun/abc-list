@@ -28,8 +28,8 @@ import {
   CommunityChallenge,
   SuccessStory,
 } from "../../lib/CommunityService";
-import { useUnifiedProfile } from "../../hooks/useUnifiedProfile";
-import { UnifiedUserProfile } from "../Profile/UnifiedUserProfile";
+import {useUnifiedProfile} from "../../hooks/useUnifiedProfile";
+import {UnifiedUserProfile} from "../Profile/UnifiedUserProfile";
 import {MentorshipManager} from "./MentorshipManager";
 import {CommunityChallenge as ChallengeComponent} from "./CommunityChallenge";
 import {PeerReview} from "./PeerReview";
@@ -57,7 +57,7 @@ export function Community() {
   const [showCreateProfile, setShowCreateProfile] = useState(false);
 
   // Use unified profile system
-  const { profile: userProfile } = useUnifiedProfile();
+  const {profile: userProfile} = useUnifiedProfile();
   const communityService = CommunityService.getInstance();
 
   useEffect(() => {
@@ -119,7 +119,9 @@ export function Community() {
                   <p className="text-sm font-medium text-gray-600">
                     Reputation
                   </p>
-                  <p className="text-2xl font-bold">{userProfile.community.reputation}</p>
+                  <p className="text-2xl font-bold">
+                    {userProfile.community.reputation}
+                  </p>
                 </div>
               </div>
             </CardContent>

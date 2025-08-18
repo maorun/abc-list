@@ -4,18 +4,23 @@
  * Integrates Google OAuth via Supabase and consolidates Community/Basar profiles
  */
 
-import { createClient, SupabaseClient, User, AuthChangeEvent, Session } from "@supabase/supabase-js";
+import {
+  createClient,
+  SupabaseClient,
+  User,
+  AuthChangeEvent,
+  Session,
+} from "@supabase/supabase-js";
 import {
   UnifiedUserProfile,
   CreateProfileData,
   UpdateProfileData,
-  AuthInfo,
   LegacyCommunityProfile,
   LegacyBasarProfile,
   UNIFIED_PROFILE_STORAGE_KEYS,
 } from "../types/profile";
-import { COMMUNITY_STORAGE_KEYS } from "./CommunityService";
-import { USER_PROFILES_KEY, CURRENT_USER_KEY } from "../components/Basar/types";
+import {COMMUNITY_STORAGE_KEYS} from "./CommunityService";
+import {USER_PROFILES_KEY, CURRENT_USER_KEY} from "../components/Basar/types";
 
 /**
  * ProfileService - Singleton service managing unified user profiles and authentication
@@ -53,21 +58,29 @@ export class ProfileService {
 
       if (supabaseUrl && supabaseKey) {
         this.supabaseClient = createClient(supabaseUrl, supabaseKey);
-        
+
         // Listen for auth state changes
-        this.supabaseClient.auth.onAuthStateChange((event: AuthChangeEvent, session: Session | null) => {
-          this.handleAuthStateChange(event, session);
-        });
+        this.supabaseClient.auth.onAuthStateChange(
+          (event: AuthChangeEvent, session: Session | null) => {
+            this.handleAuthStateChange(event, session);
+          },
+        );
       }
     } catch (error) {
-      console.warn("Supabase initialization failed, using localStorage fallback:", error);
+      console.warn(
+        "Supabase initialization failed, using localStorage fallback:",
+        error,
+      );
     }
   }
 
   /**
    * Handle authentication state changes
    */
-  private handleAuthStateChange(event: AuthChangeEvent, session: Session | null): void {
+  private handleAuthStateChange(
+    event: AuthChangeEvent,
+    session: Session | null,
+  ): void {
     if (event === "SIGNED_IN" && session?.user) {
       this.currentUser = session.user;
       this.handleGoogleLoginSuccess(session.user);
@@ -82,11 +95,14 @@ export class ProfileService {
    */
   private async handleGoogleLoginSuccess(user: User): Promise<void> {
     const existingProfile = this.getUnifiedProfile();
-    
+
     if (!existingProfile) {
       // Create new profile for Google user
       const profileData: CreateProfileData = {
-        displayName: user.user_metadata?.full_name || user.email?.split("@")[0] || "Google User",
+        displayName:
+          user.user_metadata?.full_name ||
+          user.email?.split("@")[0] ||
+          "Google User",
         bio: "",
         expertise: [],
         auth: {
@@ -97,14 +113,14 @@ export class ProfileService {
           isVerified: true,
         },
       };
-      
+
       this.createUnifiedProfile(profileData);
     } else {
       // Update existing profile with Google auth info
       this.updateUnifiedProfile({
         id: existingProfile.id,
       });
-      
+
       // Update auth info
       existingProfile.auth = {
         provider: "google",
@@ -113,7 +129,7 @@ export class ProfileService {
         lastLogin: new Date().toISOString(),
         isVerified: true,
       };
-      
+
       this.saveUnifiedProfile(existingProfile);
     }
   }
@@ -121,13 +137,17 @@ export class ProfileService {
   /**
    * Sign in with Google
    */
-  public async signInWithGoogle(): Promise<{ success: boolean; error?: string }> {
+  public async signInWithGoogle(): Promise<{success: boolean; error?: string}> {
     if (!this.supabaseClient) {
-      return { success: false, error: "Authentication service not available. Using manual profile creation." };
+      return {
+        success: false,
+        error:
+          "Authentication service not available. Using manual profile creation.",
+      };
     }
 
     try {
-      const { error } = await this.supabaseClient.auth.signInWithOAuth({
+      const {error} = await this.supabaseClient.auth.signInWithOAuth({
         provider: "google",
         options: {
           redirectTo: `${window.location.origin}/abc-list/`,
@@ -135,14 +155,17 @@ export class ProfileService {
       });
 
       if (error) {
-        return { success: false, error: error.message };
+        return {success: false, error: error.message};
       }
 
-      return { success: true };
+      return {success: true};
     } catch (error) {
-      return { 
-        success: false, 
-        error: error instanceof Error ? error.message : "Unknown authentication error" 
+      return {
+        success: false,
+        error:
+          error instanceof Error
+            ? error.message
+            : "Unknown authentication error",
       };
     }
   }
@@ -163,7 +186,9 @@ export class ProfileService {
    */
   public getUnifiedProfile(): UnifiedUserProfile | null {
     try {
-      const profile = localStorage.getItem(UNIFIED_PROFILE_STORAGE_KEYS.USER_PROFILE);
+      const profile = localStorage.getItem(
+        UNIFIED_PROFILE_STORAGE_KEYS.USER_PROFILE,
+      );
       return profile ? JSON.parse(profile) : null;
     } catch (error) {
       console.error("Failed to load unified profile:", error);
@@ -180,14 +205,14 @@ export class ProfileService {
       displayName: data.displayName,
       joinDate: new Date().toISOString(),
       lastActive: new Date().toISOString(),
-      
+
       auth: {
         provider: "manual",
         lastLogin: new Date().toISOString(),
         isVerified: false,
         ...data.auth,
       },
-      
+
       community: {
         bio: data.bio || "",
         expertise: data.expertise || [],
@@ -197,7 +222,7 @@ export class ProfileService {
         contributionCount: 0,
         helpfulReviews: 0,
       },
-      
+
       trading: {
         points: 100, // Starting points
         level: 1,
@@ -207,7 +232,7 @@ export class ProfileService {
         achievements: [],
         tradingHistory: [],
       },
-      
+
       version: 1,
       migrated: false,
     };
@@ -234,8 +259,10 @@ export class ProfileService {
         ...currentProfile.community,
         bio: data.bio ?? currentProfile.community.bio,
         expertise: data.expertise ?? currentProfile.community.expertise,
-        mentorAvailable: data.mentorAvailable ?? currentProfile.community.mentorAvailable,
-        menteeInterested: data.menteeInterested ?? currentProfile.community.menteeInterested,
+        mentorAvailable:
+          data.mentorAvailable ?? currentProfile.community.mentorAvailable,
+        menteeInterested:
+          data.menteeInterested ?? currentProfile.community.menteeInterested,
       },
     };
 
@@ -248,14 +275,19 @@ export class ProfileService {
    * Save unified profile to storage
    */
   private saveUnifiedProfile(profile: UnifiedUserProfile): void {
-    localStorage.setItem(UNIFIED_PROFILE_STORAGE_KEYS.USER_PROFILE, JSON.stringify(profile));
+    localStorage.setItem(
+      UNIFIED_PROFILE_STORAGE_KEYS.USER_PROFILE,
+      JSON.stringify(profile),
+    );
   }
 
   /**
    * Migrate legacy profiles to unified system
    */
   public migrateLegacyProfiles(): boolean {
-    const migrationStatus = localStorage.getItem(UNIFIED_PROFILE_STORAGE_KEYS.MIGRATION_STATUS);
+    const migrationStatus = localStorage.getItem(
+      UNIFIED_PROFILE_STORAGE_KEYS.MIGRATION_STATUS,
+    );
     if (migrationStatus === "completed") {
       return false; // Already migrated
     }
@@ -276,15 +308,18 @@ export class ProfileService {
     const unifiedProfile: UnifiedUserProfile = {
       id: legacyCommunity?.userId || legacyBasar?.id || this.generateId(),
       displayName: legacyCommunity?.displayName || legacyBasar?.name || "User",
-      joinDate: legacyCommunity?.joinDate || legacyBasar?.joinDate || new Date().toISOString(),
+      joinDate:
+        legacyCommunity?.joinDate ||
+        legacyBasar?.joinDate ||
+        new Date().toISOString(),
       lastActive: legacyCommunity?.lastActive || new Date().toISOString(),
-      
+
       auth: {
         provider: "manual",
         lastLogin: new Date().toISOString(),
         isVerified: false,
       },
-      
+
       community: {
         bio: legacyCommunity?.bio || "",
         expertise: legacyCommunity?.expertise || [],
@@ -294,7 +329,7 @@ export class ProfileService {
         contributionCount: legacyCommunity?.contributionCount || 0,
         helpfulReviews: legacyCommunity?.helpfulReviews || 0,
       },
-      
+
       trading: {
         points: legacyBasar?.points || 100,
         level: legacyBasar?.level || 1,
@@ -304,13 +339,16 @@ export class ProfileService {
         achievements: legacyBasar?.achievements || [],
         tradingHistory: legacyBasar?.tradingHistory || [],
       },
-      
+
       version: 1,
       migrated: true,
     };
 
     this.saveUnifiedProfile(unifiedProfile);
-    localStorage.setItem(UNIFIED_PROFILE_STORAGE_KEYS.MIGRATION_STATUS, "completed");
+    localStorage.setItem(
+      UNIFIED_PROFILE_STORAGE_KEYS.MIGRATION_STATUS,
+      "completed",
+    );
     this.notifyListeners();
     return true;
   }
@@ -322,7 +360,7 @@ export class ProfileService {
     try {
       const profile = localStorage.getItem(COMMUNITY_STORAGE_KEYS.USER_PROFILE);
       return profile ? JSON.parse(profile) : null;
-    } catch (error) {
+    } catch {
       return null;
     }
   }
@@ -339,8 +377,12 @@ export class ProfileService {
       if (!users) return null;
 
       const userProfiles = JSON.parse(users);
-      return userProfiles.find((user: LegacyBasarProfile) => user.id === currentUserId) || null;
-    } catch (error) {
+      return (
+        userProfiles.find(
+          (user: LegacyBasarProfile) => user.id === currentUserId,
+        ) || null
+      );
+    } catch {
       return null;
     }
   }

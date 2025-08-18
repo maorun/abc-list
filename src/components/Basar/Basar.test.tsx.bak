@@ -28,13 +28,15 @@ vi.mock("../../hooks/useUnifiedProfile", () => ({
   }),
 }));
 
+// Mock the unified profile hook
+vi.mock("../../hooks/useUnifiedProfile");
+
 // Mock the BasarService
 vi.mock("./BasarService");
 
 interface MockBasarService {
   getInstance: MockedFunction<() => MockBasarService>;
   initializeSampleData: Mock;
-  getCurrentUser: Mock;
   getMarketplaceTerms: Mock;
   buyTerm: Mock;
   rateTerm: Mock;
@@ -45,7 +47,6 @@ interface MockBasarService {
 const mockBasarService: MockBasarService = {
   getInstance: vi.fn(),
   initializeSampleData: vi.fn(),
-  getCurrentUser: vi.fn(),
   getMarketplaceTerms: vi.fn(() => []),
   buyTerm: vi.fn(),
   rateTerm: vi.fn(),
@@ -111,7 +112,7 @@ describe("Basar", () => {
 
     // Mock profile exists
     vi.spyOn(useUnifiedProfileModule, "useUnifiedProfile").mockReturnValue({
-      profile: mockProfile,
+      profile: mockProfile as any,
       isLoading: false,
       isAuthenticated: true,
       createProfile: vi.fn(),
@@ -131,7 +132,7 @@ describe("Basar", () => {
 
   it("creates profile when setup form is submitted", async () => {
     const mockCreateProfile = vi.fn();
-
+    
     // Mock no profile initially
     vi.spyOn(useUnifiedProfileModule, "useUnifiedProfile").mockReturnValue({
       profile: null,
@@ -161,6 +162,7 @@ describe("Basar", () => {
         expertise: [],
       });
     });
+  });
   });
 
   it("displays marketplace terms when available", () => {

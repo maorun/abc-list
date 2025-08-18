@@ -3,9 +3,13 @@
  * React hook for accessing and managing unified user profiles
  */
 
-import { useState, useEffect } from "react";
-import { ProfileService } from "../lib/ProfileService";
-import { UnifiedUserProfile, CreateProfileData, UpdateProfileData } from "../types/profile";
+import {useState, useEffect} from "react";
+import {ProfileService} from "../lib/ProfileService";
+import {
+  UnifiedUserProfile,
+  CreateProfileData,
+  UpdateProfileData,
+} from "../types/profile";
 
 interface UseUnifiedProfileReturn {
   profile: UnifiedUserProfile | null;
@@ -13,7 +17,7 @@ interface UseUnifiedProfileReturn {
   isAuthenticated: boolean;
   createProfile: (data: CreateProfileData) => UnifiedUserProfile;
   updateProfile: (data: UpdateProfileData) => boolean;
-  signInWithGoogle: () => Promise<{ success: boolean; error?: string }>;
+  signInWithGoogle: () => Promise<{success: boolean; error?: string}>;
   signOut: () => Promise<void>;
   migrateLegacyProfiles: () => boolean;
 }
@@ -66,7 +70,10 @@ export function useUnifiedProfile(): UseUnifiedProfileReturn {
     return profileService.updateUnifiedProfile(data);
   };
 
-  const signInWithGoogle = async (): Promise<{ success: boolean; error?: string }> => {
+  const signInWithGoogle = async (): Promise<{
+    success: boolean;
+    error?: string;
+  }> => {
     return profileService.signInWithGoogle();
   };
 

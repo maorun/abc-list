@@ -13,9 +13,8 @@ import {
 import {BasarService} from "./BasarService";
 import {MarketplaceTerm} from "./types";
 import {BasarTermCard} from "./BasarTermCard";
-import {BasarUserProfile} from "./BasarUserProfile";
-import { useUnifiedProfile } from "../../hooks/useUnifiedProfile";
-import { UnifiedUserProfile } from "../Profile/UnifiedUserProfile";
+import {useUnifiedProfile} from "../../hooks/useUnifiedProfile";
+import {UnifiedUserProfile} from "../Profile/UnifiedUserProfile";
 
 export function Basar() {
   const [marketplaceTerms, setMarketplaceTerms] = useState<MarketplaceTerm[]>(
@@ -32,7 +31,7 @@ export function Basar() {
   );
 
   // Use unified profile system
-  const { profile: userProfile, createProfile } = useUnifiedProfile();
+  const {profile: userProfile, createProfile} = useUnifiedProfile();
   const basarService = BasarService.getInstance();
 
   const loadMarketplaceTerms = useCallback(() => {
@@ -78,7 +77,7 @@ export function Basar() {
 
   const initializeData = useCallback(() => {
     basarService.initializeSampleData();
-    
+
     // Check if user profile exists, if not show setup
     if (!userProfile) {
       setShowUserSetup(true);
@@ -107,7 +106,7 @@ export function Basar() {
       bio: "",
       expertise: [],
     });
-    
+
     setShowUserSetup(false);
     setNewUserName("");
     toast.success(`Willkommen im ABC-Listen Basar, ${newUserName.trim()}!`);
@@ -341,9 +340,7 @@ export function Basar() {
         </>
       )}
 
-      {activeTab === "profile" && (
-        <UnifiedUserProfile />
-      )}
+      {activeTab === "profile" && <UnifiedUserProfile />}
     </div>
   );
 }

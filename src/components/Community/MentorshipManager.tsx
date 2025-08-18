@@ -43,7 +43,7 @@ import {
   CommunityService,
   MentorshipConnection,
 } from "../../lib/CommunityService";
-import { UnifiedUserProfile } from "../../types/profile";
+import {UnifiedUserProfile} from "../../types/profile";
 
 interface MentorshipManagerProps {
   userProfile: UnifiedUserProfile | null;
@@ -152,11 +152,12 @@ export function MentorshipManager({userProfile}: MentorshipManagerProps) {
   }
 
   const userMentorships = mentorships.filter(
-    (m) =>
-      m.mentorId === userProfile.id || m.menteeId === userProfile.id,
+    (m) => m.mentorId === userProfile.id || m.menteeId === userProfile.id,
   );
 
-  const userExpertiseAreas = userProfile.community.expertise.map((exp) => exp.area);
+  const userExpertiseAreas = userProfile.community.expertise.map(
+    (exp) => exp.area,
+  );
 
   return (
     <div className="space-y-6">

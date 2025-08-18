@@ -3,8 +3,8 @@
  * Consolidates Community and Basar profile systems into a single coherent interface
  */
 
-import { UserExpertise } from "../lib/CommunityService";
-import { UserAchievement, TradeRecord } from "../components/Basar/types";
+import {UserExpertise} from "../lib/CommunityService";
+import {UserAchievement, TradeRecord} from "../components/Basar/types";
 
 /**
  * Authentication information for Google login and other providers
@@ -53,16 +53,16 @@ export interface UnifiedUserProfile {
   displayName: string;
   joinDate: string;
   lastActive: string;
-  
+
   // Authentication
   auth: AuthInfo;
-  
+
   // Community features
   community: CommunityData;
-  
+
   // Trading/Basar features
   trading: TradingData;
-  
+
   // System metadata
   version: number; // For data migration and compatibility
   migrated?: boolean; // Flag to indicate if profile was migrated from separate systems

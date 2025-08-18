@@ -3,11 +3,11 @@
  * Tests for unified profile management and Google authentication
  */
 
-import { describe, it, expect, beforeEach, vi } from "vitest";
-import { ProfileService } from "./ProfileService";
-import { UNIFIED_PROFILE_STORAGE_KEYS } from "../types/profile";
-import { COMMUNITY_STORAGE_KEYS } from "./CommunityService";
-import { USER_PROFILES_KEY, CURRENT_USER_KEY } from "../components/Basar/types";
+import {describe, it, expect, beforeEach, vi} from "vitest";
+import {ProfileService} from "./ProfileService";
+import {UNIFIED_PROFILE_STORAGE_KEYS} from "../types/profile";
+import {COMMUNITY_STORAGE_KEYS} from "./CommunityService";
+import {USER_PROFILES_KEY, CURRENT_USER_KEY} from "../components/Basar/types";
 
 describe("ProfileService", () => {
   let profileService: ProfileService;
@@ -89,7 +89,7 @@ describe("ProfileService", () => {
       };
 
       const profile = profileService.createUnifiedProfile(profileData);
-      
+
       const updateData = {
         id: profile.id,
         displayName: "Updated User",
@@ -115,8 +115,11 @@ describe("ProfileService", () => {
     });
 
     it("should handle JSON parsing errors gracefully", () => {
-      localStorage.setItem(UNIFIED_PROFILE_STORAGE_KEYS.USER_PROFILE, "invalid json");
-      
+      localStorage.setItem(
+        UNIFIED_PROFILE_STORAGE_KEYS.USER_PROFILE,
+        "invalid json",
+      );
+
       const profile = profileService.getUnifiedProfile();
       expect(profile).toBeNull();
     });
@@ -130,15 +133,18 @@ describe("ProfileService", () => {
 
     it("should return false when unified profile already exists", () => {
       // Create unified profile first
-      profileService.createUnifiedProfile({ displayName: "Test" });
-      
+      profileService.createUnifiedProfile({displayName: "Test"});
+
       const migrated = profileService.migrateLegacyProfiles();
       expect(migrated).toBe(false);
     });
 
     it("should return false when migration already completed", () => {
-      localStorage.setItem(UNIFIED_PROFILE_STORAGE_KEYS.MIGRATION_STATUS, "completed");
-      
+      localStorage.setItem(
+        UNIFIED_PROFILE_STORAGE_KEYS.MIGRATION_STATUS,
+        "completed",
+      );
+
       const migrated = profileService.migrateLegacyProfiles();
       expect(migrated).toBe(false);
     });
@@ -148,7 +154,14 @@ describe("ProfileService", () => {
         userId: "community-user-123",
         displayName: "Community User",
         bio: "Community bio",
-        expertise: [{ area: "Mathematik", level: "Advanced", verified: false, endorsements: 0 }],
+        expertise: [
+          {
+            area: "Mathematik",
+            level: "Advanced",
+            verified: false,
+            endorsements: 0,
+          },
+        ],
         mentorAvailable: true,
         menteeInterested: false,
         joinDate: "2024-01-01T00:00:00.000Z",
@@ -158,7 +171,10 @@ describe("ProfileService", () => {
         helpfulReviews: 5,
       };
 
-      localStorage.setItem(COMMUNITY_STORAGE_KEYS.USER_PROFILE, JSON.stringify(legacyCommunityProfile));
+      localStorage.setItem(
+        COMMUNITY_STORAGE_KEYS.USER_PROFILE,
+        JSON.stringify(legacyCommunityProfile),
+      );
 
       const migrated = profileService.migrateLegacyProfiles();
       expect(migrated).toBe(true);
@@ -183,11 +199,23 @@ describe("ProfileService", () => {
         tradesCompleted: 15,
         termsContributed: 30,
         averageRating: 4.5,
-        achievements: [{ id: "test", name: "Test", description: "Test", icon: "🏆", dateEarned: "2024-01-01", points: 10 }],
+        achievements: [
+          {
+            id: "test",
+            name: "Test",
+            description: "Test",
+            icon: "🏆",
+            dateEarned: "2024-01-01",
+            points: 10,
+          },
+        ],
         tradingHistory: [],
       };
 
-      localStorage.setItem(USER_PROFILES_KEY, JSON.stringify([legacyBasarProfile]));
+      localStorage.setItem(
+        USER_PROFILES_KEY,
+        JSON.stringify([legacyBasarProfile]),
+      );
       localStorage.setItem(CURRENT_USER_KEY, "basar-user-123");
 
       const migrated = profileService.migrateLegacyProfiles();
@@ -232,8 +260,14 @@ describe("ProfileService", () => {
         tradingHistory: [],
       };
 
-      localStorage.setItem(COMMUNITY_STORAGE_KEYS.USER_PROFILE, JSON.stringify(legacyCommunityProfile));
-      localStorage.setItem(USER_PROFILES_KEY, JSON.stringify([legacyBasarProfile]));
+      localStorage.setItem(
+        COMMUNITY_STORAGE_KEYS.USER_PROFILE,
+        JSON.stringify(legacyCommunityProfile),
+      );
+      localStorage.setItem(
+        USER_PROFILES_KEY,
+        JSON.stringify([legacyBasarProfile]),
+      );
       localStorage.setItem(CURRENT_USER_KEY, "user-456");
 
       const migrated = profileService.migrateLegacyProfiles();
@@ -252,15 +286,15 @@ describe("ProfileService", () => {
   describe("Event Listeners", () => {
     it("should add and remove listeners", () => {
       const listener = vi.fn();
-      
+
       profileService.addListener(listener);
-      profileService.createUnifiedProfile({ displayName: "Test" });
-      
+      profileService.createUnifiedProfile({displayName: "Test"});
+
       expect(listener).toHaveBeenCalledTimes(1);
-      
+
       profileService.removeListener(listener);
-      profileService.updateUnifiedProfile({ id: "test", displayName: "Updated" });
-      
+      profileService.updateUnifiedProfile({id: "test", displayName: "Updated"});
+
       // Should still be 1 since listener was removed
       expect(listener).toHaveBeenCalledTimes(1);
     });
@@ -268,12 +302,12 @@ describe("ProfileService", () => {
     it("should notify multiple listeners", () => {
       const listener1 = vi.fn();
       const listener2 = vi.fn();
-      
+
       profileService.addListener(listener1);
       profileService.addListener(listener2);
-      
-      profileService.createUnifiedProfile({ displayName: "Test" });
-      
+
+      profileService.createUnifiedProfile({displayName: "Test"});
+
       expect(listener1).toHaveBeenCalledTimes(1);
       expect(listener2).toHaveBeenCalledTimes(1);
     });
@@ -285,7 +319,7 @@ describe("ProfileService", () => {
     });
 
     it("should return true for isAuthenticated when profile exists", () => {
-      profileService.createUnifiedProfile({ displayName: "Test" });
+      profileService.createUnifiedProfile({displayName: "Test"});
       expect(profileService.isAuthenticated()).toBe(true);
     });
 
@@ -302,11 +336,13 @@ describe("ProfileService", () => {
 
   describe("ID Generation", () => {
     it("should generate unique IDs for different profiles", () => {
-      const profile1 = profileService.createUnifiedProfile({ displayName: "User 1" });
+      const profile1 = profileService.createUnifiedProfile({
+        displayName: "User 1",
+      });
       ProfileService.resetInstance();
       const newService = ProfileService.getInstance();
-      const profile2 = newService.createUnifiedProfile({ displayName: "User 2" });
-      
+      const profile2 = newService.createUnifiedProfile({displayName: "User 2"});
+
       expect(profile1.id).not.toBe(profile2.id);
       expect(profile1.id).toMatch(/^user_\d+_\w+$/);
       expect(profile2.id).toMatch(/^user_\d+_\w+$/);
