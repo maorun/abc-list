@@ -11,6 +11,25 @@ import {render, screen, fireEvent, waitFor} from "@testing-library/react";
 import {BrowserRouter} from "react-router-dom";
 import {Basar} from "./Basar";
 import {BasarService} from "./BasarService";
+import * as useUnifiedProfileModule from "../../hooks/useUnifiedProfile";
+
+// Mock the unified profile hook
+vi.mock("../../hooks/useUnifiedProfile", () => ({
+  useUnifiedProfile: () => ({
+    profile: {
+      id: "test-user-1",
+      displayName: "Test User",
+      trading: {
+        points: 150,
+        level: 2,
+      },
+    },
+    createProfile: vi.fn(),
+  }),
+}));
+
+// Mock the unified profile hook
+vi.mock("../../hooks/useUnifiedProfile");
 
 // Mock the BasarService
 vi.mock("./BasarService");
@@ -18,8 +37,6 @@ vi.mock("./BasarService");
 interface MockBasarService {
   getInstance: MockedFunction<() => MockBasarService>;
   initializeSampleData: Mock;
-  getCurrentUser: Mock;
-  createUser: Mock;
   getMarketplaceTerms: Mock;
   buyTerm: Mock;
   rateTerm: Mock;
@@ -30,8 +47,6 @@ interface MockBasarService {
 const mockBasarService: MockBasarService = {
   getInstance: vi.fn(),
   initializeSampleData: vi.fn(),
-  getCurrentUser: vi.fn(),
-  createUser: vi.fn(),
   getMarketplaceTerms: vi.fn(() => []),
   buyTerm: vi.fn(),
   rateTerm: vi.fn(),
@@ -60,8 +75,18 @@ describe("Basar", () => {
     ).mockReturnValue(mockBasarService);
   });
 
-  it("renders user setup dialog when no current user", () => {
-    mockBasarService.getCurrentUser.mockReturnValue(null);
+  it("renders user setup dialog when no profile exists", () => {
+    // Mock no profile
+    vi.spyOn(useUnifiedProfileModule, "useUnifiedProfile").mockReturnValue({
+      profile: null,
+      isLoading: false,
+      isAuthenticated: false,
+      createProfile: vi.fn(),
+      updateProfile: vi.fn(),
+      signInWithGoogle: vi.fn(),
+      signOut: vi.fn(),
+      migrateLegacyProfiles: vi.fn(),
+    });
 
     renderBasar();
 
@@ -75,44 +100,50 @@ describe("Basar", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders marketplace when user exists", () => {
-    const mockUser = {
+  it("renders marketplace when profile exists", () => {
+    const mockProfile = {
       id: "user1",
-      name: "Test User",
-      points: 100,
-      level: 1,
-      joinDate: "2024-01-01",
-      tradesCompleted: 0,
-      termsContributed: 0,
-      averageRating: 0,
-      achievements: [],
-      tradingHistory: [],
+      displayName: "Test User",
+      trading: {
+        points: 150,
+        level: 2,
+      },
     };
 
-    mockBasarService.getCurrentUser.mockReturnValue(mockUser);
+    // Mock profile exists
+    vi.spyOn(useUnifiedProfileModule, "useUnifiedProfile").mockReturnValue({
+      profile: mockProfile as any,
+      isLoading: false,
+      isAuthenticated: true,
+      createProfile: vi.fn(),
+      updateProfile: vi.fn(),
+      signInWithGoogle: vi.fn(),
+      signOut: vi.fn(),
+      migrateLegacyProfiles: vi.fn(),
+    });
 
     renderBasar();
 
     expect(screen.getByText("🏪 ABC-Listen Basar")).toBeInTheDocument();
     expect(screen.getByText("Test User")).toBeInTheDocument();
-    expect(screen.getByText("💰 100 Punkte")).toBeInTheDocument();
+    expect(screen.getByText("💰 150 Punkte")).toBeInTheDocument();
+    expect(screen.getByText("📈 Level 2")).toBeInTheDocument();
   });
 
-  it("creates user when setup form is submitted", async () => {
-    mockBasarService.getCurrentUser.mockReturnValue(null);
-    const newUser = {
-      id: "user1",
-      name: "New User",
-      points: 100,
-      level: 1,
-      joinDate: "2024-01-01",
-      tradesCompleted: 0,
-      termsContributed: 0,
-      averageRating: 0,
-      achievements: [],
-      tradingHistory: [],
-    };
-    mockBasarService.createUser.mockReturnValue(newUser);
+  it("creates profile when setup form is submitted", async () => {
+    const mockCreateProfile = vi.fn();
+    
+    // Mock no profile initially
+    vi.spyOn(useUnifiedProfileModule, "useUnifiedProfile").mockReturnValue({
+      profile: null,
+      isLoading: false,
+      isAuthenticated: false,
+      createProfile: mockCreateProfile,
+      updateProfile: vi.fn(),
+      signInWithGoogle: vi.fn(),
+      signOut: vi.fn(),
+      migrateLegacyProfiles: vi.fn(),
+    });
 
     renderBasar();
 
@@ -125,8 +156,13 @@ describe("Basar", () => {
     fireEvent.click(createButton);
 
     await waitFor(() => {
-      expect(mockBasarService.createUser).toHaveBeenCalledWith("New User");
+      expect(mockCreateProfile).toHaveBeenCalledWith({
+        displayName: "New User",
+        bio: "",
+        expertise: [],
+      });
     });
+  });
   });
 
   it("displays marketplace terms when available", () => {

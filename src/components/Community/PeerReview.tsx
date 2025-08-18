@@ -41,12 +41,12 @@ import {
 } from "lucide-react";
 import {
   CommunityService,
-  CommunityProfile,
   PeerReview as Review,
 } from "../../lib/CommunityService";
+import { UnifiedUserProfile } from "../../types/profile";
 
 interface PeerReviewProps {
-  userProfile: CommunityProfile | null;
+  userProfile: UnifiedUserProfile | null;
 }
 
 // Extract handlers outside component to prevent recreation on every render
@@ -73,7 +73,7 @@ const handleSubmitReviewAction =
 
     communityService.submitReview({
       ...reviewData,
-      reviewerId: userProfile.userId,
+      reviewerId: userProfile.id,
     });
 
     setShowReviewDialog(false);
@@ -347,7 +347,7 @@ export function PeerReview({userProfile}: PeerReviewProps) {
     .filter((review) => {
       if (filterType === "all") return true;
       if (filterType === "mine")
-        return userProfile ? review.reviewerId === userProfile.userId : false;
+        return userProfile ? review.reviewerId === userProfile.id : false;
       return review.itemType === filterType;
     })
     .sort((a, b) => {
@@ -399,7 +399,7 @@ export function PeerReview({userProfile}: PeerReviewProps) {
   }
 
   const userReviews = reviews.filter(
-    (r) => r.reviewerId === userProfile.userId,
+    (r) => r.reviewerId === userProfile.id,
   );
   const averageRating =
     userReviews.length > 0
@@ -476,7 +476,7 @@ export function PeerReview({userProfile}: PeerReviewProps) {
                   Hilfreiche Reviews
                 </p>
                 <p className="text-2xl font-bold">
-                  {userProfile.helpfulReviews}
+                  {userProfile.community.helpfulReviews}
                 </p>
               </div>
             </div>
@@ -488,7 +488,7 @@ export function PeerReview({userProfile}: PeerReviewProps) {
               <Award className="h-8 w-8 text-purple-500 mr-3" />
               <div>
                 <p className="text-sm font-medium text-gray-600">Reputation</p>
-                <p className="text-2xl font-bold">{userProfile.reputation}</p>
+                <p className="text-2xl font-bold">{userProfile.community.reputation}</p>
               </div>
             </div>
           </CardContent>

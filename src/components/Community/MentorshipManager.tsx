@@ -41,12 +41,12 @@ import {
 } from "lucide-react";
 import {
   CommunityService,
-  CommunityProfile,
   MentorshipConnection,
 } from "../../lib/CommunityService";
+import { UnifiedUserProfile } from "../../types/profile";
 
 interface MentorshipManagerProps {
-  userProfile: CommunityProfile | null;
+  userProfile: UnifiedUserProfile | null;
 }
 
 // Extract handlers outside component to prevent recreation on every render
@@ -153,10 +153,10 @@ export function MentorshipManager({userProfile}: MentorshipManagerProps) {
 
   const userMentorships = mentorships.filter(
     (m) =>
-      m.mentorId === userProfile.userId || m.menteeId === userProfile.userId,
+      m.mentorId === userProfile.id || m.menteeId === userProfile.id,
   );
 
-  const userExpertiseAreas = userProfile.expertise.map((exp) => exp.area);
+  const userExpertiseAreas = userProfile.community.expertise.map((exp) => exp.area);
 
   return (
     <div className="space-y-6">
@@ -190,11 +190,11 @@ export function MentorshipManager({userProfile}: MentorshipManagerProps) {
                   <div className="flex justify-between items-start mb-2">
                     <div>
                       <h4 className="font-medium">
-                        {mentorship.mentorId === userProfile.userId
+                        {mentorship.mentorId === userProfile.id
                           ? "Mentee"
                           : "Mentor"}
                         :{" "}
-                        {mentorship.mentorId === userProfile.userId
+                        {mentorship.mentorId === userProfile.id
                           ? `User ${mentorship.menteeId.slice(-6)}`
                           : `User ${mentorship.mentorId.slice(-6)}`}
                       </h4>
@@ -237,7 +237,7 @@ export function MentorshipManager({userProfile}: MentorshipManagerProps) {
       )}
 
       {/* Find Mentors Section */}
-      {userProfile.menteeInterested && (
+      {userProfile.community.menteeInterested && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">

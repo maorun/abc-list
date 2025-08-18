@@ -11,12 +11,13 @@ import {
   DialogFooter,
 } from "../ui/dialog";
 import {BasarService} from "./BasarService";
-import {MarketplaceTerm, UserProfile} from "./types";
+import {MarketplaceTerm} from "./types";
 import {BasarTermCard} from "./BasarTermCard";
 import {BasarUserProfile} from "./BasarUserProfile";
+import { useUnifiedProfile } from "../../hooks/useUnifiedProfile";
+import { UnifiedUserProfile } from "../Profile/UnifiedUserProfile";
 
 export function Basar() {
-  const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
   const [marketplaceTerms, setMarketplaceTerms] = useState<MarketplaceTerm[]>(
     [],
   );
@@ -30,6 +31,8 @@ export function Basar() {
     "marketplace",
   );
 
+  // Use unified profile system
+  const { profile: userProfile, createProfile } = useUnifiedProfile();
   const basarService = BasarService.getInstance();
 
   const loadMarketplaceTerms = useCallback(() => {
@@ -75,16 +78,14 @@ export function Basar() {
 
   const initializeData = useCallback(() => {
     basarService.initializeSampleData();
-    const user = basarService.getCurrentUser();
-
-    if (!user) {
+    
+    // Check if user profile exists, if not show setup
+    if (!userProfile) {
       setShowUserSetup(true);
-    } else {
-      setCurrentUser(user);
     }
 
     loadMarketplaceTerms();
-  }, [basarService, loadMarketplaceTerms]);
+  }, [basarService, loadMarketplaceTerms, userProfile]);
 
   useEffect(() => {
     initializeData();
@@ -100,20 +101,23 @@ export function Basar() {
       return;
     }
 
-    const user = basarService.createUser(newUserName.trim());
-    setCurrentUser(user);
+    // Create unified profile instead of legacy Basar user
+    createProfile({
+      displayName: newUserName.trim(),
+      bio: "",
+      expertise: [],
+    });
+    
     setShowUserSetup(false);
     setNewUserName("");
-    toast.success(`Willkommen im ABC-Listen Basar, ${user.name}!`);
+    toast.success(`Willkommen im ABC-Listen Basar, ${newUserName.trim()}!`);
   };
 
   const handleBuyTerm = (termId: string) => {
-    if (!currentUser) return;
+    if (!userProfile) return;
 
     const success = basarService.buyTerm(termId);
     if (success) {
-      const updatedUser = basarService.getCurrentUser();
-      setCurrentUser(updatedUser);
       loadMarketplaceTerms();
       toast.success(
         "Begriff erfolgreich gekauft! Er wurde zu 'Marketplace Käufe' hinzugefügt.",
@@ -124,7 +128,7 @@ export function Basar() {
   };
 
   const handleRateTerm = (termId: string, rating: number, comment?: string) => {
-    if (!currentUser) return;
+    if (!userProfile) return;
 
     const success = basarService.rateTerm(termId, rating, comment);
     if (success) {
@@ -193,7 +197,7 @@ export function Basar() {
     );
   }
 
-  if (!currentUser) {
+  if (!userProfile) {
     return <div>Laden...</div>;
   }
 
@@ -213,9 +217,9 @@ export function Basar() {
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 rounded-lg mb-6">
         <div className="flex flex-wrap justify-between items-center gap-4">
           <div className="flex-grow">
-            <span className="font-semibold">{currentUser.name}</span>
-            <span className="ml-4">💰 {currentUser.points} Punkte</span>
-            <span className="ml-4">📈 Level {currentUser.level}</span>
+            <span className="font-semibold">{userProfile.displayName}</span>
+            <span className="ml-4">💰 {userProfile.trading.points} Punkte</span>
+            <span className="ml-4">📈 Level {userProfile.trading.level}</span>
           </div>
           <div className="flex flex-wrap gap-2">
             <Button
@@ -314,7 +318,7 @@ export function Basar() {
               <BasarTermCard
                 key={term.id}
                 term={term}
-                currentUser={currentUser}
+                currentUser={userProfile}
                 onBuy={handleBuyTerm}
                 onRate={handleRateTerm}
                 basarService={basarService}
@@ -338,11 +342,7 @@ export function Basar() {
       )}
 
       {activeTab === "profile" && (
-        <BasarUserProfile
-          user={currentUser}
-          onUserUpdate={(user) => setCurrentUser(user)}
-          basarService={basarService}
-        />
+        <UnifiedUserProfile />
       )}
     </div>
   );
