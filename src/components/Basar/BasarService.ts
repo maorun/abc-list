@@ -12,9 +12,16 @@ import {
   DEFAULT_ACHIEVEMENTS,
 } from "./types";
 import {WordWithExplanation} from "../List/types";
+import {ProfileService} from "../../lib/ProfileService";
+import {UnifiedUserProfile, UNIFIED_PROFILE_STORAGE_KEYS} from "../../types/profile";
 
 export class BasarService {
   private static instance: BasarService;
+  private profileService: ProfileService;
+
+  constructor() {
+    this.profileService = ProfileService.getInstance();
+  }
 
   static getInstance(): BasarService {
     if (!BasarService.instance) {
@@ -23,20 +30,20 @@ export class BasarService {
     return BasarService.instance;
   }
 
-  // User Management
-  getCurrentUser(): UserProfile | null {
-    const userId = localStorage.getItem(CURRENT_USER_KEY);
-    if (!userId) return null;
-
-    const users = this.getUsers();
-    return users.find((user) => user.id === userId) || null;
+  // User Management - Updated to work with unified profile system
+  getCurrentUser(): UnifiedUserProfile | null {
+    return this.profileService.getUnifiedProfile();
   }
 
   setCurrentUser(userId: string): void {
+    // This method is kept for backwards compatibility but is no longer needed
+    // The unified profile system manages the current user automatically
     localStorage.setItem(CURRENT_USER_KEY, userId);
   }
 
   createUser(name: string): UserProfile {
+    // This method is deprecated - use ProfileService.createUnifiedProfile instead
+    // Kept for backwards compatibility with legacy code that might still call it
     const users = this.getUsers();
     const newUser: UserProfile = {
       id: `user_${Date.now()}`,
@@ -67,12 +74,45 @@ export class BasarService {
   }
 
   updateUser(user: UserProfile): void {
+    // For backwards compatibility with legacy Basar code
     const users = this.getUsers();
     const index = users.findIndex((u) => u.id === user.id);
     if (index !== -1) {
       users[index] = user;
       this.saveUsers(users);
     }
+  }
+
+  // Update unified profile trading data
+  updateUserTradingData(updates: {
+    points?: number;
+    level?: number;
+    tradesCompleted?: number;
+    termsContributed?: number;
+    averageRating?: number;
+    achievements?: UserAchievement[];
+    tradingHistory?: TradeRecord[];
+  }): boolean {
+    const currentProfile = this.getCurrentUser();
+    if (!currentProfile) return false;
+
+    // Create updated profile with new trading data
+    const updatedProfile = {
+      ...currentProfile,
+      trading: {
+        ...currentProfile.trading,
+        ...updates,
+      },
+      lastActive: new Date().toISOString(),
+    };
+
+    // Save the updated profile directly to localStorage
+    localStorage.setItem(
+      UNIFIED_PROFILE_STORAGE_KEYS.USER_PROFILE,
+      JSON.stringify(updatedProfile)
+    );
+
+    return true;
   }
 
   // Marketplace Terms Management
@@ -101,7 +141,7 @@ export class BasarService {
       letter,
       listName,
       sellerId: currentUser.id,
-      sellerName: currentUser.name,
+      sellerName: currentUser.displayName,
       price,
       quality: 0,
       ratingCount: 0,
@@ -111,9 +151,11 @@ export class BasarService {
     terms.push(newTerm);
     this.saveMarketplaceTerms(terms);
 
-    // Update user stats
-    currentUser.termsContributed++;
-    this.updateUser(currentUser);
+    // Update user stats using unified profile system
+    this.updateUserTradingData({
+      termsContributed: currentUser.trading.termsContributed + 1,
+    });
+    
     this.checkAchievements(currentUser);
 
     return newTerm;
@@ -128,14 +170,10 @@ export class BasarService {
     if (termIndex === -1) return false;
 
     const term = terms[termIndex];
-    if (currentUser.points < term.price) return false;
+    if (currentUser.trading.points < term.price) return false;
     if (term.sellerId === currentUser.id) return false;
 
-    // Process purchase
-    currentUser.points -= term.price;
-    currentUser.tradesCompleted++;
-
-    // Add to trading history
+    // Create trade record
     const tradeRecord: TradeRecord = {
       id: `trade_${Date.now()}`,
       type: "buy",
@@ -147,9 +185,15 @@ export class BasarService {
       partnerName: term.sellerName,
       date: new Date().toISOString(),
     };
-    currentUser.tradingHistory.push(tradeRecord);
 
-    // Update seller
+    // Update buyer stats using unified profile system
+    this.updateUserTradingData({
+      points: currentUser.trading.points - term.price,
+      tradesCompleted: currentUser.trading.tradesCompleted + 1,
+      tradingHistory: [...currentUser.trading.tradingHistory, tradeRecord],
+    });
+
+    // Update seller (if they have a unified profile)
     const users = this.getUsers();
     const seller = users.find((u) => u.id === term.sellerId);
     if (seller) {
@@ -159,7 +203,7 @@ export class BasarService {
         ...tradeRecord,
         type: "sell",
         partnerId: currentUser.id,
-        partnerName: currentUser.name,
+        partnerName: currentUser.displayName,
       });
       this.updateUser(seller);
       this.checkAchievements(seller);
@@ -172,7 +216,6 @@ export class BasarService {
     // Add to buyer's ABC list
     this.addTermToUserList(currentUser.id, term);
 
-    this.updateUser(currentUser);
     this.checkAchievements(currentUser);
 
     return true;
@@ -266,10 +309,10 @@ export class BasarService {
   }
 
   // Achievement System
-  private checkAchievements(user: UserProfile): void {
+  private checkAchievements(user: UnifiedUserProfile): void {
     DEFAULT_ACHIEVEMENTS.forEach((achievement) => {
       if (
-        !user.achievements.some((a) => a.id === achievement.id) &&
+        !user.trading.achievements.some((a) => a.id === achievement.id) &&
         this.isAchievementEarned(user, achievement)
       ) {
         const userAchievement: UserAchievement = {
@@ -281,25 +324,28 @@ export class BasarService {
           points: achievement.points,
         };
 
-        user.achievements.push(userAchievement);
-        user.points += achievement.points;
+        // Update unified profile with new achievement and points
+        this.updateUserTradingData({
+          achievements: [...user.trading.achievements, userAchievement],
+          points: user.trading.points + achievement.points,
+        });
       }
     });
   }
 
   private isAchievementEarned(
-    user: UserProfile,
+    user: UnifiedUserProfile,
     achievement: Achievement,
   ): boolean {
     switch (achievement.requirement.type) {
       case "trades":
-        return user.tradesCompleted >= achievement.requirement.value;
+        return user.trading.tradesCompleted >= achievement.requirement.value;
       case "contributions":
-        return user.termsContributed >= achievement.requirement.value;
+        return user.trading.termsContributed >= achievement.requirement.value;
       case "rating":
-        return user.averageRating >= achievement.requirement.value;
+        return user.trading.averageRating >= achievement.requirement.value;
       case "points":
-        return user.points >= achievement.requirement.value;
+        return user.trading.points >= achievement.requirement.value;
       default:
         return false;
     }

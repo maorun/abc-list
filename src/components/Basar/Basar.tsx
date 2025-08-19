@@ -2,14 +2,6 @@ import React, {useState, useEffect, useCallback} from "react";
 import {toast} from "sonner";
 import {Button} from "../ui/button";
 import {Input} from "../ui/input";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "../ui/dialog";
 import {BasarService} from "./BasarService";
 import {MarketplaceTerm} from "./types";
 import {BasarTermCard} from "./BasarTermCard";
@@ -25,13 +17,12 @@ export function Basar() {
   const [selectedLetter, setSelectedLetter] = useState<string>("all");
   const [sortBy, setSortBy] = useState<"date" | "price" | "quality">("date");
   const [showUserSetup, setShowUserSetup] = useState(false);
-  const [newUserName, setNewUserName] = useState("");
   const [activeTab, setActiveTab] = useState<"marketplace" | "profile">(
     "marketplace",
   );
 
   // Use unified profile system
-  const {profile: userProfile, createProfile} = useUnifiedProfile();
+  const {profile: userProfile} = useUnifiedProfile();
   const basarService = BasarService.getInstance();
 
   const loadMarketplaceTerms = useCallback(() => {
@@ -94,24 +85,6 @@ export function Basar() {
     filterTerms();
   }, [filterTerms]);
 
-  const handleCreateUser = () => {
-    if (!newUserName.trim()) {
-      toast.error("Bitte geben Sie einen Namen ein");
-      return;
-    }
-
-    // Create unified profile instead of legacy Basar user
-    createProfile({
-      displayName: newUserName.trim(),
-      bio: "",
-      expertise: [],
-    });
-
-    setShowUserSetup(false);
-    setNewUserName("");
-    toast.success(`Willkommen im ABC-Listen Basar, ${newUserName.trim()}!`);
-  };
-
   const handleBuyTerm = (termId: string) => {
     if (!userProfile) return;
 
@@ -144,55 +117,34 @@ export function Basar() {
 
   if (showUserSetup) {
     return (
-      <Dialog open={showUserSetup} onOpenChange={() => {}}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>🏪 Willkommen im ABC-Listen Basar!</DialogTitle>
-            <DialogDescription>
-              Erstellen Sie Ihr Händlerprofil, um am Wissensaustausch
-              teilzunehmen.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <label
-                htmlFor="userName"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Ihr Händlername:
-              </label>
-              <Input
-                id="userName"
-                type="text"
-                value={newUserName}
-                onChange={(e) => setNewUserName(e.target.value)}
-                placeholder="Geben Sie Ihren Namen ein..."
-                className="w-full"
-                onKeyPress={(e) => e.key === "Enter" && handleCreateUser()}
-              />
-            </div>
-            <div className="text-sm text-gray-600 bg-blue-50 p-3 rounded">
-              <p className="font-medium text-blue-800 mb-1">
-                🎯 Im Basar können Sie:
-              </p>
-              <ul className="list-disc list-inside space-y-1 text-blue-700">
-                <li>Begriffe aus Ihren ABC-Listen verkaufen</li>
-                <li>Hochwertige Begriffe von anderen kaufen</li>
-                <li>Begriffe bewerten und kommentieren</li>
-                <li>Punkte sammeln und Achievements freischalten</li>
-              </ul>
-              <p className="mt-2 text-xs text-blue-600">
-                Sie starten mit 100 Punkten für Ihre ersten Käufe!
-              </p>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button onClick={handleCreateUser} className="w-full">
-              🚀 Profil erstellen
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <div className="p-4 max-w-2xl mx-auto">
+        <div className="mb-6 text-center">
+          <h1 className="text-3xl font-bold mb-2">🏪 Willkommen im ABC-Listen Basar!</h1>
+          <p className="text-gray-600">
+            Erstellen Sie Ihr Händlerprofil, um am Wissensaustausch teilzunehmen.
+          </p>
+        </div>
+        
+        <div className="mb-6 text-sm text-gray-600 bg-blue-50 p-4 rounded-lg">
+          <p className="font-medium text-blue-800 mb-2">
+            🎯 Im Basar können Sie:
+          </p>
+          <ul className="list-disc list-inside space-y-1 text-blue-700">
+            <li>Begriffe aus Ihren ABC-Listen verkaufen</li>
+            <li>Hochwertige Begriffe von anderen kaufen</li>
+            <li>Begriffe bewerten und kommentieren</li>
+            <li>Punkte sammeln und Achievements freischalten</li>
+          </ul>
+          <p className="mt-2 text-xs text-blue-600">
+            Sie starten mit 100 Punkten für Ihre ersten Käufe!
+          </p>
+        </div>
+
+        <UnifiedUserProfile 
+          showCreateProfile={false}
+          setShowCreateProfile={(show) => !show && setShowUserSetup(false)}
+        />
+      </div>
     );
   }
 
