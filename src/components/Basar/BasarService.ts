@@ -1,19 +1,16 @@
 import {
   MarketplaceTerm,
   TermRating,
-  UserProfile,
   TradeRecord,
   UserAchievement,
   Achievement,
   MARKETPLACE_TERMS_KEY,
-  USER_PROFILES_KEY,
   TERM_RATINGS_KEY,
-  CURRENT_USER_KEY,
   DEFAULT_ACHIEVEMENTS,
 } from "./types";
 import {WordWithExplanation} from "../List/types";
 import {ProfileService} from "../../lib/ProfileService";
-import {UnifiedUserProfile, UNIFIED_PROFILE_STORAGE_KEYS} from "../../types/profile";
+import {UnifiedUserProfile} from "../../types/profile";
 
 export class BasarService {
   private static instance: BasarService;
@@ -30,57 +27,9 @@ export class BasarService {
     return BasarService.instance;
   }
 
-  // User Management - Updated to work with unified profile system
+  // User Management - Uses unified profile system
   getCurrentUser(): UnifiedUserProfile | null {
     return this.profileService.getUnifiedProfile();
-  }
-
-  setCurrentUser(userId: string): void {
-    // This method is kept for backwards compatibility but is no longer needed
-    // The unified profile system manages the current user automatically
-    localStorage.setItem(CURRENT_USER_KEY, userId);
-  }
-
-  createUser(name: string): UserProfile {
-    // This method is deprecated - use ProfileService.createUnifiedProfile instead
-    // Kept for backwards compatibility with legacy code that might still call it
-    const users = this.getUsers();
-    const newUser: UserProfile = {
-      id: `user_${Date.now()}`,
-      name,
-      points: 100, // Starting points
-      level: 1,
-      joinDate: new Date().toISOString(),
-      tradesCompleted: 0,
-      termsContributed: 0,
-      averageRating: 0,
-      achievements: [],
-      tradingHistory: [],
-    };
-
-    users.push(newUser);
-    this.saveUsers(users);
-    this.setCurrentUser(newUser.id);
-    return newUser;
-  }
-
-  getUsers(): UserProfile[] {
-    const stored = localStorage.getItem(USER_PROFILES_KEY);
-    return stored ? JSON.parse(stored) : [];
-  }
-
-  private saveUsers(users: UserProfile[]): void {
-    localStorage.setItem(USER_PROFILES_KEY, JSON.stringify(users));
-  }
-
-  updateUser(user: UserProfile): void {
-    // For backwards compatibility with legacy Basar code
-    const users = this.getUsers();
-    const index = users.findIndex((u) => u.id === user.id);
-    if (index !== -1) {
-      users[index] = user;
-      this.saveUsers(users);
-    }
   }
 
   // Update unified profile trading data
@@ -96,23 +45,14 @@ export class BasarService {
     const currentProfile = this.getCurrentUser();
     if (!currentProfile) return false;
 
-    // Create updated profile with new trading data
-    const updatedProfile = {
-      ...currentProfile,
+    // Use ProfileService to update the unified profile
+    return this.profileService.updateUnifiedProfile({
+      id: currentProfile.id,
       trading: {
         ...currentProfile.trading,
         ...updates,
       },
-      lastActive: new Date().toISOString(),
-    };
-
-    // Save the updated profile directly to localStorage
-    localStorage.setItem(
-      UNIFIED_PROFILE_STORAGE_KEYS.USER_PROFILE,
-      JSON.stringify(updatedProfile)
-    );
-
-    return true;
+    });
   }
 
   // Marketplace Terms Management
@@ -155,7 +95,7 @@ export class BasarService {
     this.updateUserTradingData({
       termsContributed: currentUser.trading.termsContributed + 1,
     });
-    
+
     this.checkAchievements(currentUser);
 
     return newTerm;
@@ -193,21 +133,8 @@ export class BasarService {
       tradingHistory: [...currentUser.trading.tradingHistory, tradeRecord],
     });
 
-    // Update seller (if they have a unified profile)
-    const users = this.getUsers();
-    const seller = users.find((u) => u.id === term.sellerId);
-    if (seller) {
-      seller.points += term.price;
-      seller.tradesCompleted++;
-      seller.tradingHistory.push({
-        ...tradeRecord,
-        type: "sell",
-        partnerId: currentUser.id,
-        partnerName: currentUser.displayName,
-      });
-      this.updateUser(seller);
-      this.checkAchievements(seller);
-    }
+    // Note: Seller updates are handled separately when they access their profile
+    // as we no longer maintain legacy user profiles
 
     // Remove from marketplace
     terms.splice(termIndex, 1);
@@ -354,42 +281,12 @@ export class BasarService {
   // Utility methods
   initializeSampleData(): void {
     if (this.getMarketplaceTerms().length === 0) {
-      this.createSampleData();
+      this.createSampleMarketplaceTerms();
     }
   }
 
-  private createSampleData(): void {
-    // Create sample users
-    const sampleUsers: UserProfile[] = [
-      {
-        id: "user_sample1",
-        name: "Anna",
-        points: 250,
-        level: 2,
-        joinDate: "2024-01-15T00:00:00.000Z",
-        tradesCompleted: 5,
-        termsContributed: 12,
-        averageRating: 4.2,
-        achievements: [],
-        tradingHistory: [],
-      },
-      {
-        id: "user_sample2",
-        name: "Markus",
-        points: 180,
-        level: 1,
-        joinDate: "2024-02-01T00:00:00.000Z",
-        tradesCompleted: 3,
-        termsContributed: 8,
-        averageRating: 4.5,
-        achievements: [],
-        tradingHistory: [],
-      },
-    ];
-
-    localStorage.setItem(USER_PROFILES_KEY, JSON.stringify(sampleUsers));
-
-    // Create sample marketplace terms
+  private createSampleMarketplaceTerms(): void {
+    // Create sample marketplace terms without legacy user dependencies
     const sampleTerms: MarketplaceTerm[] = [
       {
         id: "term_sample1",
@@ -397,7 +294,7 @@ export class BasarService {
         explanation: "Eine Schritt-für-Schritt-Anleitung zur Problemlösung",
         letter: "a",
         listName: "Informatik",
-        sellerId: "user_sample1",
+        sellerId: "sample_user_1",
         sellerName: "Anna",
         price: 15,
         quality: 4.3,
@@ -412,7 +309,7 @@ export class BasarService {
         explanation: "Die Vielfalt des Lebens auf der Erde",
         letter: "b",
         listName: "Biologie",
-        sellerId: "user_sample2",
+        sellerId: "sample_user_2",
         sellerName: "Markus",
         price: 12,
         quality: 4.7,
@@ -428,7 +325,7 @@ export class BasarService {
           "Herrschaftsform, bei der das Volk die Staatsgewalt ausübt",
         letter: "d",
         listName: "Politik",
-        sellerId: "user_sample1",
+        sellerId: "sample_user_1",
         sellerName: "Anna",
         price: 18,
         quality: 4.1,

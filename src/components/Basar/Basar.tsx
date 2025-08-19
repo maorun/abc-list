@@ -119,12 +119,15 @@ export function Basar() {
     return (
       <div className="p-4 max-w-2xl mx-auto">
         <div className="mb-6 text-center">
-          <h1 className="text-3xl font-bold mb-2">🏪 Willkommen im ABC-Listen Basar!</h1>
+          <h1 className="text-3xl font-bold mb-2">
+            🏪 Willkommen im ABC-Listen Basar!
+          </h1>
           <p className="text-gray-600">
-            Erstellen Sie Ihr Händlerprofil, um am Wissensaustausch teilzunehmen.
+            Erstellen Sie Ihr Händlerprofil, um am Wissensaustausch
+            teilzunehmen.
           </p>
         </div>
-        
+
         <div className="mb-6 text-sm text-gray-600 bg-blue-50 p-4 rounded-lg">
           <p className="font-medium text-blue-800 mb-2">
             🎯 Im Basar können Sie:
@@ -140,7 +143,7 @@ export function Basar() {
           </p>
         </div>
 
-        <UnifiedUserProfile 
+        <UnifiedUserProfile
           showCreateProfile={false}
           setShowCreateProfile={(show) => !show && setShowUserSetup(false)}
         />

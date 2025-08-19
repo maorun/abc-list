@@ -3,10 +3,10 @@
  * Verifies that profiles created in Basar persist when switching to Community and back
  */
 
-import { describe, it, expect, beforeEach, vi } from "vitest";
-import { ProfileService } from "../../lib/ProfileService";
-import { BasarService } from "./BasarService";
-import { UNIFIED_PROFILE_STORAGE_KEYS } from "../../types/profile";
+import {describe, it, expect, beforeEach} from "vitest";
+import {ProfileService} from "../../lib/ProfileService";
+import {BasarService} from "./BasarService";
+import {UNIFIED_PROFILE_STORAGE_KEYS} from "../../types/profile";
 
 describe("Profile Persistence Fix", () => {
   let profileService: ProfileService;
@@ -15,7 +15,7 @@ describe("Profile Persistence Fix", () => {
   beforeEach(() => {
     // Clear localStorage before each test
     localStorage.clear();
-    
+
     // Reset singleton instances
     ProfileService.resetInstance();
     profileService = ProfileService.getInstance();
@@ -32,7 +32,9 @@ describe("Profile Persistence Fix", () => {
 
     // 2. Verify profile is created and saved
     expect(profile.displayName).toBe("Test User");
-    expect(localStorage.getItem(UNIFIED_PROFILE_STORAGE_KEYS.USER_PROFILE)).toBeTruthy();
+    expect(
+      localStorage.getItem(UNIFIED_PROFILE_STORAGE_KEYS.USER_PROFILE),
+    ).toBeTruthy();
 
     // 3. Verify BasarService can find the profile
     const basarUser = basarService.getCurrentUser();
@@ -100,7 +102,7 @@ describe("Profile Persistence Fix", () => {
     // Save legacy profile to localStorage
     localStorage.setItem(
       "community_user_profile",
-      JSON.stringify(legacyCommunityProfile)
+      JSON.stringify(legacyCommunityProfile),
     );
 
     // Migration should work

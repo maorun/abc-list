@@ -23,10 +23,10 @@ vi.mock("./BasarService");
 vi.mock("../Profile/UnifiedUserProfile", () => ({
   UnifiedUserProfile: ({
     showCreateProfile,
-    setShowCreateProfile,
+    _setShowCreateProfile,
   }: {
     showCreateProfile: boolean;
-    setShowCreateProfile: (show: boolean) => void;
+    _setShowCreateProfile: (show: boolean) => void;
   }) => {
     if (showCreateProfile) {
       return (
@@ -154,9 +154,7 @@ describe("Basar", () => {
       ),
     ).toBeInTheDocument();
     // Should now show unified profile creation interface
-    expect(
-      screen.getByTestId("unified-user-profile"),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("unified-user-profile")).toBeInTheDocument();
   });
 
   it("renders marketplace when profile exists", () => {
