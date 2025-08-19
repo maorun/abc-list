@@ -90,7 +90,8 @@ export interface UpdateProfileData {
   expertise?: UserExpertise[];
   mentorAvailable?: boolean;
   menteeInterested?: boolean;
-  // Trading data is typically updated through specific service methods
+  trading?: Partial<TradingData>;
+  community?: Partial<CommunityData>;
 }
 
 /**

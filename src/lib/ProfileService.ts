@@ -295,6 +295,11 @@ export class ProfileService {
           data.mentorAvailable ?? currentProfile.community.mentorAvailable,
         menteeInterested:
           data.menteeInterested ?? currentProfile.community.menteeInterested,
+        ...(data.community || {}),
+      },
+      trading: {
+        ...currentProfile.trading,
+        ...(data.trading || {}),
       },
     };
 

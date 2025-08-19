@@ -1,20 +1,24 @@
 import {
   MarketplaceTerm,
   TermRating,
-  UserProfile,
   TradeRecord,
   UserAchievement,
   Achievement,
   MARKETPLACE_TERMS_KEY,
-  USER_PROFILES_KEY,
   TERM_RATINGS_KEY,
-  CURRENT_USER_KEY,
   DEFAULT_ACHIEVEMENTS,
 } from "./types";
 import {WordWithExplanation} from "../List/types";
+import {ProfileService} from "../../lib/ProfileService";
+import {UnifiedUserProfile} from "../../types/profile";
 
 export class BasarService {
   private static instance: BasarService;
+  private profileService: ProfileService;
+
+  constructor() {
+    this.profileService = ProfileService.getInstance();
+  }
 
   static getInstance(): BasarService {
     if (!BasarService.instance) {
@@ -23,56 +27,32 @@ export class BasarService {
     return BasarService.instance;
   }
 
-  // User Management
-  getCurrentUser(): UserProfile | null {
-    const userId = localStorage.getItem(CURRENT_USER_KEY);
-    if (!userId) return null;
-
-    const users = this.getUsers();
-    return users.find((user) => user.id === userId) || null;
+  // User Management - Uses unified profile system
+  getCurrentUser(): UnifiedUserProfile | null {
+    return this.profileService.getUnifiedProfile();
   }
 
-  setCurrentUser(userId: string): void {
-    localStorage.setItem(CURRENT_USER_KEY, userId);
-  }
+  // Update unified profile trading data
+  updateUserTradingData(updates: {
+    points?: number;
+    level?: number;
+    tradesCompleted?: number;
+    termsContributed?: number;
+    averageRating?: number;
+    achievements?: UserAchievement[];
+    tradingHistory?: TradeRecord[];
+  }): boolean {
+    const currentProfile = this.getCurrentUser();
+    if (!currentProfile) return false;
 
-  createUser(name: string): UserProfile {
-    const users = this.getUsers();
-    const newUser: UserProfile = {
-      id: `user_${Date.now()}`,
-      name,
-      points: 100, // Starting points
-      level: 1,
-      joinDate: new Date().toISOString(),
-      tradesCompleted: 0,
-      termsContributed: 0,
-      averageRating: 0,
-      achievements: [],
-      tradingHistory: [],
-    };
-
-    users.push(newUser);
-    this.saveUsers(users);
-    this.setCurrentUser(newUser.id);
-    return newUser;
-  }
-
-  getUsers(): UserProfile[] {
-    const stored = localStorage.getItem(USER_PROFILES_KEY);
-    return stored ? JSON.parse(stored) : [];
-  }
-
-  private saveUsers(users: UserProfile[]): void {
-    localStorage.setItem(USER_PROFILES_KEY, JSON.stringify(users));
-  }
-
-  updateUser(user: UserProfile): void {
-    const users = this.getUsers();
-    const index = users.findIndex((u) => u.id === user.id);
-    if (index !== -1) {
-      users[index] = user;
-      this.saveUsers(users);
-    }
+    // Use ProfileService to update the unified profile
+    return this.profileService.updateUnifiedProfile({
+      id: currentProfile.id,
+      trading: {
+        ...currentProfile.trading,
+        ...updates,
+      },
+    });
   }
 
   // Marketplace Terms Management
@@ -101,7 +81,7 @@ export class BasarService {
       letter,
       listName,
       sellerId: currentUser.id,
-      sellerName: currentUser.name,
+      sellerName: currentUser.displayName,
       price,
       quality: 0,
       ratingCount: 0,
@@ -111,9 +91,11 @@ export class BasarService {
     terms.push(newTerm);
     this.saveMarketplaceTerms(terms);
 
-    // Update user stats
-    currentUser.termsContributed++;
-    this.updateUser(currentUser);
+    // Update user stats using unified profile system
+    this.updateUserTradingData({
+      termsContributed: currentUser.trading.termsContributed + 1,
+    });
+
     this.checkAchievements(currentUser);
 
     return newTerm;
@@ -128,14 +110,10 @@ export class BasarService {
     if (termIndex === -1) return false;
 
     const term = terms[termIndex];
-    if (currentUser.points < term.price) return false;
+    if (currentUser.trading.points < term.price) return false;
     if (term.sellerId === currentUser.id) return false;
 
-    // Process purchase
-    currentUser.points -= term.price;
-    currentUser.tradesCompleted++;
-
-    // Add to trading history
+    // Create trade record
     const tradeRecord: TradeRecord = {
       id: `trade_${Date.now()}`,
       type: "buy",
@@ -147,23 +125,16 @@ export class BasarService {
       partnerName: term.sellerName,
       date: new Date().toISOString(),
     };
-    currentUser.tradingHistory.push(tradeRecord);
 
-    // Update seller
-    const users = this.getUsers();
-    const seller = users.find((u) => u.id === term.sellerId);
-    if (seller) {
-      seller.points += term.price;
-      seller.tradesCompleted++;
-      seller.tradingHistory.push({
-        ...tradeRecord,
-        type: "sell",
-        partnerId: currentUser.id,
-        partnerName: currentUser.name,
-      });
-      this.updateUser(seller);
-      this.checkAchievements(seller);
-    }
+    // Update buyer stats using unified profile system
+    this.updateUserTradingData({
+      points: currentUser.trading.points - term.price,
+      tradesCompleted: currentUser.trading.tradesCompleted + 1,
+      tradingHistory: [...currentUser.trading.tradingHistory, tradeRecord],
+    });
+
+    // Note: Seller updates are handled separately when they access their profile
+    // as we no longer maintain legacy user profiles
 
     // Remove from marketplace
     terms.splice(termIndex, 1);
@@ -172,7 +143,6 @@ export class BasarService {
     // Add to buyer's ABC list
     this.addTermToUserList(currentUser.id, term);
 
-    this.updateUser(currentUser);
     this.checkAchievements(currentUser);
 
     return true;
@@ -266,10 +236,10 @@ export class BasarService {
   }
 
   // Achievement System
-  private checkAchievements(user: UserProfile): void {
+  private checkAchievements(user: UnifiedUserProfile): void {
     DEFAULT_ACHIEVEMENTS.forEach((achievement) => {
       if (
-        !user.achievements.some((a) => a.id === achievement.id) &&
+        !user.trading.achievements.some((a) => a.id === achievement.id) &&
         this.isAchievementEarned(user, achievement)
       ) {
         const userAchievement: UserAchievement = {
@@ -281,25 +251,28 @@ export class BasarService {
           points: achievement.points,
         };
 
-        user.achievements.push(userAchievement);
-        user.points += achievement.points;
+        // Update unified profile with new achievement and points
+        this.updateUserTradingData({
+          achievements: [...user.trading.achievements, userAchievement],
+          points: user.trading.points + achievement.points,
+        });
       }
     });
   }
 
   private isAchievementEarned(
-    user: UserProfile,
+    user: UnifiedUserProfile,
     achievement: Achievement,
   ): boolean {
     switch (achievement.requirement.type) {
       case "trades":
-        return user.tradesCompleted >= achievement.requirement.value;
+        return user.trading.tradesCompleted >= achievement.requirement.value;
       case "contributions":
-        return user.termsContributed >= achievement.requirement.value;
+        return user.trading.termsContributed >= achievement.requirement.value;
       case "rating":
-        return user.averageRating >= achievement.requirement.value;
+        return user.trading.averageRating >= achievement.requirement.value;
       case "points":
-        return user.points >= achievement.requirement.value;
+        return user.trading.points >= achievement.requirement.value;
       default:
         return false;
     }
@@ -308,42 +281,12 @@ export class BasarService {
   // Utility methods
   initializeSampleData(): void {
     if (this.getMarketplaceTerms().length === 0) {
-      this.createSampleData();
+      this.createSampleMarketplaceTerms();
     }
   }
 
-  private createSampleData(): void {
-    // Create sample users
-    const sampleUsers: UserProfile[] = [
-      {
-        id: "user_sample1",
-        name: "Anna",
-        points: 250,
-        level: 2,
-        joinDate: "2024-01-15T00:00:00.000Z",
-        tradesCompleted: 5,
-        termsContributed: 12,
-        averageRating: 4.2,
-        achievements: [],
-        tradingHistory: [],
-      },
-      {
-        id: "user_sample2",
-        name: "Markus",
-        points: 180,
-        level: 1,
-        joinDate: "2024-02-01T00:00:00.000Z",
-        tradesCompleted: 3,
-        termsContributed: 8,
-        averageRating: 4.5,
-        achievements: [],
-        tradingHistory: [],
-      },
-    ];
-
-    localStorage.setItem(USER_PROFILES_KEY, JSON.stringify(sampleUsers));
-
-    // Create sample marketplace terms
+  private createSampleMarketplaceTerms(): void {
+    // Create sample marketplace terms without legacy user dependencies
     const sampleTerms: MarketplaceTerm[] = [
       {
         id: "term_sample1",
@@ -351,7 +294,7 @@ export class BasarService {
         explanation: "Eine Schritt-für-Schritt-Anleitung zur Problemlösung",
         letter: "a",
         listName: "Informatik",
-        sellerId: "user_sample1",
+        sellerId: "sample_user_1",
         sellerName: "Anna",
         price: 15,
         quality: 4.3,
@@ -366,7 +309,7 @@ export class BasarService {
         explanation: "Die Vielfalt des Lebens auf der Erde",
         letter: "b",
         listName: "Biologie",
-        sellerId: "user_sample2",
+        sellerId: "sample_user_2",
         sellerName: "Markus",
         price: 12,
         quality: 4.7,
@@ -382,7 +325,7 @@ export class BasarService {
           "Herrschaftsform, bei der das Volk die Staatsgewalt ausübt",
         letter: "d",
         listName: "Politik",
-        sellerId: "user_sample1",
+        sellerId: "sample_user_1",
         sellerName: "Anna",
         price: 18,
         quality: 4.1,

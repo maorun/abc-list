@@ -19,6 +19,34 @@ vi.mock("../../hooks/useUnifiedProfile");
 // Mock the BasarService
 vi.mock("./BasarService");
 
+// Mock the UnifiedUserProfile component
+vi.mock("../Profile/UnifiedUserProfile", () => ({
+  UnifiedUserProfile: ({
+    showCreateProfile,
+    _setShowCreateProfile,
+  }: {
+    showCreateProfile: boolean;
+    _setShowCreateProfile: (show: boolean) => void;
+  }) => {
+    if (showCreateProfile) {
+      return (
+        <div data-testid="unified-user-profile">
+          <button>Mit Google anmelden</button>
+          <button>Manuell erstellen</button>
+          <div>Unified Profile Component</div>
+        </div>
+      );
+    }
+    return (
+      <div data-testid="unified-user-profile">
+        <div>Test User</div>
+        <div>Mitglied seit 2024-01-01</div>
+        <div>Profile View</div>
+      </div>
+    );
+  },
+}));
+
 interface MockBasarService {
   getInstance: MockedFunction<() => MockBasarService>;
   initializeSampleData: Mock;
@@ -125,6 +153,8 @@ describe("Basar", () => {
         "Erstellen Sie Ihr Händlerprofil, um am Wissensaustausch teilzunehmen.",
       ),
     ).toBeInTheDocument();
+    // Should now show unified profile creation interface
+    expect(screen.getByTestId("unified-user-profile")).toBeInTheDocument();
   });
 
   it("renders marketplace when profile exists", () => {
@@ -157,8 +187,9 @@ describe("Basar", () => {
     expect(screen.getByText("📈 Level 2")).toBeInTheDocument();
   });
 
-  it("creates profile when setup form is submitted", async () => {
+  it("shows unified profile creation interface when no profile exists", async () => {
     const mockCreateProfile = vi.fn();
+    const mockSignInWithGoogle = vi.fn();
 
     // Mock no profile initially
     vi.spyOn(useUnifiedProfileModule, "useUnifiedProfile").mockReturnValue({
@@ -167,28 +198,15 @@ describe("Basar", () => {
       isAuthenticated: false,
       createProfile: mockCreateProfile,
       updateProfile: vi.fn(),
-      signInWithGoogle: vi.fn(),
+      signInWithGoogle: mockSignInWithGoogle,
       signOut: vi.fn(),
       migrateLegacyProfiles: vi.fn(),
     });
 
     renderBasar();
 
-    const nameInput = screen.getByPlaceholderText(
-      "Geben Sie Ihren Namen ein...",
-    );
-    const createButton = screen.getByText("🚀 Profil erstellen");
-
-    fireEvent.change(nameInput, {target: {value: "New User"}});
-    fireEvent.click(createButton);
-
-    await waitFor(() => {
-      expect(mockCreateProfile).toHaveBeenCalledWith({
-        displayName: "New User",
-        bio: "",
-        expertise: [],
-      });
-    });
+    // Should show the unified profile component
+    expect(screen.getByTestId("unified-user-profile")).toBeInTheDocument();
   });
 
   it("displays marketplace terms when available", () => {
