@@ -1,6 +1,6 @@
 name: Enhanced CI/CD Pipeline
 
-on: [push, pull_request]
+on: [push]
 
 jobs:
   # Pre-validation checks that enforce code quality guidelines
