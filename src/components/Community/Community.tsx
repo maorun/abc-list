@@ -1,6 +1,7 @@
 /**
  * Community Hub - Main interface for community features
  * Provides tabbed access to profiles, mentoring, challenges, reviews, and success stories
+ * Updated to use unified profile system
  */
 
 import React, {useState, useEffect} from "react";
@@ -24,11 +25,11 @@ import {
 } from "lucide-react";
 import {
   CommunityService,
-  CommunityProfile,
   CommunityChallenge,
   SuccessStory,
 } from "../../lib/CommunityService";
-import {UserProfile} from "./UserProfile";
+import {useUnifiedProfile} from "../../hooks/useUnifiedProfile";
+import {UnifiedUserProfile} from "../Profile/UnifiedUserProfile";
 import {MentorshipManager} from "./MentorshipManager";
 import {CommunityChallenge as ChallengeComponent} from "./CommunityChallenge";
 import {PeerReview} from "./PeerReview";
@@ -50,18 +51,18 @@ const handleCreateProfileAction =
 export function Community() {
   const [activeTab, setActiveTab] = useState("overview");
   const [communityData, setCommunityData] = useState({
-    userProfile: null as CommunityProfile | null,
     challenges: [] as CommunityChallenge[],
     featuredStories: [] as SuccessStory[],
   });
   const [showCreateProfile, setShowCreateProfile] = useState(false);
 
+  // Use unified profile system
+  const {profile: userProfile} = useUnifiedProfile();
   const communityService = CommunityService.getInstance();
 
   useEffect(() => {
     const loadCommunityData = () => {
       setCommunityData({
-        userProfile: communityService.getUserProfile(),
         challenges: communityService.getCommunityChallenges(),
         featuredStories: communityService.getFeaturedStories(),
       });
@@ -80,7 +81,7 @@ export function Community() {
     handleTabChangeAction(value, setActiveTab);
   const handleCreateProfile = handleCreateProfileAction(setShowCreateProfile);
 
-  const {userProfile, challenges, featuredStories} = communityData;
+  const {challenges, featuredStories} = communityData;
 
   return (
     <div className="space-y-6">
@@ -118,7 +119,9 @@ export function Community() {
                   <p className="text-sm font-medium text-gray-600">
                     Reputation
                   </p>
-                  <p className="text-2xl font-bold">{userProfile.reputation}</p>
+                  <p className="text-2xl font-bold">
+                    {userProfile.community.reputation}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -130,7 +133,7 @@ export function Community() {
                 <div>
                   <p className="text-sm font-medium text-gray-600">Beiträge</p>
                   <p className="text-2xl font-bold">
-                    {userProfile.contributionCount}
+                    {userProfile.community.contributionCount}
                   </p>
                 </div>
               </div>
@@ -145,7 +148,7 @@ export function Community() {
                     Hilfreiche Reviews
                   </p>
                   <p className="text-2xl font-bold">
-                    {userProfile.helpfulReviews}
+                    {userProfile.community.helpfulReviews}
                   </p>
                 </div>
               </div>
@@ -160,7 +163,7 @@ export function Community() {
                     Expertise-Bereiche
                   </p>
                   <p className="text-2xl font-bold">
-                    {userProfile.expertise.length}
+                    {userProfile.community.expertise.length}
                   </p>
                 </div>
               </div>
@@ -334,8 +337,7 @@ export function Community() {
         </TabsContent>
 
         <TabsContent value="profile" className="mt-6">
-          <UserProfile
-            userProfile={userProfile}
+          <UnifiedUserProfile
             showCreateProfile={showCreateProfile}
             setShowCreateProfile={setShowCreateProfile}
           />

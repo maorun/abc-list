@@ -33,13 +33,13 @@ import {
 } from "lucide-react";
 import {
   CommunityService,
-  CommunityProfile,
   CommunityChallenge as Challenge,
 } from "../../lib/CommunityService";
+import {UnifiedUserProfile} from "../../types/profile";
 
 interface CommunityChallengeProps {
   challenges: Challenge[];
-  userProfile: CommunityProfile | null;
+  userProfile: UnifiedUserProfile | null;
 }
 
 // Extract handlers outside component to prevent recreation on every render
@@ -71,7 +71,7 @@ function ChallengeDetails({
 }) {
   const communityService = CommunityService.getInstance();
   const isParticipating = userProfile
-    ? challenge.participants.includes(userProfile.userId)
+    ? challenge.participants.includes(userProfile.id)
     : false;
 
   const daysRemaining = Math.ceil(
@@ -236,7 +236,7 @@ export function CommunityChallenge({
     if (activeFilter === "active") return challenge.status === "active";
     if (activeFilter === "participating") {
       return userProfile
-        ? challenge.participants.includes(userProfile.userId)
+        ? challenge.participants.includes(userProfile.id)
         : false;
     }
     return challenge.type === activeFilter;
@@ -337,7 +337,7 @@ export function CommunityChallenge({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {filteredChallenges.map((challenge) => {
           const isParticipating = challenge.participants.includes(
-            userProfile.userId,
+            userProfile.id,
           );
           const daysRemaining = Math.ceil(
             (new Date(challenge.endDate).getTime() - new Date().getTime()) /

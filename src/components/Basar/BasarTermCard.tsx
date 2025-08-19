@@ -12,12 +12,13 @@ import {Card, CardContent, CardFooter, CardHeader} from "../ui/card";
 import {Badge} from "../ui/badge";
 import {Label} from "../ui/label";
 import {Textarea} from "../ui/textarea";
-import {MarketplaceTerm, UserProfile} from "./types";
+import {MarketplaceTerm} from "./types";
 import {BasarService} from "./BasarService";
+import {UnifiedUserProfile} from "../../types/profile";
 
 interface BasarTermCardProps {
   term: MarketplaceTerm;
-  currentUser: UserProfile;
+  currentUser: UnifiedUserProfile;
   onBuy: (termId: string) => void;
   onRate: (termId: string, rating: number, comment?: string) => void;
   basarService: BasarService;
@@ -36,7 +37,8 @@ export function BasarTermCard({
 
   const existingRating = basarService.getUserRating(term.id, currentUser.id);
   const canBuy =
-    currentUser.points >= term.price && term.sellerId !== currentUser.id;
+    currentUser.trading.points >= term.price &&
+    term.sellerId !== currentUser.id;
   const isOwnTerm = term.sellerId === currentUser.id;
 
   const handleOpenRating = () => {
@@ -182,7 +184,7 @@ export function BasarTermCard({
                     : "bg-gray-300 cursor-not-allowed"
                 }`}
               >
-                {currentUser.points < term.price
+                {currentUser.trading.points < term.price
                   ? `💸 Zu wenig Punkte`
                   : "🛒 Kaufen"}
               </Button>
@@ -191,7 +193,8 @@ export function BasarTermCard({
 
           {!canBuy && !isOwnTerm && (
             <div className="mt-2 text-xs text-red-500 text-center w-full">
-              Sie benötigen {term.price - currentUser.points} weitere Punkte
+              Sie benötigen {term.price - currentUser.trading.points} weitere
+              Punkte
             </div>
           )}
         </CardFooter>
