@@ -3,6 +3,9 @@
     "config:recommended", ":automergeAll", ":disableDependencyDashboard"
   ],
   "labels": ["dependencies"],
+  "lockFileMaintenance": {
+    "enabled": true,
+  },
   "packageRules": [
     {
       "matchUpdateTypes": ["minor", "patch"],
