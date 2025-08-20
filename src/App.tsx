@@ -21,14 +21,8 @@ import {AccessibilityToolbar} from "./components/AccessibilityToolbar";
 import {PWAProvider} from "./contexts/PWAContext";
 import {CloudSyncProvider} from "./contexts/CloudSyncContext";
 import {PWAInstallPrompt} from "./components/PWAInstallPrompt";
-import {
-  OfflineStatusIndicator,
-  OfflineStatusIcon,
-} from "./components/OfflineStatusIndicator";
-import {
-  SyncStatusIndicator,
-  SyncStatusIcon,
-} from "./components/SyncStatusIndicator";
+import {OfflineStatusIndicator} from "./components/OfflineStatusIndicator";
+import {SyncStatusIndicator} from "./components/SyncStatusIndicator";
 import {useKeyboardNavigation} from "./hooks/useKeyboardNavigation";
 import {List} from "./components/List/List";
 import {ListItem} from "./components/List/ListItem";
@@ -45,15 +39,10 @@ import {Analytics} from "./components/Analytics/Analytics";
 import {SokratesCheck} from "./components/SokratesCheck/SokratesCheck";
 import {Basar} from "./components/Basar/Basar";
 import {GamificationDashboard} from "./components/Gamification/GamificationDashboard";
-import {GamificationStatusIndicator} from "./components/Gamification/GamificationStatusIndicator";
 import {SearchAndFilter} from "./components/Search/SearchAndFilter";
 import {Community} from "./components/Community/Community";
-import {CloudAuthButton} from "./components/CloudSync/CloudAuthButton";
-import {CloudBackupManager} from "./components/CloudSync/CloudBackupManager";
-import {
-  CloudSyncStatusIndicator,
-  CloudSyncStatusIcon,
-} from "./components/CloudSync/CloudSyncStatusIndicator";
+import {StatusIndicators} from "./components/StatusIndicators";
+import {CloudSyncStatusIndicator} from "./components/CloudSync/CloudSyncStatusIndicator";
 
 // Extract navigation items to prevent recreation on every render
 const navigationItems = [
@@ -182,33 +171,40 @@ function Navigation() {
                 <SheetContent
                   id="mobile-navigation"
                   side="right"
-                  className="w-3/5 max-w-xs bg-blue-800 border-blue-700"
+                  className="w-3/5 max-w-xs bg-blue-800 border-blue-700 overflow-hidden flex flex-col"
                   role="dialog"
                   aria-label="Navigationsmenü"
                 >
-                  <SheetHeader>
+                  <SheetHeader className="flex-shrink-0">
                     <SheetTitle className="text-white text-left">
                       Navigation
                     </SheetTitle>
                   </SheetHeader>
-                  <nav
-                    className="flex flex-col space-y-2 mt-6"
-                    role="list"
-                    aria-label="Hauptnavigation"
-                  >
-                    {navigationItems.map((item) => (
-                      <div key={item.to} role="listitem">
-                        <NavButton
-                          to={item.to}
-                          isActive={currentPath === item.to}
-                          onClick={closeNavigation}
-                          description={item.description}
-                        >
-                          {item.label}
-                        </NavButton>
-                      </div>
-                    ))}
-                  </nav>
+
+                  {/* Scrollable content container */}
+                  <div className="flex-1 overflow-y-auto">
+                    <nav
+                      className="flex flex-col space-y-1 mt-4"
+                      role="list"
+                      aria-label="Hauptnavigation"
+                    >
+                      {navigationItems.map((item) => (
+                        <div key={item.to} role="listitem">
+                          <NavButton
+                            to={item.to}
+                            isActive={currentPath === item.to}
+                            onClick={closeNavigation}
+                            description={item.description}
+                          >
+                            {item.label}
+                          </NavButton>
+                        </div>
+                      ))}
+                    </nav>
+
+                    {/* Mobile Status Indicators */}
+                    <StatusIndicators isMobile={true} />
+                  </div>
                 </SheetContent>
               </Sheet>
             </div>
@@ -235,15 +231,8 @@ function Navigation() {
               ))}
             </div>
 
-            {/* Offline and sync status icons in navigation */}
-            <div className="flex items-center gap-2">
-              <CloudBackupManager />
-              <CloudAuthButton />
-              <GamificationStatusIndicator />
-              <OfflineStatusIcon />
-              <SyncStatusIcon />
-              <CloudSyncStatusIcon />
-            </div>
+            {/* Desktop Status Indicators */}
+            <StatusIndicators isMobile={false} />
           </div>
         </div>
       </div>
