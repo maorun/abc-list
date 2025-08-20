@@ -367,10 +367,37 @@ export function checkPWANotificationSupport(): {
  * Test push notification (for settings/debugging)
  */
 export async function testPushNotification(): Promise<boolean> {
-  return await schedulePushNotification(
-    "🧪 Test Benachrichtigung",
-    "Deine Push-Benachrichtigungen funktionieren!",
+  const title = "🧪 Test Benachrichtigung";
+  const body = "Deine Benachrichtigungen funktionieren!";
+  
+  // Try push notification first
+  const pushSent = await schedulePushNotification(
+    title,
+    body,
     0,
     {type: "test"},
   );
+
+  if (pushSent) {
+    return true;
+  }
+
+  // Fallback to basic notification if push notifications are disabled/failed
+  const basicSettings = getBasicSettings();
+  if (areNotificationsAllowed(basicSettings)) {
+    try {
+      new Notification(title, {
+        body,
+        icon: "./assets/icon.png",
+        tag: "test-notification",
+        requireInteraction: false,
+      });
+      return true;
+    } catch (error) {
+      console.error("[PWANotifications] Failed to show basic test notification:", error);
+      return false;
+    }
+  }
+
+  return false;
 }

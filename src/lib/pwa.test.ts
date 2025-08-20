@@ -5,6 +5,7 @@ import {
   savePWANotificationSettings,
   checkPWANotificationSupport,
   schedulePushNotification,
+  testPushNotification,
 } from "./pwaNotifications";
 import {saveNotificationSettings} from "./notifications";
 import {EnhancedPWAStorage} from "./enhancedStorage";
@@ -186,6 +187,102 @@ describe("PWA Functionality", () => {
       });
 
       const result = await schedulePushNotification("Test Title", "Test Body");
+
+      expect(result).toBe(false);
+    });
+  });
+
+  describe("Test Notifications", () => {
+    it("should test push notifications when enabled", async () => {
+      // Mock Notification for consistency
+      Object.defineProperty(global, "Notification", {
+        value: vi.fn().mockImplementation((title, options) => ({
+          title,
+          ...options,
+          close: vi.fn(),
+        })),
+        writable: true,
+      });
+      global.Notification.permission = "granted";
+      global.Notification.requestPermission = vi.fn(() => Promise.resolve("granted"));
+
+      // Enable push notifications
+      savePWANotificationSettings({
+        enabled: true,
+        pushEnabled: true,
+        frequency: "daily",
+        quietHours: {start: 23, end: 23}, // No quiet hours
+        maxNotifications: 3,
+      });
+
+      const result = await testPushNotification();
+
+      expect(result).toBe(true);
+    });
+
+    it("should fallback to browser notifications when push disabled", async () => {
+      // Mock Notification constructor properly
+      Object.defineProperty(global, "Notification", {
+        value: vi.fn().mockImplementation((title, options) => ({
+          title,
+          ...options,
+          close: vi.fn(),
+        })),
+        writable: true,
+      });
+
+      // Set permission to granted
+      global.Notification.permission = "granted";
+      global.Notification.requestPermission = vi.fn(() => Promise.resolve("granted"));
+
+      // Enable basic notifications only
+      savePWANotificationSettings({
+        enabled: true,
+        pushEnabled: false,
+        frequency: "daily",
+        quietHours: {start: 23, end: 23}, // No quiet hours
+        maxNotifications: 3,
+      });
+
+      // Enable basic notifications
+      saveNotificationSettings({
+        enabled: true,
+        frequency: "daily",
+        quietHours: {start: 23, end: 23}, // No quiet hours
+        maxNotifications: 3,
+      });
+
+      const result = await testPushNotification();
+
+      expect(result).toBe(true);
+      expect(global.Notification).toHaveBeenCalledWith(
+        "🧪 Test Benachrichtigung",
+        expect.objectContaining({
+          body: "Deine Benachrichtigungen funktionieren!",
+          icon: "./assets/icon.png",
+          tag: "test-notification",
+        })
+      );
+    });
+
+    it("should fail when all notifications disabled", async () => {
+      // Disable all notifications
+      savePWANotificationSettings({
+        enabled: false,
+        pushEnabled: false,
+        frequency: "daily",
+        quietHours: {start: 22, end: 8},
+        maxNotifications: 3,
+      });
+
+      saveNotificationSettings({
+        enabled: false,
+        frequency: "daily",
+        quietHours: {start: 22, end: 8},
+        maxNotifications: 3,
+      });
+
+      const result = await testPushNotification();
 
       expect(result).toBe(false);
     });
