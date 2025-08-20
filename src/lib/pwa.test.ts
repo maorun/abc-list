@@ -204,7 +204,9 @@ describe("PWA Functionality", () => {
         writable: true,
       });
       global.Notification.permission = "granted";
-      global.Notification.requestPermission = vi.fn(() => Promise.resolve("granted"));
+      global.Notification.requestPermission = vi.fn(() =>
+        Promise.resolve("granted"),
+      );
 
       // Enable push notifications
       savePWANotificationSettings({
@@ -233,7 +235,9 @@ describe("PWA Functionality", () => {
 
       // Set permission to granted
       global.Notification.permission = "granted";
-      global.Notification.requestPermission = vi.fn(() => Promise.resolve("granted"));
+      global.Notification.requestPermission = vi.fn(() =>
+        Promise.resolve("granted"),
+      );
 
       // Enable basic notifications only
       savePWANotificationSettings({
@@ -261,7 +265,7 @@ describe("PWA Functionality", () => {
           body: "Deine Benachrichtigungen funktionieren!",
           icon: "./assets/icon.png",
           tag: "test-notification",
-        })
+        }),
       );
     });
 

@@ -4,6 +4,19 @@ ABC-List is a React/TypeScript/Vite web application implementing Vera F. Birkenb
 
 **ALWAYS reference these instructions first and fallback to search or bash commands only when you encounter unexpected information that does not match the info here.**
 
+## ⚠️ CRITICAL REMINDER: MANDATORY TESTING AND LINTING WORKFLOW ⚠️
+
+**🚫 NEVER FORGET: After ANY code changes, you MUST run tests and linting before committing!**
+
+```bash
+# MANDATORY after every code change:
+npm run test    # ← MUST pass (365 tests) 
+npm run lint    # ← MUST pass (0 errors)
+npm run build   # ← MUST pass (production build)
+```
+
+**This is not optional - it prevents regressions and maintains code quality. If you skip this, you introduce bugs.**
+
 ## Working Effectively
 
 ### Prerequisites and Setup
@@ -65,6 +78,29 @@ ABC-List is a React/TypeScript/Vite web application implementing Vera F. Birkenb
    - Linting takes ~2-5 seconds. Set timeout to 30+ seconds.
    - Uses ESLint 9 with TypeScript, React, and accessibility rules
    - Prettier configured with specific rules (no bracket spacing, double quotes, trailing commas)
+
+## ⚠️ MANDATORY POST-DEVELOPMENT VALIDATION ⚠️
+
+**🔴 CRITICAL: After making ANY code changes, you MUST run this validation sequence:**
+
+```bash
+# Step 1: Test (MUST pass all 365 tests)
+npm run test
+
+# Step 2: Lint (MUST have 0 errors) 
+npm run lint
+
+# Step 3: Build (MUST complete successfully)
+npm run build
+```
+
+**If any of these steps fail, you MUST fix the issues before committing. No exceptions.**
+
+**📝 Use this checklist for every development session:**
+- [ ] Tests pass (`npm run test` - 365 tests)
+- [ ] Linting passes (`npm run lint` - 0 errors)  
+- [ ] Build succeeds (`npm run build`)
+- [ ] Only then commit changes with `report_progress`
 
 ## Validation Scenarios
 
@@ -339,6 +375,12 @@ This cycle continues until your code both passes all tests and has no linting er
 ### Adding New Components
 - Create components in appropriate subdirectory under `/src/components`
 - Include corresponding `.test.tsx` file with React Testing Library tests
+
+**⚠️ REMINDER: After creating new components, ALWAYS run:**
+```bash
+npm run test && npm run lint && npm run build
+```
+
 ### TypeScript Guidelines
 - **STRICTLY FORBIDDEN: Never use `any` type** - This violates type safety and is explicitly prohibited
 - Always use proper TypeScript types with specific interfaces and type annotations
@@ -610,6 +652,11 @@ it("should handle production rerender scenarios without localStorage access grow
 - Theme configuration in `src/themes/default.tsx`
 - Component-specific styles use Tailwind utility classes
 
+**⚠️ REMINDER: After modifying styles, ALWAYS run:**
+```bash
+npm run test && npm run lint && npm run build
+```
+
 ### Working with State Management
 - Uses React hooks for local state management
 - localStorage for persistence of lists and associations
@@ -621,6 +668,11 @@ it("should handle production rerender scenarios without localStorage access grow
 - Setup file: `src/test/setup.ts`
 - Focus on user interactions and component behavior
 - Always add tests for new features and bug fixes
+
+**⚠️ REMINDER: After writing tests, ALWAYS run:**
+```bash
+npm run test && npm run lint && npm run build
+```
 
 ### Updating documentations
 - Always update AGENTS.MD and .github/copilot-instructions.md on new or changed features
@@ -1468,3 +1520,30 @@ const handleMentorshipRequest = () =>
 - Focus management in modal dialogs and tabbed community interfaces
 
 The Community Hub successfully transforms ABC-List into a collaborative learning platform while preserving its core educational mission and maintaining the highest technical quality standards.
+
+---
+
+## 🚨 FINAL REMINDER: NEVER FORGET THE MANDATORY WORKFLOW 🚨
+
+**Before closing any development session, ALWAYS complete this checklist:**
+
+```bash
+# 1. TEST (MUST pass all 365 tests)
+npm run test
+
+# 2. LINT (MUST have 0 errors)  
+npm run lint
+
+# 3. BUILD (MUST complete successfully)
+npm run build
+```
+
+**✅ Development Session Checklist:**
+- [ ] All tests pass (`npm run test`)
+- [ ] No linting errors (`npm run lint`)
+- [ ] Build succeeds (`npm run build`)
+- [ ] Changes committed with `report_progress`
+
+**If ANY step fails, fix the issues before committing. This prevents regressions and maintains code quality.**
+
+**💡 Remember: Testing and linting are not optional - they are mandatory parts of the development workflow!**

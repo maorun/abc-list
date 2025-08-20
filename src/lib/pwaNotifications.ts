@@ -369,14 +369,11 @@ export function checkPWANotificationSupport(): {
 export async function testPushNotification(): Promise<boolean> {
   const title = "🧪 Test Benachrichtigung";
   const body = "Deine Benachrichtigungen funktionieren!";
-  
+
   // Try push notification first
-  const pushSent = await schedulePushNotification(
-    title,
-    body,
-    0,
-    {type: "test"},
-  );
+  const pushSent = await schedulePushNotification(title, body, 0, {
+    type: "test",
+  });
 
   if (pushSent) {
     return true;
@@ -394,7 +391,10 @@ export async function testPushNotification(): Promise<boolean> {
       });
       return true;
     } catch (error) {
-      console.error("[PWANotifications] Failed to show basic test notification:", error);
+      console.error(
+        "[PWANotifications] Failed to show basic test notification:",
+        error,
+      );
       return false;
     }
   }
