@@ -44,8 +44,13 @@ const handleTabChangeAction = (
 };
 
 const handleCreateProfileAction =
-  (setShowCreateProfile: (show: boolean) => void) => () => {
+  (
+    setShowCreateProfile: (show: boolean) => void,
+    setActiveTab: (tab: string) => void,
+  ) =>
+  () => {
     setShowCreateProfile(true);
+    setActiveTab("profile");
   };
 
 export function Community() {
@@ -79,7 +84,10 @@ export function Community() {
   // Create stable handler references
   const handleTabChange = (value: string) =>
     handleTabChangeAction(value, setActiveTab);
-  const handleCreateProfile = handleCreateProfileAction(setShowCreateProfile);
+  const handleCreateProfile = handleCreateProfileAction(
+    setShowCreateProfile,
+    setActiveTab,
+  );
 
   const {challenges, featuredStories} = communityData;
 
