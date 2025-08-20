@@ -171,36 +171,40 @@ function Navigation() {
                 <SheetContent
                   id="mobile-navigation"
                   side="right"
-                  className="w-3/5 max-w-xs bg-blue-800 border-blue-700"
+                  className="w-3/5 max-w-xs bg-blue-800 border-blue-700 overflow-hidden flex flex-col"
                   role="dialog"
                   aria-label="Navigationsmenü"
                 >
-                  <SheetHeader>
+                  <SheetHeader className="flex-shrink-0">
                     <SheetTitle className="text-white text-left">
                       Navigation
                     </SheetTitle>
                   </SheetHeader>
-                  <nav
-                    className="flex flex-col space-y-2 mt-6"
-                    role="list"
-                    aria-label="Hauptnavigation"
-                  >
-                    {navigationItems.map((item) => (
-                      <div key={item.to} role="listitem">
-                        <NavButton
-                          to={item.to}
-                          isActive={currentPath === item.to}
-                          onClick={closeNavigation}
-                          description={item.description}
-                        >
-                          {item.label}
-                        </NavButton>
-                      </div>
-                    ))}
-                  </nav>
 
-                  {/* Mobile Status Indicators */}
-                  <StatusIndicators isMobile={true} />
+                  {/* Scrollable content container */}
+                  <div className="flex-1 overflow-y-auto">
+                    <nav
+                      className="flex flex-col space-y-1 mt-4"
+                      role="list"
+                      aria-label="Hauptnavigation"
+                    >
+                      {navigationItems.map((item) => (
+                        <div key={item.to} role="listitem">
+                          <NavButton
+                            to={item.to}
+                            isActive={currentPath === item.to}
+                            onClick={closeNavigation}
+                            description={item.description}
+                          >
+                            {item.label}
+                          </NavButton>
+                        </div>
+                      ))}
+                    </nav>
+
+                    {/* Mobile Status Indicators */}
+                    <StatusIndicators isMobile={true} />
+                  </div>
                 </SheetContent>
               </Sheet>
             </div>

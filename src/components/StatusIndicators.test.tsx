@@ -133,11 +133,11 @@ describe("StatusIndicators", () => {
       </TestWrapper>,
     );
 
-    // Check for mobile-first responsive classes
-    const mobileContainer = container.querySelector(".space-y-3");
+    // Check for mobile-first responsive classes with compact spacing
+    const mobileContainer = container.querySelector(".space-y-2");
     expect(mobileContainer).toBeInTheDocument();
 
-    const flexContainer = container.querySelector(".flex.flex-col.gap-2");
+    const flexContainer = container.querySelector(".flex.flex-col.gap-1");
     expect(flexContainer).toBeInTheDocument();
   });
 

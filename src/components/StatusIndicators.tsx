@@ -23,26 +23,26 @@ export function StatusIndicators({
   const gamificationHandler = createGamificationHandler(onGamificationClick);
 
   if (isMobile) {
-    // Mobile layout: Stack vertically with proper spacing and touch targets
+    // Mobile layout: Stack vertically with compact spacing for better fit
     return (
-      <div className="space-y-3 py-3 border-t border-blue-700 mt-4">
+      <div className="space-y-2 py-2 border-t border-blue-700 mt-3">
         <div className="text-sm font-medium text-white/80 px-4">
           Status & Einstellungen
         </div>
 
         {/* Cloud & Backup Section */}
-        <div className="space-y-2 px-4">
+        <div className="space-y-1 px-4">
           <div className="text-xs text-white/60 font-medium">
             Cloud & Backup
           </div>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-1">
             <CloudBackupManager />
             <CloudAuthButton />
           </div>
         </div>
 
         {/* Status Section */}
-        <div className="space-y-2 px-4">
+        <div className="space-y-1 px-4">
           <div className="text-xs text-white/60 font-medium">Status</div>
           <div className="flex items-center gap-3">
             <GamificationStatusIndicator onClick={gamificationHandler} />
