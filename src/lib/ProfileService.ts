@@ -151,7 +151,7 @@ export class ProfileService {
       const {error} = await this.supabaseClient.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/abc-list/`,
+          redirectTo: window.location.origin + window.location.pathname,
         },
       });
 
