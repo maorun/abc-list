@@ -6,23 +6,39 @@ import {MemoryRouter} from "react-router-dom";
 
 // Mock the child components to focus on StatusIndicators behavior
 vi.mock("./CloudSync/CloudBackupManager", () => ({
-  CloudBackupManager: () => <div data-testid="cloud-backup-manager">CloudBackupManager</div>,
+  CloudBackupManager: () => (
+    <div data-testid="cloud-backup-manager">CloudBackupManager</div>
+  ),
 }));
 
 vi.mock("./CloudSync/CloudAuthButton", () => ({
-  CloudAuthButton: () => <div data-testid="cloud-auth-button">CloudAuthButton</div>,
+  CloudAuthButton: () => (
+    <div data-testid="cloud-auth-button">CloudAuthButton</div>
+  ),
 }));
 
 vi.mock("./Gamification/GamificationStatusIndicator", () => ({
   GamificationStatusIndicator: ({onClick}: {onClick?: () => void}) => (
-    <div data-testid="gamification-status" onClick={onClick}>
+    <button
+      type="button"
+      data-testid="gamification-status"
+      onClick={onClick}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClick?.();
+        }
+      }}
+    >
       GamificationStatus
-    </div>
+    </button>
   ),
 }));
 
 vi.mock("./OfflineStatusIndicator", () => ({
-  OfflineStatusIcon: () => <div data-testid="offline-status">OfflineStatus</div>,
+  OfflineStatusIcon: () => (
+    <div data-testid="offline-status">OfflineStatus</div>
+  ),
 }));
 
 vi.mock("./SyncStatusIndicator", () => ({
@@ -30,7 +46,9 @@ vi.mock("./SyncStatusIndicator", () => ({
 }));
 
 vi.mock("./CloudSync/CloudSyncStatusIndicator", () => ({
-  CloudSyncStatusIcon: () => <div data-testid="cloud-sync-status">CloudSyncStatus</div>,
+  CloudSyncStatusIcon: () => (
+    <div data-testid="cloud-sync-status">CloudSyncStatus</div>
+  ),
 }));
 
 function TestWrapper({children}: {children: React.ReactNode}) {
@@ -75,7 +93,9 @@ describe("StatusIndicators", () => {
     );
 
     // Mobile headers should not be present
-    expect(screen.queryByText("Status & Einstellungen")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Status & Einstellungen"),
+    ).not.toBeInTheDocument();
     expect(screen.queryByText("Cloud & Backup")).not.toBeInTheDocument();
     expect(screen.queryByText("Status")).not.toBeInTheDocument();
 
@@ -90,10 +110,13 @@ describe("StatusIndicators", () => {
 
   it("should handle gamification click when provided", () => {
     const mockGamificationClick = vi.fn();
-    
+
     render(
       <TestWrapper>
-        <StatusIndicators isMobile={false} onGamificationClick={mockGamificationClick} />
+        <StatusIndicators
+          isMobile={false}
+          onGamificationClick={mockGamificationClick}
+        />
       </TestWrapper>,
     );
 
@@ -113,7 +136,7 @@ describe("StatusIndicators", () => {
     // Check for mobile-first responsive classes
     const mobileContainer = container.querySelector(".space-y-3");
     expect(mobileContainer).toBeInTheDocument();
-    
+
     const flexContainer = container.querySelector(".flex.flex-col.gap-2");
     expect(flexContainer).toBeInTheDocument();
   });
@@ -126,9 +149,11 @@ describe("StatusIndicators", () => {
     );
 
     // Check for desktop layout with separators
-    const desktopContainer = container.querySelector(".flex.items-center.gap-3");
+    const desktopContainer = container.querySelector(
+      ".flex.items-center.gap-3",
+    );
     expect(desktopContainer).toBeInTheDocument();
-    
+
     const separators = container.querySelectorAll(".border-r");
     expect(separators.length).toBeGreaterThan(0);
   });
