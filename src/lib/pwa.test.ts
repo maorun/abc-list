@@ -222,6 +222,49 @@ describe("PWA Functionality", () => {
       expect(result).toBe(true);
     });
 
+    it("should test notifications when both types enabled but restrictions apply", async () => {
+      // Mock Notification constructor properly
+      Object.defineProperty(global, "Notification", {
+        value: vi.fn().mockImplementation((title, options) => ({
+          title,
+          ...options,
+          close: vi.fn(),
+        })),
+        writable: true,
+      });
+
+      // Set permission to granted
+      global.Notification.permission = "granted";
+      global.Notification.requestPermission = vi.fn(() =>
+        Promise.resolve("granted"),
+      );
+
+      // Get current time to set up quiet hours that would block normal notifications
+      const now = new Date();
+      const currentHour = now.getHours();
+
+      // Enable both notifications but set quiet hours that include current time
+      savePWANotificationSettings({
+        enabled: true,
+        pushEnabled: true,
+        frequency: "daily",
+        quietHours: {start: currentHour, end: (currentHour + 1) % 24}, // Current hour is quiet
+        maxNotifications: 3,
+      });
+
+      saveNotificationSettings({
+        enabled: true,
+        frequency: "daily",
+        quietHours: {start: currentHour, end: (currentHour + 1) % 24}, // Current hour is quiet
+        maxNotifications: 3,
+      });
+
+      // Test notification should still work despite quiet hours
+      const result = await testPushNotification();
+
+      expect(result).toBe(true);
+    });
+
     it("should fallback to browser notifications when push disabled", async () => {
       // Mock Notification constructor properly
       Object.defineProperty(global, "Notification", {
