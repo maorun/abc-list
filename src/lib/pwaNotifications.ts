@@ -177,10 +177,14 @@ export async function schedulePushNotification(
   body: string,
   delay: number = 0,
   data?: unknown,
+  bypassRestrictions: boolean = false,
 ): Promise<boolean> {
   const settings = getPWANotificationSettings();
 
-  if (!settings.pushEnabled || !areNotificationsAllowed(settings)) {
+  if (
+    !settings.pushEnabled ||
+    (!bypassRestrictions && !areNotificationsAllowed(settings))
+  ) {
     console.log(
       "[PWANotifications] Push notifications disabled or not allowed",
     );
@@ -367,10 +371,48 @@ export function checkPWANotificationSupport(): {
  * Test push notification (for settings/debugging)
  */
 export async function testPushNotification(): Promise<boolean> {
-  return await schedulePushNotification(
-    "🧪 Test Benachrichtigung",
-    "Deine Push-Benachrichtigungen funktionieren!",
+  const title = "🧪 Test Benachrichtigung";
+  const body = "Deine Benachrichtigungen funktionieren!";
+
+  // Try push notification first with bypassed restrictions
+  const pushSent = await schedulePushNotification(
+    title,
+    body,
     0,
-    {type: "test"},
-  );
+    {
+      type: "test",
+    },
+    true,
+  ); // Bypass restrictions for test notifications
+
+  if (pushSent) {
+    return true;
+  }
+
+  // Fallback to basic notification if push notifications are disabled/failed
+  const basicSettings = getBasicSettings();
+  // For test notifications, bypass restriction checks but still require basic permission
+  if (
+    basicSettings.enabled &&
+    typeof Notification !== "undefined" &&
+    Notification.permission === "granted"
+  ) {
+    try {
+      new Notification(title, {
+        body,
+        icon: "./assets/icon.png",
+        tag: "test-notification",
+        requireInteraction: false,
+      });
+      return true;
+    } catch (error) {
+      console.error(
+        "[PWANotifications] Failed to show basic test notification:",
+        error,
+      );
+      return false;
+    }
+  }
+
+  return false;
 }
