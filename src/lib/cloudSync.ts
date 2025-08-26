@@ -140,7 +140,7 @@ export class CloudSyncService {
       const {data, error} = await this.supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/abc-list/`,
+          redirectTo: `${window.location.origin}/`,
           queryParams: {
             access_type: "offline",
             prompt: "consent",

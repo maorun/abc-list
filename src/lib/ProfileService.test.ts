@@ -3,7 +3,7 @@
  * Tests for unified profile management and Google authentication
  */
 
-import {describe, it, expect, beforeEach, vi} from "vitest";
+import {describe, it, expect, beforeEach, vi, afterEach} from "vitest";
 import {ProfileService} from "./ProfileService";
 import {UNIFIED_PROFILE_STORAGE_KEYS} from "../types/profile";
 import {COMMUNITY_STORAGE_KEYS} from "./CommunityService";
@@ -13,15 +13,12 @@ describe("ProfileService", () => {
   let profileService: ProfileService;
 
   beforeEach(() => {
+    // Mock environment variables for Supabase
+    vi.stubEnv("VITE_SUPABASE_URL", undefined);
+    vi.stubEnv("VITE_SUPABASE_ANON_KEY", undefined);
     localStorage.clear();
     ProfileService.resetInstance();
     profileService = ProfileService.getInstance();
-
-    // Mock environment variables for Supabase
-    vi.stubGlobal("import.meta.env", {
-      VITE_SUPABASE_URL: undefined,
-      VITE_SUPABASE_ANON_KEY: undefined,
-    });
   });
 
   afterEach(() => {

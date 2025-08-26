@@ -66,7 +66,7 @@ npm run build   # ← MUST pass (production build)
    npm run dev
    ```
    - Starts in approximately 1 second
-   - Available at `http://localhost:5173/abc-list/` (note the base path)
+   - Available at `http://localhost:5173/` (note the base path)
    - Uses Vite with HMR for fast development
 
 2. **Linting and formatting:**
@@ -364,7 +364,7 @@ This cycle continues until your code both passes all tests and has no linting er
 
 ### Important Configuration Files
 - `package.json` - Dependencies and scripts
-- `vite.config.ts` - Vite configuration with base path `/abc-list/`
+- `vite.config.ts` - Vite configuration with base path `/`
 - `tailwind.config.js` - Tailwind CSS configuration
 - `eslint.config.js` - ESLint rules and plugins
 - `.prettierrc.cjs` - Code formatting rules
@@ -733,7 +733,6 @@ npm run test && npm run lint && npm run build
 - **Build fails:** Check TypeScript errors and ESLint violations
 - **Tests fail:** Verify React Testing Library queries and assertions
 - **Dev server issues:** Check port availability (5173) and base path
-- **Routing problems:** Application uses base path `/abc-list/` for GitHub Pages
 
 ### Performance Notes
 - npm install: ~3 minutes (due to many dependencies)
