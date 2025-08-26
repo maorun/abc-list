@@ -122,8 +122,8 @@ export function showReviewNotification(dueCount: number): void {
   notification.onclick = () => {
     window.focus();
     // Navigate to Sokrates-Check if possible
-    if (window.location.pathname !== "/abc-list/sokrates") {
-      window.location.href = "/abc-list/sokrates";
+    if (window.location.pathname !== "/sokrates") {
+      window.location.href = "/sokrates";
     }
     notification.close();
   };

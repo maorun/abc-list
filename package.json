@@ -32,6 +32,7 @@
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
+    "test:watch": "vitest watch",
     "test": "vitest run",
     "test:ui": "vitest --ui",
     "coverage": "vitest run --coverage",

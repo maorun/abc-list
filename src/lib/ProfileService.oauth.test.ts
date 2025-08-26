@@ -14,7 +14,7 @@ describe("OAuth Redirect Configuration", () => {
     window.location = {
       ...originalLocation,
       origin: "https://example.com",
-      pathname: "/abc-list/community",
+      pathname: "/community",
     } as Location;
   });
 
@@ -27,7 +27,7 @@ describe("OAuth Redirect Configuration", () => {
     const expectedRedirectUrl =
       window.location.origin + window.location.pathname;
 
-    expect(expectedRedirectUrl).toBe("https://example.com/abc-list/community");
+    expect(expectedRedirectUrl).toBe("https://example.com/community");
 
     // The redirect should work for any current path, not just /abc-list/
     window.location.pathname = "/abc-list/";

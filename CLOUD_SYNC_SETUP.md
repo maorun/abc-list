@@ -84,11 +84,11 @@ This guide walks you through setting up the cloud synchronization and backup sys
 
 1. Go to Authentication > URL Configuration
 2. Set your Site URL:
-   - Development: `http://localhost:5173/abc-list/`
-   - Production: `https://your-domain.com/abc-list/`
+   - Development: `http://localhost:5173/`
+   - Production: `https://your-domain.com/`
 3. Add Redirect URLs:
-   - Development: `http://localhost:5173/abc-list/`
-   - Production: `https://your-domain.com/abc-list/`
+   - Development: `http://localhost:5173/`
+   - Production: `https://your-domain.com/`
 
 ## Step 4: Application Configuration
 
@@ -118,7 +118,7 @@ npm install
    npm run dev
    ```
 
-2. Open your browser to `http://localhost:5173/abc-list/`
+2. Open your browser to `http://localhost:5173/`
 
 3. Look for the "Cloud-Sync" button in the navigation
 
@@ -183,7 +183,6 @@ The provided SQL schema automatically sets up RLS policies that ensure:
 **2. OAuth redirect error**
 - Verify your redirect URLs match exactly in Google Console and Supabase
 - Check that you're using the correct domain (http vs https)
-- Ensure the base path `/abc-list/` is included
 
 **3. Database connection errors**
 - Verify your Supabase URL and anon key are correct
