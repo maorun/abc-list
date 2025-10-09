@@ -136,6 +136,8 @@ export function NumberMemory() {
     loadData();
     service.addEventListener(handleUpdate);
     return () => service.removeEventListener(handleUpdate);
+    // loadData is stable because it only uses service which is in deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [service]);
 
   const loadData = () => {
@@ -486,8 +488,14 @@ export function NumberMemory() {
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Zahl</label>
+              <label
+                htmlFor="number-input"
+                className="block text-sm font-medium mb-1"
+              >
+                Zahl
+              </label>
               <Input
+                id="number-input"
                 type="text"
                 value={newNumber}
                 onChange={(e) => setNewNumber(e.target.value)}
@@ -501,10 +509,14 @@ export function NumberMemory() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label
+                htmlFor="image-input"
+                className="block text-sm font-medium mb-1"
+              >
                 Bild/Wort
               </label>
               <Input
+                id="image-input"
                 type="text"
                 value={newImage}
                 onChange={(e) => setNewImage(e.target.value)}
@@ -513,10 +525,14 @@ export function NumberMemory() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label
+                htmlFor="story-input"
+                className="block text-sm font-medium mb-1"
+              >
                 Geschichte (optional)
               </label>
               <Input
+                id="story-input"
                 type="text"
                 value={newStory}
                 onChange={(e) => setNewStory(e.target.value)}

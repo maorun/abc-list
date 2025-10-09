@@ -147,23 +147,25 @@ export function generateTrainingNumber(type: TrainingSession["type"]): string {
       return Array.from({length: 10}, () =>
         Math.floor(Math.random() * 10),
       ).join("");
-    case "date":
+    case "date": {
       // Date in DDMMYYYY format
       const day = String(Math.floor(Math.random() * 28) + 1).padStart(2, "0");
       const month = String(Math.floor(Math.random() * 12) + 1).padStart(2, "0");
       const year = String(Math.floor(Math.random() * 100) + 1950);
       return day + month + year;
+    }
     case "pin":
       // 4-digit PIN
       return Array.from({length: 4}, () => Math.floor(Math.random() * 10)).join(
         "",
       );
-    case "custom":
+    case "custom": {
       // Random 6-8 digits
       const length = Math.floor(Math.random() * 3) + 6;
       return Array.from({length}, () => Math.floor(Math.random() * 10)).join(
         "",
       );
+    }
     default:
       return "1234";
   }

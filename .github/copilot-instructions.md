@@ -1,6 +1,6 @@
 # ABC-List Learning Application
 
-ABC-List is a React/TypeScript/Vite web application implementing Vera F. Birkenbihl's learning methodology with ABC-Lists, KaWa (word associations), KaGa (graphical associations), Stadt-Land-Fluss (quick knowledge retrieval game), Sokrates spaced repetition system, and Template Library. This application helps users create learning materials using brain-compatible learning techniques with scientifically-backed retention optimization and pre-configured templates for quick start.
+ABC-List is a React/TypeScript/Vite web application implementing Vera F. Birkenbihl's learning methodology with ABC-Lists, KaWa (word associations), KaGa (graphical associations), Stadt-Land-Fluss (quick knowledge retrieval game), Sokrates spaced repetition system, Zahlen-Merk-System (Major-System for number memorization), and Template Library. This application helps users create learning materials using brain-compatible learning techniques with scientifically-backed retention optimization and pre-configured templates for quick start.
 
 **ALWAYS reference these instructions first and fallback to search or bash commands only when you encounter unexpected information that does not match the info here.**
 
@@ -10,7 +10,7 @@ ABC-List is a React/TypeScript/Vite web application implementing Vera F. Birkenb
 
 ```bash
 # MANDATORY after every code change:
-npm run test    # ← MUST pass (388 tests) 
+npm run test    # ← MUST pass (432 tests) 
 npm run lint    # ← MUST pass (0 errors)
 npm run build   # ← MUST pass (production build)
 ```
@@ -48,7 +48,7 @@ npm run build   # ← MUST pass (production build)
    npm run test
    ```
    - Takes approximately 8 seconds. NEVER CANCEL. Set timeout to 30+ seconds.
-   - Runs 388 tests across test files using Vitest
+   - Runs 432 tests across test files using Vitest
    - All tests should pass - uses React Testing Library and Jest DOM
 
 4. **Run test coverage:**
@@ -161,7 +161,30 @@ npm run build
 - Test game history and round tracking
 - Verify game data persistence in localStorage
 
-### 7. Sokrates Spaced Repetition System
+### 7. Zahlen-Merk-System (Number Memory System)
+- Navigate to "Zahlen-Merk-System" tab
+- Test Training mode:
+  - Select training type: PIN (4 digits), Telefon (10 digits), Datum (8 digits), or Beliebig (6-8 digits)
+  - Click "Training starten" to begin
+  - Memorize the displayed number with Major-System consonants hint
+  - Enter the number and verify correctness feedback
+  - Check statistics update: success rate, sessions count, longest number
+- Test Associations tab:
+  - Verify default number-to-image associations (0=Sonne, 1=Tee, 10=Dose, etc.)
+  - Click "Eigene Assoziation" to create custom association
+  - Enter number, image/word, and optional story
+  - Verify consonant mapping is shown (e.g., 42 → r-n)
+  - Delete custom associations and verify persistence
+- Test History tab:
+  - View recent training sessions with correct/incorrect indicators
+  - Verify time spent per session is tracked
+- Test Help tab:
+  - Verify Major-System explanation in German
+  - Check digit-to-consonant mapping reference (0-9)
+  - Review examples: 1→Tee, 10→Dose, 42→Regen
+- Verify gamification integration (tracks as Sokrates session)
+
+### 8. Sokrates Spaced Repetition System
 - Navigate to any ABC-List with saved words
 - Click "Sokrates-Check" button to enter spaced repetition mode
 - Test spaced repetition settings:
@@ -346,12 +369,16 @@ This cycle continues until your code both passes all tests and has no linting er
     /List             # ABC-List components with templates
       AbcListTemplates.tsx # Pre-configured ABC-List educational templates
     /LinkLists        # List linking functionality
+    /NumberMemory     # Zahlen-Merk-System (Major-System) components
+      NumberMemory.tsx # Number memory training interface
     /Search           # Search and tagging system components
     /SokratesCheck    # Spaced repetition system components
     /StadtLandFluss   # Stadt-Land-Fluss game components with templates
       StadtLandFlussTemplates.tsx # Pre-configured game category templates
   /lib                # Utility libraries and algorithms
     CommunityService.ts # Community data management and mentoring system
+    NumberMemoryService.ts # Number memory system service
+    numberMemory.ts   # Major-System algorithm and data structures
     notifications.ts  # Browser notification system
     searchService.ts  # Full-text search and indexing engine
     spacedRepetition.ts # Spaced repetition algorithm implementation
@@ -1316,6 +1343,156 @@ const achievementClick = handleAchievementClick(achievement, setSelectedAchievem
 - Focus management in modal dialogs and tabbed interfaces
 
 The gamification system successfully enhances user engagement while maintaining ABC-List's educational mission and technical quality standards.
+
+## Zahlen-Merk-System (Number Memory System)
+
+### Overview
+The Zahlen-Merk-System implements Vera F. Birkenbihl's Major-System methodology for memorizing numbers through visual associations. This scientifically-backed technique converts digits to consonants, which are then combined with vowels to create memorable words and images, dramatically improving number retention.
+
+### Core Implementation
+
+**Service Architecture (`src/lib/NumberMemoryService.ts`)**
+- Singleton service managing number-to-image associations and training sessions
+- Event-driven system for real-time UI updates
+- localStorage persistence with training history management
+- Automatic default association initialization with German examples
+
+**Major-System Algorithm (`src/lib/numberMemory.ts`)**
+- Digit-to-consonant mapping based on German phonetics:
+  - 0 = S, Z (weicher S-Laut)
+  - 1 = T, D (dentale Laute)
+  - 2 = N (Nasal)
+  - 3 = M (Nasal)
+  - 4 = R (rollender Laut)
+  - 5 = L (flüssig)
+  - 6 = CH, J, SCH (weiche Laute)
+  - 7 = K, G (harte Laute)
+  - 8 = F, V, W (Frikative)
+  - 9 = P, B (Labiale)
+- Default German associations: 0=Sonne, 1=Tee, 10=Dose, 42=Regen, etc.
+- Training number generators for PIN, phone, date, and custom formats
+
+**UI Component (`src/components/NumberMemory/NumberMemory.tsx`)**
+- Tabbed interface with Training, Associations, History, and Help sections
+- Four training modes: PIN (4 digits), Phone (10 digits), Date (8 digits), Custom (6-8 digits)
+- Interactive memorization workflow with Major-System hints
+- Custom association creation with consonant validation
+- Comprehensive help documentation in German
+
+### Data Model
+
+**Number Association:**
+```typescript
+interface NumberAssociation {
+  number: string;              // The number as string (e.g., "42", "0815")
+  image: string;               // The associated image/word
+  story?: string;              // Optional mnemonic story
+  isCustom: boolean;           // User-created or preset
+  createdAt: string;
+  lastReviewed?: string;
+  reviewCount: number;
+}
+```
+
+**Training Session:**
+```typescript
+interface TrainingSession {
+  id: string;
+  type: "phone" | "date" | "pin" | "custom";
+  numberToMemorize: string;
+  userAnswer: string;
+  isCorrect: boolean;
+  timeSpent: number;           // in seconds
+  timestamp: string;
+}
+```
+
+**Statistics:**
+```typescript
+interface NumberMemoryStats {
+  totalTrainingSessions: number;
+  successRate: number;
+  averageTimePerDigit: number;
+  longestNumberMemorized: number;
+  favoriteNumberType: string;
+  customAssociationsCount: number;
+  totalReviewCount: number;
+}
+```
+
+### Key Features
+
+**Training Modes:**
+- **PIN (4 digits):** Practice with 4-digit security codes
+- **Phone (10 digits):** German phone number format training
+- **Date (8 digits):** Date memorization in DDMMYYYY format
+- **Custom (6-8 digits):** Flexible length number practice
+
+**Association Management:**
+- 21 preset German associations (0-20) based on Major-System
+- Unlimited custom association creation with stories
+- Consonant mapping display for learning reinforcement
+- Review count tracking for spaced repetition integration
+
+**Statistics Dashboard:**
+- Real-time success rate calculation
+- Total training sessions counter
+- Longest number memorized tracking
+- Custom associations count display
+
+### Testing Coverage
+
+**Comprehensive Test Suite (37 tests):**
+- Major-System algorithm validation (17 tests)
+- Service functionality and data persistence (20 tests)
+- Digit-to-consonant conversion accuracy
+- Word validation against Major-System rules
+- Training number generation for all formats
+- Statistics calculation accuracy
+- Event system functionality
+
+### Integration Points
+
+**Gamification Integration:**
+- Training sessions tracked as Sokrates-Check activity
+- Points awarded for successful memorization
+- Statistics contribute to overall learning metrics
+
+**Navigation Integration:**
+- "Zahlen-Merk-System" entry in main navigation
+- Mobile-responsive hamburger menu support
+- Route: `/number-memory`
+
+**Data Persistence:**
+- localStorage keys: `numberMemory-customAssociations`, `numberMemory-trainingHistory`
+- Automatic cleanup: keeps last 100 training sessions
+- Event-driven updates for UI synchronization
+
+### Mobile-First Implementation
+
+**Responsive Design:**
+- Touch-friendly training mode selection buttons
+- Mobile-optimized tab navigation
+- Responsive statistics cards (2x2 grid on mobile, 1x4 on desktop)
+- Association grid: 1 column mobile, 2 tablet, 3 desktop
+- Full-screen training interface for distraction-free memorization
+
+### Development Guidelines
+
+**When Working with Number Memory:**
+1. Always test Major-System consonant mapping accuracy
+2. Verify German language associations are culturally appropriate
+3. Test all training modes (PIN, phone, date, custom) thoroughly
+4. Ensure mobile responsiveness of training interfaces
+5. Follow function extraction pattern for all event handlers
+6. Add tests for new association validation logic
+
+**Common Patterns:**
+- Use `NumberMemoryService.getInstance()` for all data operations
+- Apply `numberToMajorWord()` for consonant conversion display
+- Validate custom associations with `wordMatchesMajorSystem()`
+- Generate training numbers with `generateTrainingNumber(type)`
+- Calculate stats with `calculateStats(sessions, associations)`
 
 ## Template Library System
 
