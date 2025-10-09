@@ -8,6 +8,7 @@ interface AccessibilitySettings {
     x: number;
     y: number;
   };
+  isMinimized: boolean;
 }
 
 interface AccessibilityContextType {
@@ -17,6 +18,7 @@ interface AccessibilityContextType {
   increaseFontSize: () => void;
   decreaseFontSize: () => void;
   updateToolbarPosition: (x: number, y: number) => void;
+  toggleMinimized: () => void;
 }
 
 const defaultSettings: AccessibilitySettings = {
@@ -27,6 +29,7 @@ const defaultSettings: AccessibilitySettings = {
     x: 16, // 16px from right (equivalent to right-4 in Tailwind)
     y: 16, // 16px from bottom (equivalent to bottom-4 in Tailwind)
   },
+  isMinimized: false,
 };
 
 const AccessibilityContext = createContext<
@@ -81,6 +84,10 @@ export function AccessibilityProvider({children}: {children: ReactNode}) {
     });
   };
 
+  const toggleMinimized = () => {
+    updateSettings({isMinimized: !settings.isMinimized});
+  };
+
   // Apply settings on mount
   React.useEffect(() => {
     applySettingsToDocument(settings);
@@ -95,6 +102,7 @@ export function AccessibilityProvider({children}: {children: ReactNode}) {
         increaseFontSize,
         decreaseFontSize,
         updateToolbarPosition,
+        toggleMinimized,
       }}
     >
       {children}
