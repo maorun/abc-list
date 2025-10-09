@@ -1,0 +1,13 @@
+---
+name: feature
+about: Feature für copilot
+title: Feature aus der features.md 
+labels: Copilot
+assignees: 'Copilot'
+
+---
+
+Berücksichtige bei der Entwicklung die komplette copilot-instructions.md
+
+Nimm dir das vielversprechende feature aus der features.md heraus und setze es um. 
+Entferne daraufhin das entsprechende feature aus der features.md. erwähnen in der features.md nicht, dass es nur umgesetzt ist.
