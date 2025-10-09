@@ -89,18 +89,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 ## ⭐ Mittlere Priorität
 
-### 6. Template-Bibliothek
-**Priorität:** MITTEL | **Impact:** 7/10 | **Alignment:** 8/10 | **Feasibility:** 9/10
-
-**Beschreibung:** Vorgefertigte Vorlagen für verschiedene Lernbereiche
-- **Fach-Templates:** Vorlagen für Mathematik, Sprachen, Geschichte, etc.
-- **Prüfungs-Vorlagen:** Strukturen für Klausur-Vorbereitung
-- **Community-Templates:** Von Nutzern erstellte Vorlagen teilen
-- **Smart-Anpassung:** Templates automatisch an Thema anpassen
-
-**Begründung:** Senkt Einstiegshürde für neue Nutzer. Einfach umsetzbar durch JSON-Vorlagen.
-
-### 7. Dual-Coding-Unterstützung
+### 6. Dual-Coding-Unterstützung
 **Priorität:** MITTEL | **Impact:** 7/10 | **Alignment:** 9/10 | **Feasibility:** 7/10
 
 **Beschreibung:** Kombination von visuellen und verbalen Informationen
@@ -111,7 +100,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Begründung:** Wissenschaftlich fundiert. Kann ohne KI-Bildgenerierung umgesetzt werden.
 
-### 8. Browser-Extension
+### 7. Browser-Extension
 **Priorität:** MITTEL | **Impact:** 6/10 | **Alignment:** 6/10 | **Feasibility:** 8/10
 
 **Beschreibung:** Integration in tägliches Browsing für effizientes Lernen
@@ -122,7 +111,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Begründung:** Nützlich für schnelles Erfassen von Lerninhalten. Standard Web-Extension-Technologie.
 
-### 9. Widgets für Homescreen
+### 8. Widgets für Homescreen
 **Priorität:** MITTEL | **Impact:** 6/10 | **Alignment:** 7/10 | **Feasibility:** 7/10
 
 **Beschreibung:** Schnellzugriff auf Lernfortschritt vom Startbildschirm
@@ -133,7 +122,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Begründung:** Erhöht Engagement durch ständige Sichtbarkeit. Mit PWA-API umsetzbar.
 
-### 10. Handschrift-Erkennung
+### 9. Handschrift-Erkennung
 **Priorität:** MITTEL | **Impact:** 6/10 | **Alignment:** 7/10 | **Feasibility:** 6/10
 
 **Beschreibung:** Digitalisierung von handgeschriebenen Notizen
@@ -143,7 +132,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Begründung:** Nützlich für Tablet-Nutzer. OCR-Libraries verfügbar, keine KI-Training nötig.
 
-### 11. Animierte Lernkarten
+### 10. Animierte Lernkarten
 **Priorität:** MITTEL | **Impact:** 6/10 | **Alignment:** 7/10 | **Feasibility:** 7/10
 
 **Beschreibung:** Dynamische Visualisierungen für besseres Einprägen
@@ -154,7 +143,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Begründung:** Visuelle Verstärkung des Lernens. Mit CSS-Animationen und Canvas realisierbar.
 
-### 12. Lerntyp-Analyse
+### 11. Lerntyp-Analyse
 **Priorität:** MITTEL | **Impact:** 7/10 | **Alignment:** 8/10 | **Feasibility:** 7/10
 
 **Beschreibung:** Erkennung und Anpassung an individuelle Lernstile
@@ -169,7 +158,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 ## 📉 Niedrige Priorität
 
-### 13. API und Webhooks
+### 12. API und Webhooks
 **Priorität:** NIEDRIG | **Impact:** 5/10 | **Alignment:** 4/10 | **Feasibility:** 8/10
 
 **Beschreibung:** Programmierbare Schnittstellen für Integrationen
@@ -180,7 +169,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Begründung:** Nützlich für Power-User, aber keine breite Nachfrage erwartet.
 
-### 14. Ende-zu-Ende-Verschlüsselung
+### 13. Ende-zu-Ende-Verschlüsselung
 **Priorität:** NIEDRIG | **Impact:** 5/10 | **Alignment:** 3/10 | **Feasibility:** 5/10
 
 **Beschreibung:** Maximale Privatsphäre für sensible Lerninhalte
@@ -191,7 +180,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Begründung:** Für Lerninhalte meist nicht kritisch. Komplexe Implementierung.
 
-### 15. Zwei-Faktor-Authentifizierung (2FA)
+### 14. Zwei-Faktor-Authentifizierung (2FA)
 **Priorität:** NIEDRIG | **Impact:** 4/10 | **Alignment:** 3/10 | **Feasibility:** 7/10
 
 **Beschreibung:** Erweiterte Konto-Sicherheit
@@ -201,7 +190,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Begründung:** Sicherheit wichtig, aber für Lern-App weniger kritisch als für Banking.
 
-### 16. Multi-Format-Import
+### 15. Multi-Format-Import
 **Priorität:** NIEDRIG | **Impact:** 6/10 | **Alignment:** 5/10 | **Feasibility:** 6/10
 
 **Beschreibung:** Inhalte aus verschiedenen Quellen importieren
@@ -212,7 +201,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Begründung:** Nice-to-have, aber JSON-Export/-Import deckt Hauptbedarf ab.
 
-### 17. Print-on-Demand
+### 16. Print-on-Demand
 **Priorität:** NIEDRIG | **Impact:** 4/10 | **Alignment:** 6/10 | **Feasibility:** 4/10
 
 **Beschreibung:** Physische Lernmaterialien erstellen
@@ -223,7 +212,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Begründung:** Digitaler Fokus der App. PDF-Export für Selbstdruck ausreichend.
 
-### 18. Erweiterte Barrierefreiheit
+### 17. Erweiterte Barrierefreiheit
 **Priorität:** NIEDRIG | **Impact:** 5/10 | **Alignment:** 6/10 | **Feasibility:** 7/10
 
 **Beschreibung:** Inklusive Features für spezifische Bedürfnisse (über bestehende hinaus)
@@ -233,7 +222,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Begründung:** Grundlegende Accessibility bereits vorhanden. Erweiterungen für spezielle Bedürfnisse.
 
-### 19. Lern-Daten für Forschung
+### 18. Lern-Daten für Forschung
 **Priorität:** NIEDRIG | **Impact:** 4/10 | **Alignment:** 5/10 | **Feasibility:** 6/10
 
 **Beschreibung:** Anonymisierte Daten für Lernforschung bereitstellen
@@ -244,7 +233,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Begründung:** Interessant für Wissenschaft, aber kein direkter Nutzen für Lernende.
 
-### 20. A/B-Testing für Lernmethoden
+### 19. A/B-Testing für Lernmethoden
 **Priorität:** NIEDRIG | **Impact:** 5/10 | **Alignment:** 6/10 | **Feasibility:** 7/10
 
 **Beschreibung:** Empirische Optimierung von Features
@@ -266,24 +255,23 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 4. **Interleaved Learning** - Wissenschaftlich fundiert
 5. **Elaborative Interrogation** - Fördert tiefes Verständnis
 
-### Mittlere Priorität (7 Features):
-6. Template-Bibliothek
-7. Dual-Coding-Unterstützung
-8. Browser-Extension
-9. Widgets für Homescreen
-10. Handschrift-Erkennung
-11. Animierte Lernkarten
-12. Lerntyp-Analyse
+### Mittlere Priorität (6 Features):
+6. Dual-Coding-Unterstützung
+7. Browser-Extension
+8. Widgets für Homescreen
+9. Handschrift-Erkennung
+10. Animierte Lernkarten
+11. Lerntyp-Analyse
 
 ### Niedrige Priorität (8 Features):
-13. API und Webhooks
-14. Ende-zu-Ende-Verschlüsselung
-15. Zwei-Faktor-Authentifizierung
-16. Multi-Format-Import
-17. Print-on-Demand
-18. Erweiterte Barrierefreiheit
-19. Lern-Daten für Forschung
-20. A/B-Testing für Lernmethoden
+12. API und Webhooks
+13. Ende-zu-Ende-Verschlüsselung
+14. Zwei-Faktor-Authentifizierung
+15. Multi-Format-Import
+16. Print-on-Demand
+17. Erweiterte Barrierefreiheit
+18. Lern-Daten für Forschung
+19. A/B-Testing für Lernmethoden
 
 ---
 

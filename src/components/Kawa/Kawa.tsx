@@ -1,9 +1,11 @@
 import React, {useState, useEffect} from "react";
 import {useNavigate} from "react-router-dom";
+import {toast} from "sonner";
 import {NewStringItem, NewItemWithSaveKey} from "../NewStringItem";
 import {DeleteConfirm} from "../DeleteConfirm";
 import {Button} from "../ui/button";
 import {useGamification} from "@/hooks/useGamification";
+import {KawaTemplates, KawaTemplate} from "./KawaTemplates";
 
 const KAWA_STORAGE_KEY = "Kawas";
 
@@ -46,10 +48,46 @@ export function Kawa() {
     setItemToDelete(undefined);
   };
 
+  const handleTemplateSelect = (template: KawaTemplate) => {
+    const kawaKey = template.word.toLowerCase().replace(/\s+/g, "-");
+    const existingKawa = kawas.find((k) => k.key === kawaKey);
+
+    if (existingKawa) {
+      toast.error(`KaWa "${template.word}" existiert bereits.`);
+      return;
+    }
+
+    const newKawa: NewItemWithSaveKey = {
+      text: template.word,
+      key: kawaKey,
+    };
+
+    const newKawas = [...kawas, newKawa];
+    setKawas(newKawas);
+    updateStorage(newKawas);
+
+    // Save template associations to localStorage
+    const letters = template.word.toLowerCase().split("");
+    letters.forEach((letter, index) => {
+      const storageKey = `kawa-${kawaKey}:${letter}${index}`;
+      const association = Object.values(template.associations)[index] || "";
+      if (association) {
+        localStorage.setItem(storageKey, association);
+      }
+    });
+
+    // Track gamification activity
+    trackKawaCreated(kawaKey);
+
+    toast.success(`Vorlage "${template.name}" erfolgreich geladen!`);
+    navigate(`/kawa/${kawaKey}`, {state: {item: newKawa}});
+  };
+
   return (
     <div className="space-y-4">
-      <div className="flex justify-center">
+      <div className="flex flex-col sm:flex-row justify-center gap-2">
         <NewStringItem title={"Neues Kawa"} onSave={saveKawa} />
+        <KawaTemplates onTemplateSelect={handleTemplateSelect} />
       </div>
 
       <h2 className="text-xl sm:text-2xl font-bold text-center my-4 sm:my-6">

@@ -1,7 +1,12 @@
 import React, {useState, useEffect} from "react";
 import {useNavigate} from "react-router-dom";
+import {toast} from "sonner";
 import {NewStringItem} from "../NewStringItem";
 import {Button} from "../ui/button";
+import {
+  StadtLandFlussTemplates,
+  StadtLandFlussTemplate,
+} from "./StadtLandFlussTemplates";
 
 export const cacheKey = "slfGames";
 
@@ -49,6 +54,36 @@ export function StadtLandFluss() {
     }
   };
 
+  const handleTemplateSelect = (template: StadtLandFlussTemplate) => {
+    const gameName = template.name;
+
+    if (games.includes(gameName)) {
+      toast.error(`Spiel "${gameName}" existiert bereits.`);
+      return;
+    }
+
+    const newData = [...games, gameName];
+    setGames(newData);
+    updateStorage(newData);
+
+    // Save template categories to localStorage
+    const gameData = {
+      categories: template.categories,
+      currentLetter: "",
+      isGameActive: false,
+      timeLeft: 0,
+      gameDuration: 120,
+      answers: {},
+      rounds: [],
+      totalScore: 0,
+    };
+
+    localStorage.setItem(`slf-${gameName}`, JSON.stringify(gameData));
+
+    toast.success(`Vorlage "${template.name}" erfolgreich geladen!`);
+    showGame(gameName);
+  };
+
   return (
     <div className="space-y-4">
       {/* Mobile-first button layout */}
@@ -57,6 +92,7 @@ export function StadtLandFluss() {
           title={"Neues Stadt-Land-Fluss Spiel"}
           onSave={(item) => createNewGame(item.text)}
         />
+        <StadtLandFlussTemplates onTemplateSelect={handleTemplateSelect} />
         <div className="flex gap-2 flex-wrap">
           <Button
             variant="destructive"
