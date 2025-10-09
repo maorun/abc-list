@@ -41,6 +41,7 @@ import {Basar} from "./components/Basar/Basar";
 import {GamificationDashboard} from "./components/Gamification/GamificationDashboard";
 import {SearchAndFilter} from "./components/Search/SearchAndFilter";
 import {Community} from "./components/Community/Community";
+import {NumberMemory} from "./components/NumberMemory/NumberMemory";
 import {StatusIndicators} from "./components/StatusIndicators";
 import {CloudSyncStatusIndicator} from "./components/CloudSync/CloudSyncStatusIndicator";
 
@@ -71,6 +72,11 @@ const navigationItems = [
     description: "Community Hub und Mentoring",
   },
   {to: "/sokrates", label: "Sokrates-Check", description: "Lernerfolg prüfen"},
+  {
+    to: "/number-memory",
+    label: "Zahlen-Merk-System",
+    description: "Zahlen mit Major-System merken",
+  },
   {
     to: "/gamification",
     label: "Erfolge",
@@ -271,6 +277,7 @@ function AppContent() {
             <Route path="/basar" element={<Basar />} />
             <Route path="/community" element={<Community />} />
             <Route path="/sokrates" element={<SokratesCheck />} />
+            <Route path="/number-memory" element={<NumberMemory />} />
             <Route path="/gamification" element={<GamificationDashboard />} />
             <Route path="/analytics" element={<Analytics />} />
           </Routes>
