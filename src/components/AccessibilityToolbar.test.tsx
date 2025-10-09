@@ -405,4 +405,147 @@ describe("AccessibilityToolbar", () => {
     );
     expect(dragHandle).toHaveAttribute("aria-label", "Toolbar verschieben");
   });
+
+  // Minimize/Maximize functionality tests
+  it("should render minimize button", () => {
+    renderWithProvider(<AccessibilityToolbar />);
+
+    expect(screen.getByLabelText("Toolbar minimieren")).toBeInTheDocument();
+    expect(screen.getByTitle("Toolbar minimieren")).toBeInTheDocument();
+  });
+
+  it("should minimize toolbar when minimize button is clicked", () => {
+    renderWithProvider(<AccessibilityToolbar />);
+
+    // Initially should show all controls
+    expect(
+      screen.getByLabelText(/hohen kontrast aktivieren/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByLabelText(/schriftgröße vergrößern/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByLabelText(/schriftgröße verkleinern/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByLabelText(/barrierefreiheit-einstellungen öffnen/i),
+    ).toBeInTheDocument();
+
+    // Click minimize button
+    const minimizeButton = screen.getByLabelText("Toolbar minimieren");
+    fireEvent.click(minimizeButton);
+
+    // After minimize, button text should change
+    expect(screen.getByLabelText("Toolbar maximieren")).toBeInTheDocument();
+
+    // Other controls should be hidden
+    expect(
+      screen.queryByLabelText(/hohen kontrast aktivieren/i),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByLabelText(/schriftgröße vergrößern/i),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByLabelText(/schriftgröße verkleinern/i),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByLabelText(/barrierefreiheit-einstellungen öffnen/i),
+    ).not.toBeInTheDocument();
+  });
+
+  it("should maximize toolbar when maximize button is clicked", () => {
+    renderWithProvider(<AccessibilityToolbar />);
+
+    // First minimize
+    const minimizeButton = screen.getByLabelText("Toolbar minimieren");
+    fireEvent.click(minimizeButton);
+
+    // Now maximize
+    const maximizeButton = screen.getByLabelText("Toolbar maximieren");
+    fireEvent.click(maximizeButton);
+
+    // Button should be back to minimize
+    expect(screen.getByLabelText("Toolbar minimieren")).toBeInTheDocument();
+
+    // All controls should be visible again
+    expect(
+      screen.getByLabelText(/hohen kontrast aktivieren/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByLabelText(/schriftgröße vergrößern/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByLabelText(/schriftgröße verkleinern/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByLabelText(/barrierefreiheit-einstellungen öffnen/i),
+    ).toBeInTheDocument();
+  });
+
+  it("should have proper ARIA attributes for minimize button", () => {
+    renderWithProvider(<AccessibilityToolbar />);
+
+    const minimizeButton = screen.getByLabelText("Toolbar minimieren");
+    expect(minimizeButton).toHaveAttribute("aria-pressed", "false");
+    expect(minimizeButton).toHaveAttribute("title", "Toolbar minimieren");
+
+    // Click to minimize
+    fireEvent.click(minimizeButton);
+
+    const maximizeButton = screen.getByLabelText("Toolbar maximieren");
+    expect(maximizeButton).toHaveAttribute("aria-pressed", "true");
+    expect(maximizeButton).toHaveAttribute("title", "Toolbar maximieren");
+  });
+
+  it("should persist minimize state in localStorage", () => {
+    renderWithProvider(<AccessibilityToolbar />);
+
+    // Click minimize button
+    const minimizeButton = screen.getByLabelText("Toolbar minimieren");
+    fireEvent.click(minimizeButton);
+
+    // Check that settings are stored in localStorage
+    const storedSettings = localStorage.getItem("accessibility-settings");
+    expect(storedSettings).toBeTruthy();
+    const settings = JSON.parse(storedSettings!);
+    expect(settings.isMinimized).toBe(true);
+  });
+
+  it("should load minimized state from localStorage on mount", () => {
+    // Set minimized state in localStorage
+    const testSettings = {
+      highContrast: false,
+      fontSize: "medium",
+      reducedMotion: false,
+      toolbarPosition: {x: 16, y: 16},
+      isMinimized: true,
+    };
+
+    localStorage.setItem(
+      "accessibility-settings",
+      JSON.stringify(testSettings),
+    );
+
+    renderWithProvider(<AccessibilityToolbar />);
+
+    // Should show maximize button
+    expect(screen.getByLabelText("Toolbar maximieren")).toBeInTheDocument();
+
+    // Controls should be hidden
+    expect(
+      screen.queryByLabelText(/hohen kontrast aktivieren/i),
+    ).not.toBeInTheDocument();
+  });
+
+  it("should keep drag handle and minimize button visible when minimized", () => {
+    renderWithProvider(<AccessibilityToolbar />);
+
+    // Minimize the toolbar
+    const minimizeButton = screen.getByLabelText("Toolbar minimieren");
+    fireEvent.click(minimizeButton);
+
+    // Drag handle and maximize button should still be visible
+    expect(screen.getByLabelText("Toolbar verschieben")).toBeInTheDocument();
+    expect(screen.getByLabelText("Toolbar maximieren")).toBeInTheDocument();
+  });
 });
