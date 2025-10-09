@@ -5,6 +5,7 @@ import {NewStringItem} from "../NewStringItem";
 import {Button} from "../ui/button";
 import {ExportUtils} from "@/lib/exportUtils";
 import {useGamification} from "@/hooks/useGamification";
+import {AbcListTemplates, AbcListTemplate} from "./AbcListTemplates";
 import {
   Dialog,
   DialogContent,
@@ -65,6 +66,37 @@ export function List() {
 
       showAbcList(newItem);
     }
+  };
+
+  const handleTemplateSelect = (template: AbcListTemplate) => {
+    const listName = template.name;
+
+    // Check if list already exists
+    if (data.includes(listName)) {
+      toast.error(`Liste "${listName}" existiert bereits.`);
+      return;
+    }
+
+    // Add to list of ABC lists
+    const newData = [...data, listName];
+    setData(newData);
+    updateStorage(newData);
+
+    // Save template data to localStorage
+    const alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
+    alphabet.forEach((letter) => {
+      const storageKey = `abcList-${listName}:${letter}`;
+      const words = template.data[letter] || [];
+      if (words.length > 0) {
+        localStorage.setItem(storageKey, JSON.stringify(words));
+      }
+    });
+
+    // Track gamification activity
+    trackListCreated(listName);
+
+    toast.success(`Vorlage "${template.name}" erfolgreich geladen!`);
+    showAbcList(listName);
   };
 
   const createMultiColumnList = () => {
@@ -176,6 +208,7 @@ export function List() {
             title={"Neue ABC-Liste"}
             onSave={(item) => createNewItem(item.text)}
           />
+          <AbcListTemplates onTemplateSelect={handleTemplateSelect} />
           <Button
             variant="default"
             onClick={createMultiColumnList}

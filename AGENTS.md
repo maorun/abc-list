@@ -15,6 +15,7 @@ ABC-List implements Vera F. Birkenbihl's learning methodology with multiple lear
 - **Gamification System**: Comprehensive achievement and motivation system with daily streaks, challenges, levels, and leaderboards
 - **Search & Tagging System**: Intelligent full-text search with automated tagging, smart collections, and advanced filtering across all content types
 - **Community Hub**: Collaborative learning platform with user profiles, mentoring system, peer reviews, community challenges, and success stories
+- **Template Library**: Pre-configured templates for quick start with educational content across multiple subjects (Mathematik, Sprachen, Geschichte, etc.)
 
 **Key Technical Features:**
 - Mobile-first responsive design with hamburger navigation
@@ -671,9 +672,137 @@ it("should suggest educational tags for German content", () => {
 - Follow mobile-first responsive design principles
 - Implement proper error handling for search edge cases
 
-## 11. Community Hub System
+## 11. Template Library System
 
 ### 11.1. Overview
+
+The Template Library (Template-Bibliothek) provides users with pre-configured templates for quick-start learning across ABC-Lists, KaWa, and Stadt-Land-Fluss. It includes 33 professionally crafted templates covering various educational subjects and learning scenarios, significantly lowering the barrier to entry for new users.
+
+### 11.2. Core Components
+
+**ABC-List Templates (`src/components/List/AbcListTemplates.tsx`)**
+- 8 subject-specific templates covering Mathematik, Sprachen, Biologie, Geschichte, Physik, Chemie, and learning techniques
+- Pre-filled word associations with explanations for each letter
+- Grouped by educational category for easy navigation
+- One-click template application with automatic list creation
+
+**KaWa Templates (`src/components/Kawa/KawaTemplates.tsx`)**
+- 10 creative word association templates across 7 categories
+- Pre-configured associations for words like LERNEN, ERFOLG, WISSEN, FOKUS
+- Categories: Bildung, Motivation, Produktivität, Kreativität, Philosophie, Naturwissenschaft, Gesundheit
+- Letter-by-letter associations automatically applied to new KaWa items
+
+**Stadt-Land-Fluss Templates (`src/components/StadtLandFluss/StadtLandFlussTemplates.tsx`)**
+- 15 game templates with pre-configured categories across 12 different themes
+- Templates ranging from classic (Stadt, Land, Fluss) to specialized (Wissenschaft, Technik, Sprachen)
+- Category counts displayed for quick template evaluation
+- Automatic game initialization with selected categories
+
+### 11.3. Template Data Structure
+
+**ABC-List Template:**
+```typescript
+interface AbcListTemplate {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  preview: string;
+  data: Record<string, WordWithExplanation[]>;
+}
+```
+
+**KaWa Template:**
+```typescript
+interface KawaTemplate {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  word: string;
+  preview: string;
+  associations: Record<string, string>;
+}
+```
+
+**Stadt-Land-Fluss Template:**
+```typescript
+interface StadtLandFlussTemplate {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  preview: string;
+  categories: string[];
+}
+```
+
+### 11.4. Integration Points
+
+**UI Integration:**
+- Template buttons added to List, Kawa, and StadtLandFluss main screens
+- Dialog-based template selection with category grouping
+- Mobile-first responsive design with touch-friendly buttons
+- Preview information for each template before selection
+
+**Data Persistence:**
+- Templates automatically create new items in localStorage
+- Pre-filled data seamlessly integrates with existing data structures
+- Gamification tracking applied to template-created content
+- Duplicate detection prevents overwriting existing items
+
+### 11.5. Template Categories
+
+**Educational Subjects:**
+- Mathematik: Grundlagen, geometry, algebra concepts
+- Sprachen: English, German grammar, vocabulary
+- Naturwissenschaften: Biologie (cell structure), Physik (energy), Chemie (atoms)
+- Geisteswissenschaften: Geschichte (ancient civilizations)
+
+**Learning Techniques:**
+- Prüfungsvorbereitung: Study planning, exam preparation structure
+- Motivation: Success factors, focus, creativity
+- Productivity: Time management, organization methods
+
+**Game Variants:**
+- Standard: Classic and extended versions
+- Subject-specific: Geography, nature, science, culture, history
+- Age-appropriate: Templates for children and advanced learners
+
+### 11.6. Testing Coverage
+
+**Comprehensive Test Suite (21 new tests):**
+- Template dialog rendering and interaction
+- Category grouping and display
+- Template selection and callback handling
+- Data structure validation
+- Mobile responsiveness verification
+
+**Test Files:**
+- `src/components/List/AbcListTemplates.test.tsx` (6 tests)
+- `src/components/Kawa/KawaTemplates.test.tsx` (7 tests)
+- `src/components/StadtLandFluss/StadtLandFlussTemplates.test.tsx` (9 tests)
+
+### 11.7. Development Guidelines
+
+**When Adding New Templates:**
+1. Follow existing template structure and data format
+2. Ensure educational accuracy and pedagogical value
+3. Use appropriate German terminology consistent with Birkenbihl methodology
+4. Group templates by logical categories
+5. Provide clear, concise descriptions and previews
+6. Test template application with real user workflows
+
+**Common Patterns:**
+- Extract template selection handlers outside components (function extraction pattern)
+- Use dialog-based UI for template selection
+- Implement duplicate detection before template application
+- Track gamification events for template usage
+- Follow mobile-first responsive design principles
+
+## 12. Community Hub System
+
+### 12.1. Overview
 
 The Community Hub transforms ABC-List into a collaborative learning platform while maintaining its educational focus. It provides a centralized space for knowledge sharing, mentoring, and peer collaboration through five core features: user profiles, intelligent mentoring system, community challenges, peer review system, and success stories.
 
