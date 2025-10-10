@@ -134,12 +134,13 @@ npm run coverage
 
 ## 4. Coding Style
 
-This project uses **Prettier** and **ESLint** to enforce a consistent code style. Configuration files for Prettier and ESLint are included in the repository.
+This project uses **Prettier**, **ESLint**, and **markdownlint** to enforce a consistent code style. Configuration files for Prettier, ESLint, and markdownlint are included in the repository.
 
 To check for linting errors, run:
 
 ```bash
-npm run lint
+npm run lint          # Runs ESLint on source files and markdown linting via postlint
+npm run lint:md       # Runs markdown linting specifically
 ```
 
 To automatically fix formatting and linting issues, run:
@@ -150,7 +151,16 @@ npm run format
 
 Please ensure your code adheres to these styles. It's recommended to integrate Prettier and ESLint into your editor to format code automatically on save.
 
-### 4.1. Code Quality Requirements
+### 4.1. Markdown Documentation Quality
+
+The project now includes automated markdown linting to ensure documentation quality:
+
+- **Markdown linting** runs automatically after ESLint via the `postlint` script
+- Configuration in `.markdownlint.json` enforces basic markdown quality standards
+- All markdown files (`.md`) are checked except `node_modules` and `dist` directories
+- Linting focuses on critical formatting issues while being lenient with documentation style
+
+### 4.2. Code Quality Requirements
 
 - **STRICTLY FORBIDDEN: Never use ESLint disable comments** (e.g., `// eslint-disable-next-line`)
   - **AUTOMATED ENFORCEMENT**: The enhanced CI pipeline automatically detects and blocks ESLint disable comments
@@ -166,7 +176,7 @@ Please ensure your code adheres to these styles. It's recommended to integrate P
 - Use proper type annotations for function parameters and return values
 - Define interfaces for all data structures used in multiple components
 
-### 4.2. Enhanced CI/CD Pipeline
+### 4.3. Enhanced CI/CD Pipeline
 
 The repository now includes a comprehensive CI/CD pipeline that automatically enforces all guidelines:
 
@@ -175,6 +185,7 @@ The repository now includes a comprehensive CI/CD pipeline that automatically en
 - Prevention of ESLint disable comments
 - TypeScript strict compilation validation
 - Enhanced ESLint rules with type-aware linting
+- Markdown documentation quality checks
 
 **Workflow Validation:**
 - Enforces the mandatory Test→Code→Lint sequence

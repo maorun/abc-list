@@ -64,11 +64,18 @@ jobs:
         run: |
           echo "🔧 MANDATORY WORKFLOW: Running linting (after tests pass)..."
           npm run lint
+          echo "✅ ESLint completed successfully"
+          echo "✅ Markdown linting completed successfully (via postlint)"
       
       - name: Mandatory Workflow Step 3 - Formatting Check
         run: |
           echo "💅 MANDATORY WORKFLOW: Checking code formatting..."
           npm run format:check
+      
+      - name: Markdown Linting
+        run: |
+          echo "📝 Checking markdown files quality..."
+          npm run lint:md
 
   # Build validation
   build:
@@ -193,6 +200,7 @@ jobs:
           echo "🚀 Running complete validation pipeline as per copilot-instructions.md..."
           npm run test && npm run build && npm run lint && npm run format:check
           echo "✅ Complete pipeline validation successful!"
+          echo "✅ Markdown linting passed (via postlint)!"
       
       - name: Validation Summary
         run: |
@@ -204,6 +212,7 @@ jobs:
           echo "✅ Mandatory Workflow (Test→Code→Lint): Enforced"
           echo "✅ Build: Successful"
           echo "✅ Test Coverage: Generated"
+          echo "✅ Markdown Linting: Passed"
           echo "✅ Complete Pipeline: Successful"
           echo ""
           echo "🎉 All GitHub Copilot workflow guidelines enforced successfully!"
