@@ -38,27 +38,12 @@ export function MilestoneTracking({data}: MilestoneTrackingProps) {
     category: "words" as Milestone["category"],
   });
 
-  useEffect(() => {
-    loadMilestones();
-  }, [loadMilestones]);
-
-  useEffect(() => {
-    updateMilestoneProgress();
-  }, [updateMilestoneProgress]);
-
-  const loadMilestones = useCallback(() => {
-    const stored = localStorage.getItem("learningMilestones");
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        setMilestones(parsed);
-      } catch {
-        initializeDefaultMilestones();
-      }
-    } else {
-      initializeDefaultMilestones();
-    }
-  }, [initializeDefaultMilestones]);
+  const saveMilestones = useCallback((milestonesToSave: Milestone[]) => {
+    localStorage.setItem(
+      "learningMilestones",
+      JSON.stringify(milestonesToSave),
+    );
+  }, []);
 
   const initializeDefaultMilestones = useCallback(() => {
     const defaultMilestones: Milestone[] = [
@@ -110,9 +95,27 @@ export function MilestoneTracking({data}: MilestoneTrackingProps) {
 
     setMilestones(defaultMilestones);
     saveMilestones(defaultMilestones);
-  }, []);
+  }, [saveMilestones]);
 
-  const updateMilestoneProgress = useCallback(() => {
+  const loadMilestones = useCallback(() => {
+    const stored = localStorage.getItem("learningMilestones");
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        setMilestones(parsed);
+      } catch {
+        initializeDefaultMilestones();
+      }
+    } else {
+      initializeDefaultMilestones();
+    }
+  }, [initializeDefaultMilestones]);
+
+  useEffect(() => {
+    loadMilestones();
+  }, [loadMilestones]);
+
+  useEffect(() => {
     if (milestones.length === 0) return;
 
     const updatedMilestones = milestones.map((milestone) => {
@@ -153,14 +156,13 @@ export function MilestoneTracking({data}: MilestoneTrackingProps) {
       setMilestones(updatedMilestones);
       saveMilestones(updatedMilestones);
     }
-  }, [milestones, data.totalWords, data.totalLists, data.abcLists]);
-
-  const saveMilestones = (milestonesToSave: Milestone[]) => {
-    localStorage.setItem(
-      "learningMilestones",
-      JSON.stringify(milestonesToSave),
-    );
-  };
+  }, [
+    milestones,
+    data.totalWords,
+    data.totalLists,
+    data.abcLists,
+    saveMilestones,
+  ]);
 
   const addMilestone = () => {
     if (!newMilestone.title || newMilestone.target <= 0) return;

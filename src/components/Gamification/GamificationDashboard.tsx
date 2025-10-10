@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useMemo} from "react";
 import {Card, CardContent, CardHeader, CardTitle} from "../ui/card";
 import {Button} from "../ui/button";
 import {Progress} from "../ui/progress";
@@ -51,17 +51,6 @@ const handleCloseModal =
     setSelectedAchievement(null);
   };
 
-const handleLeaderboardRefresh =
-  (
-    activeLeaderboard: string,
-    setLeaderboardData: (data: LeaderboardEntry[]) => void,
-    gamificationService: GamificationService,
-  ) =>
-  () => {
-    const data = gamificationService.generateLeaderboard(activeLeaderboard);
-    setLeaderboardData(data);
-  };
-
 // Level progress component
 function LevelProgress({profile}: {profile: GamificationProfile}) {
   const progressPercentage =
@@ -88,7 +77,9 @@ function LevelProgress({profile}: {profile: GamificationProfile}) {
           />
           <p className="text-sm text-gray-600">
             {profile.experienceToNextLevel > 0
-              ? `${profile.experienceToNextLevel} XP bis Level ${profile.level + 1}`
+              ? `${profile.experienceToNextLevel} XP bis Level ${
+                  profile.level + 1
+                }`
               : "Maximales Level erreicht!"}
           </p>
         </div>
@@ -282,11 +273,9 @@ function ChallengeCard({challenge}: {challenge: Challenge}) {
 function LeaderboardView({
   activeLeaderboard,
   leaderboardData,
-  onRefresh,
 }: {
   activeLeaderboard: string;
   leaderboardData: LeaderboardEntry[];
-  onRefresh: () => void;
 }) {
   const leaderboardType = LEADERBOARD_TYPES.find(
     (lt) => lt.id === activeLeaderboard,
@@ -298,9 +287,6 @@ function LeaderboardView({
         <h3 className="text-lg font-semibold">
           {leaderboardType?.icon} {leaderboardType?.name}
         </h3>
-        <Button variant="outline" size="sm" onClick={onRefresh}>
-          🔄 Aktualisieren
-        </Button>
       </div>
 
       <div className="space-y-2">
@@ -344,28 +330,22 @@ function LeaderboardView({
 }
 
 export function GamificationDashboard() {
-  const [profile, setProfile] = useState<GamificationProfile | null>(null);
+  const gamificationService = GamificationService.getInstance();
+  const [profile] = useState<GamificationProfile | null>(() =>
+    gamificationService.getProfile(),
+  );
   const [activeTab, setActiveTab] = useState("overview");
   const [selectedAchievement, setSelectedAchievement] =
     useState<GamificationAchievement | null>(null);
   const [showAchievementModal, setShowAchievementModal] = useState(false);
   const [activeLeaderboard, setActiveLeaderboard] = useState("points");
-  const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>(
-    [],
-  );
 
-  const gamificationService = GamificationService.getInstance();
-
-  useEffect(() => {
-    const currentProfile = gamificationService.getProfile();
-    setProfile(currentProfile);
-
-    // Load initial leaderboard
-    if (currentProfile) {
-      const data = gamificationService.generateLeaderboard(activeLeaderboard);
-      setLeaderboardData(data);
+  const leaderboardData = useMemo(() => {
+    if (profile) {
+      return gamificationService.generateLeaderboard(activeLeaderboard);
     }
-  }, [activeLeaderboard, gamificationService]);
+    return [];
+  }, [activeLeaderboard, gamificationService, profile]);
 
   if (!profile) {
     return (
@@ -391,11 +371,6 @@ export function GamificationDashboard() {
   const closeModalHandler = handleCloseModal(
     setShowAchievementModal,
     setSelectedAchievement,
-  );
-  const refreshLeaderboardHandler = handleLeaderboardRefresh(
-    activeLeaderboard,
-    setLeaderboardData,
-    gamificationService,
   );
 
   return (
@@ -496,7 +471,6 @@ export function GamificationDashboard() {
           <LeaderboardView
             activeLeaderboard={activeLeaderboard}
             leaderboardData={leaderboardData}
-            onRefresh={refreshLeaderboardHandler}
           />
         </TabsContent>
       </Tabs>

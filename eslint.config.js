@@ -42,7 +42,7 @@ export default tseslint.config(
     rules: {
       ...react.configs.recommended.rules,
       "react/prop-types": "off", // Not needed for TypeScript
-      ...reactHooks.configs.recommended.rules,
+      "react-hooks/rules-of-hooks": "error",
       ...jsxA11y.configs.recommended.rules,
       "react/react-in-jsx-scope": "off",
 
