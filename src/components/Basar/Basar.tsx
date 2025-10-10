@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback} from "react";
+import React, {useState, useMemo} from "react";
 import {toast} from "sonner";
 import {Button} from "../ui/button";
 import {Input} from "../ui/input";
@@ -9,28 +9,25 @@ import {useUnifiedProfile} from "../../hooks/useUnifiedProfile";
 import {UnifiedUserProfile} from "../Profile/UnifiedUserProfile";
 
 export function Basar() {
+  const basarService = BasarService.getInstance();
   const [marketplaceTerms, setMarketplaceTerms] = useState<MarketplaceTerm[]>(
-    [],
+    () => {
+      basarService.initializeSampleData();
+      return basarService.getMarketplaceTerms();
+    },
   );
-  const [filteredTerms, setFilteredTerms] = useState<MarketplaceTerm[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedLetter, setSelectedLetter] = useState<string>("all");
   const [sortBy, setSortBy] = useState<"date" | "price" | "quality">("date");
-  const [showUserSetup, setShowUserSetup] = useState(false);
+  const [showUserSetup, setShowUserSetup] = useState(true);
   const [activeTab, setActiveTab] = useState<"marketplace" | "profile">(
     "marketplace",
   );
 
   // Use unified profile system
   const {profile: userProfile} = useUnifiedProfile();
-  const basarService = BasarService.getInstance();
 
-  const loadMarketplaceTerms = useCallback(() => {
-    const terms = basarService.getMarketplaceTerms();
-    setMarketplaceTerms(terms);
-  }, [basarService]);
-
-  const filterTerms = useCallback(() => {
+  const filteredTerms = useMemo(() => {
     let filtered = [...marketplaceTerms];
 
     // Filter by search term
@@ -63,34 +60,15 @@ export function Basar() {
       }
     });
 
-    setFilteredTerms(filtered);
+    return filtered;
   }, [marketplaceTerms, searchTerm, selectedLetter, sortBy]);
-
-  const initializeData = useCallback(() => {
-    basarService.initializeSampleData();
-
-    // Check if user profile exists, if not show setup
-    if (!userProfile) {
-      setShowUserSetup(true);
-    }
-
-    loadMarketplaceTerms();
-  }, [basarService, loadMarketplaceTerms, userProfile]);
-
-  useEffect(() => {
-    initializeData();
-  }, [initializeData]);
-
-  useEffect(() => {
-    filterTerms();
-  }, [filterTerms]);
 
   const handleBuyTerm = (termId: string) => {
     if (!userProfile) return;
 
     const success = basarService.buyTerm(termId);
     if (success) {
-      loadMarketplaceTerms();
+      setMarketplaceTerms(basarService.getMarketplaceTerms());
       toast.success(
         "Begriff erfolgreich gekauft! Er wurde zu 'Marketplace Käufe' hinzugefügt.",
       );
@@ -104,7 +82,7 @@ export function Basar() {
 
     const success = basarService.rateTerm(termId, rating, comment);
     if (success) {
-      loadMarketplaceTerms();
+      setMarketplaceTerms(basarService.getMarketplaceTerms());
       toast.success("Bewertung abgegeben!");
     } else {
       toast.error("Bewertung fehlgeschlagen");
@@ -115,7 +93,7 @@ export function Basar() {
     String.fromCharCode(97 + i),
   );
 
-  if (showUserSetup) {
+  if (showUserSetup && !userProfile) {
     return (
       <div className="p-4 max-w-2xl mx-auto">
         <div className="mb-6 text-center">

@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback} from "react";
+import React, {useState} from "react";
 import {Button} from "../ui/button";
 import {Input} from "../ui/input";
 import {
@@ -41,23 +41,26 @@ export function BasarUserProfile({
     "overview" | "history" | "achievements" | "sell"
   >("overview");
 
-  const loadTermsForLetter = useCallback(() => {
-    const storageKey = `abcList-${selectedList}:${selectedLetter}`;
+  const loadTermsForLetter = (list: string, letter: string) => {
+    const storageKey = `abcList-${list}:${letter}`;
     const stored = localStorage.getItem(storageKey);
-    const terms: WordWithExplanation[] = stored ? JSON.parse(stored) : [];
-    setAvailableTerms(terms);
-    setSelectedTerm(null);
-  }, [selectedList, selectedLetter]);
-
-  useEffect(() => {
-    if (selectedList && selectedLetter) {
-      loadTermsForLetter();
+    try {
+      const terms: WordWithExplanation[] = stored ? JSON.parse(stored) : [];
+      setAvailableTerms(terms);
+    } catch (e) {
+      console.error("Failed to parse terms from localStorage", e);
+      setAvailableTerms([]);
     }
-  }, [selectedList, selectedLetter, loadTermsForLetter]);
+    setSelectedTerm(null);
+  };
 
   const getAvailableLists = (): string[] => {
     const stored = localStorage.getItem("abcLists");
-    return stored ? JSON.parse(stored) : [];
+    try {
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
   };
 
   const handleSellTerm = () => {
@@ -291,7 +294,9 @@ export function BasarUserProfile({
                       >
                         <div className="flex items-start space-x-3">
                           <span
-                            className={`text-3xl ${earned ? "" : "filter grayscale"}`}
+                            className={`text-3xl ${
+                              earned ? "" : "filter grayscale"
+                            }`}
                           >
                             {achievement.icon}
                           </span>
@@ -390,8 +395,10 @@ export function BasarUserProfile({
                 id="list-select"
                 value={selectedList}
                 onChange={(e) => {
-                  setSelectedList(e.target.value);
+                  const newList = e.target.value;
+                  setSelectedList(newList);
                   setSelectedLetter("");
+                  setAvailableTerms([]);
                   setSelectedTerm(null);
                 }}
                 className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -417,7 +424,13 @@ export function BasarUserProfile({
                   id="letter-select"
                   value={selectedLetter}
                   onChange={(e) => {
-                    setSelectedLetter(e.target.value);
+                    const newLetter = e.target.value;
+                    setSelectedLetter(newLetter);
+                    if (selectedList && newLetter) {
+                      loadTermsForLetter(selectedList, newLetter);
+                    } else {
+                      setAvailableTerms([]);
+                    }
                     setSelectedTerm(null);
                   }}
                   className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
