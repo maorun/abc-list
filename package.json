@@ -36,7 +36,7 @@
     "test": "vitest run",
     "test:ui": "vitest --ui",
     "coverage": "vitest run --coverage",
-    "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
+    "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "lint:md": "markdownlint \"**/*.md\" --ignore node_modules --ignore dist",
     "postlint": "npm run lint:md",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css,md}\"",
