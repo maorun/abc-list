@@ -18,6 +18,8 @@ import {
   DEFAULT_SETTINGS,
   type SpacedRepetitionSettings,
 } from "../../lib/spacedRepetition";
+import {InterleavedLearningService} from "../../lib/InterleavedLearningService";
+import {DEFAULT_INTERLEAVING_SETTINGS} from "../../lib/interleavedLearning";
 
 interface SpacedRepetitionSettingsProps {
   onSettingsChange?: () => void;
@@ -61,15 +63,22 @@ export function SpacedRepetitionSettings({
       : "unsupported",
   );
 
+  const interleavedService = InterleavedLearningService.getInstance();
+  const [interleavedSettings, setInterleavedSettings] = useState(
+    interleavedService.getSettings(),
+  );
+
   useEffect(() => {
     // Load settings when component mounts
     setSpacedSettings(getSpacedRepetitionSettings());
     setNotificationSettings(getNotificationSettings());
-  }, []);
+    setInterleavedSettings(interleavedService.getSettings());
+  }, [interleavedService]);
 
   const handleSave = () => {
     saveSpacedRepetitionSettings(spacedSettings);
     saveNotificationSettings(notificationSettings);
+    interleavedService.updateSettings(interleavedSettings);
     onSettingsChange?.();
     setIsOpen(false);
   };
@@ -87,6 +96,7 @@ export function SpacedRepetitionSettings({
       quietHours: {start: 22, end: 8},
       maxNotifications: 3,
     });
+    setInterleavedSettings(DEFAULT_INTERLEAVING_SETTINGS);
   };
 
   return (
@@ -383,6 +393,107 @@ export function SpacedRepetitionSettings({
                   </div>
                 </>
               )}
+            </div>
+          </div>
+
+          {/* Interleaved Learning Settings */}
+          <div>
+            <h3 className="text-lg font-semibold mb-3">
+              🔀 Interleaved Learning
+            </h3>
+            <p className="text-sm text-gray-600 mb-3">
+              Wissenschaftlich optimiertes Mischen von Themen für bessere
+              Retention durch Kontext-Wechsel
+            </p>
+
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="interleaving-enabled"
+                  checked={interleavedSettings.enabled}
+                  onChange={(e) =>
+                    setInterleavedSettings({
+                      ...interleavedSettings,
+                      enabled: e.target.checked,
+                    })
+                  }
+                  className="w-4 h-4"
+                />
+                <label
+                  htmlFor="interleaving-enabled"
+                  className="text-sm font-medium"
+                >
+                  Interleaved Learning aktivieren
+                </label>
+              </div>
+
+              {interleavedSettings.enabled && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label
+                      htmlFor="context-switch-freq"
+                      className="block text-sm font-medium mb-1"
+                    >
+                      Kontext-Wechsel Häufigkeit
+                    </label>
+                    <input
+                      id="context-switch-freq"
+                      type="range"
+                      min="1"
+                      max="5"
+                      value={interleavedSettings.contextSwitchFrequency}
+                      onChange={(e) =>
+                        setInterleavedSettings({
+                          ...interleavedSettings,
+                          contextSwitchFrequency: parseInt(e.target.value),
+                        })
+                      }
+                      className="w-full"
+                    />
+                    <p className="text-xs text-gray-600 mt-1">
+                      Aktuell: {interleavedSettings.contextSwitchFrequency}{" "}
+                      (1=Sehr häufig, 5=Selten)
+                    </p>
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="shuffle-intensity"
+                      className="block text-sm font-medium mb-1"
+                    >
+                      Shuffle-Intensität
+                    </label>
+                    <input
+                      id="shuffle-intensity"
+                      type="range"
+                      min="1"
+                      max="5"
+                      value={interleavedSettings.shuffleIntensity}
+                      onChange={(e) =>
+                        setInterleavedSettings({
+                          ...interleavedSettings,
+                          shuffleIntensity: parseInt(e.target.value),
+                        })
+                      }
+                      className="w-full"
+                    />
+                    <p className="text-xs text-gray-600 mt-1">
+                      Aktuell: {interleavedSettings.shuffleIntensity} (1=Wenig,
+                      5=Sehr viel)
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              <div className="p-3 bg-blue-50 border border-blue-200 rounded">
+                <p className="text-xs text-blue-700">
+                  💡 <strong>Tipp:</strong> Interleaved Learning mischt
+                  automatisch verschiedene Themen während der Wiederholung. Dies
+                  verbessert das Langzeitgedächtnis durch Kontextwechsel, wie
+                  Forschung zeigt.
+                </p>
+              </div>
             </div>
           </div>
 

@@ -1,6 +1,6 @@
 # ABC-List Learning Application
 
-ABC-List is a React/TypeScript/Vite web application implementing Vera F. Birkenbihl's learning methodology with ABC-Lists, KaWa (word associations), KaGa (graphical associations), Stadt-Land-Fluss (quick knowledge retrieval game), Sokrates spaced repetition system, Zahlen-Merk-System (Major-System for number memorization), and Template Library. This application helps users create learning materials using brain-compatible learning techniques with scientifically-backed retention optimization and pre-configured templates for quick start.
+ABC-List is a React/TypeScript/Vite web application implementing Vera F. Birkenbihl's learning methodology with ABC-Lists, KaWa (word associations), KaGa (graphical associations), Stadt-Land-Fluss (quick knowledge retrieval game), Sokrates spaced repetition system with Interleaved Learning, Zahlen-Merk-System (Major-System for number memorization), and Template Library. This application helps users create learning materials using brain-compatible learning techniques with scientifically-backed retention optimization and pre-configured templates for quick start.
 
 **ALWAYS reference these instructions first and fallback to search or bash commands only when you encounter unexpected information that does not match the info here.**
 
@@ -10,7 +10,7 @@ ABC-List is a React/TypeScript/Vite web application implementing Vera F. Birkenb
 
 ```bash
 # MANDATORY after every code change:
-npm run test    # ← MUST pass (432 tests) 
+npm run test    # ← MUST pass (472 tests) 
 npm run lint    # ← MUST pass (0 errors)
 npm run build   # ← MUST pass (production build)
 ```
@@ -942,6 +942,124 @@ const handleRating = (rating: number) =>
 - Apply `upgradeWordData()` when loading legacy data
 - Follow notification permission best practices
 - Implement responsive design with mobile-first approach
+
+## Interleaved Learning System
+
+### Overview
+The Interleaved Learning system enhances the Sokrates spaced repetition algorithm with scientifically-backed topic mixing for improved long-term retention. Based on research showing that interleaving (mixing different topics) improves retention by 10-30% compared to blocked practice, this feature intelligently shuffles terms from multiple lists during review sessions.
+
+### Core Implementation
+
+**InterleavedLearningService (`src/lib/InterleavedLearningService.ts`)**
+- Singleton service managing interleaved learning sessions with localStorage persistence
+- Event-driven system for real-time UI updates
+- Session tracking with performance metrics and AI-powered recommendations
+- Statistics aggregation: total sessions, average accuracy, session duration, most practiced topics
+
+**Interleaved Learning Algorithm (`src/lib/interleavedLearning.ts`)**
+- Balanced interleaving with weighted topic selection for optimal distribution
+- Context-switching optimization based on configurable frequency (1-5 scale)
+- Effectiveness scoring: measures topic distribution uniformity (0-1 scale)
+- Performance analysis: accuracy tracking, response time metrics per topic
+- Recommendation generation: identifies weak topics, time-intensive areas, practice balance
+
+### Key Features
+
+**Configurable Settings:**
+- **Enabled/Disabled**: Toggle interleaving on/off
+- **Context Switch Frequency**: 1-5 scale (1=very frequent, 5=rare)
+- **Shuffle Intensity**: 1-5 scale (1=minimal, 5=aggressive)
+- **Minimum Topics**: Default 2 (need at least 2 topics to interleave)
+
+**Session Management:**
+- Start session with topic groups (list names as topics)
+- Record results: topic, term, correct/incorrect, response time
+- Finish session: analyze performance, generate recommendations
+- Session history: stores last 50 sessions with full metrics
+
+**Performance Metrics:**
+- Topic-specific accuracy rates
+- Average response times per topic
+- Context switch counts and effectiveness scores
+- Recommendations based on learning patterns
+
+### Integration with Sokrates
+
+**Settings UI (`SpacedRepetitionSettings.tsx`):**
+- Interleaved Learning toggle with descriptive help text
+- Range sliders for context-switch frequency and shuffle intensity
+- Real-time settings persistence with visual feedback
+- Mobile-optimized controls with touch-friendly sliders
+
+**Review Flow:**
+- Terms from multiple lists grouped by list name (topic)
+- Interleaved sequence generated respecting user settings
+- Performance tracked per topic for detailed analysis
+- Recommendations provided after session completion
+
+### Data Model
+
+```typescript
+interface InterleavingSettings {
+  enabled: boolean;
+  contextSwitchFrequency: number; // 1-5
+  minTopicsToInterleave: number; // default: 2
+  shuffleIntensity: number; // 1-5
+}
+
+interface InterleavingSession {
+  id: string;
+  startTime: string;
+  endTime?: string;
+  topicGroups: TopicGroup[];
+  results: Array<{
+    topic: string;
+    term: string;
+    correct: boolean;
+    responseTime: number;
+    timestamp: string;
+  }>;
+  metrics?: PerformanceMetrics[];
+  recommendations?: string[];
+}
+```
+
+### Testing Coverage
+
+**Comprehensive Test Suite (40 tests):**
+- `src/lib/interleavedLearning.test.ts` (19 tests): Algorithm correctness, weighted selection, context-switching
+- `src/lib/InterleavedLearningService.test.ts` (21 tests): Service integration, session management, persistence
+
+**Test Scenarios:**
+- Algorithm with various topic configurations (balanced, weighted, empty)
+- Context-switching frequency validation
+- Effectiveness calculation accuracy
+- Session lifecycle management
+- Performance metrics and recommendations
+- Settings persistence and event system
+
+### Development Guidelines
+
+**When Working with Interleaved Learning:**
+1. Use `InterleavedLearningService.getInstance()` for all operations
+2. Test with realistic topic distributions (2-10 topics)
+3. Verify mobile responsiveness with touch interaction
+4. Ensure settings persist across browser sessions
+5. Follow function extraction pattern for event handlers
+6. Add tests for new algorithm features
+
+**Common Patterns:**
+- Use `generateInterleavedSequence()` for sequence generation
+- Apply `analyzeInterleavingPerformance()` after sessions
+- Generate recommendations with `generateInterleavingRecommendations()`
+- Track session history for long-term analysis
+- Integrate with gamification for activity tracking
+
+**Scientific Backing:**
+- Interleaving improves discrimination between similar concepts
+- Context switching enhances long-term retention
+- Balanced distribution maximizes learning effectiveness
+- Performance tracking enables personalized optimization
 
 ## Search & Tagging System
 
