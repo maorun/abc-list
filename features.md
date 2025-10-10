@@ -30,17 +30,6 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 ## 🔥 Hohe Priorität
 
-### 1. Mind-Map-Integration
-**Priorität:** HOCH | **Impact:** 9/10 | **Alignment:** 10/10 | **Feasibility:** 7/10
-
-**Beschreibung:** Erweiterte visuelle Strukturierung von Wissensinhalten
-- **Automatische Mind-Map-Generierung:** Aus ABC-Listen und KaWa-Assoziationen
-- **Interaktive Knoten:** Verknüpfung mit bestehenden Listen und Notizen
-- **Export-Optionen:** PNG, SVG, PDF für externe Nutzung
-- **Inline-Mind-Maps:** Direkt in bestehende Listen integrierbar
-
-**Begründung:** Mind-Maps sind ein Kern-Element der Birkenbihl-Methodik und ergänzen ABC-Listen perfekt. Technisch mit bestehenden Libraries umsetzbar.
-
 ### 2. Loci-Methode (Gedächtnispalast)
 **Priorität:** HOCH | **Impact:** 8/10 | **Alignment:** 9/10 | **Feasibility:** 6/10
 
@@ -67,7 +56,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 ## ⭐ Mittlere Priorität
 
-### 6. Dual-Coding-Unterstützung
+### 4. Dual-Coding-Unterstützung
 **Priorität:** MITTEL | **Impact:** 7/10 | **Alignment:** 9/10 | **Feasibility:** 7/10
 
 **Beschreibung:** Kombination von visuellen und verbalen Informationen
@@ -78,7 +67,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Begründung:** Wissenschaftlich fundiert. Kann ohne KI-Bildgenerierung umgesetzt werden.
 
-### 7. Browser-Extension
+### 5. Browser-Extension
 **Priorität:** MITTEL | **Impact:** 6/10 | **Alignment:** 6/10 | **Feasibility:** 8/10
 
 **Beschreibung:** Integration in tägliches Browsing für effizientes Lernen
@@ -89,7 +78,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Begründung:** Nützlich für schnelles Erfassen von Lerninhalten. Standard Web-Extension-Technologie.
 
-### 8. Widgets für Homescreen
+### 6. Widgets für Homescreen
 **Priorität:** MITTEL | **Impact:** 6/10 | **Alignment:** 7/10 | **Feasibility:** 7/10
 
 **Beschreibung:** Schnellzugriff auf Lernfortschritt vom Startbildschirm
@@ -100,7 +89,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Begründung:** Erhöht Engagement durch ständige Sichtbarkeit. Mit PWA-API umsetzbar.
 
-### 9. Handschrift-Erkennung
+### 7. Handschrift-Erkennung
 **Priorität:** MITTEL | **Impact:** 6/10 | **Alignment:** 7/10 | **Feasibility:** 6/10
 
 **Beschreibung:** Digitalisierung von handgeschriebenen Notizen
@@ -110,7 +99,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Begründung:** Nützlich für Tablet-Nutzer. OCR-Libraries verfügbar, keine KI-Training nötig.
 
-### 10. Animierte Lernkarten
+### 8. Animierte Lernkarten
 **Priorität:** MITTEL | **Impact:** 6/10 | **Alignment:** 7/10 | **Feasibility:** 7/10
 
 **Beschreibung:** Dynamische Visualisierungen für besseres Einprägen
@@ -121,7 +110,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Begründung:** Visuelle Verstärkung des Lernens. Mit CSS-Animationen und Canvas realisierbar.
 
-### 11. Lerntyp-Analyse
+### 9. Lerntyp-Analyse
 **Priorität:** MITTEL | **Impact:** 7/10 | **Alignment:** 8/10 | **Feasibility:** 7/10
 
 **Beschreibung:** Erkennung und Anpassung an individuelle Lernstile
@@ -136,7 +125,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 ## 📉 Niedrige Priorität
 
-### 12. API und Webhooks
+### 10. API und Webhooks
 **Priorität:** NIEDRIG | **Impact:** 5/10 | **Alignment:** 4/10 | **Feasibility:** 8/10
 
 **Beschreibung:** Programmierbare Schnittstellen für Integrationen
@@ -147,7 +136,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Begründung:** Nützlich für Power-User, aber keine breite Nachfrage erwartet.
 
-### 13. Ende-zu-Ende-Verschlüsselung
+### 11. Ende-zu-Ende-Verschlüsselung
 **Priorität:** NIEDRIG | **Impact:** 5/10 | **Alignment:** 3/10 | **Feasibility:** 5/10
 
 **Beschreibung:** Maximale Privatsphäre für sensible Lerninhalte
@@ -158,7 +147,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Begründung:** Für Lerninhalte meist nicht kritisch. Komplexe Implementierung.
 
-### 14. Zwei-Faktor-Authentifizierung (2FA)
+### 12. Zwei-Faktor-Authentifizierung (2FA)
 **Priorität:** NIEDRIG | **Impact:** 4/10 | **Alignment:** 3/10 | **Feasibility:** 7/10
 
 **Beschreibung:** Erweiterte Konto-Sicherheit
@@ -168,7 +157,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Begründung:** Sicherheit wichtig, aber für Lern-App weniger kritisch als für Banking.
 
-### 15. Multi-Format-Import
+### 13. Multi-Format-Import
 **Priorität:** NIEDRIG | **Impact:** 6/10 | **Alignment:** 5/10 | **Feasibility:** 6/10
 
 **Beschreibung:** Inhalte aus verschiedenen Quellen importieren
@@ -179,7 +168,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Begründung:** Nice-to-have, aber JSON-Export/-Import deckt Hauptbedarf ab.
 
-### 16. Print-on-Demand
+### 14. Print-on-Demand
 **Priorität:** NIEDRIG | **Impact:** 4/10 | **Alignment:** 6/10 | **Feasibility:** 4/10
 
 **Beschreibung:** Physische Lernmaterialien erstellen
@@ -190,7 +179,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Begründung:** Digitaler Fokus der App. PDF-Export für Selbstdruck ausreichend.
 
-### 17. Erweiterte Barrierefreiheit
+### 15. Erweiterte Barrierefreiheit
 **Priorität:** NIEDRIG | **Impact:** 5/10 | **Alignment:** 6/10 | **Feasibility:** 7/10
 
 **Beschreibung:** Inklusive Features für spezifische Bedürfnisse (über bestehende hinaus)
@@ -200,7 +189,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Begründung:** Grundlegende Accessibility bereits vorhanden. Erweiterungen für spezielle Bedürfnisse.
 
-### 18. Lern-Daten für Forschung
+### 16. Lern-Daten für Forschung
 **Priorität:** NIEDRIG | **Impact:** 4/10 | **Alignment:** 5/10 | **Feasibility:** 6/10
 
 **Beschreibung:** Anonymisierte Daten für Lernforschung bereitstellen
@@ -211,7 +200,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Begründung:** Interessant für Wissenschaft, aber kein direkter Nutzen für Lernende.
 
-### 19. A/B-Testing für Lernmethoden
+### 17. A/B-Testing für Lernmethoden
 **Priorität:** NIEDRIG | **Impact:** 5/10 | **Alignment:** 6/10 | **Feasibility:** 7/10
 
 **Beschreibung:** Empirische Optimierung von Features
@@ -226,38 +215,36 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 ## 📌 Zusammenfassung der Priorisierung
 
-### Hohe Priorität (3 Features):
-1. **Mind-Map-Integration** - Kern der Birkenbihl-Methodik
-2. **Loci-Methode** - Bewährte Gedächtnistechnik
-3. **Elaborative Interrogation** - Fördert tiefes Verständnis
+### Hohe Priorität (2 Features):
+1. **Loci-Methode** - Bewährte Gedächtnistechnik
+2. **Elaborative Interrogation** - Fördert tiefes Verständnis
 
 ### Mittlere Priorität (6 Features):
-6. Dual-Coding-Unterstützung
-7. Browser-Extension
-8. Widgets für Homescreen
-9. Handschrift-Erkennung
-10. Animierte Lernkarten
-11. Lerntyp-Analyse
+4. Dual-Coding-Unterstützung
+5. Browser-Extension
+6. Widgets für Homescreen
+7. Handschrift-Erkennung
+8. Animierte Lernkarten
+9. Lerntyp-Analyse
 
 ### Niedrige Priorität (8 Features):
-12. API und Webhooks
-13. Ende-zu-Ende-Verschlüsselung
-14. Zwei-Faktor-Authentifizierung
-15. Multi-Format-Import
-16. Print-on-Demand
-17. Erweiterte Barrierefreiheit
-18. Lern-Daten für Forschung
-19. A/B-Testing für Lernmethoden
+10. API und Webhooks
+11. Ende-zu-Ende-Verschlüsselung
+12. Zwei-Faktor-Authentifizierung
+13. Multi-Format-Import
+14. Print-on-Demand
+15. Erweiterte Barrierefreiheit
+16. Lern-Daten für Forschung
+17. A/B-Testing für Lernmethoden
 
 ---
 
 ## 🎯 Empfohlene Umsetzungsreihenfolge
 
 **Phase 1 (Kurzfristig - 3-6 Monate):**
-- Mind-Map-Integration
+- Loci-Methode
 
 **Phase 2 (Mittelfristig - 6-12 Monate):**
-- Loci-Methode
 - Elaborative Interrogation
 
 **Phase 3 (Langfristig - 12+ Monate):**
