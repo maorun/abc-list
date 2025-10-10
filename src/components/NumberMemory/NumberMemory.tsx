@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useCallback} from "react";
 import {Button} from "../ui/button";
 import {Input} from "../ui/input";
 import {
@@ -128,6 +128,12 @@ export function NumberMemory() {
 
   const {trackSokratesSession} = useGamification();
 
+  const loadData = useCallback(() => {
+    setAssociations(service.getAllAssociations());
+    setTrainingHistory(service.getTrainingHistory(10));
+    setStats(service.getStatistics());
+  }, [service]);
+
   useEffect(() => {
     const handleUpdate = () => {
       loadData();
@@ -136,15 +142,7 @@ export function NumberMemory() {
     loadData();
     service.addEventListener(handleUpdate);
     return () => service.removeEventListener(handleUpdate);
-    // loadData is stable because it only uses service which is in deps
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [service]);
-
-  const loadData = () => {
-    setAssociations(service.getAllAssociations());
-    setTrainingHistory(service.getTrainingHistory(10));
-    setStats(service.getStatistics());
-  };
+  }, [service, loadData]);
 
   const startTraining = () =>
     handleStartTraining(
