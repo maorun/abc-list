@@ -1,13 +1,13 @@
 /// <reference types="vitest" />
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import tailwindcss from '@tailwindcss/vite';
+import {defineConfig} from "vite";
+import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig({
   // The base path is set to a relative value ('./') to support multiple deployment scenarios, including GitHub Pages and other static hosts.
-  base: './',
+  base: "./",
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
@@ -16,7 +16,7 @@ export default defineConfig({
   },
   test: {
     globals: true,
-    environment: 'jsdom',
-    setupFiles: './src/test/setup.ts',
+    environment: "jsdom",
+    setupFiles: "./src/test/setup.ts",
   },
 });

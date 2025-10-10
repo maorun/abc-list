@@ -8,10 +8,18 @@ import prettierRecommended from "eslint-plugin-prettier/recommended";
 
 export default tseslint.config(
   {
-    ignores: ["dist", "node_modules", "coverage"],
+    ignores: ["dist", "node_modules", "coverage", "debug_test.js", "public"],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
+  {
+    files: ["*.js", "*.cjs", "*.mjs", "*.ts", "*.tsx", "*.jsx"],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+    },
+  },
   {
     files: ["src/**/*.{js,jsx,ts,tsx}"],
     plugins: {
@@ -22,7 +30,7 @@ export default tseslint.config(
     languageOptions: {
       parser: tseslint.parser,
       parserOptions: {
-        ecmaFeatures: { jsx: true },
+        ecmaFeatures: {jsx: true},
         project: "./tsconfig.json",
         tsconfigRootDir: import.meta.dirname,
       },
@@ -37,19 +45,22 @@ export default tseslint.config(
       ...reactHooks.configs.recommended.rules,
       ...jsxA11y.configs.recommended.rules,
       "react/react-in-jsx-scope": "off",
-      
+
       // Enforce copilot-instructions.md guidelines - Strictly forbid 'any' type
       "@typescript-eslint/no-explicit-any": "error",
-      
+
       // Additional strict TypeScript rules
       "@typescript-eslint/no-unnecessary-type-assertion": "error",
-      "@typescript-eslint/no-unused-vars": ["error", { 
-        "argsIgnorePattern": "^_",
-        "varsIgnorePattern": "^_" 
-      }],
-      
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+        },
+      ],
+
       // React best practices (following function extraction pattern from copilot-instructions.md)
-      "react-hooks/exhaustive-deps": "error"
+      "react-hooks/exhaustive-deps": "error",
     },
     settings: {
       react: {
@@ -57,5 +68,5 @@ export default tseslint.config(
       },
     },
   },
-  prettierRecommended
+  prettierRecommended,
 );
