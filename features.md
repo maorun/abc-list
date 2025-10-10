@@ -52,18 +52,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Begründung:** Etablierte Gedächtnistechnik mit hohem Lerneffekt. 2D-Umsetzung ist technisch machbar ohne 3D/VR.
 
-### 3. Interleaved Learning
-**Priorität:** HOCH | **Impact:** 9/10 | **Alignment:** 9/10 | **Feasibility:** 8/10
-
-**Beschreibung:** Wissenschaftlich optimiertes Mischen von Themen
-- **Auto-Shuffling:** Intelligentes Mischen von Lernthemen
-- **Kontext-Wechsel:** Automatisches Umschalten zwischen Bereichen
-- **Forschungs-basiert:** Implementierung bewährter Lernstrategien
-- **Performance-Tracking:** Effektivität des Interleavings messen
-
-**Begründung:** Wissenschaftlich nachgewiesene Methode zur Lernoptimierung. Einfache Integration in bestehendes Sokrates-System.
-
-### 4. Elaborative Interrogation
+### 3. Elaborative Interrogation
 **Priorität:** HOCH | **Impact:** 8/10 | **Alignment:** 9/10 | **Feasibility:** 7/10
 
 **Beschreibung:** Tieferes Verständnis durch gezielte Fragen
@@ -237,11 +226,10 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 ## 📌 Zusammenfassung der Priorisierung
 
-### Hohe Priorität (4 Features):
+### Hohe Priorität (3 Features):
 1. **Mind-Map-Integration** - Kern der Birkenbihl-Methodik
 2. **Loci-Methode** - Bewährte Gedächtnistechnik
-3. **Interleaved Learning** - Wissenschaftlich fundiert
-4. **Elaborative Interrogation** - Fördert tiefes Verständnis
+3. **Elaborative Interrogation** - Fördert tiefes Verständnis
 
 ### Mittlere Priorität (6 Features):
 6. Dual-Coding-Unterstützung
@@ -270,10 +258,9 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Phase 2 (Mittelfristig - 6-12 Monate):**
 - Loci-Methode
-- Interleaved Learning
+- Elaborative Interrogation
 
 **Phase 3 (Langfristig - 12+ Monate):**
-- Elaborative Interrogation
 - Dual-Coding-Unterstützung
 - Weitere Features nach Bedarf
 

@@ -1,6 +1,7 @@
 /**
  * Spaced Repetition Algorithm based on Ebbinghaus Forgetting Curve
  * Implements scientifically-backed intervals for optimal learning retention
+ * Enhanced with Interleaved Learning for optimal context-switching
  */
 
 export interface SpacedRepetitionSettings {

@@ -999,3 +999,177 @@ const handleProfileUpdate = () =>
 - Follow mobile-first responsive design principles
 - Implement proper error boundaries and fallback states
 - Ensure backwards compatibility with existing data structures
+
+## 13. Interleaved Learning System
+
+### 13.1. Overview
+
+The Interleaved Learning system implements scientifically-backed learning optimization through intelligent mixing of topics during review sessions. Based on research showing that interleaving (mixing different topics) improves long-term retention compared to blocked practice (studying one topic at a time), this feature seamlessly integrates with the existing Sokrates spaced repetition system.
+
+### 13.2. Core Components
+
+**InterleavedLearningService (`src/lib/InterleavedLearningService.ts`)**
+- Singleton service managing interleaved learning sessions with localStorage persistence
+- Event-driven system for real-time UI updates
+- Session tracking with performance metrics and recommendations
+- Statistics aggregation across multiple learning sessions
+
+**Interleaved Learning Algorithm (`src/lib/interleavedLearning.ts`)**
+- Balanced interleaving strategy with weighted topic selection
+- Context-switching optimization based on research-backed frequencies
+- Effectiveness scoring based on topic distribution uniformity
+- Performance analysis with accuracy and response time metrics
+- AI-powered recommendation generation based on learning patterns
+
+### 13.3. Data Model Enhancement
+
+Enhanced session tracking interfaces:
+
+```typescript
+interface InterleavingSettings {
+  enabled: boolean;
+  contextSwitchFrequency: number; // 1-5: how often to switch topics
+  minTopicsToInterleave: number; // Minimum topics needed (default: 2)
+  shuffleIntensity: number; // 1-5: shuffling aggressiveness
+}
+
+interface InterleavingSession {
+  id: string;
+  startTime: string;
+  endTime?: string;
+  topicGroups: TopicGroup[];
+  results: Array<{
+    topic: string;
+    term: string;
+    correct: boolean;
+    responseTime: number;
+    timestamp: string;
+  }>;
+  metrics?: PerformanceMetrics[];
+  recommendations?: string[];
+}
+```
+
+### 13.4. Algorithm Behavior Examples
+
+**Balanced Interleaving:**
+```typescript
+// Topics: Math (3 terms), Science (3 terms)
+// Without interleaving: [M1, M2, M3, S1, S2, S3]
+// With interleaving: [M1, S1, M2, S2, M3, S3]
+// Context switches: 5
+// Effectiveness: ~0.95 (highly balanced)
+```
+
+**Weighted Selection:**
+- Topics with higher weights appear more frequently
+- But still maintains balanced distribution for optimal learning
+- Prevents over-representation of any single topic
+
+**Performance Recommendations:**
+- Low accuracy topics (<60%): "Fokus auf schwächere Themen: [topics]"
+- Time-intensive topics: "Zeitintensive Themen für vertieftes Üben: [topics]"
+- Unbalanced practice: "Gleichmäßigere Verteilung der Übungszeit empfohlen"
+- Excellent performance (>80%): "Interleaving zeigt positive Effekte"
+
+### 13.5. Testing Coverage
+
+**Comprehensive Test Suite (40 tests across 2 files):**
+- Algorithm correctness with various topic configurations
+- Weighted selection and context-switching validation
+- Edge cases: empty topics, single topic, many topics
+- Service integration: session management, persistence
+- Performance metrics accuracy and recommendation generation
+- Settings persistence and event system functionality
+
+**Test Files:**
+- `src/lib/interleavedLearning.test.ts` (19 tests)
+- `src/lib/InterleavedLearningService.test.ts` (21 tests)
+
+### 13.6. Integration with Sokrates System
+
+**Settings Integration:**
+- Interleaved learning toggle in SpacedRepetitionSettings component
+- Context-switch frequency slider (1-5 scale)
+- Shuffle intensity control for varying learning preferences
+- Real-time settings persistence with event-driven updates
+
+**Review Flow Integration:**
+- Terms from multiple lists can be interleaved during Sokrates reviews
+- Automatic topic grouping based on list names
+- Priority scheduling: earliest due terms first with interleaving applied
+- Session size optimization remains (10-25 terms based on cognitive load)
+
+**Statistics Tracking:**
+- Total interleaved sessions count
+- Average accuracy across all sessions
+- Average session duration tracking
+- Most practiced topics ranking (top 5)
+- Total terms reviewed across all sessions
+
+### 13.7. Mobile-First Design
+
+**Responsive UI Components:**
+- Touch-friendly slider controls for settings (minimum 44px touch targets)
+- Range inputs with clear value indicators for mobile interaction
+- Settings panel optimized for mobile viewports (375px width)
+- Informational cards with responsive text sizing
+
+**Component Patterns:**
+```jsx
+// Mobile-first interleaved settings
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <div>
+    <label className="block text-sm font-medium mb-1">
+      Kontext-Wechsel Häufigkeit
+    </label>
+    <input type="range" min="1" max="5" className="w-full" />
+    <p className="text-xs text-gray-600 mt-1">
+      Aktuell: {value} (1=Sehr häufig, 5=Selten)
+    </p>
+  </div>
+</div>
+```
+
+### 13.8. Development Guidelines
+
+**When Working with Interleaved Learning:**
+1. Always use `InterleavedLearningService.getInstance()` for state management
+2. Test algorithm effectiveness with realistic topic distributions
+3. Verify mobile responsiveness with touch interaction testing
+4. Ensure settings persistence across browser sessions
+5. Follow function extraction pattern for all event handlers
+6. Add comprehensive test coverage for new algorithm features
+7. Track performance metrics for continuous improvement
+
+**Common Patterns:**
+- Use `generateInterleavedSequence()` for all sequence generation
+- Apply `analyzeInterleavingPerformance()` after session completion
+- Implement `generateInterleavingRecommendations()` for user feedback
+- Follow singleton pattern for service access
+- Persist settings and session data to localStorage
+
+**Performance Considerations:**
+- Event batching for localStorage operations to reduce writes
+- Memoized calculations for effectiveness scores
+- Session history limited to 50 most recent sessions
+- Function extraction applied throughout to prevent rerenders
+
+### 13.9. Scientific Backing
+
+The Interleaved Learning implementation is based on established cognitive science research:
+
+**Key Research Findings:**
+- Interleaving improves long-term retention by 10-30% compared to blocked practice
+- Context switching enhances discrimination ability between similar concepts
+- Optimal switching frequency depends on topic similarity and learner expertise
+- Balanced topic distribution maximizes learning effectiveness
+
+**Implementation Decisions:**
+- Default context-switch frequency: 3 (moderate switching based on research)
+- Minimum 2 topics required for interleaving to be effective
+- Effectiveness scoring prioritizes balanced distribution
+- Performance tracking enables personalized optimization
+
+The system seamlessly integrates research-backed principles with the existing Sokrates spaced repetition algorithm, creating a comprehensive learning optimization platform aligned with Vera F. Birkenbihl's brain-compatible learning methodology.
+
