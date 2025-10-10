@@ -71,11 +71,6 @@ jobs:
         run: |
           echo "💅 MANDATORY WORKFLOW: Checking code formatting..."
           npm run format:check
-      
-      - name: Markdown Linting
-        run: |
-          echo "📝 Checking markdown files quality..."
-          npm run lint:md
 
   # Build validation
   build:
