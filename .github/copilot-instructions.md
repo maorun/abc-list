@@ -71,12 +71,14 @@ npm run build   # ← MUST pass (production build)
 
 2. **Linting and formatting:**
    ```bash
-   npm run lint          # Check ESLint rules
+   npm run lint          # Check ESLint rules (includes markdown linting via postlint)
+   npm run lint:md       # Check markdown files specifically
    npm run format        # Auto-fix Prettier formatting
    npm run format:check  # Check formatting without fixing
    ```
    - Linting takes ~2-5 seconds. Set timeout to 30+ seconds.
    - Uses ESLint 9 with TypeScript, React, and accessibility rules
+   - markdownlint-cli checks all markdown files for quality
    - Prettier configured with specific rules (no bracket spacing, double quotes, trailing commas)
 
 ## ⚠️ MANDATORY POST-DEVELOPMENT VALIDATION ⚠️
@@ -84,7 +86,7 @@ npm run build   # ← MUST pass (production build)
 **🔴 CRITICAL: After making ANY code changes, you MUST run this validation sequence:**
 
 ```bash
-# Step 1: Test (MUST pass all 365 tests)
+# Step 1: Test (MUST pass all 432 tests)
 npm run test
 
 # Step 2: Lint (MUST have 0 errors) 
@@ -97,8 +99,8 @@ npm run build
 **If any of these steps fail, you MUST fix the issues before committing. No exceptions.**
 
 **📝 Use this checklist for every development session:**
-- [ ] Tests pass (`npm run test` - 365 tests)
-- [ ] Linting passes (`npm run lint` - 0 errors)  
+- [ ] Tests pass (`npm run test` - 432 tests)
+- [ ] Linting passes (`npm run lint` - 0 errors, includes markdown linting)  
 - [ ] Build succeeds (`npm run build`)
 - [ ] Only then commit changes with `report_progress`
 
@@ -1845,10 +1847,10 @@ The Community Hub successfully transforms ABC-List into a collaborative learning
 **Before closing any development session, ALWAYS complete this checklist:**
 
 ```bash
-# 1. TEST (MUST pass all 365 tests)
+# 1. TEST (MUST pass all 432 tests)
 npm run test
 
-# 2. LINT (MUST have 0 errors)  
+# 2. LINT (MUST have 0 errors, includes markdown linting)  
 npm run lint
 
 # 3. BUILD (MUST complete successfully)
@@ -1856,8 +1858,8 @@ npm run build
 ```
 
 **✅ Development Session Checklist:**
-- [ ] All tests pass (`npm run test` - 388 tests)
-- [ ] No linting errors (`npm run lint`)
+- [ ] All tests pass (`npm run test` - 432 tests)
+- [ ] No linting errors (`npm run lint` - includes markdown linting)
 - [ ] Build succeeds (`npm run build`)
 - [ ] Changes committed with `report_progress`
 
