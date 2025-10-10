@@ -41,18 +41,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Begründung:** Mind-Maps sind ein Kern-Element der Birkenbihl-Methodik und ergänzen ABC-Listen perfekt. Technisch mit bestehenden Libraries umsetzbar.
 
-### 2. Zahlen-Merk-System (Major-System)
-**Priorität:** HOCH | **Impact:** 8/10 | **Alignment:** 10/10 | **Feasibility:** 8/10
-
-**Beschreibung:** Systematisches Merken von Zahlen mit der Birkenbihl-Methode
-- **Zahlen-Bild-Assoziationen:** Automatische Vorschläge für Zahlenbilder
-- **Trainingsmodus:** Übungen zum Einprägen von Telefonnummern, Daten, etc.
-- **Personalisierung:** Eigene Assoziationen für Zahlen anlegen
-- **Fortschritts-Tracking:** Statistiken zur Merkfähigkeit
-
-**Begründung:** Direkter Bezug zur Birkenbihl-Methode. Einfache Implementierung mit regelbasierten Algorithmen.
-
-### 3. Loci-Methode (Gedächtnispalast)
+### 2. Loci-Methode (Gedächtnispalast)
 **Priorität:** HOCH | **Impact:** 8/10 | **Alignment:** 9/10 | **Feasibility:** 6/10
 
 **Beschreibung:** Räumliche Gedächtnistechnik digital umgesetzt
@@ -63,7 +52,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Begründung:** Etablierte Gedächtnistechnik mit hohem Lerneffekt. 2D-Umsetzung ist technisch machbar ohne 3D/VR.
 
-### 4. Interleaved Learning
+### 3. Interleaved Learning
 **Priorität:** HOCH | **Impact:** 9/10 | **Alignment:** 9/10 | **Feasibility:** 8/10
 
 **Beschreibung:** Wissenschaftlich optimiertes Mischen von Themen
@@ -74,7 +63,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Begründung:** Wissenschaftlich nachgewiesene Methode zur Lernoptimierung. Einfache Integration in bestehendes Sokrates-System.
 
-### 5. Elaborative Interrogation
+### 4. Elaborative Interrogation
 **Priorität:** HOCH | **Impact:** 8/10 | **Alignment:** 9/10 | **Feasibility:** 7/10
 
 **Beschreibung:** Tieferes Verständnis durch gezielte Fragen
@@ -248,12 +237,11 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 ## 📌 Zusammenfassung der Priorisierung
 
-### Hohe Priorität (5 Features):
+### Hohe Priorität (4 Features):
 1. **Mind-Map-Integration** - Kern der Birkenbihl-Methodik
-2. **Zahlen-Merk-System** - Direkt aus Birkenbihl-Methode
-3. **Loci-Methode** - Bewährte Gedächtnistechnik
-4. **Interleaved Learning** - Wissenschaftlich fundiert
-5. **Elaborative Interrogation** - Fördert tiefes Verständnis
+2. **Loci-Methode** - Bewährte Gedächtnistechnik
+3. **Interleaved Learning** - Wissenschaftlich fundiert
+4. **Elaborative Interrogation** - Fördert tiefes Verständnis
 
 ### Mittlere Priorität (6 Features):
 6. Dual-Coding-Unterstützung
@@ -279,12 +267,10 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Phase 1 (Kurzfristig - 3-6 Monate):**
 - Mind-Map-Integration
-- Zahlen-Merk-System
 
 **Phase 2 (Mittelfristig - 6-12 Monate):**
 - Loci-Methode
 - Interleaved Learning
-- Template-Bibliothek
 
 **Phase 3 (Langfristig - 12+ Monate):**
 - Elaborative Interrogation
