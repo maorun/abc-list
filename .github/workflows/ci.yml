@@ -54,29 +54,64 @@ jobs:
           # Focus on ensuring the enhanced TypeScript config is working
           echo "✅ TypeScript configuration validated via build process."
       
-      # Enforce the mandatory workflow: Test → Code → Lint
-      - name: Mandatory Workflow Step 1 - Tests First
+      - name: Formatting Check
         run: |
-          echo "🧪 MANDATORY WORKFLOW: Running tests first (before any code changes)..."
-          npm run test
+          echo "💅 Checking code formatting..."
+          npm run format:check
+
+  # Tests run in parallel with linting for faster CI
+  test-validation:
+    name: Test Validation
+    runs-on: ubuntu-latest
+    needs: code-quality-checks
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
       
-      - name: Mandatory Workflow Step 2 - Linting Second
+      - name: Use Node.js 22.x
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22.x
+          cache: npm
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run Tests
         run: |
-          echo "🔧 MANDATORY WORKFLOW: Running linting (after tests pass)..."
+          echo "🧪 Running tests..."
+          npm run test
+
+  # Linting runs in parallel with tests for faster CI
+  lint-validation:
+    name: Linting Validation
+    runs-on: ubuntu-latest
+    needs: code-quality-checks
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+      
+      - name: Use Node.js 22.x
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22.x
+          cache: npm
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run Linting
+        run: |
+          echo "🔧 Running linting..."
           npm run lint
           echo "✅ ESLint completed successfully"
           echo "✅ Markdown linting completed successfully (via postlint)"
-      
-      - name: Mandatory Workflow Step 3 - Formatting Check
-        run: |
-          echo "💅 MANDATORY WORKFLOW: Checking code formatting..."
-          npm run format:check
 
   # Build validation
   build:
     name: Build Validation
     runs-on: ubuntu-latest
-    needs: code-quality-checks
+    needs: [test-validation, lint-validation]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -112,7 +147,7 @@ jobs:
   coverage:
     name: Test Coverage Validation
     runs-on: ubuntu-latest
-    needs: code-quality-checks
+    needs: [test-validation, lint-validation]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -176,7 +211,7 @@ jobs:
   complete-validation:
     name: Complete Pipeline Validation
     runs-on: ubuntu-latest
-    needs: [code-quality-checks, build, coverage]
+    needs: [test-validation, lint-validation, build, coverage]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
