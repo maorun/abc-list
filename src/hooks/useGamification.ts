@@ -83,6 +83,13 @@ export function useGamification() {
     [trackActivity],
   );
 
+  const trackInterrogationSession = useCallback(
+    (sessionData?: unknown) => {
+      trackActivity("interrogation_session", sessionData);
+    },
+    [trackActivity],
+  );
+
   return {
     // Core tracking function
     trackActivity,
@@ -95,6 +102,7 @@ export function useGamification() {
     trackStadtLandFlussGame,
     trackSokratesSession,
     trackBasarTrade,
+    trackInterrogationSession,
 
     // Service access
     gamificationService,
