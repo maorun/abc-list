@@ -12,7 +12,8 @@ export interface ActivityType {
     | "basar_trade"
     | "daily_login"
     | "streak_milestone"
-    | "challenge_completed";
+    | "challenge_completed"
+    | "interrogation_session";
   points: number;
   description: string;
 }
@@ -89,6 +90,7 @@ export interface UserStatistics {
   slfGamesPlayed: number;
   sokratesSessions: number;
   basarTrades: number;
+  interrogationSessions: number;
   totalActiveDays: number;
   averageWordsPerList: number;
   favoriteActivity: string;
@@ -147,6 +149,11 @@ export const ACTIVITY_POINTS: Record<string, ActivityType> = {
     type: "basar_trade",
     points: 12,
     description: "Basar-Handel abgeschlossen",
+  },
+  interrogation_session: {
+    type: "interrogation_session",
+    points: 10,
+    description: "Elaborative Interrogation durchgeführt",
   },
   daily_login: {type: "daily_login", points: 3, description: "Täglicher Login"},
   streak_milestone: {

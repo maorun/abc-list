@@ -166,6 +166,9 @@ export class GamificationService {
       case "basar_trade":
         stats.basarTrades++;
         break;
+      case "interrogation_session":
+        stats.interrogationSessions = (stats.interrogationSessions || 0) + 1;
+        break;
     }
 
     // Update favorite activity based on most used feature
@@ -177,7 +180,11 @@ export class GamificationService {
 
     const stats = this.profile.statistics;
     const activities = {
-      learning: stats.listsCreated + stats.wordsAdded + stats.sokratesSessions,
+      learning:
+        stats.listsCreated +
+        stats.wordsAdded +
+        stats.sokratesSessions +
+        (stats.interrogationSessions || 0),
       creativity: stats.kawasCreated + stats.kagasCreated,
       gaming: stats.slfGamesPlayed,
       social: stats.basarTrades,
