@@ -8,6 +8,8 @@ import {
   InterrogationSession,
   InterrogationStatistics,
 } from "@/lib/elaborativeInterrogation";
+import {WordWithExplanation} from "../List/types";
+import {NewItemWithSaveKey} from "../NewStringItem";
 
 const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
@@ -43,18 +45,124 @@ const handleViewSession = (
   navigate(`/interrogation/session/${sessionId}`);
 };
 
+const handleStartFromSuggestion = (
+  word: string,
+  explanation: string,
+  navigate: (path: string) => void,
+) => {
+  // Navigate to new session with pre-filled data
+  navigate("/interrogation/new", {
+    state: {word, explanation},
+  });
+};
+
+interface Suggestion {
+  word: string;
+  explanation: string;
+  source: string;
+  type: "abc-list" | "kawa";
+}
+
+const loadSuggestions = (): Suggestion[] => {
+  const suggestions: Suggestion[] = [];
+  const alphabet = Array.from({length: 26}, (_, i) =>
+    String.fromCharCode(97 + i),
+  );
+
+  // Load from ABC-Lists
+  const abcListsData = localStorage.getItem("abcLists");
+  if (abcListsData) {
+    try {
+      const abcLists: string[] = JSON.parse(abcListsData);
+      abcLists.forEach((listName) => {
+        alphabet.forEach((letter) => {
+          const storageKey = `abcList-${listName}:${letter}`;
+          const data = localStorage.getItem(storageKey);
+          if (data) {
+            try {
+              const words: WordWithExplanation[] = JSON.parse(data);
+              words.forEach((word) => {
+                if (word.text && word.explanation) {
+                  suggestions.push({
+                    word: word.text,
+                    explanation: word.explanation,
+                    source: listName,
+                    type: "abc-list",
+                  });
+                }
+              });
+            } catch {
+              // Skip invalid data
+            }
+          }
+        });
+      });
+    } catch {
+      // Skip if parsing fails
+    }
+  }
+
+  // Load from KaWas
+  const kawasData = localStorage.getItem("Kawas");
+  if (kawasData) {
+    try {
+      const kawas: NewItemWithSaveKey[] = JSON.parse(kawasData);
+      kawas.forEach((kawa) => {
+        if (kawa.text && kawa.key) {
+          // Get KaWa associations
+          const kawaKey = `kawa-${kawa.key}`;
+          const kawaData = localStorage.getItem(kawaKey);
+          if (kawaData) {
+            try {
+              const associations: Record<string, string> = JSON.parse(kawaData);
+              const associationTexts = Object.values(associations)
+                .filter((a) => a)
+                .join(", ");
+              if (associationTexts) {
+                suggestions.push({
+                  word: kawa.text,
+                  explanation: `Assoziationen: ${associationTexts}`,
+                  source: kawa.text,
+                  type: "kawa",
+                });
+              }
+            } catch {
+              // Skip invalid data
+            }
+          }
+        }
+      });
+    } catch {
+      // Skip if parsing fails
+    }
+  }
+
+  // Remove duplicates and limit to 10 most recent
+  const uniqueSuggestions = suggestions.filter(
+    (suggestion, index, self) =>
+      index ===
+      self.findIndex(
+        (s) => s.word === suggestion.word && s.source === suggestion.source,
+      ),
+  );
+
+  return uniqueSuggestions.slice(0, 10);
+};
+
 export function InterrogationDashboard() {
   const navigate = useNavigate();
   const service = ElaborativeInterrogationService.getInstance();
 
   const [sessions, setSessions] = useState<InterrogationSession[]>([]);
   const [stats, setStats] = useState<InterrogationStatistics | null>(null);
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
 
   useEffect(() => {
     const loadData = () => {
       const allSessions = service.getAllSessions();
       setSessions(allSessions.slice().reverse()); // Most recent first
       setStats(service.getStatistics());
+      setSuggestions(loadSuggestions());
     };
 
     loadData();
@@ -68,6 +176,8 @@ export function InterrogationDashboard() {
   const newSession = () => handleNewSession(navigate);
   const viewSession = (sessionId: string) =>
     handleViewSession(sessionId, navigate);
+  const startFromSuggestion = (word: string, explanation: string) =>
+    handleStartFromSuggestion(word, explanation, navigate);
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
@@ -165,6 +275,58 @@ export function InterrogationDashboard() {
                 </p>
               </div>
               <div className="text-2xl">📈</div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Suggestions from ABC-Lists and KaWas */}
+      {suggestions.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>💡 Vorschläge aus deinen Listen</CardTitle>
+            <p className="text-sm text-gray-600 mt-1">
+              Starte eine Interrogation-Session mit Begriffen aus deinen
+              ABC-Listen oder KaWas
+            </p>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {suggestions.map((suggestion, index) => (
+                <div
+                  key={`${suggestion.source}-${suggestion.word}-${index}`}
+                  className="flex flex-col sm:flex-row sm:items-center justify-between p-3 border rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  <div className="flex-1 mb-2 sm:mb-0">
+                    <div className="flex items-center gap-2">
+                      <h4 className="font-medium">{suggestion.word}</h4>
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">
+                        {suggestion.type === "abc-list" ? "ABC-Liste" : "KaWa"}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-600 line-clamp-1 mt-1">
+                      {suggestion.explanation}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Quelle: {suggestion.source}
+                    </p>
+                  </div>
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() =>
+                      startFromSuggestion(
+                        suggestion.word,
+                        suggestion.explanation,
+                      )
+                    }
+                    className="w-full sm:w-auto"
+                  >
+                    Session starten
+                  </Button>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>

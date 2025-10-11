@@ -1,6 +1,6 @@
 // ElaborativeInterrogation - Main component for deep learning through questioning
 import React, {useState, useEffect} from "react";
-import {useNavigate, useParams} from "react-router-dom";
+import {useNavigate, useParams, useLocation} from "react-router-dom";
 import {Button} from "../ui/button";
 import {Textarea} from "../ui/textarea";
 import {Progress} from "../ui/progress";
@@ -107,6 +107,7 @@ const handleNextQuestion = (
 export function ElaborativeInterrogation() {
   const {word, sessionId} = useParams<{word?: string; sessionId?: string}>();
   const navigate = useNavigate();
+  const location = useLocation();
   const service = ElaborativeInterrogationService.getInstance();
   const {trackInterrogationSession} = useGamification();
 
@@ -122,6 +123,15 @@ export function ElaborativeInterrogation() {
   const [selectedWord, setSelectedWord] = useState("");
   const [selectedExplanation, setSelectedExplanation] = useState("");
   const [showWordSelector, setShowWordSelector] = useState(true);
+
+  // Load from navigation state if provided (from suggestions)
+  useEffect(() => {
+    if (location.state?.word && location.state?.explanation) {
+      setSelectedWord(location.state.word);
+      setSelectedExplanation(location.state.explanation);
+      // Keep showWordSelector true so the form displays with pre-filled data
+    }
+  }, [location.state]);
 
   // Load existing session if sessionId is provided
   useEffect(() => {
