@@ -17,6 +17,7 @@ ABC-List implements Vera F. Birkenbihl's learning methodology with multiple lear
 - **Search & Tagging System**: Intelligent full-text search with automated tagging, smart collections, and advanced filtering across all content types
 - **Community Hub**: Collaborative learning platform with user profiles, mentoring system, peer reviews, community challenges, and success stories
 - **Template Library**: Pre-configured templates for quick start with educational content across multiple subjects (Mathematik, Sprachen, Geschichte, etc.)
+- **Dual-Coding Support**: Visual learning enhancement with emoji picker, symbol library (48 educational symbols in 9 categories), and external image URL support for stronger memory associations
 
 **Key Technical Features:**
 - Mobile-first responsive design with hamburger navigation

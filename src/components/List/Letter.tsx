@@ -117,6 +117,20 @@ const handleRatingChangeAction = (
   localStorage.setItem(storageKey, JSON.stringify(newWords));
 };
 
+const handleVisualElementsChangeAction = (
+  wordText: string,
+  visualData: {emoji?: string; symbol?: string; imageUrl?: string},
+  words: WordWithExplanation[],
+  storageKey: string,
+  setWords: (words: WordWithExplanation[]) => void,
+) => {
+  const newWords = words.map((word) =>
+    word.text === wordText ? {...word, ...visualData} : word,
+  );
+  setWords(newWords);
+  localStorage.setItem(storageKey, JSON.stringify(newWords));
+};
+
 const setModalOpenAction = (setIsModalOpen: (open: boolean) => void) => () => {
   setIsModalOpen(true);
 };
@@ -213,6 +227,18 @@ export const Letter = React.memo(
     const handleRatingChange = (wordText: string, rating: number) =>
       handleRatingChangeAction(wordText, rating, words, storageKey, setWords);
 
+    const handleVisualElementsChange = (
+      wordText: string,
+      visualData: {emoji?: string; symbol?: string; imageUrl?: string},
+    ) =>
+      handleVisualElementsChangeAction(
+        wordText,
+        visualData,
+        words,
+        storageKey,
+        setWords,
+      );
+
     const openModal = setModalOpenAction(setIsModalOpen);
     const closeModal = setModalCloseAction(setIsModalOpen);
 
@@ -249,11 +275,17 @@ export const Letter = React.memo(
               explanation={word.explanation}
               imported={word.imported}
               rating={word.rating}
+              emoji={word.emoji}
+              symbol={word.symbol}
+              imageUrl={word.imageUrl}
               onDelete={() => handleDeleteWord(word.text)}
               onExplanationChange={(explanation) =>
                 handleExplanationChange(word.text, explanation)
               }
               onRatingChange={(rating) => handleRatingChange(word.text, rating)}
+              onVisualElementsChange={(visualData) =>
+                handleVisualElementsChange(word.text, visualData)
+              }
             />
           ))}
         </div>

@@ -1,5 +1,7 @@
 import React, {useState} from "react";
 import {DeleteConfirm} from "../DeleteConfirm";
+import {VisualElementsEditor} from "../DualCoding/VisualElementsEditor";
+import {getSymbolById} from "@/lib/symbolLibrary";
 
 export interface WordWithExplanation {
   text: string;
@@ -13,6 +15,10 @@ export interface WordWithExplanation {
   easeFactor?: number; // Individual ease factor for this term
   interval?: number; // Current interval in days
   nextReviewDate?: string; // Calculated next review date (ISO string)
+  // Dual-Coding Support: Visual elements for enhanced learning
+  emoji?: string; // Unicode emoji for visual association
+  symbol?: string; // Symbol ID from symbol library
+  imageUrl?: string; // External image URL for visual learning
 }
 
 interface SavedWordProps {
@@ -20,9 +26,17 @@ interface SavedWordProps {
   explanation?: string;
   imported?: boolean;
   rating?: number;
+  emoji?: string;
+  symbol?: string;
+  imageUrl?: string;
   onDelete?: () => void;
   onExplanationChange?: (explanation: string) => void;
   onRatingChange?: (rating: number) => void;
+  onVisualElementsChange?: (data: {
+    emoji?: string;
+    symbol?: string;
+    imageUrl?: string;
+  }) => void;
 }
 
 // Extracted function handlers to prevent recreation on every render
@@ -119,20 +133,52 @@ const setEditingExplanationTrueAction =
     setEditingExplanation(true);
   };
 
+const handleVisualElementsToggleAction =
+  (
+    showVisualElements: boolean,
+    setShowVisualElements: (show: boolean) => void,
+  ) =>
+  (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowVisualElements(!showVisualElements);
+  };
+
+const handleVisualElementsSaveAction =
+  (
+    onVisualElementsChange:
+      | ((data: {emoji?: string; symbol?: string; imageUrl?: string}) => void)
+      | undefined,
+    setShowVisualElements: (show: boolean) => void,
+  ) =>
+  (data: {emoji?: string; symbol?: string; imageUrl?: string}) => {
+    if (onVisualElementsChange) {
+      onVisualElementsChange(data);
+    }
+    setShowVisualElements(false);
+  };
+
 export function SavedWord({
   text,
   explanation,
   imported,
   rating,
+  emoji,
+  symbol,
+  imageUrl,
   onDelete,
   onExplanationChange,
   onRatingChange,
+  onVisualElementsChange,
 }: SavedWordProps) {
   const [showDelete, setShowDelete] = useState(false);
   const [showExplanation, setShowExplanation] = useState(false);
   const [editingExplanation, setEditingExplanation] = useState(false);
   const [explanationText, setExplanationText] = useState(explanation || "");
   const [showRating, setShowRating] = useState(false);
+  const [showVisualElements, setShowVisualElements] = useState(false);
+
+  const symbolData = symbol ? getSymbolById(symbol) : undefined;
+  const hasVisualElements = !!(emoji || symbol || imageUrl);
 
   // Create stable function references inside component
   const handleDelete = handleDeleteAction(setShowDelete, onDelete);
@@ -169,6 +215,14 @@ export function SavedWord({
   const showRatingFalse = setShowRatingFalseAction(setShowRating);
   const editingExplanationTrue = setEditingExplanationTrueAction(
     setEditingExplanation,
+  );
+  const handleVisualElementsToggle = handleVisualElementsToggleAction(
+    showVisualElements,
+    setShowVisualElements,
+  );
+  const handleVisualElementsSave = handleVisualElementsSaveAction(
+    onVisualElementsChange,
+    setShowVisualElements,
   );
 
   const renderStars = (currentRating?: number, interactive = false) => {
@@ -224,7 +278,14 @@ export function SavedWord({
           }
         >
           <div className="flex items-center justify-between">
-            <span>{text}</span>
+            <div className="flex items-center gap-2">
+              {emoji && <span className="text-xl">{emoji}</span>}
+              {symbolData && (
+                <span className="text-xl">{symbolData.emoji}</span>
+              )}
+              {imageUrl && <span className="text-sm">🖼️</span>}
+              <span>{text}</span>
+            </div>
             <div className="flex gap-1 items-center">
               {imported && <span className="text-blue-600 text-xs">📥</span>}
               {explanation && (
@@ -236,6 +297,25 @@ export function SavedWord({
                   <span className="text-xs text-gray-600">{rating}</span>
                 </div>
               )}
+              <span
+                onClick={handleVisualElementsToggle}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleVisualElementsToggle(
+                      e as unknown as React.MouseEvent,
+                    );
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                className={`text-xs ${hasVisualElements ? "text-purple-600" : "text-gray-400"} hover:text-purple-800 cursor-pointer`}
+                title="Visuelle Elemente (Dual-Coding)"
+                aria-label="Visuelle Elemente bearbeiten"
+              >
+                🎨
+              </span>
               <span
                 onClick={handleRatingToggle}
                 onKeyDown={handleRatingKeyDown}
@@ -335,6 +415,15 @@ export function SavedWord({
           </div>
         )}
       </div>
+
+      <VisualElementsEditor
+        isOpen={showVisualElements}
+        onClose={() => setShowVisualElements(false)}
+        currentEmoji={emoji}
+        currentSymbol={symbol}
+        currentImageUrl={imageUrl}
+        onSave={handleVisualElementsSave}
+      />
 
       <DeleteConfirm
         itemToDelete={text}

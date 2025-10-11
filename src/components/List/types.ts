@@ -10,6 +10,10 @@ export interface WordWithExplanation {
   easeFactor?: number;
   interval?: number;
   nextReviewDate?: string;
+  // Dual-Coding Support: Visual elements for enhanced learning
+  emoji?: string; // Unicode emoji for visual association
+  symbol?: string; // Symbol ID from symbol library
+  imageUrl?: string; // External image URL for visual learning
 }
 
 export interface ColumnConfig {

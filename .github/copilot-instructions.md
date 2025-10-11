@@ -10,7 +10,7 @@ ABC-List is a React/TypeScript/Vite web application implementing Vera F. Birkenb
 
 ```bash
 # MANDATORY after every code change:
-npm run test    # ← MUST pass (483 tests) 
+npm run test    # ← MUST pass (516 tests) 
 npm run lint    # ← MUST pass (0 errors)
 npm run build   # ← MUST pass (production build)
 ```
@@ -48,7 +48,7 @@ npm run build   # ← MUST pass (production build)
    npm run test
    ```
    - Takes approximately 8 seconds. NEVER CANCEL. Set timeout to 30+ seconds.
-   - Runs 483 tests across test files using Vitest
+   - Runs 516 tests across test files using Vitest
    - All tests should pass - uses React Testing Library and Jest DOM
 
 4. **Run test coverage:**
@@ -86,7 +86,7 @@ npm run build   # ← MUST pass (production build)
 **🔴 CRITICAL: After making ANY code changes, you MUST run this validation sequence:**
 
 ```bash
-# Step 1: Test (MUST pass all 432 tests)
+# Step 1: Test (MUST pass all 516 tests)
 npm run test
 
 # Step 2: Lint (MUST have 0 errors) 
@@ -99,7 +99,7 @@ npm run build
 **If any of these steps fail, you MUST fix the issues before committing. No exceptions.**
 
 **📝 Use this checklist for every development session:**
-- [ ] Tests pass (`npm run test` - 432 tests)
+- [ ] Tests pass (`npm run test` - 516 tests)
 - [ ] Linting passes (`npm run lint` - 0 errors, includes markdown linting)  
 - [ ] Build succeeds (`npm run build`)
 - [ ] Only then commit changes with `report_progress`
@@ -309,6 +309,43 @@ npm run build
   - Test mind map on mobile viewport (375px width)
   - Verify touch gestures work for pan and zoom
   - Check that export buttons are accessible on mobile
+
+### 11. Dual-Coding Support (Visual Learning Elements)
+- Navigate to any ABC-List and add/view a word
+- Click the 🎨 icon next to any word to access visual elements editor
+- Test Emoji Picker:
+  - Click "Emoji wählen" button in the visual elements dialog
+  - Browse emojis by category (Emotionen, Natur, Tiere, Essen, Objekte, Symbole, Wissenschaft, Transport)
+  - Use search field to find specific emojis
+  - Enter custom emoji in the input field and click "Verwenden"
+  - Verify selected emoji is displayed in the preview
+- Test Symbol Library:
+  - Click "Symbol wählen" button in the visual elements dialog
+  - Browse symbols by category (Wissenschaft, Mathematik, Sprachen, Natur, Technik, Emotion, Zeit, Richtung, Zustand)
+  - Use search field to find symbols by name, description, or category
+  - Verify symbol selection shows both emoji and name
+  - Verify selected symbol is displayed in the preview
+- Test Image URL Support:
+  - Enter an external image URL in the "Bild-URL" field
+  - Verify URL validation and preview indication
+  - Test with various image hosting services
+- Test Visual Element Display:
+  - Verify emoji appears before word text when set
+  - Verify symbol emoji appears before word text when set
+  - Verify 🖼️ icon appears when image URL is set
+  - Confirm multiple visual elements can be combined
+- Test Visual Element Persistence:
+  - Save visual elements and refresh the page
+  - Verify all visual elements are persisted in localStorage
+  - Test export/import functionality preserves visual elements
+- Test Visual Element Removal:
+  - Click "Symbol entfernen" or "Emoji entfernen" buttons
+  - Click "Alle löschen" to remove all visual elements
+  - Verify visual elements are cleared from display and storage
+- Verify mobile responsiveness:
+  - Test visual elements editor on mobile viewport (375px width)
+  - Verify touch-friendly symbol/emoji grid layouts
+  - Check that visual elements display correctly on small screens
 
 ## CI/CD Requirements
 
@@ -2147,12 +2184,197 @@ The Mind-Map Integration successfully implements core Birkenbihl learning method
 
 ---
 
+## Dual-Coding Support System
+
+### Overview
+The Dual-Coding Support system implements the scientifically-backed dual-coding theory by combining visual and verbal learning elements. This feature allows users to enhance word retention by adding emojis, symbols from a curated library, or external image URLs to their vocabulary, creating stronger memory associations through multi-sensory encoding.
+
+### Core Implementation
+
+**Symbol Library (`src/lib/symbolLibrary.ts`)**
+- 48 pre-selected educational symbols organized in 9 categories
+- Categories: Wissenschaft, Mathematik, Sprachen, Natur, Technik, Emotion, Zeit, Richtung, Zustand
+- Search functionality: by name, description, or category
+- Helper functions: `getSymbolsByCategory()`, `getSymbolById()`, `searchSymbols()`
+
+**Visual Elements Components (`src/components/DualCoding/`)**
+- **EmojiPicker**: Categorized emoji selection with search and custom input
+- **SymbolPicker**: Symbol library browser with category filtering
+- **VisualElementsEditor**: Combined interface for all visual element types
+
+**Integration Points:**
+- SavedWord component enhanced with 🎨 icon for visual element editing
+- Letter component passes visual element props and handles changes
+- WordWithExplanation interface extended with `emoji?`, `symbol?`, `imageUrl?` fields
+- Full localStorage persistence and export/import support
+
+### Data Model Enhancement
+
+```typescript
+interface WordWithExplanation {
+  text: string;
+  explanation?: string;
+  // ... existing fields
+  // Dual-Coding Support: Visual elements for enhanced learning
+  emoji?: string;        // Unicode emoji for visual association
+  symbol?: string;       // Symbol ID from symbol library
+  imageUrl?: string;     // External image URL for visual learning
+}
+
+interface Symbol {
+  id: string;
+  name: string;
+  emoji: string;
+  category: SymbolCategory;
+  description: string;
+}
+```
+
+### Key Features
+
+**Emoji Integration:**
+- 8 categorized emoji collections (Emotionen, Natur, Tiere, Essen, Objekte, Symbole, Wissenschaft, Transport)
+- Custom emoji input for flexibility
+- Search functionality within categories
+- Current emoji highlighting
+
+**Symbol Library:**
+- 48 carefully selected educational symbols
+- Category-based browsing with "Alle" option
+- Real-time search by name, description, or category
+- Symbol details: emoji representation, German name, educational description
+- Examples: 🔬 Mikroskop (Wissenschaft), 🧮 Taschenrechner (Mathematik), 📚 Buch (Sprachen)
+
+**Image URL Support:**
+- External image URL input field
+- URL validation with user guidance
+- Suggestions for free image databases (Unsplash, Pixabay)
+- Visual indicator (🖼️) when image URL is set
+
+**Visual Element Display:**
+- Emojis and symbols appear before word text in list view
+- Highlight visual element button (🎨) when elements are present (purple color)
+- Combined preview showing all active visual elements
+- Mobile-optimized display with touch-friendly controls
+
+### Testing Coverage
+
+**Comprehensive Test Suite (53 tests total, 516 passing):**
+- `src/lib/symbolLibrary.test.ts` (12 tests): Symbol library validation, search, category filtering
+- `src/components/DualCoding/SymbolPicker.test.tsx` (14 tests): UI interaction, filtering, selection
+- Updated existing tests to account for new 🎨 icon in accessible names
+
+**Test Scenarios:**
+- Symbol library content validation and uniqueness
+- Category-based filtering accuracy
+- Search functionality with partial and case-insensitive matching
+- Symbol selection and removal workflows
+- Visual elements persistence and localStorage integration
+- Mobile responsiveness and touch interactions
+
+### Mobile-First Implementation
+
+**Responsive Design Requirements:**
+- Touch-friendly symbol/emoji grids (responsive columns: 4/6/8 based on screen size)
+- Mobile-optimized picker dialogs with scrollable content
+- Visual element indicators adapt to small screens
+- Symbol grids: 4 columns mobile, 6 tablet, responsive up to desktop
+- Emoji grids: 8 columns mobile, 10 desktop for optimal density
+
+**Component Patterns:**
+```jsx
+// Mobile-first emoji grid
+<div className="grid grid-cols-8 sm:grid-cols-10 gap-2">
+  {emojis.map(emoji => (
+    <button className="p-2 rounded-lg border-2 text-2xl">
+      {emoji}
+    </button>
+  ))}
+</div>
+
+// Mobile-first symbol grid
+<div className="grid grid-cols-4 sm:grid-cols-6 gap-3">
+  {symbols.map(symbol => (
+    <button className="flex flex-col items-center p-3">
+      <span className="text-3xl">{symbol.emoji}</span>
+      <span className="text-xs">{symbol.name}</span>
+    </button>
+  ))}
+</div>
+```
+
+### Performance Optimization
+
+**Function Extraction Applied:**
+All Dual-Coding components follow the function extraction pattern:
+```typescript
+// Extracted handlers outside components
+const handleSymbolClickAction = (symbol, onSelect, onClose) => () => {
+  onSelect(symbol);
+  onClose();
+};
+
+// Stable references inside component
+const handleSymbolClick = (symbol) => 
+  handleSymbolClickAction(symbol, onSelect, onClose)();
+```
+
+### Integration Points
+
+**Data Persistence:**
+- Visual elements stored with word data in localStorage
+- Backwards compatible with existing word data (optional fields)
+- Export/import preserves all visual elements
+- Migration-free: old data works without modification
+
+**UI Integration:**
+- Visual elements button (🎨) integrated into SavedWord component
+- Visual indicators in word display (emoji before text, symbol before text, 🖼️ for images)
+- Consistent styling with existing UI patterns
+- Accessibility: proper labels, keyboard navigation, ARIA attributes
+
+### Development Guidelines
+
+**When Working with Dual-Coding:**
+1. Always use symbol IDs from SYMBOL_LIBRARY, not raw emojis for symbols
+2. Test visual element persistence across page reloads
+3. Verify mobile responsiveness with touch interaction testing
+4. Ensure export/import preserves all visual elements
+5. Follow function extraction pattern for all event handlers
+6. Add tests for new symbol categories or emoji collections
+
+**Common Patterns:**
+- Use `getSymbolById()` to retrieve symbol data for display
+- Use `searchSymbols()` for flexible symbol discovery
+- Apply `WordWithExplanation` interface for type safety
+- Implement proper error boundaries for visual element loading failures
+- Follow mobile-first responsive design with grid-based layouts
+
+**Scientific Backing:**
+- Dual-coding theory: combining visual and verbal information improves retention by 30-40%
+- Multi-sensory encoding creates stronger memory traces
+- Visual associations activate different brain regions for enhanced recall
+- Emotionally-resonant emojis strengthen episodic memory formation
+
+### Accessibility Standards
+
+**Implementation Requirements:**
+- All visual elements have proper ARIA labels and descriptions
+- Keyboard navigation supported in all pickers
+- Screen reader announces selected visual elements
+- High contrast mode compatible visual indicators
+- Focus management in modal dialogs
+
+The Dual-Coding Support system successfully enhances learning effectiveness through scientifically-backed visual-verbal integration while maintaining ABC-List's technical excellence and mobile-first design principles.
+
+---
+
 ## 🚨 FINAL REMINDER: NEVER FORGET THE MANDATORY WORKFLOW 🚨
 
 **Before closing any development session, ALWAYS complete this checklist:**
 
 ```bash
-# 1. TEST (MUST pass all 483 tests)
+# 1. TEST (MUST pass all 516 tests)
 npm run test
 
 # 2. LINT (MUST have 0 errors, includes markdown linting)  
@@ -2163,7 +2385,7 @@ npm run build
 ```
 
 **✅ Development Session Checklist:**
-- [ ] All tests pass (`npm run test` - 483 tests)
+- [ ] All tests pass (`npm run test` - 516 tests)
 - [ ] No linting errors (`npm run lint` - includes markdown linting)
 - [ ] Build succeeds (`npm run build`)
 - [ ] Changes committed with `report_progress`

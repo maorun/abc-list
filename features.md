@@ -56,17 +56,6 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 ## ⭐ Mittlere Priorität
 
-### 4. Dual-Coding-Unterstützung
-**Priorität:** MITTEL | **Impact:** 7/10 | **Alignment:** 9/10 | **Feasibility:** 7/10
-
-**Beschreibung:** Kombination von visuellen und verbalen Informationen
-- **Symbol-Bibliothek:** Schneller Zugriff auf Icons und Symbole
-- **Bild-Upload:** Eigene Bilder zu Begriffen hochladen
-- **Bild-Text-Pairing:** Optimale Kombination von Medien
-- **Emoji-Integration:** Visuelle Marker für schnellere Assoziation
-
-**Begründung:** Wissenschaftlich fundiert. Kann ohne KI-Bildgenerierung umgesetzt werden.
-
 ### 5. Browser-Extension
 **Priorität:** MITTEL | **Impact:** 6/10 | **Alignment:** 6/10 | **Feasibility:** 8/10
 
@@ -219,8 +208,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 1. **Loci-Methode** - Bewährte Gedächtnistechnik
 2. **Elaborative Interrogation** - Fördert tiefes Verständnis
 
-### Mittlere Priorität (6 Features):
-4. Dual-Coding-Unterstützung
+### Mittlere Priorität (5 Features):
 5. Browser-Extension
 6. Widgets für Homescreen
 7. Handschrift-Erkennung
@@ -248,7 +236,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 - Elaborative Interrogation
 
 **Phase 3 (Langfristig - 12+ Monate):**
-- Dual-Coding-Unterstützung
+- Browser-Extension
 - Weitere Features nach Bedarf
 
 ---
