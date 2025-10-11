@@ -45,6 +45,8 @@ import {NumberMemory} from "./components/NumberMemory/NumberMemory";
 import {MindMapView} from "./components/MindMap/MindMapView";
 import {StatusIndicators} from "./components/StatusIndicators";
 import {CloudSyncStatusIndicator} from "./components/CloudSync/CloudSyncStatusIndicator";
+import {ElaborativeInterrogation} from "./components/ElaborativeInterrogation/ElaborativeInterrogation";
+import {InterrogationDashboard} from "./components/ElaborativeInterrogation/InterrogationDashboard";
 
 // Extract navigation items to prevent recreation on every render
 const navigationItems = [
@@ -73,6 +75,11 @@ const navigationItems = [
     description: "Community Hub und Mentoring",
   },
   {to: "/sokrates", label: "Sokrates-Check", description: "Lernerfolg prüfen"},
+  {
+    to: "/interrogation",
+    label: "Interrogation",
+    description: "Verständnis durch Fragen vertiefen",
+  },
   {
     to: "/number-memory",
     label: "Zahlen-Merk-System",
@@ -288,6 +295,15 @@ function AppContent() {
             <Route path="/basar" element={<Basar />} />
             <Route path="/community" element={<Community />} />
             <Route path="/sokrates" element={<SokratesCheck />} />
+            <Route path="/interrogation" element={<InterrogationDashboard />} />
+            <Route
+              path="/interrogation/new"
+              element={<ElaborativeInterrogation />}
+            />
+            <Route
+              path="/interrogation/:word"
+              element={<ElaborativeInterrogation />}
+            />
             <Route path="/number-memory" element={<NumberMemory />} />
             <Route path="/gamification" element={<GamificationDashboard />} />
             <Route path="/analytics" element={<Analytics />} />
