@@ -41,17 +41,6 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Begründung:** Etablierte Gedächtnistechnik mit hohem Lerneffekt. 2D-Umsetzung ist technisch machbar ohne 3D/VR.
 
-### 3. Elaborative Interrogation
-**Priorität:** HOCH | **Impact:** 8/10 | **Alignment:** 9/10 | **Feasibility:** 7/10
-
-**Beschreibung:** Tieferes Verständnis durch gezielte Fragen
-- **Warum-Fragen:** System stellt "Warum"-Fragen zu Assoziationen
-- **Erklär-Modus:** Nutzer muss Zusammenhänge erklären
-- **Peer-Teaching-Simulation:** Virtueller Schüler zum Unterrichten
-- **Verständnis-Check:** Regelbasierte Bewertung der Erklärungsqualität
-
-**Begründung:** Fördert aktives Lernen und tiefes Verständnis. Ohne echte KI mit Mustererkennung implementierbar.
-
 ---
 
 ## ⭐ Mittlere Priorität
@@ -204,9 +193,8 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 ## 📌 Zusammenfassung der Priorisierung
 
-### Hohe Priorität (2 Features):
+### Hohe Priorität (1 Feature):
 1. **Loci-Methode** - Bewährte Gedächtnistechnik
-2. **Elaborative Interrogation** - Fördert tiefes Verständnis
 
 ### Mittlere Priorität (5 Features):
 5. Browser-Extension
@@ -233,10 +221,9 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 - Loci-Methode
 
 **Phase 2 (Mittelfristig - 6-12 Monate):**
-- Elaborative Interrogation
+- Browser-Extension
 
 **Phase 3 (Langfristig - 12+ Monate):**
-- Browser-Extension
 - Weitere Features nach Bedarf
 
 ---
