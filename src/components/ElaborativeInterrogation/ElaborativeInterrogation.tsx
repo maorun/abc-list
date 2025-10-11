@@ -105,7 +105,7 @@ const handleNextQuestion = (
 };
 
 export function ElaborativeInterrogation() {
-  const {word} = useParams<{word?: string}>();
+  const {word, sessionId} = useParams<{word?: string; sessionId?: string}>();
   const navigate = useNavigate();
   const service = ElaborativeInterrogationService.getInstance();
   const {trackInterrogationSession} = useGamification();
@@ -123,9 +123,34 @@ export function ElaborativeInterrogation() {
   const [selectedExplanation, setSelectedExplanation] = useState("");
   const [showWordSelector, setShowWordSelector] = useState(true);
 
+  // Load existing session if sessionId is provided
+  useEffect(() => {
+    if (sessionId) {
+      const existingSession = service.getSession(sessionId);
+      if (existingSession) {
+        setSession(existingSession);
+        setSelectedWord(existingSession.word);
+        setSelectedExplanation(existingSession.explanation);
+        setShowWordSelector(false);
+
+        // Find next unanswered question or first question if all answered
+        const nextQ = service.getNextUnansweredQuestion(sessionId);
+        if (nextQ) {
+          setCurrentQuestion(nextQ);
+        } else if (existingSession.questions.length > 0) {
+          // If all questions answered, show first question for review
+          setCurrentQuestion(existingSession.questions[0]);
+        }
+      } else {
+        toast.error("Session nicht gefunden");
+        navigate("/interrogation");
+      }
+    }
+  }, [sessionId, service, navigate]);
+
   // Load word data if provided via URL
   useEffect(() => {
-    if (word) {
+    if (word && !sessionId) {
       // Try to load word from localStorage
       const alphabet = Array.from({length: 26}, (_, i) =>
         String.fromCharCode(97 + i),
@@ -149,7 +174,7 @@ export function ElaborativeInterrogation() {
         }
       }
     }
-  }, [word]);
+  }, [word, sessionId]);
 
   // Start session handler
   const startSession = () =>

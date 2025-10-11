@@ -301,6 +301,10 @@ function AppContent() {
               element={<ElaborativeInterrogation />}
             />
             <Route
+              path="/interrogation/session/:sessionId"
+              element={<ElaborativeInterrogation />}
+            />
+            <Route
               path="/interrogation/:word"
               element={<ElaborativeInterrogation />}
             />
