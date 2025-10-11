@@ -425,6 +425,14 @@ export function ListItem() {
           >
             📥 Import
           </button>
+          <button
+            onClick={() => navigate(`/mindmap/${item}`)}
+            className="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            title="Als Mind-Map visualisieren"
+            aria-label="ABC-Liste als Mind-Map visualisieren"
+          >
+            🧠 Mind-Map
+          </button>
         </div>
       </div>
 

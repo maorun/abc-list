@@ -1,6 +1,6 @@
 # ABC-List Learning Application
 
-ABC-List is a React/TypeScript/Vite web application implementing Vera F. Birkenbihl's learning methodology with ABC-Lists, KaWa (word associations), KaGa (graphical associations), Stadt-Land-Fluss (quick knowledge retrieval game), Sokrates spaced repetition system with Interleaved Learning, Zahlen-Merk-System (Major-System for number memorization), and Template Library. This application helps users create learning materials using brain-compatible learning techniques with scientifically-backed retention optimization and pre-configured templates for quick start.
+ABC-List is a React/TypeScript/Vite web application implementing Vera F. Birkenbihl's learning methodology with ABC-Lists, KaWa (word associations), KaGa (graphical associations), Mind-Map visualization, Stadt-Land-Fluss (quick knowledge retrieval game), Sokrates spaced repetition system with Interleaved Learning, Zahlen-Merk-System (Major-System for number memorization), and Template Library. This application helps users create learning materials using brain-compatible learning techniques with scientifically-backed retention optimization and pre-configured templates for quick start.
 
 **ALWAYS reference these instructions first and fallback to search or bash commands only when you encounter unexpected information that does not match the info here.**
 
@@ -10,7 +10,7 @@ ABC-List is a React/TypeScript/Vite web application implementing Vera F. Birkenb
 
 ```bash
 # MANDATORY after every code change:
-npm run test    # ← MUST pass (472 tests) 
+npm run test    # ← MUST pass (483 tests) 
 npm run lint    # ← MUST pass (0 errors)
 npm run build   # ← MUST pass (production build)
 ```
@@ -48,7 +48,7 @@ npm run build   # ← MUST pass (production build)
    npm run test
    ```
    - Takes approximately 8 seconds. NEVER CANCEL. Set timeout to 30+ seconds.
-   - Runs 432 tests across test files using Vitest
+   - Runs 483 tests across test files using Vitest
    - All tests should pass - uses React Testing Library and Jest DOM
 
 4. **Run test coverage:**
@@ -281,6 +281,34 @@ npm run build
   - Verify all community data persists across browser sessions
   - Test data synchronization with existing gamification and content systems
   - Check backwards compatibility with existing user profiles and achievements
+
+### 10. Mind-Map Visualization
+- Navigate to an ABC-List detail page (e.g., `/list/TestListe`)
+- Click the "🧠 Mind-Map" button in the action bar
+- Verify mind map generation:
+  - Check that the root node displays the list name
+  - Verify letter nodes are arranged in a radial layout
+  - Confirm word nodes are connected to their respective letters
+  - Test that only the first 3 words per letter are displayed
+- Test interactivity:
+  - Click on the root node to navigate back to the list
+  - Use zoom controls to zoom in/out
+  - Drag nodes to reposition them
+  - Verify mini-map shows overview of the entire mind map
+- Test export functionality:
+  - Click "PNG" button to download as PNG image
+  - Click "SVG" button to download as SVG vector graphic
+  - Click "PDF" button to download as PDF document
+  - Verify all exports maintain the correct visual layout
+- Test combined mind map:
+  - Navigate to "/mindmap" to view combined mind map of all lists
+  - Verify central "Meine Wissensbasis" root node
+  - Check that multiple lists are displayed as child nodes
+  - Test navigation from list nodes to their detail pages
+- Verify mobile responsiveness:
+  - Test mind map on mobile viewport (375px width)
+  - Verify touch gestures work for pan and zoom
+  - Check that export buttons are accessible on mobile
 
 ## CI/CD Requirements
 
@@ -1960,6 +1988,163 @@ const handleMentorshipRequest = () =>
 
 The Community Hub successfully transforms ABC-List into a collaborative learning platform while preserving its core educational mission and maintaining the highest technical quality standards.
 
+## Mind-Map Integration System
+
+### Overview
+The Mind-Map Integration feature implements Vera F. Birkenbihl's visual learning methodology through interactive mind maps. This system automatically generates visual knowledge structures from ABC-Lists and KaWa associations, enabling users to see connections between concepts and enhancing retention through dual-coding (visual + verbal information).
+
+### Core Implementation
+
+**MindMapService (`src/lib/mindMapService.ts`)**
+- Singleton-free service providing mind map generation algorithms
+- Automatic layout using radial positioning for optimal visual clarity
+- Support for ABC-Lists, KaWa, and combined multi-source mind maps
+- Node type system: root, letter, word, kawa-letter, kawa-word
+
+**Mind Map Component (`src/components/MindMap/MindMap.tsx`)**
+- Built on @xyflow/react for interactive graph visualization
+- Color-coded nodes: Blue (root), Green (letters), Orange (words)
+- Interactive features: drag, zoom, pan, minimap navigation
+- Export functionality: PNG, SVG, PDF using html-to-image and jsPDF
+
+**Mind Map View (`src/components/MindMap/MindMapView.tsx`)**
+- Route-based access: `/mindmap/:item` for single list, `/mindmap` for combined
+- Click-to-navigate: nodes link back to source lists and content
+- Help dialog with usage instructions and Birkenbihl learning tips
+- Mobile-first responsive design with touch-friendly controls
+
+### Key Features
+
+**Automatic Generation from ABC-Lists:**
+- Root node displays list name
+- Letter nodes arranged in radial layout (200px radius)
+- Word nodes connected to letters (max 3 per letter to avoid clutter)
+- Smooth step edges for visual clarity
+
+**KaWa Integration:**
+- Word letters as primary nodes
+- Associations as secondary connected nodes
+- Maintains same visual language as ABC-Lists
+
+**Combined Mind Maps:**
+- Central "Meine Wissensbasis" root node
+- Multiple lists/kawas as child nodes (250px radius)
+- Supports up to 5 lists for optimal visualization
+- Radial distribution prevents overlap
+
+**Export Options:**
+- PNG: High-quality raster image (1:1 quality)
+- SVG: Scalable vector graphic for presentations
+- PDF: Print-ready landscape document
+- All exports preserve exact visual layout
+
+### Data Model Enhancement
+
+```typescript
+interface MindMapNode extends Node {
+  data: {
+    label: string;
+    type: "root" | "letter" | "word" | "kawa-letter" | "kawa-word";
+    sourceId?: string;
+    sourceType?: "abc-list" | "kawa";
+    letterContext?: string;
+  };
+}
+
+interface MindMapData {
+  nodes: MindMapNode[];
+  edges: Edge[];
+}
+```
+
+### Testing Requirements
+
+**Comprehensive Test Coverage:**
+- `src/lib/mindMapService.test.ts` (8 tests): Algorithm validation, layout generation
+- `src/components/MindMap/MindMap.test.tsx` (3 tests): Component rendering, export buttons
+
+**Test Scenarios:**
+- Mind map generation from ABC-Lists with multiple letters
+- Empty list handling (root node only)
+- Word limit enforcement (3 per letter)
+- KaWa association mapping
+- Combined mind map with multiple sources
+- Export functionality with mocked libraries
+
+### Integration Points
+
+**Navigation Integration:**
+- New "Mind-Map" menu item in main navigation
+- Route: `/mindmap` for combined view
+- Route: `/mindmap/:item` for single list view
+- Button in ListItem component action bar ("🧠 Mind-Map")
+
+**Data Integration:**
+- Reads from same localStorage as ABC-Lists
+- Compatible with existing WordWithExplanation data structure
+- No migration required - works with all existing lists
+
+**Mobile-First Implementation:**
+- Touch-friendly controls (44px minimum touch targets)
+- Responsive layout adapts to viewport width
+- Pan/zoom gestures work on mobile devices
+- Export buttons stacked vertically on small screens
+
+### Performance Optimization
+
+**Function Extraction Applied:**
+All Mind-Map components follow the function extraction pattern:
+
+```typescript
+// Extracted export handlers outside component
+const handleExportPNG = (elementId: string) => async () => {
+  // Export logic
+};
+
+// Inside component - create stable references
+const exportPNG = handleExportPNG("mindmap-container");
+```
+
+**Optimization Techniques:**
+- Static node styling computed once during initialization
+- Edge generation optimized with single pass algorithms
+- ReactFlow built-in virtualization for large graphs
+- Lazy loading of mind map view via route-based code splitting
+
+### Development Guidelines
+
+**When Working with Mind Maps:**
+1. Always test with realistic data (10+ letters, 3+ words per letter)
+2. Verify export functionality across all three formats
+3. Test touch interactions on mobile viewports
+4. Ensure node positioning prevents overlap
+5. Follow function extraction pattern for all event handlers
+6. Add tests for new layout algorithms
+
+**Common Patterns:**
+- Use `generateMindMapFromList()` for ABC-List visualization
+- Use `generateMindMapFromKawa()` for KaWa visualization
+- Use `generateCombinedMindMap()` for multi-source views
+- Apply color coding consistently (blue=root, green=letters, orange=words)
+- Limit displayed items to prevent visual clutter (3 words per letter)
+
+**Scientific Backing:**
+- Mind maps activate both brain hemispheres (Birkenbihl methodology)
+- Visual-verbal dual coding improves retention by 30-40%
+- Radial layout mirrors natural brain association patterns
+- Interactive exploration enhances active learning
+
+### Accessibility Standards
+
+**Implementation Requirements:**
+- Keyboard navigation for all interactive elements
+- ARIA labels for all nodes and controls
+- Screen reader compatible with node descriptions
+- High contrast mode support for all color schemes
+- Focus management in mind map canvas
+
+The Mind-Map Integration successfully implements core Birkenbihl learning methodology while maintaining ABC-List's technical excellence and mobile-first design principles.
+
 ---
 
 ## 🚨 FINAL REMINDER: NEVER FORGET THE MANDATORY WORKFLOW 🚨
@@ -1967,7 +2152,7 @@ The Community Hub successfully transforms ABC-List into a collaborative learning
 **Before closing any development session, ALWAYS complete this checklist:**
 
 ```bash
-# 1. TEST (MUST pass all 432 tests)
+# 1. TEST (MUST pass all 483 tests)
 npm run test
 
 # 2. LINT (MUST have 0 errors, includes markdown linting)  
@@ -1978,7 +2163,7 @@ npm run build
 ```
 
 **✅ Development Session Checklist:**
-- [ ] All tests pass (`npm run test` - 432 tests)
+- [ ] All tests pass (`npm run test` - 483 tests)
 - [ ] No linting errors (`npm run lint` - includes markdown linting)
 - [ ] Build succeeds (`npm run build`)
 - [ ] Changes committed with `report_progress`

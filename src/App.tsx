@@ -42,6 +42,7 @@ import {GamificationDashboard} from "./components/Gamification/GamificationDashb
 import {SearchAndFilter} from "./components/Search/SearchAndFilter";
 import {Community} from "./components/Community/Community";
 import {NumberMemory} from "./components/NumberMemory/NumberMemory";
+import {MindMapView} from "./components/MindMap/MindMapView";
 import {StatusIndicators} from "./components/StatusIndicators";
 import {CloudSyncStatusIndicator} from "./components/CloudSync/CloudSyncStatusIndicator";
 
@@ -76,6 +77,11 @@ const navigationItems = [
     to: "/number-memory",
     label: "Zahlen-Merk-System",
     description: "Zahlen mit Major-System merken",
+  },
+  {
+    to: "/mindmap",
+    label: "Mind-Map",
+    description: "Wissensbasis visualisieren",
   },
   {
     to: "/gamification",
@@ -264,6 +270,11 @@ function AppContent() {
           <Routes>
             <Route path="/" element={<List />} />
             <Route path="/list/:item" element={<ListItem />} />
+            <Route path="/mindmap/:item" element={<MindMapView />} />
+            <Route
+              path="/mindmap"
+              element={<MindMapView showCombined={true} />}
+            />
             <Route path="/multi-list" element={<MultiColumnList />} />
             <Route path="/multi-list/:item" element={<MultiColumnListItem />} />
             <Route path="/search" element={<SearchAndFilter />} />
