@@ -133,19 +133,29 @@ describe("Interleaved Learning Algorithm", () => {
         contextSwitchFrequency: 5, // Switch every 5 terms
       };
 
-      const resultFrequent = generateInterleavedSequence(
-        topics,
-        frequentSwitching,
-      );
-      const resultInfrequent = generateInterleavedSequence(
-        topics,
-        infrequentSwitching,
-      );
+      // Run multiple times to account for randomness and take average
+      const runs = 10;
+      let totalFrequent = 0;
+      let totalInfrequent = 0;
 
-      // More frequent switching should have more context switches
-      expect(resultFrequent.contextSwitches).toBeGreaterThanOrEqual(
-        resultInfrequent.contextSwitches,
-      );
+      for (let i = 0; i < runs; i++) {
+        const resultFrequent = generateInterleavedSequence(
+          topics,
+          frequentSwitching,
+        );
+        const resultInfrequent = generateInterleavedSequence(
+          topics,
+          infrequentSwitching,
+        );
+        totalFrequent += resultFrequent.contextSwitches;
+        totalInfrequent += resultInfrequent.contextSwitches;
+      }
+
+      const avgFrequent = totalFrequent / runs;
+      const avgInfrequent = totalInfrequent / runs;
+
+      // More frequent switching should have more context switches on average
+      expect(avgFrequent).toBeGreaterThan(avgInfrequent);
     });
 
     it("should calculate effectiveness score correctly", () => {
