@@ -46,12 +46,14 @@ const handleStartSession = (
   service: ElaborativeInterrogationService,
   setSession: (session: InterrogationSession) => void,
   setCurrentQuestion: (question: InterrogationQuestion | null) => void,
+  setShowWordSelector: (show: boolean) => void,
   trackInterrogation: () => void,
 ) => {
   const newSession = service.startSession(word, explanation);
   setSession(newSession);
   const firstQuestion = service.getNextUnansweredQuestion(newSession.id);
   setCurrentQuestion(firstQuestion);
+  setShowWordSelector(false);
   trackInterrogation();
   toast.success("Interrogation-Session gestartet!");
 };
@@ -157,6 +159,7 @@ export function ElaborativeInterrogation() {
       service,
       setSession,
       setCurrentQuestion,
+      setShowWordSelector,
       trackInterrogationSession,
     );
 
