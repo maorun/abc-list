@@ -53,6 +53,7 @@ describe("PWA Functionality", () => {
     Object.defineProperty(global, "indexedDB", {
       value: mockIndexedDB,
       writable: true,
+      configurable: true,
     });
 
     Object.defineProperty(global, "navigator", {
@@ -61,6 +62,7 @@ describe("PWA Functionality", () => {
         onLine: true,
       },
       writable: true,
+      configurable: true,
     });
 
     Object.defineProperty(global, "Notification", {
@@ -69,11 +71,13 @@ describe("PWA Functionality", () => {
         requestPermission: vi.fn(() => Promise.resolve("granted")),
       },
       writable: true,
+      configurable: true,
     });
 
     Object.defineProperty(global, "PushManager", {
       value: vi.fn(),
       writable: true,
+      configurable: true,
     });
 
     // Clear localStorage
@@ -266,21 +270,29 @@ describe("PWA Functionality", () => {
     });
 
     it("should fallback to browser notifications when push disabled", async () => {
-      // Mock Notification constructor properly
-      Object.defineProperty(global, "Notification", {
-        value: vi.fn().mockImplementation((title, options) => ({
+      // Mock Notification constructor properly for Vitest v4
+      const NotificationConstructor = vi.fn(function (
+        this: unknown,
+        title: string,
+        options?: NotificationOptions,
+      ) {
+        return {
           title,
           ...options,
           close: vi.fn(),
-        })),
-        writable: true,
+        };
       });
 
-      // Set permission to granted
-      global.Notification.permission = "granted";
-      global.Notification.requestPermission = vi.fn(() =>
-        Promise.resolve("granted"),
+      NotificationConstructor.permission = "granted";
+      NotificationConstructor.requestPermission = vi.fn(() =>
+        Promise.resolve("granted" as NotificationPermission),
       );
+
+      Object.defineProperty(global, "Notification", {
+        value: NotificationConstructor,
+        writable: true,
+        configurable: true,
+      });
 
       // Enable basic notifications only
       savePWANotificationSettings({
@@ -302,7 +314,7 @@ describe("PWA Functionality", () => {
       const result = await testPushNotification();
 
       expect(result).toBe(true);
-      expect(global.Notification).toHaveBeenCalledWith(
+      expect(NotificationConstructor).toHaveBeenCalledWith(
         "🧪 Test Benachrichtigung",
         expect.objectContaining({
           body: "Deine Benachrichtigungen funktionieren!",

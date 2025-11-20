@@ -36,6 +36,7 @@ const indexedDBMock = {
 Object.defineProperty(window, "indexedDB", {
   value: indexedDBMock,
   writable: true,
+  configurable: true,
 });
 
 // Mock Notification API for PWA tests
@@ -81,11 +82,13 @@ NotificationMock.requestPermission = vi.fn(() => Promise.resolve("granted"));
 Object.defineProperty(window, "Notification", {
   value: NotificationMock,
   writable: true,
+  configurable: true,
 });
 
 Object.defineProperty(global, "Notification", {
   value: NotificationMock,
   writable: true,
+  configurable: true,
 });
 
 // Mock service worker for PWA tests
