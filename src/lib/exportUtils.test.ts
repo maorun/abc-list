@@ -2,21 +2,24 @@ import {describe, it, expect, beforeEach, vi} from "vitest";
 
 // Mock jsPDF to avoid actual PDF generation in tests
 const mockSave = vi.fn();
+// Vitest v4 requires proper constructor pattern for mocks
 vi.mock("jspdf", () => ({
-  default: vi.fn().mockImplementation(() => ({
-    setFontSize: vi.fn(),
-    setFont: vi.fn(),
-    text: vi.fn(),
-    addPage: vi.fn(),
-    splitTextToSize: vi.fn().mockReturnValue(["test line"]),
-    save: mockSave,
-    internal: {
-      pageSize: {
-        height: 297,
-        width: 210,
+  default: vi.fn(function (this: unknown) {
+    return {
+      setFontSize: vi.fn(),
+      setFont: vi.fn(),
+      text: vi.fn(),
+      addPage: vi.fn(),
+      splitTextToSize: vi.fn().mockReturnValue(["test line"]),
+      save: mockSave,
+      internal: {
+        pageSize: {
+          height: 297,
+          width: 210,
+        },
       },
-    },
-  })),
+    };
+  }),
 }));
 
 // Mock Papa Parse
@@ -53,11 +56,17 @@ describe("ExportUtils", () => {
     global.URL.createObjectURL = vi.fn(() => "blob:url");
     global.URL.revokeObjectURL = vi.fn();
 
-    // Mock Blob constructor
-    global.Blob = vi.fn().mockImplementation((content, options) => ({
-      type: options?.type || "",
-      size: content[0]?.length || 0,
-    }));
+    // Mock Blob constructor - Vitest v4 requires proper constructor pattern
+    global.Blob = vi.fn(function (
+      this: Blob,
+      content: BlobPart[],
+      options?: BlobPropertyBag,
+    ) {
+      return {
+        type: options?.type || "",
+        size: content[0]?.toString().length || 0,
+      } as Blob;
+    }) as unknown as typeof Blob;
 
     // Mock document.createElement and DOM manipulation
     const mockElement = {
