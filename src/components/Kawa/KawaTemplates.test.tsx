@@ -132,9 +132,12 @@ describe("KawaTemplates", () => {
     const letters = Object.keys(selectedTemplate.associations);
     expect(letters.length).toBeGreaterThan(0);
 
-    // Each association should be a string
+    // Each association should be an array of strings
     letters.forEach((letter) => {
-      expect(typeof selectedTemplate.associations[letter]).toBe("string");
+      expect(Array.isArray(selectedTemplate.associations[letter])).toBe(true);
+      selectedTemplate.associations[letter].forEach((association: unknown) => {
+        expect(typeof association).toBe("string");
+      });
     });
   });
 
