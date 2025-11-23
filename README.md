@@ -41,27 +41,27 @@ z.B.
 
 Thema: Ökonomie
 
-| Buchstabe     | Assoziation  |
-| ------------- |:-------------:|
-| A   | Aufgaben von allen |
-| B   | Betriebswirtschaftslehre in Industriebetrieben |
-| ... |       |
-| P   | Prognose der wirtschaftlichen Entwicklung      |
-| ... |       |
-| Y   | (nichts) |
-| Z   | Zusammenhänge und Gesetzmäßigkeiten in einer Gesellschaft |
+| Buchstabe | Assoziation |
+| :--- | :--- |
+| A | Aufgaben von allen |
+| B | Betriebswirtschaftslehre in Industriebetrieben |
+| ... | |
+| P | Prognose der wirtschaftlichen Entwicklung |
+| ... | |
+| Y | (nichts) |
+| Z | Zusammenhänge und Gesetzmäßigkeiten in einer Gesellschaft |
 
 oder: Testing in Software
 
-| Buchstabe     | Assoziation  |
-| ------------- |:-------------:|
-| A   | Automatisierung |
-| B   | breit gefächert, Bugs nicht wiederholen |
-| ... |       |
-| U   | Unit- und Integration-Tests |
-| ... |       |
-| Y   | (nichts) |
-| Z   | Zusammenhänge erkennen, weniger **Z**uarbeit |
+| Buchstabe | Assoziation |
+| :--- | :--- |
+| A | Automatisierung |
+| B | breit gefächert, Bugs nicht wiederholen |
+| ... | |
+| U | Unit- und Integration-Tests |
+| ... | |
+| Y | (nichts) |
+| Z | Zusammenhänge erkennen, weniger **Z**uarbeit |
 
 Es ist natürlich erlaubt auch mehrere Assoziationen pro Buchstaben zu definieren.
 
@@ -99,29 +99,29 @@ z.B.
 
 Thema: Ökonomie
 
-| Buchstabe     | Assoziation  | Erklärung (in Gedanken, wenn man die Assoziation sieht) |
-| ------------- |:-------------:| ---- |
-| Ö   | Öl         | .. treibt die Wirtschaft an |
-| K   | Kopernikus | beschäftigte sich mit der Folge der Inflation |
-| O   |       | evtl. fällt nichts ein, kann auch leer gelassen werden |
-| N   | Der Wohlstand der **N**ationen  | 1776 veröffentlichte Buch von Adam Smith |
-| O   | natürliche **O**rdnung | Freiheit, Wettbewerb und Privateigentum |
-| M   | Modelle | müssen erstellt werden für Prognosen der wirtschaftliche Entwicklung |
-| I   | Irrtum | allein die Wirtschaft kann nicht alles regeln |
-| E   | Engagement | ohne Engagement wird ein Unternehmen nicht überleben |
+| Buchstabe | Assoziation | Erklärung (in Gedanken, wenn man die Assoziation sieht) |
+| :--- | :--- | :--- |
+| Ö | Öl | .. treibt die Wirtschaft an |
+| K | Kopernikus | beschäftigte sich mit der Folge der Inflation |
+| O | | evtl. fällt nichts ein, kann auch leer gelassen werden |
+| N | Der Wohlstand der **N**ationen | 1776 veröffentlichte Buch von Adam Smith |
+| O | natürliche **O**rdnung | Freiheit, Wettbewerb und Privateigentum |
+| M | Modelle | müssen erstellt werden für Prognosen der wirtschaftliche Entwicklung |
+| I | Irrtum | allein die Wirtschaft kann nicht alles regeln |
+| E | Engagement | ohne Engagement wird ein Unternehmen nicht überleben |
 
 oder: Software
 
-| Buchstabe     | Assoziation  |
-| ------------- |:-------------:|
-| S   | sofort installierbar |
-| O   | Open-Source |
-| F   | frei nur unter bestimmten Lizenzen      |
-| T   | Training benötigt um eine Software zu schreiben |
-| W   | wandelbar (als Programmierer anpassbar) |
-| A   |  |
-| R   | Rating bei Games |
-| E   |       |
+| Buchstabe | Assoziation |
+| :--- | :--- |
+| S | sofort installierbar |
+| O | Open-Source |
+| F | frei nur unter bestimmten Lizenzen |
+| T | Training benötigt um eine Software zu schreiben |
+| W | wandelbar (als Programmierer anpassbar) |
+| A | |
+| R | Rating bei Games |
+| E | |
 
 Da im Gegenzug zu ABC-Listen ein KaWa enger gefasst ist, muss man mehr überlegen und aktiviert sein Gehirn in die Tiefe.
 

@@ -67,13 +67,21 @@ export function Kawa() {
     updateStorage(newKawas);
 
     // Save template associations to localStorage
-    const letters = template.word.toLowerCase().split("");
-    letters.forEach((letter, index) => {
-      const storageKey = `kawa-${kawaKey}:${letter}${index}`;
-      const association = Object.values(template.associations)[index] || "";
-      if (association) {
-        localStorage.setItem(storageKey, association);
-      }
+    Object.entries(template.associations).forEach(([letter, texts]) => {
+      texts.forEach((text, index) => {
+        // Construct a unique key for each association to avoid overwriting.
+        // The original logic was flawed because multiple letters can be the same.
+        // A better approach is to find all indices of a letter and use them.
+        const indices = template.word
+          .split("")
+          .map((l, i) => (l.toLowerCase() === letter.toLowerCase() ? i : -1))
+          .filter((i) => i !== -1);
+
+        if (indices[index] !== undefined) {
+          const storageKey = `KawaItem_${letter}_${newKawa.key}_${indices[index]}`;
+          localStorage.setItem(storageKey, JSON.stringify({text}));
+        }
+      });
     });
 
     // Track gamification activity
