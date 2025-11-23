@@ -31,9 +31,15 @@ export const kawaTemplates: KawaTemplate[] = [
     preview: "📚 Lesen, Erinnern, Notizen...",
     associations: {
       l: ["Lesen - Aufnahme von Informationen"],
-      e: ["Erinnern - Abrufen von Wissen", "Experimentieren - Aktives Ausprobieren"],
+      e: [
+        "Erinnern - Abrufen von Wissen",
+        "Experimentieren - Aktives Ausprobieren",
+      ],
       r: ["Repetieren - Wiederholung festigt"],
-      n: ["Notizen - Schriftliches Festhalten", "Nachdenken - Reflektieren über Gelerntes"],
+      n: [
+        "Notizen - Schriftliches Festhalten",
+        "Nachdenken - Reflektieren über Gelerntes",
+      ],
     },
   },
   {
@@ -62,7 +68,10 @@ export const kawaTemplates: KawaTemplate[] = [
     associations: {
       w: ["Wahrheit - Fundierte Erkenntnisse"],
       i: ["Information - Daten und Fakten"],
-      s: ["Struktur - Organisierte Gedanken", "Synthese - Verbindung von Ideen"],
+      s: [
+        "Struktur - Organisierte Gedanken",
+        "Synthese - Verbindung von Ideen",
+      ],
       e: ["Erfahrung - Praktisches Lernen"],
       n: ["Neugier - Wissensdurst"],
     },
@@ -109,8 +118,14 @@ export const kawaTemplates: KawaTemplate[] = [
     associations: {
       f: ["Freie Wahl - Entscheidungsfreiheit"],
       r: ["Respekt - Achtung der Grenzen"],
-      e: ["Eigenverantwortung - Selbstständiges Handeln", "Entfaltung - Persönliches Wachstum"],
-      i: ["Individualität - Eigene Persönlichkeit", "Initiative - Aktives Gestalten"],
+      e: [
+        "Eigenverantwortung - Selbstständiges Handeln",
+        "Entfaltung - Persönliches Wachstum",
+      ],
+      i: [
+        "Individualität - Eigene Persönlichkeit",
+        "Initiative - Aktives Gestalten",
+      ],
       h: ["Hoffnung - Glaube an Möglichkeiten"],
       t: ["Toleranz - Akzeptanz der Vielfalt"],
     },
@@ -139,7 +154,11 @@ export const kawaTemplates: KawaTemplate[] = [
     word: "ENERGIE",
     preview: "⚡ Kraft, Bewegung, Wärme...",
     associations: {
-      e: ["Elektrizität - Elektrische Energie", "Erneuerbar - Nachhaltige Energie", "Erhaltung - Energieerhaltungssatz"],
+      e: [
+        "Elektrizität - Elektrische Energie",
+        "Erneuerbar - Nachhaltige Energie",
+        "Erhaltung - Energieerhaltungssatz",
+      ],
       n: ["Natur - Natürliche Energiequellen"],
       r: ["Reibung - Mechanische Energie"],
       g: ["Generator - Energieerzeugung"],
