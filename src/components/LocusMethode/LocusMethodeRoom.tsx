@@ -80,34 +80,7 @@ export function LocusMethodeRoom() {
     [navigate],
   );
 
-  useEffect(() => {
-    if (id) {
-      const loadedPalace = service.getPalace(id);
-      if (loadedPalace) {
-        setPalace(loadedPalace);
-        document.title = `Loci-Methode - ${loadedPalace.name}`;
-        drawPalace(loadedPalace);
-      } else {
-        navigate("/locus-methode");
-      }
-    }
-
-    const handleUpdate = () => {
-      if (id) {
-        const updatedPalace = service.getPalace(id);
-        if (updatedPalace) {
-          setPalace(updatedPalace);
-          drawPalace(updatedPalace);
-        }
-      }
-    };
-
-    service.on(handleUpdate);
-    return () => {
-      service.off(handleUpdate);
-    };
-  }, [id, service, navigate, drawPalace]);
-
+  // Define drawPalace BEFORE useEffect that uses it
   const drawPalace = useCallback((palaceData: MemoryPalace) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -228,6 +201,34 @@ export function LocusMethodeRoom() {
     // Restore main canvas state
     ctx.restore();
   }, []);
+
+  useEffect(() => {
+    if (id) {
+      const loadedPalace = service.getPalace(id);
+      if (loadedPalace) {
+        setPalace(loadedPalace);
+        document.title = `Loci-Methode - ${loadedPalace.name}`;
+        drawPalace(loadedPalace);
+      } else {
+        navigate("/locus-methode");
+      }
+    }
+
+    const handleUpdate = () => {
+      if (id) {
+        const updatedPalace = service.getPalace(id);
+        if (updatedPalace) {
+          setPalace(updatedPalace);
+          drawPalace(updatedPalace);
+        }
+      }
+    };
+
+    service.on(handleUpdate);
+    return () => {
+      service.off(handleUpdate);
+    };
+  }, [id, service, navigate, drawPalace]);
 
   const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!id) return;
