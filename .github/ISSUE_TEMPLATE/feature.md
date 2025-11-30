@@ -24,7 +24,12 @@ assignees: 'Copilot'
      - Accessibility-Verbesserungen
      - Mobile-First Design Optimierungen
    - Orientiere dich an den **Birkenbihl-Lernmethoden** und dem **pädagogischen Ansatz** der Anwendung
-   - Dokumentiere das neue Feature-Konzept in einem Kommentar in diesem Issue
+   - **Füge neue Feature-Vorschläge zu `/features.md` hinzu:**
+     - Erstelle 3-5 neue, gut durchdachte Feature-Vorschläge
+     - Ordne sie nach Priorität ein (Hoch/Mittel/Niedrig)
+     - Bewerte nach Impact, Alignment, Feasibility (siehe features.md Struktur)
+     - Füge die Features zur entsprechenden Prioritätskategorie in `/features.md` hinzu
+   - Wähle dann das vielversprechendste der neu hinzugefügten Features zur Implementierung aus
 
 ### Schritt 2: Entwicklung
 
@@ -39,7 +44,7 @@ Die `copilot-instructions.md` enthält:
 - Projektstruktur und Common Tasks
 
 **Entwicklungs-Checkliste:**
-- [ ] Feature aus `features.md` ausgewählt (oder neues Feature konzipiert, falls leer)
+- [ ] Feature aus `features.md` ausgewählt (oder neue Features zu `features.md` hinzugefügt und eines ausgewählt, falls leer)
 - [ ] `.github/copilot-instructions.md` vollständig gelesen und verstanden
 - [ ] `AGENTS.md` für projekt-spezifische Konventionen konsultiert
 - [ ] Tests geschrieben (TDD: Test-Driven Development)
@@ -50,18 +55,19 @@ Die `copilot-instructions.md` enthält:
 - [ ] **MANDATORY:** `npm run lint` ✅ (0 Fehler, inkl. Markdown)
 - [ ] **MANDATORY:** `npm run build` ✅ (Production Build erfolgreich)
 - [ ] Dokumentation aktualisiert (`AGENTS.md` und `.github/copilot-instructions.md`)
-- [ ] Feature aus `features.md` entfernt (falls dort vorhanden)
+- [ ] Implementiertes Feature aus `features.md` entfernt
 
 ### Schritt 3: Nach der Implementierung
 
-**Entferne das Feature aus `features.md`:**
-- Lösche den entsprechenden Feature-Eintrag aus `/features.md`
-- Erwähne **NICHT**, dass das Feature umgesetzt wurde
+**Entferne das implementierte Feature aus `features.md`:**
+- Lösche nur den Feature-Eintrag, der tatsächlich implementiert wurde
+- Erwähne **NICHT** in `features.md`, dass es umgesetzt wurde
 - Behalte die Struktur und Priorisierung bei
+- Belasse andere (nicht implementierte) Features in der Datei
 
-**Falls `features.md` komplett leer ist:**
-- Behalte die Struktur der Datei (Header, Kategorien)
-- Füge einen kurzen Hinweis hinzu: "Alle priorisierten Features sind implementiert. Neue Feature-Vorschläge können als GitHub Issues eingereicht werden."
+**Falls du neue Features zu `features.md` hinzugefügt hast:**
+- Entferne nur das eine Feature, das du implementiert hast
+- Die anderen neu hinzugefügten Features bleiben für zukünftige Implementierungen erhalten
 
 ## 📋 Wichtige Referenzen
 
