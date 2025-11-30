@@ -106,14 +106,17 @@ export function LocusMethodeRoom() {
     return () => {
       service.off(handleUpdate);
     };
-  }, [id, service, navigate]);
+  }, [id, service, navigate, drawPalace]);
 
-  const drawPalace = (palaceData: MemoryPalace) => {
+  const drawPalace = useCallback((palaceData: MemoryPalace) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
+
+    // Save canvas state
+    ctx.save();
 
     // Set canvas size
     const rect = canvas.getBoundingClientRect();
@@ -130,6 +133,7 @@ export function LocusMethodeRoom() {
 
     // Draw landmarks
     template.landmarks.forEach((landmark) => {
+      ctx.save(); // Save state before drawing each landmark
       const x = (landmark.x / 100) * canvas.width;
       const y = (landmark.y / 100) * canvas.height;
 
@@ -137,16 +141,19 @@ export function LocusMethodeRoom() {
       ctx.font = "32px Arial";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
+      ctx.fillStyle = "#000"; // Reset fill style for icons
       ctx.fillText(landmark.icon, x, y);
 
       // Draw landmark label
       ctx.font = "12px Arial";
       ctx.fillStyle = "#666";
       ctx.fillText(landmark.label, x, y + 25);
+      ctx.restore(); // Restore state after drawing landmark
     });
 
     // Draw memory objects
     palaceData.objects.forEach((obj) => {
+      ctx.save(); // Save state before drawing each object
       const x = (obj.x / 100) * canvas.width;
       const y = (obj.y / 100) * canvas.height;
 
@@ -161,6 +168,7 @@ export function LocusMethodeRoom() {
         ctx.font = "24px Arial";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
+        ctx.fillStyle = "#000"; // Ensure text is visible
         ctx.fillText(obj.symbol, x, y);
       }
 
@@ -186,12 +194,14 @@ export function LocusMethodeRoom() {
         }
       });
       ctx.fillText(line, x, lineY);
+      ctx.restore(); // Restore state after drawing object
     });
 
     // Draw routes if any
     palaceData.routes.forEach((route) => {
       if (route.objectIds.length < 2) return;
 
+      ctx.save(); // Save state before drawing route
       ctx.strokeStyle = "#3B82F6";
       ctx.lineWidth = 2;
       ctx.setLineDash([5, 5]);
@@ -212,9 +222,12 @@ export function LocusMethodeRoom() {
       });
 
       ctx.stroke();
-      ctx.setLineDash([]);
+      ctx.restore(); // Restore state after drawing route
     });
-  };
+
+    // Restore main canvas state
+    ctx.restore();
+  }, []);
 
   const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!id) return;
