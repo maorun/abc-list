@@ -430,9 +430,9 @@ export function LocusMethodeRoom() {
       {/* Delete Confirmation */}
       <DeleteConfirm
         isVisible={deleteConfirm.visible}
-        onConfirm={handleDeleteObject}
-        onCancel={() => setDeleteConfirm({visible: false, objectId: null})}
-        itemName="dieses Objekt"
+        itemToDelete={deleteConfirm.objectId}
+        onDelete={handleDeleteObject}
+        onAbort={() => setDeleteConfirm({visible: false, objectId: null})}
       />
     </div>
   );

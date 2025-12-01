@@ -265,9 +265,9 @@ export function LocusMethode() {
       {/* Delete Confirmation */}
       <DeleteConfirm
         isVisible={deleteConfirm.visible}
-        onConfirm={confirmDelete}
-        onCancel={() => setDeleteConfirm({visible: false, palaceId: null})}
-        itemName="diesen Gedächtnispalast"
+        itemToDelete={deleteConfirm.palaceId}
+        onDelete={confirmDelete}
+        onAbort={() => setDeleteConfirm({visible: false, palaceId: null})}
       />
     </div>
   );
