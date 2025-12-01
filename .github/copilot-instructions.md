@@ -1,6 +1,6 @@
 # ABC-List Learning Application
 
-ABC-List is a React/TypeScript/Vite web application implementing Vera F. Birkenbihl's learning methodology with ABC-Lists, KaWa (word associations), KaGa (graphical associations), Mind-Map visualization, Stadt-Land-Fluss (quick knowledge retrieval game), Sokrates spaced repetition system with Interleaved Learning, Zahlen-Merk-System (Major-System for number memorization), and Template Library. This application helps users create learning materials using brain-compatible learning techniques with scientifically-backed retention optimization and pre-configured templates for quick start.
+ABC-List is a React/TypeScript/Vite web application implementing Vera F. Birkenbihl's learning methodology with ABC-Lists, KaWa (word associations), KaGa (graphical associations), Mind-Map visualization, Stadt-Land-Fluss (quick knowledge retrieval game), Sokrates spaced repetition system with Interleaved Learning, Zahlen-Merk-System (Major-System for number memorization), Loci-Methode (Memory Palace with spatial memory technique), and Template Library. This application helps users create learning materials using brain-compatible learning techniques with scientifically-backed retention optimization and pre-configured templates for quick start.
 
 **ALWAYS reference these instructions first and fallback to search or bash commands only when you encounter unexpected information that does not match the info here.**
 
@@ -10,7 +10,7 @@ ABC-List is a React/TypeScript/Vite web application implementing Vera F. Birkenb
 
 ```bash
 # MANDATORY after every code change:
-npm run test    # ← MUST pass (516 tests) 
+npm run test    # ← MUST pass (613 tests) 
 npm run lint    # ← MUST pass (0 errors)
 npm run build   # ← MUST pass (production build)
 ```
@@ -48,7 +48,7 @@ npm run build   # ← MUST pass (production build)
    npm run test
    ```
    - Takes approximately 8 seconds. NEVER CANCEL. Set timeout to 30+ seconds.
-   - Runs 516 tests across test files using Vitest
+   - Runs 613 tests across test files using Vitest
    - All tests should pass - uses React Testing Library and Jest DOM
 
 4. **Run test coverage:**
@@ -86,7 +86,7 @@ npm run build   # ← MUST pass (production build)
 **🔴 CRITICAL: After making ANY code changes, you MUST run this validation sequence:**
 
 ```bash
-# Step 1: Test (MUST pass all 516 tests)
+# Step 1: Test (MUST pass all 613 tests)
 npm run test
 
 # Step 2: Lint (MUST have 0 errors) 
@@ -99,7 +99,7 @@ npm run build
 **If any of these steps fail, you MUST fix the issues before committing. No exceptions.**
 
 **📝 Use this checklist for every development session:**
-- [ ] Tests pass (`npm run test` - 516 tests)
+- [ ] Tests pass (`npm run test` - 613 tests)
 - [ ] Linting passes (`npm run lint` - 0 errors, includes markdown linting)  
 - [ ] Build succeeds (`npm run build`)
 - [ ] Only then commit changes with `report_progress`
@@ -2369,12 +2369,213 @@ The Dual-Coding Support system successfully enhances learning effectiveness thro
 
 ---
 
+## Loci-Methode (Memory Palace) System
+
+### Overview
+The Loci-Methode implements the ancient memory palace technique (Method of Loci) through a modern 2D digital interface. This scientifically-backed spatial memory technique allows users to associate information with specific locations in virtual rooms, dramatically improving retention through spatial visualization and mental navigation.
+
+### Core Implementation
+
+**Service Architecture (`src/lib/LocusMethodeService.ts`)**
+- Singleton service managing all memory palace data with localStorage persistence
+- Event-driven system for real-time UI updates across components
+- Support for multiple palaces with independent object collections
+- Full CRUD operations for palaces, objects, and memory routes
+
+**Data Model (`src/lib/locusMethode.ts`)**
+- Memory Palace: Container with template, objects, and routes
+- Memory Object: Individual pieces of information placed at specific coordinates
+- Memory Route: Ordered paths through objects for sequential memorization
+- Room Templates: Predefined layouts (Haus, Büro, Natur, Custom)
+
+**UI Components (`src/components/LocusMethode/`)**
+- **LocusMethode.tsx**: Main list view with statistics dashboard
+- **LocusMethodeRoom.tsx**: Interactive canvas-based room editor with click-to-place objects
+
+### Key Features
+
+**Room Templates (4 predefined):**
+- **Haus (House)**: Comfortable home with Eingang, Wohnzimmer, Küche, Schlafzimmer, Badezimmer
+- **Büro (Office)**: Professional workspace with Schreibtisch, Bücherregal, Besprechungstisch, Whiteboard, Aktenschrank
+- **Natur (Nature)**: Outdoor environment with Großer Baum, Blumenwiese, Teich, Felsen, Bank
+- **Custom**: Blank canvas for user-created memory palaces
+
+**Interactive Canvas Features:**
+- Click-to-place objects with percentage-based positioning (0-100)
+- Visual landmarks with emoji icons for spatial reference
+- Object details dialog with content, notes, and statistics
+- Background colors matching template themes
+- Responsive canvas sizing for mobile and desktop
+
+**Memory Routes:**
+- Create ordered paths through objects for sequential learning
+- Visual route representation with dashed lines
+- Support for multiple routes per palace
+- Automatic route cleanup when objects are deleted
+
+**Statistics Dashboard:**
+- Total memory palaces count
+- Total objects stored across all palaces
+- Total memory routes created
+- Average objects per palace metric
+
+### Data Model Enhancement
+
+```typescript
+interface MemoryPalace {
+  id: string;
+  name: string;
+  template: RoomTemplateType;
+  objects: MemoryObject[];
+  routes: MemoryRoute[];
+  createdAt: string;
+  lastModified: string;
+  reviewCount: number;
+}
+
+interface MemoryObject {
+  id: string;
+  content: string;
+  x: number; // Position percentage 0-100
+  y: number; // Position percentage 0-100
+  color: string;
+  size: number;
+  symbol?: string;
+  notes?: string;
+  createdAt: string;
+  reviewCount: number;
+  lastReviewed?: string;
+}
+
+interface MemoryRoute {
+  id: string;
+  name: string;
+  objectIds: string[];
+  description?: string;
+  createdAt: string;
+}
+```
+
+### Testing Coverage
+
+**Comprehensive Test Suite (54 new tests, 613 total):**
+- `src/lib/locusMethode.test.ts` (14 tests): Utility functions and data structures
+- `src/lib/LocusMethodeService.test.ts` (33 tests): Service layer operations
+- `src/components/LocusMethode/LocusMethode.test.tsx` (7 tests): Component rendering
+
+**Test Scenarios:**
+- Memory palace creation with all template types
+- Object placement and position validation
+- Memory route management with object relationships
+- Statistics calculation accuracy
+- Data persistence and recovery
+- Event system functionality
+
+### Integration Points
+
+**Navigation Integration:**
+- New "Loci-Methode" entry in main navigation
+- Route: `/locus-methode` for palace list
+- Route: `/locus-methode/:id` for individual room editor
+- Mobile-responsive hamburger menu support
+
+**Gamification Integration:**
+- Palace creation tracked as gamification activity
+- Points awarded for creating new memory palaces
+- Statistics contribute to overall learning metrics
+
+**Data Persistence:**
+- localStorage keys: `locus-memoryPalaces`, `locus-activePalaceId`
+- Event-driven updates for UI synchronization
+- Active palace tracking for seamless navigation
+
+### Mobile-First Implementation
+
+**Responsive Design:**
+- Touch-friendly canvas with precise click/touch handling
+- Mobile-optimized dialogs and forms
+- Responsive statistics cards (2x2 grid mobile, 1x4 desktop)
+- Full-screen canvas mode for distraction-free placement
+
+**Component Patterns:**
+```jsx
+// Mobile-first statistics dashboard
+<div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+  <div className="bg-white p-4 rounded-lg shadow">
+    <div className="text-2xl font-bold text-blue-600">{stats.totalPalaces}</div>
+    <div className="text-sm text-gray-600">Gedächtnispaläste</div>
+  </div>
+</div>
+```
+
+### Performance Optimization
+
+**Function Extraction Applied:**
+All Loci-Methode components follow the function extraction pattern:
+
+```typescript
+// Extracted handlers prevent recreation on every render
+const handleCanvasClickAction = (
+  e: React.MouseEvent<HTMLCanvasElement>,
+  canvasRef: React.RefObject<HTMLCanvasElement>,
+  palaceId: string,
+  service: LocusMethodeService,
+  setSelectedObject: (obj: MemoryObject | null) => void,
+  setIsAddDialogOpen: (open: boolean) => void,
+  setClickPosition: (pos: {x: number; y: number}) => void,
+) => {
+  // Click handling logic
+};
+
+// Inside component - create stable references
+const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  handleCanvasClickAction(e, canvasRef, id, service, setSelectedObject, setIsAddDialogOpen, setClickPosition);
+};
+```
+
+### Development Guidelines
+
+**When Working with Loci-Methode:**
+1. Always test canvas click handling on both mobile and desktop
+2. Verify percentage-based positioning works across different canvas sizes
+3. Ensure visual landmarks are properly displayed with emoji icons
+4. Test object deletion cascades to remove from routes
+5. Follow function extraction pattern for all event handlers
+6. Add tests for new template types or object features
+
+**Common Patterns:**
+- Use `LocusMethodeService.getInstance()` for all data operations
+- Apply percentage-based positioning (0-100) for responsive canvas
+- Follow canvas redrawing pattern for visual updates
+- Implement proper error boundaries for canvas failures
+- Use stable event handler references with useCallback
+
+**Scientific Backing:**
+- Spatial memory is one of the strongest forms of human memory
+- The Loci-Methode dates back to ancient Greek and Roman orators
+- Mental navigation through familiar spaces enhances recall by 30-40%
+- Visual-spatial integration activates multiple brain regions
+- Sequential route traversal mimics natural memory retrieval patterns
+
+### Accessibility Standards
+
+**Implementation Requirements:**
+- All interactive elements have proper ARIA labels
+- Keyboard navigation supported for object selection
+- Screen reader compatible with canvas element descriptions
+- High contrast mode support for room backgrounds
+- Focus management in object dialogs
+
+The Loci-Methode system successfully implements a classical memory technique through modern technology while maintaining ABC-List's technical excellence and mobile-first design principles.
+
+---
+
 ## 🚨 FINAL REMINDER: NEVER FORGET THE MANDATORY WORKFLOW 🚨
 
 **Before closing any development session, ALWAYS complete this checklist:**
 
 ```bash
-# 1. TEST (MUST pass all 516 tests)
+# 1. TEST (MUST pass all 613 tests)
 npm run test
 
 # 2. LINT (MUST have 0 errors, includes markdown linting)  

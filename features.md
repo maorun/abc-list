@@ -28,21 +28,6 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 ---
 
-## 🔥 Hohe Priorität
-
-### 2. Loci-Methode (Gedächtnispalast)
-**Priorität:** HOCH | **Impact:** 8/10 | **Alignment:** 9/10 | **Feasibility:** 6/10
-
-**Beschreibung:** Räumliche Gedächtnistechnik digital umgesetzt
-- **Virtuelle Räume:** 2D-Darstellung von Gedächtnisorten (Canvas-basiert)
-- **Objekt-Verknüpfung:** Lerninhalte mit Orten im virtuellen Raum verbinden
-- **Gedächtnis-Routen:** Definierte Pfade durch den Gedächtnispalast
-- **Raum-Templates:** Vorgefertigte Räume (Haus, Büro, Natur)
-
-**Begründung:** Etablierte Gedächtnistechnik mit hohem Lerneffekt. 2D-Umsetzung ist technisch machbar ohne 3D/VR.
-
----
-
 ## ⭐ Mittlere Priorität
 
 ### 5. Browser-Extension
@@ -193,9 +178,6 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 ## 📌 Zusammenfassung der Priorisierung
 
-### Hohe Priorität (1 Feature):
-1. **Loci-Methode** - Bewährte Gedächtnistechnik
-
 ### Mittlere Priorität (5 Features):
 5. Browser-Extension
 6. Widgets für Homescreen
@@ -218,12 +200,9 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 ## 🎯 Empfohlene Umsetzungsreihenfolge
 
 **Phase 1 (Kurzfristig - 3-6 Monate):**
-- Loci-Methode
-
-**Phase 2 (Mittelfristig - 6-12 Monate):**
 - Browser-Extension
 
-**Phase 3 (Langfristig - 12+ Monate):**
+**Phase 2 (Mittelfristig - 6-12 Monate):**
 - Weitere Features nach Bedarf
 
 ---

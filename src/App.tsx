@@ -47,6 +47,8 @@ import {StatusIndicators} from "./components/StatusIndicators";
 import {CloudSyncStatusIndicator} from "./components/CloudSync/CloudSyncStatusIndicator";
 import {ElaborativeInterrogation} from "./components/ElaborativeInterrogation/ElaborativeInterrogation";
 import {InterrogationDashboard} from "./components/ElaborativeInterrogation/InterrogationDashboard";
+import {LocusMethode} from "./components/LocusMethode/LocusMethode";
+import {LocusMethodeRoom} from "./components/LocusMethode/LocusMethodeRoom";
 
 // Extract navigation items to prevent recreation on every render
 const navigationItems = [
@@ -84,6 +86,11 @@ const navigationItems = [
     to: "/number-memory",
     label: "Zahlen-Merk-System",
     description: "Zahlen mit Major-System merken",
+  },
+  {
+    to: "/locus-methode",
+    label: "Loci-Methode",
+    description: "Gedächtnispaläste erstellen",
   },
   {
     to: "/mindmap",
@@ -309,6 +316,8 @@ function AppContent() {
               element={<ElaborativeInterrogation />}
             />
             <Route path="/number-memory" element={<NumberMemory />} />
+            <Route path="/locus-methode" element={<LocusMethode />} />
+            <Route path="/locus-methode/:id" element={<LocusMethodeRoom />} />
             <Route path="/gamification" element={<GamificationDashboard />} />
             <Route path="/analytics" element={<Analytics />} />
           </Routes>
