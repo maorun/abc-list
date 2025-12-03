@@ -18,21 +18,21 @@
       "purpose": "any"
     },
     {
-      "src": "./assets/drawer-150x150.png", 
+      "src": "./assets/drawer-150x150.png",
       "sizes": "150x150",
       "type": "image/png",
       "purpose": "any"
     },
     {
       "src": "./assets/icon.png",
-      "sizes": "1024x1024", 
+      "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "any"
     },
     {
       "src": "./assets/adaptive-icon.png",
       "sizes": "1024x1024",
-      "type": "image/png", 
+      "type": "image/png",
       "purpose": "maskable"
     }
   ],
@@ -47,7 +47,7 @@
   "prefer_related_applications": false,
   "features": [
     "offline",
-    "installable", 
+    "installable",
     "background-sync",
     "push-notifications"
   ],

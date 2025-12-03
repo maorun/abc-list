@@ -9,43 +9,50 @@ The cloud sync system provides comprehensive cross-device synchronization, confl
 ## Features Implemented
 
 ### ✅ User Account System (OAuth Google)
+
 - **Library Used**: Supabase Auth with Google OAuth provider
-- **Implementation**: `CloudSyncService.signInWithGoogle()` 
-- **Features**: 
+- **Implementation**: `CloudSyncService.signInWithGoogle()`
+- **Features**:
   - Secure OAuth flow with offline access and consent prompt
   - Session persistence and automatic refresh
   - User profile management with email display
 
 ### ✅ Automatic Cloud Synchronization
+
 - **Real-time sync**: Configurable intervals (15s to 15min) with intelligent batching
 - **Offline-first design**: Works completely offline, syncs when connection restored
 - **Data coverage**: All ABC-Lists, KaWa, KaGa, Stadt-Land-Fluss games, and Basar items
 - **Automatic migration**: Seamlessly upgrades existing localStorage data
 
 ### ✅ Conflict Resolution System
+
 - **Four strategies**: Local preference, Remote preference, Smart merge, Manual resolution
 - **Intelligent merging**: Arrays combined with duplicates removed, objects merged with local priority
 - **Conflict detection**: Timestamp-based with 1-second tolerance for network latency
 - **User feedback**: Visual indicators and detailed conflict information
 
 ### ✅ Backup and Restore Functionality
+
 - **Full backups**: Complete user data including metadata and device information
 - **Incremental design**: Efficient storage with SHA-256 checksums for integrity
 - **Backup browsing**: Historical backups with size, date, and device information
 - **One-click restore**: Complete data restoration with progress feedback
 
 ### ✅ Cross-Platform Sync (Web, Mobile, Desktop)
+
 - **Universal compatibility**: Works on all modern browsers supporting PWA standards
 - **Responsive design**: Mobile-first UI components for all sync features
 - **Platform detection**: Device-specific metadata for debugging and analytics
 
 ### ✅ Offline-First with Automatic Sync
+
 - **Enhanced storage layer**: IndexedDB with localStorage fallback
 - **Sync queue**: Pending changes tracked and processed when online
 - **Background sync**: Service worker integration for background processing
 - **Status indicators**: Real-time sync status in navigation and detailed views
 
 ### ✅ Privacy-Compliant Backup System (GDPR)
+
 - **Data export**: Complete user data export in JSON format
 - **Right to deletion**: One-click complete data removal
 - **Consent management**: Clear privacy information and user control
@@ -104,15 +111,15 @@ CREATE TABLE user_backups (
 
 ```typescript
 interface CloudSyncConfig {
-  autoSync: boolean;           // Enable automatic synchronization
-  syncInterval: number;        // Sync frequency in milliseconds
-  conflictResolution:          // Strategy for handling conflicts
-    'local' |                  // - Prefer local changes
-    'remote' |                 // - Prefer remote changes  
-    'merge' |                  // - Intelligent merging
-    'ask';                     // - Manual resolution
-  enableBackup: boolean;       // Enable automatic backups
-  enableRealtime: boolean;     // Enable real-time updates
+  autoSync: boolean; // Enable automatic synchronization
+  syncInterval: number; // Sync frequency in milliseconds
+  conflictResolution: // Strategy for handling conflicts
+  | "local" // - Prefer local changes
+    | "remote" // - Prefer remote changes
+    | "merge" // - Intelligent merging
+    | "ask"; // - Manual resolution
+  enableBackup: boolean; // Enable automatic backups
+  enableRealtime: boolean; // Enable real-time updates
 }
 ```
 
@@ -151,11 +158,11 @@ import { useCloudAuth } from '@/contexts/CloudSyncContext';
 
 function LoginButton() {
   const { signInWithGoogle, isAuthenticated, user } = useCloudAuth();
-  
+
   if (isAuthenticated) {
     return <span>Welcome, {user?.email}</span>;
   }
-  
+
   return (
     <button onClick={signInWithGoogle}>
       Sign in with Google
@@ -177,7 +184,7 @@ function MyComponent() {
     [],             // Default value
     true            // Auto-sync enabled
   );
-  
+
   return (
     <div>
       {isLoading ? 'Loading...' : `Items: ${data.length}`}
@@ -196,7 +203,7 @@ import { useCloudBackup } from '@/contexts/CloudSyncContext';
 
 function BackupButton() {
   const { createBackup, listBackups, restoreBackup } = useCloudBackup();
-  
+
   const handleBackup = async () => {
     try {
       const metadata = await createBackup();
@@ -205,7 +212,7 @@ function BackupButton() {
       console.error('Backup failed:', error);
     }
   };
-  
+
   return <button onClick={handleBackup}>Create Backup</button>;
 }
 ```
@@ -213,21 +220,25 @@ function BackupButton() {
 ## Integration with Existing Features
 
 ### Enhanced Storage Layer
+
 - Seamlessly upgrades existing localStorage usage
 - Maintains backward compatibility with all current data
 - Provides progressive enhancement for cloud features
 
 ### Real-time Conflict Resolution
+
 - Integrates with existing data structures
 - Preserves data integrity during conflicts
 - Provides user feedback through existing UI patterns
 
 ### Gamification Integration
+
 - Cloud sync status affects gamification achievements
 - Cross-device progress tracking
 - Backup creation triggers achievements
 
 ### Search and Community Integration
+
 - Cloud data included in search indexing
 - Community features available across devices
 - Shared data synchronization for collaborative features
@@ -235,12 +246,14 @@ function BackupButton() {
 ## Testing
 
 ### Comprehensive Test Coverage
+
 - **Unit tests**: Cloud sync service functionality
 - **Integration tests**: React context and hooks
 - **UI tests**: Component interaction and error handling
 - **Mock environment**: Complete Supabase simulation for testing
 
 ### Manual Testing Scenarios
+
 1. **Cross-device sync**: Create data on one device, verify on another
 2. **Offline behavior**: Disconnect network, verify offline functionality
 3. **Conflict resolution**: Modify same data simultaneously on different devices
@@ -250,12 +263,14 @@ function BackupButton() {
 ## Performance Considerations
 
 ### Optimization Strategies
+
 - **Function extraction**: All event handlers extracted to prevent React rerenders
 - **Intelligent batching**: Multiple changes combined into single sync operations
 - **Caching strategy**: Local-first approach with cloud backup
 - **Background processing**: Non-blocking sync operations with progress feedback
 
 ### Resource Management
+
 - **Memory usage**: Efficient data structures and cleanup
 - **Network usage**: Compressed payloads and incremental updates
 - **Storage usage**: Optimized JSON structures and automatic cleanup
@@ -263,12 +278,14 @@ function BackupButton() {
 ## Security and Privacy
 
 ### Data Protection
+
 - **Encryption**: All data encrypted in transit (HTTPS) and at rest
 - **Authentication**: Secure OAuth 2.0 flow with refresh tokens
 - **Authorization**: Row-level security in Supabase database
 - **Privacy**: No data sharing, full user control over deletion
 
 ### GDPR Compliance
+
 - **Data portability**: Complete data export functionality
 - **Right to deletion**: One-click complete data removal
 - **Consent management**: Clear privacy information and opt-in
@@ -277,12 +294,14 @@ function BackupButton() {
 ## Monitoring and Analytics
 
 ### Sync Statistics
+
 - **Success rates**: Track sync completion and failure rates
 - **Performance metrics**: Sync duration and data transfer sizes
 - **Error tracking**: Detailed error logging and user feedback
 - **Usage patterns**: Anonymized usage statistics for optimization
 
 ### User Feedback
+
 - **Status indicators**: Real-time sync status in navigation
 - **Progress feedback**: Visual progress for long operations
 - **Error handling**: User-friendly error messages with retry options
@@ -291,6 +310,7 @@ function BackupButton() {
 ## Future Enhancements
 
 ### Planned Features
+
 1. **Collaborative editing**: Real-time collaborative ABC-List editing
 2. **Advanced conflict resolution**: Visual diff tool for manual resolution
 3. **Selective sync**: Choose which data types to sync
@@ -298,6 +318,7 @@ function BackupButton() {
 5. **Offline indicators**: Enhanced offline status and queued changes display
 
 ### Scalability Considerations
+
 - **Database optimization**: Indexing and query optimization
 - **CDN integration**: Static asset optimization
 - **Caching layer**: Redis integration for improved performance

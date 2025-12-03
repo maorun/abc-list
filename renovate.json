@@ -1,10 +1,12 @@
 {
   "extends": [
-    "config:recommended", ":automergeAll", ":disableDependencyDashboard"
+    "config:recommended",
+    ":automergeAll",
+    ":disableDependencyDashboard"
   ],
   "labels": ["dependencies"],
   "lockFileMaintenance": {
-    "enabled": true,
+    "enabled": true
   },
   "packageRules": [
     {

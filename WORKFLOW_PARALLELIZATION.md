@@ -36,8 +36,8 @@ code-quality-checks:
     - Check 'any' type usage
     - Check ESLint disable comments
     - TypeScript validation
-    - Run Tests          # Step 1
-    - Run Linting        # Step 2 (waits for tests)
+    - Run Tests # Step 1
+    - Run Linting # Step 2 (waits for tests)
     - Format check
 
 build:
@@ -57,12 +57,12 @@ code-quality-checks:
     - TypeScript validation
     - Format check
 
-test-validation:           # Job 1 (parallel)
+test-validation: # Job 1 (parallel)
   needs: code-quality-checks
   steps:
     - Run Tests
 
-lint-validation:           # Job 2 (parallel)
+lint-validation: # Job 2 (parallel)
   needs: code-quality-checks
   steps:
     - Run Linting
@@ -80,7 +80,7 @@ coverage:
    - Tests (~40s) and linting (~5s) run simultaneously
    - Total time reduced from ~45s to ~40s
 
-2. **Better Resource Utilization**: 
+2. **Better Resource Utilization**:
    - Utilizes GitHub Actions parallel job capacity
    - More efficient runner usage
 

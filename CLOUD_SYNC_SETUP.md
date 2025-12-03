@@ -95,6 +95,7 @@ This guide walks you through setting up the cloud synchronization and backup sys
 ### 4.1 Environment Variables
 
 1. Copy `.env.example` to `.env.local`:
+
    ```bash
    cp .env.example .env.local
    ```
@@ -114,6 +115,7 @@ npm install
 ### 4.3 Test the Setup
 
 1. Start the development server:
+
    ```bash
    npm run dev
    ```
@@ -153,6 +155,7 @@ VITE_SUPABASE_ANON_KEY=your_supabase_anon_key_here
 ### Row Level Security (RLS)
 
 The provided SQL schema automatically sets up RLS policies that ensure:
+
 - Users can only access their own data
 - No cross-user data leakage
 - Secure by default
@@ -176,20 +179,24 @@ The provided SQL schema automatically sets up RLS policies that ensure:
 ### Common Issues
 
 **1. "supabaseUrl is required" error**
+
 - Check that your environment variables are properly set
 - Ensure `.env.local` is in the project root
 - Restart your development server after adding environment variables
 
 **2. OAuth redirect error**
+
 - Verify your redirect URLs match exactly in Google Console and Supabase
 - Check that you're using the correct domain (http vs https)
 
 **3. Database connection errors**
+
 - Verify your Supabase URL and anon key are correct
 - Check that the database schema was applied successfully
 - Ensure RLS policies are properly configured
 
 **4. Sync not working**
+
 - Check browser console for JavaScript errors
 - Verify user is properly authenticated
 - Check network tab for failed requests
@@ -206,29 +213,34 @@ The provided SQL schema automatically sets up RLS policies that ensure:
 After setup, test these key features:
 
 ### Authentication
+
 - [ ] Google OAuth sign-in works
 - [ ] User session persists across browser restarts
 - [ ] Sign-out works properly
 - [ ] User email displays correctly
 
 ### Data Synchronization
+
 - [ ] Creating ABC-List syncs to cloud
 - [ ] Data appears on second device/browser
 - [ ] Offline changes sync when back online
 - [ ] Real-time updates work (if enabled)
 
 ### Conflict Resolution
+
 - [ ] Simultaneous edits trigger conflict detection
 - [ ] Conflict resolution strategies work
 - [ ] Data integrity maintained during conflicts
 
 ### Backup and Restore
+
 - [ ] Backups can be created successfully
 - [ ] Backup list shows historical backups
 - [ ] Restore functionality works correctly
 - [ ] Data integrity verified after restore
 
 ### Privacy Features
+
 - [ ] Data export works
 - [ ] Complete data deletion works
 - [ ] User controls are accessible
@@ -240,6 +252,7 @@ After setup, test these key features:
 For optimal performance in production:
 
 1. **Enable Realtime (Optional)**:
+
    ```sql
    ALTER publication supabase_realtime ADD TABLE user_abc_lists;
    -- Add other tables as needed

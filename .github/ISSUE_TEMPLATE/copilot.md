@@ -1,11 +1,9 @@
 ---
 name: copilot
 about: Feature für copilot
-title:  
+title:
 labels: Copilot
-assignees: ''
-
+assignees: ""
 ---
 
 Berücksichtige bei der Entwicklung die copilot-instructions.md und die agents.md
-

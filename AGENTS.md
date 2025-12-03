@@ -7,6 +7,7 @@ Welcome, agent! This document provides instructions and guidelines for working o
 This is a web application built with **React**, **TypeScript**, and **Vite**. It uses **Tailwind CSS** for styling and **Vitest** for testing. The application follows **mobile-first responsive design principles**.
 
 ABC-List implements Vera F. Birkenbihl's learning methodology with multiple learning modes:
+
 - **ABC-Lists**: Create association lists for any topic using letters A-Z
 - **KaWa (Word Associations)**: Build associations for each letter of a specific word
 - **KaGa (Graphical Associations)**: Visual learning with drawing tools and graphical elements
@@ -21,6 +22,7 @@ ABC-List implements Vera F. Birkenbihl's learning methodology with multiple lear
 - **Dual-Coding Support**: Visual learning enhancement with emoji picker, symbol library (48 educational symbols in 9 categories), and external image URL support for stronger memory associations
 
 **Key Technical Features:**
+
 - Mobile-first responsive design with hamburger navigation
 - shadcn/ui components for consistent UI
 - Accessibility-focused implementation
@@ -43,8 +45,9 @@ npm run validate:copilot
 ```
 
 This comprehensive script enforces all guidelines from copilot-instructions.md:
+
 - ✅ Detects forbidden 'any' type usage automatically
-- ✅ Prevents ESLint disable comments  
+- ✅ Prevents ESLint disable comments
 - ✅ Enforces TypeScript strict mode compilation
 - ✅ Validates the mandatory Test→Code→Lint workflow
 - ✅ Verifies build success and output integrity
@@ -65,7 +68,7 @@ This workflow is not a recommendation; it is a requirement. Following this seque
 
 2.  **Write New Tests (for new features)**
     - When adding a new feature, practice **Test-Driven Development (TDD)**.
-    - Write a failing test that describes the new functionality *before* implementing it. This ensures your feature is testable and correctly implemented.
+    - Write a failing test that describes the new functionality _before_ implementing it. This ensures your feature is testable and correctly implemented.
 
 3.  **Implement Your Changes**
     - Write the necessary code to either make the new test pass or to fix an existing bug.
@@ -169,7 +172,7 @@ The project now includes automated markdown linting to ensure documentation qual
   - **AUTOMATED ENFORCEMENT**: The enhanced CI pipeline automatically detects and blocks ESLint disable comments
   - Instead of disabling ESLint rules, fix the underlying issue by:
     - Adding proper dependencies to useEffect hooks
-    - Using useCallback to stabilize function references 
+    - Using useCallback to stabilize function references
     - Moving pure functions outside components to avoid unnecessary re-creation
     - Restructuring code to follow React best practices
   - ESLint rules exist for good reasons and should not be suppressed
@@ -184,6 +187,7 @@ The project now includes automated markdown linting to ensure documentation qual
 The repository now includes a comprehensive CI/CD pipeline that automatically enforces all guidelines:
 
 **Code Quality Enforcement:**
+
 - Automatic detection of forbidden 'any' type usage
 - Prevention of ESLint disable comments
 - TypeScript strict compilation validation
@@ -191,12 +195,14 @@ The repository now includes a comprehensive CI/CD pipeline that automatically en
 - Markdown documentation quality checks
 
 **Workflow Validation:**
+
 - Enforces the mandatory Test→Code→Lint sequence
 - Build validation with output verification
 - Test coverage generation and validation
 - Documentation update validation for new features
 
 **Local Development Support:**
+
 - `npm run validate:copilot` - Comprehensive validation script
 - `npm run precommit` - Pre-commit validation hook
 - Colored output with detailed error reporting
@@ -268,11 +274,11 @@ const handleAddWordAction = (
 
 function MyComponent() {
   const [data, setData] = useState("");
-  
+
   // Create stable reference inside component
   const exportAsJSON = () => handleExportAsJSON(item, setData);
   const handleAddWord = () => handleAddWordAction(newWord, words, storageKey, setWords, setNewWord, setIsModalOpen);
-  
+
   return <button onClick={exportAsJSON}>Export</button>;
 }
 
@@ -281,11 +287,11 @@ function MyComponent() {
   const exportAsJSON = () => {  // ← New function reference each render
     // ... logic
   };
-  
+
   const handleAddWord = () => {  // ← Another new function reference each render
     // ... logic
   };
-  
+
   return <button onClick={exportAsJSON}>Export</button>;
 }
 ```
@@ -309,13 +315,13 @@ Replace useEffect with direct computation:
 export function ListItem() {
   const {item} = useParams<{item: string}>();
   const cacheKey = getCacheKey(item);
-  
+
   if (item) setDocumentTitle(item);
-  
+
   if (!item || !cacheKey) {
     return <div>Loading...</div>;
   }
-  
+
   return <div>Content...</div>;
 }
 
@@ -323,7 +329,7 @@ export function ListItem() {
 export function ListItem() {
   const {item} = useParams<{item: string}>();
   const [isReady, setIsReady] = useState(false);
-  
+
   useEffect(() => {  // ← Creates timing issues and rerenders
     if (item) {
       document.title = `ABC-Liste für ${item}`;
@@ -331,7 +337,7 @@ export function ListItem() {
       return () => clearTimeout(timer);
     }
   }, [item]);
-  
+
   if (!isReady) return <div>Loading...</div>;
   return <div>Content...</div>;
 }
@@ -352,16 +358,16 @@ Always verify no rerender loops in tests:
 it("should prevent production rerender loops", async () => {
   let accessCount = 0;
   const originalGetItem = localStorage.getItem;
-  
+
   localStorage.getItem = function(...args) {
     accessCount++;
     return originalGetItem.apply(this, args);
   };
-  
+
   for (let i = 0; i < 10; i++) {
     rerender(<Component />);
   }
-  
+
   expect(accessCount).toBe(0); // Should be 0 with proper function extraction
 });
 ```
@@ -375,12 +381,14 @@ Thank you for your contribution!
 The repository includes comprehensive automation to ensure GitHub Copilot reliably follows all guidelines:
 
 **Validation Script (`scripts/validate-copilot-guidelines.sh`):**
+
 - Comprehensive pre-commit validation with colored output
 - Enforces all guidelines from `.github/copilot-instructions.md`
 - Provides clear error messages and fix guidance
 - Integrated with npm scripts for easy access
 
 **Usage:**
+
 ```bash
 # Run comprehensive validation (recommended before any commit)
 npm run validate:copilot
@@ -393,6 +401,7 @@ npm run test && npm run build && npm run lint && npm run format:check
 ```
 
 **Validation Features:**
+
 - ✅ Forbidden 'any' type detection with TypeScript patterns
 - ✅ ESLint disable comment prevention
 - ✅ TypeScript strict mode compilation enforcement
@@ -404,19 +413,22 @@ npm run test && npm run build && npm run lint && npm run format:check
 ### 8.2. CI/CD Pipeline Enhancements
 
 **Enhanced Workflow (`.github/workflows/ci.yml`):**
+
 - **Code Quality Checks**: Multi-layered validation before any other jobs
 - **Parallel Test & Lint Validation**: Tests and linting run in parallel for faster CI execution
-- **TypeScript Strict Mode**: Enhanced compilation with comprehensive flags  
+- **TypeScript Strict Mode**: Enhanced compilation with comprehensive flags
 - **Build Validation**: Production build verification with output checks
 - **Coverage Validation**: Automated test coverage generation
 - **Documentation Validation**: Warns when new features lack documentation
 
 **Workflow Optimization:**
+
 - Tests and linting execute in parallel after code quality checks (faster CI)
 - Build and coverage validation depend on both test and lint completion
 - Complete pipeline validation ensures all steps pass before merging
 
 **Enforcement Mechanisms:**
+
 - Automatic blocking of commits with forbidden patterns
 - Enhanced TypeScript configuration with strict flags
 - ESLint configuration with type-aware rules
@@ -431,30 +443,35 @@ The Sokrates spaced repetition system implements a scientifically-backed learnin
 ### 9.2. Core Components
 
 **Spaced Repetition Algorithm (`src/lib/spacedRepetition.ts`)**
+
 - SM-2 based intervals with dynamic ease factor adjustments
 - Rating-based initial intervals: 1★=1day, 2★=2days, 3★=4days, 4★=7days, 5★=14days
 - Forgetting curve adaptation that increases intervals for good performance and resets for poor performance
 - Comprehensive statistics including retention rate, mastery tracking, and performance analytics
 
 **Settings Component (`src/components/SokratesCheck/SpacedRepetitionSettings.tsx`)**
+
 - Algorithm customization: Base interval, ease factor, min/max intervals
 - Preset configurations: Intensiv (aggressive), Standard (balanced), Entspannt (relaxed)
 - Real-time preview showing how settings affect review intervals
 - Notification management with quiet hours and frequency control
 
 **Dashboard Component (`src/components/SokratesCheck/SokratesDashboard.tsx`)**
+
 - Advanced metrics: Retention rate, mastery progress, average intervals
 - Visual analytics: Interval distribution charts, algorithm status indicators
 - KI-based recommendations tailored to learning patterns
 - Performance tracking across multiple ABC lists
 
 **Review Component (`src/components/SokratesCheck/SokratesReview.tsx`)**
+
 - Bulk review functionality with list selection dialog
 - Session optimization with recommended sizes (10-25 terms based on cognitive load research)
 - Priority scheduling: Earliest due terms first, then by difficulty
 - Interval preview showing next review date for each rating choice
 
 **Notification System (`src/lib/notifications.ts`)**
+
 - Intelligent scheduling: Daily, twice-daily, or hourly check frequencies
 - Quiet hours: Respects user sleep/work schedules (default: 22:00-08:00)
 - Permission management: Graceful handling of browser notification permissions
@@ -467,21 +484,23 @@ The existing `WordWithExplanation` interface has been enhanced with spaced repet
 ```typescript
 interface WordWithExplanation {
   // Existing fields...
-  repetitionCount?: number;    // Review history count
-  easeFactor?: number;         // Individual difficulty factor (2.5 default)
-  interval?: number;           // Current review interval in days
-  nextReviewDate?: string;     // Calculated next review date (ISO string)
+  repetitionCount?: number; // Review history count
+  easeFactor?: number; // Individual difficulty factor (2.5 default)
+  interval?: number; // Current review interval in days
+  nextReviewDate?: string; // Calculated next review date (ISO string)
 }
 ```
 
 ### 9.4. Algorithm Examples
 
 **First Review Sequence:**
+
 - Rating 4 (good) → 7 days next review
 - Second review with rating 4 → ~17 days (7 × 2.5 ease factor)
 - Poor performance with rating 2 → reset to 1 day, reduce ease factor
 
 **Progressive Learning:**
+
 - Terms with consistent good ratings get longer intervals
 - Difficult terms get shorter intervals and more frequent reviews
 - Algorithm adapts to individual learning patterns
@@ -489,6 +508,7 @@ interface WordWithExplanation {
 ### 9.5. Testing Coverage
 
 The spaced repetition system includes comprehensive test coverage:
+
 - Algorithm behavior across all rating scenarios (1-5 stars)
 - Edge case handling (invalid dates, extreme intervals, first reviews)
 - Performance demonstration with forgetting curve simulation
@@ -505,6 +525,7 @@ The spaced repetition system includes comprehensive test coverage:
 ### 9.7. Mobile-First Design
 
 All Sokrates components follow the existing mobile-first responsive design principles:
+
 - Touch-friendly interface elements with adequate spacing
 - Responsive charts and dialogs that work on mobile and desktop
 - Hamburger navigation integration for mobile devices
@@ -519,18 +540,21 @@ The comprehensive search and tagging system transforms ABC-List into an intellig
 ### 10.2. Core Components
 
 **SearchService (`src/lib/searchService.ts`)**
+
 - Singleton service managing search indexing and querying
 - Full-text search with relevance scoring and highlighting
 - Multi-criteria filtering (type, tags, dates, ratings, favorites)
 - Search history tracking with persistence
 
 **TaggingService (`src/lib/taggingService.ts`)**
+
 - AI-powered automatic tag suggestions based on German educational content
 - Subject area detection (Mathematik, Physik, Biologie, etc.)
 - Difficulty level and format-specific tag recognition
 - Tag validation and duplicate prevention
 
 **SearchAndFilter Component (`src/components/Search/SearchAndFilter.tsx`)**
+
 - Main search interface with tabbed layout (Search Results, Smart Collections, Search History, Favorites)
 - Real-time search with debounced input and live results
 - Advanced filter UI with expandable sections
@@ -550,12 +574,14 @@ Each collection displays real-time statistics and provides quick action buttons 
 ### 10.4. Search Features
 
 **Full-Text Search Engine:**
+
 - Searches across ABC-List titles, KaWa/KaGa content, and individual words
 - Relevance scoring algorithm based on title matches, content frequency, and recency
 - Context-aware result highlighting with text snippets
 - Real-time search suggestions and auto-complete
 
 **Advanced Filtering:**
+
 - Content type filtering (ABC-Lists, KaWa, KaGa, Words)
 - Tag-based multi-select filtering
 - Date range filtering for content discovery
@@ -563,6 +589,7 @@ Each collection displays real-time statistics and provides quick action buttons 
 - Content presence filtering (items with/without explanations)
 
 **Search History Management:**
+
 - Persistent search history with frequency tracking
 - Quick re-execution of previous searches
 - Popular search term identification
@@ -571,18 +598,21 @@ Each collection displays real-time statistics and provides quick action buttons 
 ### 10.5. Tagging System
 
 **Automated Tag Suggestions:**
+
 - German educational content recognition with subject categorization
 - Difficulty level detection (Anfänger, Fortgeschritten, Experte)
 - Format-specific tags (Vokabeln, Prüfung, Definitionen, Übung)
 - Content analysis for custom tag generation
 
 **Tag Management:**
+
 - Manual tag addition/removal with validation
 - Bulk tag operations across multiple items
 - Similar tag detection to prevent duplication
 - Popular tags tracking and usage statistics
 
 **German Language Support:**
+
 - Educational subject keywords (Mathematik, Physik, Chemie, etc.)
 - Learning context detection (Schule, Studium, Beruf)
 - Category-specific term recognition (Wissenschaft, Technik, Kultur)
@@ -595,7 +625,7 @@ Enhanced interfaces for search functionality:
 ```typescript
 interface SearchableItem {
   id: string;
-  type: 'abc-list' | 'kawa' | 'kaga' | 'word';
+  type: "abc-list" | "kawa" | "kaga" | "word";
   title: string;
   content: string;
   tags: string[];
@@ -607,8 +637,8 @@ interface SearchableItem {
 interface SearchFilters {
   query?: string;
   tags?: string[];
-  type?: ('abc-list' | 'kawa' | 'kaga' | 'word')[];
-  dateRange?: { start?: Date; end?: Date; };
+  type?: ("abc-list" | "kawa" | "kaga" | "word")[];
+  dateRange?: {start?: Date; end?: Date};
   isFavorite?: boolean;
   hasContent?: boolean;
 }
@@ -617,17 +647,20 @@ interface SearchFilters {
 ### 10.7. Integration Points
 
 **Navigation Integration:**
+
 - New "Suchen" tab with search icon in main navigation
 - Deep linking support for search results and filters
 - Breadcrumb navigation for search contexts
 
 **Feature Integration:**
+
 - Direct navigation to found ABC-Lists, KaWa, and KaGa items
 - Word-level search within lists with jump-to functionality
 - Tag synchronization across all content types
 - Favorites integration with existing rating systems
 
 **Data Persistence:**
+
 - localStorage integration for search history and preferences
 - Tag data stored within existing content structures
 - Backwards compatibility with existing ABC-List data
@@ -636,6 +669,7 @@ interface SearchFilters {
 ### 10.8. Testing Requirements
 
 **Comprehensive Test Coverage:**
+
 - Search functionality across all content types with edge cases
 - Tag suggestion accuracy and German language recognition
 - Filter combinations and complex query scenarios
@@ -643,34 +677,41 @@ interface SearchFilters {
 - Mobile responsiveness and touch interaction testing
 
 **Test Patterns:**
+
 ```typescript
 // Test search accuracy
 it("should find ABC-Lists by title and content", () => {
-  const results = searchService.search({ query: "Mathematik" });
-  expect(results).toContainEqual(expect.objectContaining({
-    item: expect.objectContaining({ title: "Grundlagen Mathematik" })
-  }));
+  const results = searchService.search({query: "Mathematik"});
+  expect(results).toContainEqual(
+    expect.objectContaining({
+      item: expect.objectContaining({title: "Grundlagen Mathematik"}),
+    }),
+  );
 });
 
 // Test German tag suggestions
 it("should suggest educational tags for German content", () => {
   const suggestions = taggingService.generateSuggestions("Physik Grundlagen");
-  expect(suggestions).toContainEqual(expect.objectContaining({
-    tag: "Wissenschaft",
-    confidence: expect.any(Number)
-  }));
+  expect(suggestions).toContainEqual(
+    expect.objectContaining({
+      tag: "Wissenschaft",
+      confidence: expect.any(Number),
+    }),
+  );
 });
 ```
 
 ### 10.9. Mobile-First Implementation
 
 **Responsive Design:**
+
 - Touch-friendly search interface with adequate spacing (minimum 44px)
 - Responsive filter panels that work on mobile viewports (375px width)
 - Collapsible filter sections for mobile optimization
 - Swipe gestures for collection navigation
 
 **Performance Optimization:**
+
 - Function extraction pattern applied to all search components
 - Debounced search input to prevent excessive API calls
 - Lazy loading of search results and collections
@@ -679,6 +720,7 @@ it("should suggest educational tags for German content", () => {
 ### 10.10. Development Guidelines
 
 **When Working with Search:**
+
 1. Always update search index after content modifications
 2. Test tag suggestions with German educational content
 3. Verify mobile responsiveness of search interfaces
@@ -687,6 +729,7 @@ it("should suggest educational tags for German content", () => {
 6. Add comprehensive test coverage for new search features
 
 **Common Patterns:**
+
 - Use `searchService.updateIndex()` after content changes
 - Apply `taggingService.generateSuggestions()` for automatic tagging
 - Follow mobile-first responsive design principles
@@ -701,18 +744,21 @@ The Template Library (Template-Bibliothek) provides users with pre-configured te
 ### 11.2. Core Components
 
 **ABC-List Templates (`src/components/List/AbcListTemplates.tsx`)**
+
 - 8 subject-specific templates covering Mathematik, Sprachen, Biologie, Geschichte, Physik, Chemie, and learning techniques
 - Pre-filled word associations with explanations for each letter
 - Grouped by educational category for easy navigation
 - One-click template application with automatic list creation
 
 **KaWa Templates (`src/components/Kawa/KawaTemplates.tsx`)**
+
 - 10 creative word association templates across 7 categories
 - Pre-configured associations for words like LERNEN, ERFOLG, WISSEN, FOKUS
 - Categories: Bildung, Motivation, Produktivität, Kreativität, Philosophie, Naturwissenschaft, Gesundheit
 - Letter-by-letter associations automatically applied to new KaWa items
 
 **Stadt-Land-Fluss Templates (`src/components/StadtLandFluss/StadtLandFlussTemplates.tsx`)**
+
 - 15 game templates with pre-configured categories across 12 different themes
 - Templates ranging from classic (Stadt, Land, Fluss) to specialized (Wissenschaft, Technik, Sprachen)
 - Category counts displayed for quick template evaluation
@@ -721,6 +767,7 @@ The Template Library (Template-Bibliothek) provides users with pre-configured te
 ### 11.3. Template Data Structure
 
 **ABC-List Template:**
+
 ```typescript
 interface AbcListTemplate {
   id: string;
@@ -733,6 +780,7 @@ interface AbcListTemplate {
 ```
 
 **KaWa Template:**
+
 ```typescript
 interface KawaTemplate {
   id: string;
@@ -746,6 +794,7 @@ interface KawaTemplate {
 ```
 
 **Stadt-Land-Fluss Template:**
+
 ```typescript
 interface StadtLandFlussTemplate {
   id: string;
@@ -760,12 +809,14 @@ interface StadtLandFlussTemplate {
 ### 11.4. Integration Points
 
 **UI Integration:**
+
 - Template buttons added to List, Kawa, and StadtLandFluss main screens
 - Dialog-based template selection with category grouping
 - Mobile-first responsive design with touch-friendly buttons
 - Preview information for each template before selection
 
 **Data Persistence:**
+
 - Templates automatically create new items in localStorage
 - Pre-filled data seamlessly integrates with existing data structures
 - Gamification tracking applied to template-created content
@@ -774,17 +825,20 @@ interface StadtLandFlussTemplate {
 ### 11.5. Template Categories
 
 **Educational Subjects:**
+
 - Mathematik: Grundlagen, geometry, algebra concepts
 - Sprachen: English, German grammar, vocabulary
 - Naturwissenschaften: Biologie (cell structure), Physik (energy), Chemie (atoms)
 - Geisteswissenschaften: Geschichte (ancient civilizations)
 
 **Learning Techniques:**
+
 - Prüfungsvorbereitung: Study planning, exam preparation structure
 - Motivation: Success factors, focus, creativity
 - Productivity: Time management, organization methods
 
 **Game Variants:**
+
 - Standard: Classic and extended versions
 - Subject-specific: Geography, nature, science, culture, history
 - Age-appropriate: Templates for children and advanced learners
@@ -792,6 +846,7 @@ interface StadtLandFlussTemplate {
 ### 11.6. Testing Coverage
 
 **Comprehensive Test Suite (21 new tests):**
+
 - Template dialog rendering and interaction
 - Category grouping and display
 - Template selection and callback handling
@@ -799,6 +854,7 @@ interface StadtLandFlussTemplate {
 - Mobile responsiveness verification
 
 **Test Files:**
+
 - `src/components/List/AbcListTemplates.test.tsx` (6 tests)
 - `src/components/Kawa/KawaTemplates.test.tsx` (7 tests)
 - `src/components/StadtLandFluss/StadtLandFlussTemplates.test.tsx` (9 tests)
@@ -806,6 +862,7 @@ interface StadtLandFlussTemplate {
 ### 11.7. Development Guidelines
 
 **When Adding New Templates:**
+
 1. Follow existing template structure and data format
 2. Ensure educational accuracy and pedagogical value
 3. Use appropriate German terminology consistent with Birkenbihl methodology
@@ -814,6 +871,7 @@ interface StadtLandFlussTemplate {
 6. Test template application with real user workflows
 
 **Common Patterns:**
+
 - Extract template selection handlers outside components (function extraction pattern)
 - Use dialog-based UI for template selection
 - Implement duplicate detection before template application
@@ -829,12 +887,14 @@ The Community Hub transforms ABC-List into a collaborative learning platform whi
 ### 11.2. Core Components
 
 **CommunityService (`src/lib/CommunityService.ts`)**
+
 - Singleton service managing all community data with localStorage persistence
 - Event-driven system for real-time UI updates
 - Integration with existing Gamification and Basar systems
 - Comprehensive error handling and graceful fallbacks
 
 **Community Components (`src/components/Community/`)**
+
 - **Community.tsx**: Main tabbed interface with mobile-first responsive design
 - **UserProfile.tsx**: Profile creation and management with expertise areas
 - **MentorshipManager.tsx**: Mentor finding and mentorship request workflows
@@ -845,6 +905,7 @@ The Community Hub transforms ABC-List into a collaborative learning platform whi
 ### 11.3. Data Models
 
 **Core Interfaces:**
+
 ```typescript
 interface CommunityProfile {
   userId: string;
@@ -888,6 +949,7 @@ interface PeerReview {
 
 **German Academic Subjects:**
 The system includes 25+ predefined expertise areas matching the German educational context:
+
 - STEM: Mathematik, Physik, Chemie, Biologie, Informatik, Technik, Ingenieurwesen
 - Languages: Deutsch, Englisch, Französisch, Spanisch
 - Humanities: Geschichte, Geographie, Politik, Philosophie, Rechtswissenschaft
@@ -898,17 +960,20 @@ The system includes 25+ predefined expertise areas matching the German education
 ### 11.5. Integration Points
 
 **Gamification Integration:**
+
 - Activity tracking for peer reviews and success story submissions
 - Community challenge completion rewards
 - Reputation system integration with existing achievement system
 - Mentorship participation badges and recognition
 
 **Navigation Integration:**
+
 - New "Community" tab in main navigation with Users icon
 - Deep linking support for community profiles and challenges
 - Mobile-responsive tabbed interface with touch-friendly controls
 
 **Data Persistence:**
+
 - localStorage integration with COMMUNITY_STORAGE_KEYS
 - Event-driven updates for real-time UI synchronization
 - Backwards compatibility with existing user data and profiles
@@ -917,12 +982,14 @@ The system includes 25+ predefined expertise areas matching the German education
 ### 11.6. Mobile-First Implementation
 
 **Responsive Design Requirements:**
+
 - Touch-friendly interface with minimum 44px touch targets
 - Responsive profile cards and challenge layouts for mobile viewports
 - Collapsible sections and expandable content for small screens
 - Optimized form layouts for profile creation and mentorship requests
 
 **Component Patterns:**
+
 ```jsx
 // Mobile-first community profile layout
 <div className="flex flex-col gap-4">
@@ -939,6 +1006,7 @@ The system includes 25+ predefined expertise areas matching the German education
 ### 11.7. Testing Requirements
 
 **Comprehensive Test Coverage (`src/lib/CommunityService.test.ts`):**
+
 - Singleton pattern management and instance isolation
 - User profile CRUD operations with validation
 - Mentorship request workflows and status tracking
@@ -949,6 +1017,7 @@ The system includes 25+ predefined expertise areas matching the German education
 - Error handling for localStorage failures and JSON parsing errors
 
 **Test Isolation Patterns:**
+
 ```typescript
 beforeEach(() => {
   localStorage.clear();
@@ -958,6 +1027,7 @@ beforeEach(() => {
 ```
 
 **Integration Testing:**
+
 - Community data persistence across browser sessions
 - Integration with existing Gamification and Basar systems
 - Mobile responsiveness and touch interaction validation
@@ -970,25 +1040,28 @@ All Community Hub components follow the function extraction pattern to prevent p
 
 ```typescript
 // Extracted handlers prevent recreation on every render
-const handleProfileUpdateAction = (
-  profileData: Partial<CommunityProfile>,
-  setProfile: (profile: CommunityProfile) => void,
-  onSuccess: () => void
-) => () => {
-  const communityService = CommunityService.getInstance();
-  communityService.updateUserProfile(profileData);
-  setProfile(communityService.getUserProfile()!);
-  onSuccess();
-};
+const handleProfileUpdateAction =
+  (
+    profileData: Partial<CommunityProfile>,
+    setProfile: (profile: CommunityProfile) => void,
+    onSuccess: () => void,
+  ) =>
+  () => {
+    const communityService = CommunityService.getInstance();
+    communityService.updateUserProfile(profileData);
+    setProfile(communityService.getUserProfile()!);
+    onSuccess();
+  };
 
 // Inside component - create stable references
-const handleProfileUpdate = () => 
+const handleProfileUpdate = () =>
   handleProfileUpdateAction(profileData, setProfile, onSuccess)();
 ```
 
 ### 11.9. Development Guidelines
 
 **When Working with Community Features:**
+
 1. Always test singleton instance management and data persistence
 2. Verify mobile responsiveness of all community interfaces
 3. Ensure integration with existing gamification and content systems
@@ -997,6 +1070,7 @@ const handleProfileUpdate = () =>
 6. Test error handling for localStorage and network failures
 
 **Common Patterns:**
+
 - Use `CommunityService.getInstance()` for all community operations
 - Apply function extraction pattern to prevent React rerender loops
 - Follow mobile-first responsive design principles
@@ -1012,12 +1086,14 @@ The Interleaved Learning system implements scientifically-backed learning optimi
 ### 13.2. Core Components
 
 **InterleavedLearningService (`src/lib/InterleavedLearningService.ts`)**
+
 - Singleton service managing interleaved learning sessions with localStorage persistence
 - Event-driven system for real-time UI updates
 - Session tracking with performance metrics and recommendations
 - Statistics aggregation across multiple learning sessions
 
 **Interleaved Learning Algorithm (`src/lib/interleavedLearning.ts`)**
+
 - Balanced interleaving strategy with weighted topic selection
 - Context-switching optimization based on research-backed frequencies
 - Effectiveness scoring based on topic distribution uniformity
@@ -1056,6 +1132,7 @@ interface InterleavingSession {
 ### 13.4. Algorithm Behavior Examples
 
 **Balanced Interleaving:**
+
 ```typescript
 // Topics: Math (3 terms), Science (3 terms)
 // Without interleaving: [M1, M2, M3, S1, S2, S3]
@@ -1065,11 +1142,13 @@ interface InterleavingSession {
 ```
 
 **Weighted Selection:**
+
 - Topics with higher weights appear more frequently
 - But still maintains balanced distribution for optimal learning
 - Prevents over-representation of any single topic
 
 **Performance Recommendations:**
+
 - Low accuracy topics (<60%): "Fokus auf schwächere Themen: [topics]"
 - Time-intensive topics: "Zeitintensive Themen für vertieftes Üben: [topics]"
 - Unbalanced practice: "Gleichmäßigere Verteilung der Übungszeit empfohlen"
@@ -1078,6 +1157,7 @@ interface InterleavingSession {
 ### 13.5. Testing Coverage
 
 **Comprehensive Test Suite (40 tests across 2 files):**
+
 - Algorithm correctness with various topic configurations
 - Weighted selection and context-switching validation
 - Edge cases: empty topics, single topic, many topics
@@ -1086,24 +1166,28 @@ interface InterleavingSession {
 - Settings persistence and event system functionality
 
 **Test Files:**
+
 - `src/lib/interleavedLearning.test.ts` (19 tests)
 - `src/lib/InterleavedLearningService.test.ts` (21 tests)
 
 ### 13.6. Integration with Sokrates System
 
 **Settings Integration:**
+
 - Interleaved learning toggle in SpacedRepetitionSettings component
 - Context-switch frequency slider (1-5 scale)
 - Shuffle intensity control for varying learning preferences
 - Real-time settings persistence with event-driven updates
 
 **Review Flow Integration:**
+
 - Terms from multiple lists can be interleaved during Sokrates reviews
 - Automatic topic grouping based on list names
 - Priority scheduling: earliest due terms first with interleaving applied
 - Session size optimization remains (10-25 terms based on cognitive load)
 
 **Statistics Tracking:**
+
 - Total interleaved sessions count
 - Average accuracy across all sessions
 - Average session duration tracking
@@ -1113,12 +1197,14 @@ interface InterleavingSession {
 ### 13.7. Mobile-First Design
 
 **Responsive UI Components:**
+
 - Touch-friendly slider controls for settings (minimum 44px touch targets)
 - Range inputs with clear value indicators for mobile interaction
 - Settings panel optimized for mobile viewports (375px width)
 - Informational cards with responsive text sizing
 
 **Component Patterns:**
+
 ```jsx
 // Mobile-first interleaved settings
 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1137,6 +1223,7 @@ interface InterleavingSession {
 ### 13.8. Development Guidelines
 
 **When Working with Interleaved Learning:**
+
 1. Always use `InterleavedLearningService.getInstance()` for state management
 2. Test algorithm effectiveness with realistic topic distributions
 3. Verify mobile responsiveness with touch interaction testing
@@ -1146,6 +1233,7 @@ interface InterleavingSession {
 7. Track performance metrics for continuous improvement
 
 **Common Patterns:**
+
 - Use `generateInterleavedSequence()` for all sequence generation
 - Apply `analyzeInterleavingPerformance()` after session completion
 - Implement `generateInterleavingRecommendations()` for user feedback
@@ -1153,6 +1241,7 @@ interface InterleavingSession {
 - Persist settings and session data to localStorage
 
 **Performance Considerations:**
+
 - Event batching for localStorage operations to reduce writes
 - Memoized calculations for effectiveness scores
 - Session history limited to 50 most recent sessions
@@ -1163,12 +1252,14 @@ interface InterleavingSession {
 The Interleaved Learning implementation is based on established cognitive science research:
 
 **Key Research Findings:**
+
 - Interleaving improves long-term retention by 10-30% compared to blocked practice
 - Context switching enhances discrimination ability between similar concepts
 - Optimal switching frequency depends on topic similarity and learner expertise
 - Balanced topic distribution maximizes learning effectiveness
 
 **Implementation Decisions:**
+
 - Default context-switch frequency: 3 (moderate switching based on research)
 - Minimum 2 topics required for interleaving to be effective
 - Effectiveness scoring prioritizes balanced distribution

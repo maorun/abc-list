@@ -9,13 +9,16 @@ This implementation addresses the Codacy integration requirements by enhancing t
 ### 1. Markdown Linting Integration
 
 **Added Tools:**
+
 - `markdownlint-cli` (v0.45.0) - Industry-standard markdown linter
 
 **Configuration Files:**
+
 - `.markdownlint.json` - Lenient configuration that enforces basic markdown quality without breaking existing documentation
 - `.markdownlintignore` - Excludes build artifacts and dependencies (node_modules, dist, coverage, .git)
 
 **NPM Scripts:**
+
 ```json
 "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
 "lint:md": "markdownlint \"**/*.md\" --ignore node_modules --ignore dist",
@@ -27,11 +30,13 @@ The `postlint` script ensures markdown linting runs automatically after ESLint, 
 ### 2. CI/CD Pipeline Updates
 
 **Enhanced Workflow Steps:**
+
 - Added explicit markdown linting check after ESLint
 - Updated validation summary to include markdown linting status
 - Maintains all existing quality checks (TypeScript strict mode, 'any' type detection, ESLint disable prevention)
 
 **CI Workflow Changes:**
+
 ```yaml
 - name: Mandatory Workflow Step 2 - Linting Second
   run: |
@@ -49,15 +54,17 @@ The `postlint` script ensures markdown linting runs automatically after ESLint, 
 ### 3. Documentation Updates
 
 **Updated Files:**
+
 - `AGENTS.md` - Added markdown linting section under Coding Style
 - `.github/copilot-instructions.md` - Updated linting commands and test count
 - Corrected test count references from 365/388 to 432 (current actual count)
 
 ## Why PMD Was Not Included
 
-PMD (Programming Mistake Detector) is a static code analyzer specifically designed for Java, JavaScript, Apex, and other languages, but **not for TypeScript**. 
+PMD (Programming Mistake Detector) is a static code analyzer specifically designed for Java, JavaScript, Apex, and other languages, but **not for TypeScript**.
 
 This project uses:
+
 - **TypeScript** with strict type checking
 - **ESLint** with TypeScript-specific rules (@typescript-eslint)
 - **React-specific linting** (eslint-plugin-react)
@@ -79,6 +86,7 @@ Codacy will automatically analyze the repository using the configured linting to
 ## Testing and Validation
 
 All changes have been validated:
+
 - ✅ 432 tests pass
 - ✅ 0 ESLint errors
 - ✅ 0 Markdown linting errors
@@ -88,16 +96,19 @@ All changes have been validated:
 ## Usage
 
 **Run all linting (ESLint + Markdown):**
+
 ```bash
 npm run lint
 ```
 
 **Run markdown linting only:**
+
 ```bash
 npm run lint:md
 ```
 
 **The linting automatically runs:**
+
 - After `npm run lint` via the postlint hook
 - In the CI pipeline after tests pass
 - As part of the complete validation workflow

@@ -1,5 +1,5 @@
 // Quick debug script to understand the gamification behavior
-const { GamificationService } = require('./dist/lib/GamificationService.js');
+const {GamificationService} = require("./dist/lib/GamificationService.js");
 
 // Clear any existing data
 localStorage.clear();
@@ -11,7 +11,9 @@ console.log("=== Initial State ===");
 const initialProfile = service.getProfile();
 console.log(`Experience: ${initialProfile.experience}`);
 console.log(`Points: ${initialProfile.totalPoints}`);
-console.log(`Experience to next level: ${initialProfile.experienceToNextLevel}`);
+console.log(
+  `Experience to next level: ${initialProfile.experienceToNextLevel}`,
+);
 console.log(`Lists created: ${initialProfile.statistics.listsCreated}`);
 
 console.log("\n=== After first list_created ===");
@@ -22,7 +24,7 @@ console.log(`Points: ${afterFirst.totalPoints}`);
 console.log(`Experience to next level: ${afterFirst.experienceToNextLevel}`);
 console.log(`Lists created: ${afterFirst.statistics.listsCreated}`);
 console.log(`Achievements: ${afterFirst.achievements.length}`);
-afterFirst.achievements.forEach(a => {
+afterFirst.achievements.forEach((a) => {
   console.log(`  - ${a.id}: progress ${a.progress}, earned: ${!!a.dateEarned}`);
 });
 
@@ -33,6 +35,6 @@ for (let i = 0; i < 4; i++) {
 const afterFive = service.getProfile();
 console.log(`Lists created: ${afterFive.statistics.listsCreated}`);
 console.log(`Achievements:`);
-afterFive.achievements.forEach(a => {
+afterFive.achievements.forEach((a) => {
   console.log(`  - ${a.id}: progress ${a.progress}, earned: ${!!a.dateEarned}`);
 });
