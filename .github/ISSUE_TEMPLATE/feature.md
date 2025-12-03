@@ -1,10 +1,9 @@
 ---
 name: feature
 about: Feature Implementation für GitHub Copilot
-title: 'Feature: [Feature Name aus features.md]'
+title: "Feature: [Feature Name aus features.md]"
 labels: Copilot, enhancement
-assignees: 'Copilot'
-
+assignees: "Copilot"
 ---
 
 ## 🎯 Aufgabe für GitHub Copilot
@@ -36,6 +35,7 @@ assignees: 'Copilot'
 **📚 WICHTIG: Befolge strikt die Richtlinien in `.github/copilot-instructions.md`**
 
 Die `copilot-instructions.md` enthält:
+
 - ⚠️ Mandatory Testing und Linting Workflow
 - TypeScript Guidelines und Code Quality Requirements
 - Mobile-First Design Principles
@@ -44,6 +44,7 @@ Die `copilot-instructions.md` enthält:
 - Projektstruktur und Common Tasks
 
 **Entwicklungs-Checkliste:**
+
 - [ ] Feature aus `features.md` ausgewählt (oder neue Features zu `features.md` hinzugefügt und eines ausgewählt, falls leer)
 - [ ] `.github/copilot-instructions.md` vollständig gelesen und verstanden
 - [ ] `AGENTS.md` für projekt-spezifische Konventionen konsultiert
@@ -60,12 +61,14 @@ Die `copilot-instructions.md` enthält:
 ### Schritt 3: Nach der Implementierung
 
 **Entferne das implementierte Feature aus `features.md`:**
+
 - Lösche nur den Feature-Eintrag, der tatsächlich implementiert wurde
 - Erwähne **NICHT** in `features.md`, dass es umgesetzt wurde
 - Behalte die Struktur und Priorisierung bei
 - Belasse andere (nicht implementierte) Features in der Datei
 
 **Falls du neue Features zu `features.md` hinzugefügt hast:**
+
 - Entferne nur das eine Feature, das du implementiert hast
 - Die anderen neu hinzugefügten Features bleiben für zukünftige Implementierungen erhalten
 

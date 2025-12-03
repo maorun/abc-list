@@ -10,7 +10,15 @@
   "MD031": false,
   "MD032": false,
   "MD033": {
-    "allowed_elements": ["br", "img", "details", "summary", "antml:function_calls", "antml:invoke", "antml:parameter"]
+    "allowed_elements": [
+      "br",
+      "img",
+      "details",
+      "summary",
+      "antml:function_calls",
+      "antml:invoke",
+      "antml:parameter"
+    ]
   },
   "MD034": false,
   "MD036": false,

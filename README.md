@@ -1,4 +1,3 @@
-
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/2e63aead16244183ac8e54ab82a46487)](https://app.codacy.com/gh/maorun/abc-list?utm_source=github.com&utm_medium=referral&utm_content=maorun/abc-list&utm_campaign=Badge_Grade_Settings)
 [![CI](https://github.com/maorun/abc-list/actions/workflows/ci.yml/badge.svg)](https://github.com/maorun/abc-list/actions/workflows/ci.yml)
 
@@ -15,13 +14,13 @@ Für weitere Informationen bitte https://www.birkenbihl.com/ besuchen.
 
 Diese App bietet eine Vielzahl von Werkzeugen, die auf den Lernmethoden von Vera F. Birkenbihl basieren, um das gehirn-gerechte Lernen zu unterstützen:
 
--   **ABC-Listen**: Erstellen Sie zu einem beliebigen Thema Assoziationslisten für die Buchstaben A bis Z. Dies hilft, das vorhandene Wissen zu aktivieren und neue Verknüfungen herzustellen.
--   **KaWa (Wort-Assoziationen)**: Bilden Sie zu jedem Buchstaben eines bestimmten Wortes gezielte Assoziationen. Diese Methode fördert das tiefergehende Nachdenken über ein Thema.
--   **KaGa (Grafische Assoziationen)**: Nutzen Sie eine digitale Leinwand, um Ihre Gedanken visuell zu organisieren. Zeichnen, kritzeln und beschriften Sie, um komplexe Zusammenhänge grafisch darzustellen.
--   **Stadt-Land-Fluss**: Trainieren Sie Ihr schnelles Abrufwissen mit dem klassischen Spiel, das mit benutzerdefinierten Kategorien und einem Timer angepasst werden kann.
--   **Listen Verknüpfen**: Verbinden Sie verschiedene ABC-Listen miteinander, um thematische Überschneidungen und neue Einsichten zu entdecken.
--   **Export & Import**: Sichern Sie Ihre Lernmaterialien lokal, indem Sie sie als JSON-Dateien exportieren und bei Bedarf wieder importieren.
--   **Responsive Design**: Die Anwendung ist für alle Geräte optimiert, egal ob Smartphone, Tablet oder Desktop.
+- **ABC-Listen**: Erstellen Sie zu einem beliebigen Thema Assoziationslisten für die Buchstaben A bis Z. Dies hilft, das vorhandene Wissen zu aktivieren und neue Verknüfungen herzustellen.
+- **KaWa (Wort-Assoziationen)**: Bilden Sie zu jedem Buchstaben eines bestimmten Wortes gezielte Assoziationen. Diese Methode fördert das tiefergehende Nachdenken über ein Thema.
+- **KaGa (Grafische Assoziationen)**: Nutzen Sie eine digitale Leinwand, um Ihre Gedanken visuell zu organisieren. Zeichnen, kritzeln und beschriften Sie, um komplexe Zusammenhänge grafisch darzustellen.
+- **Stadt-Land-Fluss**: Trainieren Sie Ihr schnelles Abrufwissen mit dem klassischen Spiel, das mit benutzerdefinierten Kategorien und einem Timer angepasst werden kann.
+- **Listen Verknüpfen**: Verbinden Sie verschiedene ABC-Listen miteinander, um thematische Überschneidungen und neue Einsichten zu entdecken.
+- **Export & Import**: Sichern Sie Ihre Lernmaterialien lokal, indem Sie sie als JSON-Dateien exportieren und bei Bedarf wieder importieren.
+- **Responsive Design**: Die Anwendung ist für alle Geräte optimiert, egal ob Smartphone, Tablet oder Desktop.
 
 ## Lernen, jetzt aber richtig
 
@@ -41,27 +40,27 @@ z.B.
 
 Thema: Ökonomie
 
-| Buchstabe | Assoziation |
-| :--- | :--- |
-| A | Aufgaben von allen |
-| B | Betriebswirtschaftslehre in Industriebetrieben |
-| ... | |
-| P | Prognose der wirtschaftlichen Entwicklung |
-| ... | |
-| Y | (nichts) |
-| Z | Zusammenhänge und Gesetzmäßigkeiten in einer Gesellschaft |
+| Buchstabe | Assoziation                                               |
+| :-------- | :-------------------------------------------------------- |
+| A         | Aufgaben von allen                                        |
+| B         | Betriebswirtschaftslehre in Industriebetrieben            |
+| ...       |                                                           |
+| P         | Prognose der wirtschaftlichen Entwicklung                 |
+| ...       |                                                           |
+| Y         | (nichts)                                                  |
+| Z         | Zusammenhänge und Gesetzmäßigkeiten in einer Gesellschaft |
 
 oder: Testing in Software
 
-| Buchstabe | Assoziation |
-| :--- | :--- |
-| A | Automatisierung |
-| B | breit gefächert, Bugs nicht wiederholen |
-| ... | |
-| U | Unit- und Integration-Tests |
-| ... | |
-| Y | (nichts) |
-| Z | Zusammenhänge erkennen, weniger **Z**uarbeit |
+| Buchstabe | Assoziation                                  |
+| :-------- | :------------------------------------------- |
+| A         | Automatisierung                              |
+| B         | breit gefächert, Bugs nicht wiederholen      |
+| ...       |                                              |
+| U         | Unit- und Integration-Tests                  |
+| ...       |                                              |
+| Y         | (nichts)                                     |
+| Z         | Zusammenhänge erkennen, weniger **Z**uarbeit |
 
 Es ist natürlich erlaubt auch mehrere Assoziationen pro Buchstaben zu definieren.
 
@@ -99,29 +98,29 @@ z.B.
 
 Thema: Ökonomie
 
-| Buchstabe | Assoziation | Erklärung (in Gedanken, wenn man die Assoziation sieht) |
-| :--- | :--- | :--- |
-| Ö | Öl | .. treibt die Wirtschaft an |
-| K | Kopernikus | beschäftigte sich mit der Folge der Inflation |
-| O | | evtl. fällt nichts ein, kann auch leer gelassen werden |
-| N | Der Wohlstand der **N**ationen | 1776 veröffentlichte Buch von Adam Smith |
-| O | natürliche **O**rdnung | Freiheit, Wettbewerb und Privateigentum |
-| M | Modelle | müssen erstellt werden für Prognosen der wirtschaftliche Entwicklung |
-| I | Irrtum | allein die Wirtschaft kann nicht alles regeln |
-| E | Engagement | ohne Engagement wird ein Unternehmen nicht überleben |
+| Buchstabe | Assoziation                    | Erklärung (in Gedanken, wenn man die Assoziation sieht)              |
+| :-------- | :----------------------------- | :------------------------------------------------------------------- |
+| Ö         | Öl                             | .. treibt die Wirtschaft an                                          |
+| K         | Kopernikus                     | beschäftigte sich mit der Folge der Inflation                        |
+| O         |                                | evtl. fällt nichts ein, kann auch leer gelassen werden               |
+| N         | Der Wohlstand der **N**ationen | 1776 veröffentlichte Buch von Adam Smith                             |
+| O         | natürliche **O**rdnung         | Freiheit, Wettbewerb und Privateigentum                              |
+| M         | Modelle                        | müssen erstellt werden für Prognosen der wirtschaftliche Entwicklung |
+| I         | Irrtum                         | allein die Wirtschaft kann nicht alles regeln                        |
+| E         | Engagement                     | ohne Engagement wird ein Unternehmen nicht überleben                 |
 
 oder: Software
 
-| Buchstabe | Assoziation |
-| :--- | :--- |
-| S | sofort installierbar |
-| O | Open-Source |
-| F | frei nur unter bestimmten Lizenzen |
-| T | Training benötigt um eine Software zu schreiben |
-| W | wandelbar (als Programmierer anpassbar) |
-| A | |
-| R | Rating bei Games |
-| E | |
+| Buchstabe | Assoziation                                     |
+| :-------- | :---------------------------------------------- |
+| S         | sofort installierbar                            |
+| O         | Open-Source                                     |
+| F         | frei nur unter bestimmten Lizenzen              |
+| T         | Training benötigt um eine Software zu schreiben |
+| W         | wandelbar (als Programmierer anpassbar)         |
+| A         |                                                 |
+| R         | Rating bei Games                                |
+| E         |                                                 |
 
 Da im Gegenzug zu ABC-Listen ein KaWa enger gefasst ist, muss man mehr überlegen und aktiviert sein Gehirn in die Tiefe.
 
@@ -143,6 +142,7 @@ Das KaGa ist eine Weiterentwicklung des KaWa und der ABC-Liste. Es geht darum, z
 Nachdem Sie ein Thema für Ihr KaGa erstellt haben, öffnet sich eine digitale Leinwand. Hier können Sie Ihrer Kreativität freien Lauf lassen.
 
 **Werkzeuge:**
+
 - **Stift:** Zum freien Zeichnen und Skizzieren.
 - **Text:** Zum Hinzufügen von Notizen und Beschriftungen.
 - **Farbauswahl:** Um verschiedene Farben für Stift und Text zu wählen.
@@ -200,6 +200,7 @@ Sollten Unklarheiten vorhanden sein kann ein [Issue](https://github.com/maorun/a
 wird sich darum gekümmert!
 
 ## Ansporn
+
 Diese App wurde entwickelt, da keine App bekannt ist, welche die Idee der ABC-Listen und KaWa umsetzt.
 
 Weiterentwicklungen sind bei den [Issues](https://github.com/maorun/abc-list/issues) gelistet.
