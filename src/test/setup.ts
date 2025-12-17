@@ -1,5 +1,11 @@
 import "@testing-library/jest-dom";
-import {vi} from "vitest";
+import {vi, afterEach} from "vitest";
+import "./localStorageMock";
+
+afterEach(() => {
+  localStorage.clear();
+  vi.clearAllMocks();
+});
 
 // Mock ResizeObserver for Recharts
 global.ResizeObserver = class ResizeObserver {
