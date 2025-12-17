@@ -1,4 +1,3 @@
-
 let store: Record<string, string> = {};
 
 const localStorageMock = {

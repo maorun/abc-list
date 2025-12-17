@@ -340,10 +340,7 @@ export function ListItem() {
       const updated = updateFn(newWords[letter] || []);
       newWords[letter] = updated;
       if (cacheKey) {
-        localStorage.setItem(
-          `${cacheKey}:${letter}`,
-          JSON.stringify(updated),
-        );
+        localStorage.setItem(`${cacheKey}:${letter}`, JSON.stringify(updated));
       }
       return newWords;
     });
