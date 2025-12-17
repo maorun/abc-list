@@ -17,6 +17,8 @@ import {Mic} from "lucide-react";
 interface LetterProps {
   cacheKey: string;
   letter: string;
+  words: WordWithExplanation[];
+  onWordsChange: (words: WordWithExplanation[]) => void;
 }
 
 // Extracted function handlers to prevent recreation on every render
@@ -141,10 +143,14 @@ const setModalCloseAction = (setIsModalOpen: (open: boolean) => void) => () => {
 
 // Custom memo with detailed comparison to prevent unnecessary re-renders
 export const Letter = React.memo(
-  function Letter({cacheKey, letter}: LetterProps) {
+  function Letter({
+    cacheKey,
+    letter,
+    words,
+    onWordsChange,
+  }: LetterProps) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isVoiceOpen, setIsVoiceOpen] = useState(false);
-    const [words, setWords] = useState<WordWithExplanation[]>([]);
     const [newWord, setNewWord] = useState("");
     const {trackWordAdded} = useGamification();
 
@@ -153,40 +159,9 @@ export const Letter = React.memo(
       return `${cacheKey}:${letter}`;
     }, [cacheKey, letter]);
 
-    // Load data only once when storage key changes
-    useEffect(() => {
-      const storedData = localStorage.getItem(storageKey);
-      if (storedData) {
-        try {
-          const parsed = JSON.parse(storedData);
-          // Handle both old string[] format and new WordWithExplanation[] format
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            if (parsed.every((item) => typeof item === "string")) {
-              // Convert old format to new format and migrate immediately
-              const converted = parsed.map((word: string) => ({
-                text: word,
-                explanation: "",
-                version: 1,
-                imported: false,
-              }));
-              setWords(converted);
-              // Migrate to new format immediately to avoid future conversions
-              localStorage.setItem(storageKey, JSON.stringify(converted));
-            } else {
-              setWords(parsed);
-            }
-          } else {
-            setWords([]);
-          }
-        } catch (error) {
-          // Handle JSON parse errors gracefully
-          console.warn(`Failed to parse stored data for ${storageKey}:`, error);
-          setWords([]);
-        }
-      } else {
-        setWords([]);
-      }
-    }, [storageKey]); // Only depend on storageKey, which is stable
+    const setWords = (newWords: WordWithExplanation[]) => {
+      onWordsChange(newWords);
+    };
 
     // Create stable function references inside component
     const handleAddWord = () =>

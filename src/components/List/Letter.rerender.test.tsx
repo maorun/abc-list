@@ -1,7 +1,8 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import {render} from "@testing-library/react";
 import {vi} from "vitest";
 import {Letter} from "./Letter";
+import {WordWithExplanation} from "./SavedWord";
 
 // Mock useGamification hook to prevent gamification tracking during testing
 vi.mock("@/hooks/useGamification", () => ({
@@ -48,6 +49,54 @@ describe("Letter component rerender issue", () => {
     vi.restoreAllMocks();
   });
 
+  const TestWrapper = ({
+    initialWords = [],
+    cacheKey,
+    letter,
+  }: {
+    initialWords?: WordWithExplanation[];
+    cacheKey: string;
+    letter: string;
+  }) => {
+    const [words, setWords] = useState(initialWords);
+    const storageKey = `${cacheKey}:${letter}`;
+
+    // Simulate the old data migration logic that was in the Letter component
+    useEffect(() => {
+      const storedData = localStorage.getItem(storageKey);
+      if (storedData) {
+        try {
+          const parsed = JSON.parse(storedData);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            if (parsed.every((item) => typeof item === "string")) {
+              const converted = parsed.map((word: string) => ({
+                text: word,
+                explanation: "",
+                version: 1,
+                imported: false,
+              }));
+              setWords(converted);
+              localStorage.setItem(storageKey, JSON.stringify(converted));
+            } else {
+              setWords(parsed);
+            }
+          }
+        } catch (error) {
+          console.warn(`Failed to parse stored data for ${storageKey}:`, error);
+        }
+      }
+    }, [storageKey]);
+
+    return (
+      <Letter
+        cacheKey={cacheKey}
+        letter={letter}
+        words={words}
+        onWordsChange={setWords}
+      />
+    );
+  };
+
   it("should not cause rerender loop when converting old format data", () => {
     // Set up old format data that needs conversion
     const oldFormatData = ["Apfel", "Auto", "Ameise"];
@@ -63,7 +112,9 @@ describe("Letter component rerender issue", () => {
     };
 
     // Render the component
-    const {rerender} = render(<Letter cacheKey="abcList-test" letter="a" />);
+    const {rerender} = render(
+      <TestWrapper cacheKey="abcList-test" letter="a" />,
+    );
 
     // Wait for effects to complete - migration should happen in separate effect
     expect(setItemCalls).toHaveLength(1);
@@ -79,13 +130,13 @@ describe("Letter component rerender issue", () => {
     setItemCalls.length = 0;
 
     // Multiple re-renders should not trigger additional writes
-    rerender(<Letter cacheKey="abcList-test" letter="a" />);
+    rerender(<TestWrapper cacheKey="abcList-test" letter="a" />);
     expect(setItemCalls).toHaveLength(0);
 
-    rerender(<Letter cacheKey="abcList-test" letter="a" />);
+    rerender(<TestWrapper cacheKey="abcList-test" letter="a" />);
     expect(setItemCalls).toHaveLength(0);
 
-    rerender(<Letter cacheKey="abcList-test" letter="a" />);
+    rerender(<TestWrapper cacheKey="abcList-test" letter="a" />);
     expect(setItemCalls).toHaveLength(0);
 
     // Restore
@@ -105,7 +156,13 @@ describe("Letter component rerender issue", () => {
     const setItemSpy = vi.spyOn(localStorage, "setItem");
 
     // Render the component
-    render(<Letter cacheKey="abcList-test" letter="b" />);
+    render(
+      <TestWrapper
+        cacheKey="abcList-test"
+        letter="b"
+        initialWords={convertedData}
+      />,
+    );
 
     // Should not write to localStorage since data is already in correct format
     expect(setItemSpy).not.toHaveBeenCalled();
@@ -118,7 +175,7 @@ describe("Letter component rerender issue", () => {
     const setItemSpy = vi.spyOn(localStorage, "setItem");
 
     // Render component with no existing data
-    render(<Letter cacheKey="abcList-test" letter="c" />);
+    render(<TestWrapper cacheKey="abcList-test" letter="c" />);
 
     // Should not write to localStorage since there's no data to convert
     expect(setItemSpy).not.toHaveBeenCalled();

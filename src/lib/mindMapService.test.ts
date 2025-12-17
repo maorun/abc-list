@@ -187,7 +187,7 @@ describe("mindMapService", () => {
             T: "Testen",
             E: "Erfolg",
             S: "Systematisch",
-            T: "Thorough",
+            U: "Unthorough",
           },
         },
       ];

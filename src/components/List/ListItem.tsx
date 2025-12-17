@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from "react";
+import React, {useState, useCallback, useEffect} from "react";
 import {useParams, useNavigate} from "react-router-dom";
 import {toast} from "sonner";
 import {usePrompt} from "@/components/ui/prompt-dialog";
@@ -325,6 +325,23 @@ export function ListItem() {
     setDocumentTitle(item);
   }
 
+  const [allWords, setAllWords] = useState<
+    Record<string, WordWithExplanation[]>
+  >({});
+
+  useEffect(() => {
+    if (cacheKey) {
+      setAllWords(getWordsData(cacheKey));
+    }
+  }, [cacheKey]);
+
+  const handleWordsChange = (
+    letter: string,
+    newWords: WordWithExplanation[],
+  ) => {
+    setAllWords((prev) => ({...prev, [letter]: newWords}));
+  };
+
   // Don't render Letter components until we have a valid item and cacheKey
   if (!item || !cacheKey) {
     return (
@@ -440,7 +457,12 @@ export function ListItem() {
         {cacheKey &&
           alphabet.map((char) => (
             <div key={char} className="m-2">
-              <Letter letter={char} cacheKey={cacheKey} />
+              <Letter
+                letter={char}
+                cacheKey={cacheKey}
+                words={allWords[char] || []}
+                onWordsChange={(newWords) => handleWordsChange(char, newWords)}
+              />
             </div>
           ))}
       </div>

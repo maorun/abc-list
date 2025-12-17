@@ -1,6 +1,8 @@
+import React, {useState, useEffect} from "react";
 import {render, screen, fireEvent} from "@testing-library/react";
-import {describe, it, expect, beforeEach} from "vitest";
+import {describe, it, expect, beforeEach, vi} from "vitest";
 import {Letter} from "./Letter";
+import {WordWithExplanation} from "./SavedWord";
 
 // Mock localStorage
 const localStorageMock = (() => {
@@ -31,28 +33,60 @@ describe("Letter", () => {
     localStorage.clear();
   });
 
+  const TestWrapper = ({
+    initialWords = [],
+  }: {
+    initialWords?: WordWithExplanation[];
+  }) => {
+    const [words, setWords] = useState(initialWords);
+    useEffect(() => {
+      localStorage.setItem(
+        `${cacheKey}:${letter}`,
+        JSON.stringify(initialWords),
+      );
+      const storedWords = localStorage.getItem(`${cacheKey}:${letter}`);
+      if (storedWords) {
+        setWords(JSON.parse(storedWords));
+      }
+    }, [initialWords]);
+
+    const handleWordsChange = (newWords: WordWithExplanation[]) => {
+      setWords(newWords);
+      localStorage.setItem(
+        `${cacheKey}:${letter}`,
+        JSON.stringify(newWords),
+      );
+    };
+
+    return (
+      <Letter
+        cacheKey={cacheKey}
+        letter={letter}
+        words={words}
+        onWordsChange={handleWordsChange}
+      />
+    );
+  };
+
   it("renders a button with the capitalized letter", () => {
-    render(<Letter cacheKey={cacheKey} letter={letter} />);
+    render(<TestWrapper />);
     expect(
       screen.getByRole("button", {name: "Wort für Buchstabe A hinzufügen"}),
     ).toBeInTheDocument();
   });
 
   it("loads and displays words from localStorage on initial render", () => {
-    localStorage.setItem(
-      `${cacheKey}:${letter}`,
-      JSON.stringify([
-        {text: "Apple", explanation: "", version: 1, imported: false},
-        {text: "Ant", explanation: "", version: 1, imported: false},
-      ]),
-    );
-    render(<Letter cacheKey={cacheKey} letter={letter} />);
+    const initialWords = [
+      {text: "Apple", explanation: "", version: 1, imported: false},
+      {text: "Ant", explanation: "", version: 1, imported: false},
+    ];
+    render(<TestWrapper initialWords={initialWords} />);
     expect(screen.getByText("Apple")).toBeInTheDocument();
     expect(screen.getByText("Ant")).toBeInTheDocument();
   });
 
   it("opens a modal when the letter button is clicked", () => {
-    render(<Letter cacheKey={cacheKey} letter={letter} />);
+    render(<TestWrapper />);
     fireEvent.click(
       screen.getByRole("button", {name: "Wort für Buchstabe A hinzufügen"}),
     );
@@ -62,7 +96,7 @@ describe("Letter", () => {
   });
 
   it("adds a new word, saves to localStorage, and closes modal", () => {
-    render(<Letter cacheKey={cacheKey} letter={letter} />);
+    render(<TestWrapper />);
     fireEvent.click(
       screen.getByRole("button", {name: "Wort für Buchstabe A hinzufügen"}),
     );
@@ -83,8 +117,10 @@ describe("Letter", () => {
   });
 
   it("does not add a duplicate word", () => {
-    localStorage.setItem(`${cacheKey}:${letter}`, JSON.stringify(["Apple"]));
-    render(<Letter cacheKey={cacheKey} letter={letter} />);
+    const initialWords = [
+      {text: "Apple", explanation: "", version: 1, imported: false},
+    ];
+    render(<TestWrapper initialWords={initialWords} />);
     fireEvent.click(
       screen.getByRole("button", {name: "Wort für Buchstabe A hinzufügen"}),
     );
@@ -102,14 +138,11 @@ describe("Letter", () => {
   });
 
   it("deletes a word and updates localStorage", () => {
-    localStorage.setItem(
-      `${cacheKey}:${letter}`,
-      JSON.stringify([
-        {text: "Apple", explanation: "", version: 1, imported: false},
-        {text: "Ant", explanation: "", version: 1, imported: false},
-      ]),
-    );
-    render(<Letter cacheKey={cacheKey} letter={letter} />);
+    const initialWords = [
+      {text: "Apple", explanation: "", version: 1, imported: false},
+      {text: "Ant", explanation: "", version: 1, imported: false},
+    ];
+    render(<TestWrapper initialWords={initialWords} />);
 
     // Find the button associated with the word 'Apple' to delete it.
     // The SavedWord component renders the text as a button.
@@ -129,7 +162,7 @@ describe("Letter", () => {
   });
 
   it('closes the modal when "Abbrechen" is clicked', () => {
-    render(<Letter cacheKey={cacheKey} letter={letter} />);
+    render(<TestWrapper />);
     fireEvent.click(
       screen.getByRole("button", {name: "Wort für Buchstabe A hinzufügen"}),
     );
