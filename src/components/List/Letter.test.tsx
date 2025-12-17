@@ -52,10 +52,7 @@ describe("Letter", () => {
 
     const handleWordsChange = (newWords: WordWithExplanation[]) => {
       setWords(newWords);
-      localStorage.setItem(
-        `${cacheKey}:${letter}`,
-        JSON.stringify(newWords),
-      );
+      localStorage.setItem(`${cacheKey}:${letter}`, JSON.stringify(newWords));
     };
 
     return (

@@ -143,12 +143,7 @@ const setModalCloseAction = (setIsModalOpen: (open: boolean) => void) => () => {
 
 // Custom memo with detailed comparison to prevent unnecessary re-renders
 export const Letter = React.memo(
-  function Letter({
-    cacheKey,
-    letter,
-    words,
-    onWordsChange,
-  }: LetterProps) {
+  function Letter({cacheKey, letter, words, onWordsChange}: LetterProps) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isVoiceOpen, setIsVoiceOpen] = useState(false);
     const [newWord, setNewWord] = useState("");
