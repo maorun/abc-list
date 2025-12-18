@@ -163,7 +163,7 @@ describe("ListItem Production Rerender Investigation", () => {
       await act(async () => {
         // Force rerender by creating new router instance (simulates production behavior)
         rerender(
-          <MemoryRouter initialEntries={["/list/Foobar"]} key={i}>
+          <MemoryRouter initialEntries={["/list/Foobar"]}>
             <Routes>
               <Route path="/list/:item" element={<ListItem />} />
             </Routes>

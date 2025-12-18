@@ -1,4 +1,4 @@
-import {render, screen, fireEvent} from "@testing-library/react";
+import {render, screen, fireEvent, act} from "@testing-library/react";
 import {describe, it, expect, vi, beforeEach, afterEach} from "vitest";
 import {MemoryRouter} from "react-router-dom";
 import {StadtLandFlussGame} from "./StadtLandFlussGame";
@@ -84,7 +84,7 @@ describe("StadtLandFlussGame", () => {
     expect(screen.getByText("Spielzeit:")).toBeInTheDocument();
   });
 
-  it("starts a new round when start button is clicked", () => {
+  it("starts a new round when start button is clicked", async () => {
     render(
       <MemoryRouter>
         <StadtLandFlussGame />
@@ -92,7 +92,9 @@ describe("StadtLandFlussGame", () => {
     );
 
     const startButton = screen.getByText("Spiel starten");
-    fireEvent.click(startButton);
+    await act(async () => {
+      fireEvent.click(startButton);
+    });
 
     // After clicking start, the game should be active and show current round info
     expect(screen.getByText(/Buchstabe:/)).toBeInTheDocument();

@@ -13,6 +13,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {useGamification} from "@/hooks/useGamification";
 
 // Extract alphabet generation outside component to prevent recreation
 const alphabet = Array.from({length: 26}, (_, i) =>
@@ -304,6 +305,7 @@ const handleBackToListsAction = (navigate: ReturnType<typeof useNavigate>) => {
 export function ListItem() {
   const {item} = useParams<{item: string}>();
   const navigate = useNavigate();
+  const {trackWordAdded} = useGamification();
   const [showExportModal, setShowExportModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
   const [importData, setImportData] = useState("");
@@ -324,6 +326,83 @@ export function ListItem() {
   if (item) {
     setDocumentTitle(item);
   }
+
+  const [allWords, setAllWords] = useState<
+    Record<string, WordWithExplanation[]>
+  >(() => (cacheKey ? getWordsData(cacheKey) : {}));
+
+  const updateWordsForLetter = (
+    letter: string,
+    updateFn: (words: WordWithExplanation[]) => WordWithExplanation[],
+  ) => {
+    setAllWords((prev) => {
+      const newWords = {...prev};
+      const updated = updateFn(newWords[letter] || []);
+      newWords[letter] = updated;
+      if (cacheKey) {
+        localStorage.setItem(`${cacheKey}:${letter}`, JSON.stringify(updated));
+      }
+      return newWords;
+    });
+  };
+
+  const handleAddWord = (letter: string, word: string) => {
+    updateWordsForLetter(letter, (words) => {
+      if (words.some((w) => w.text === word)) {
+        return words;
+      }
+      const newWord: WordWithExplanation = {
+        text: word,
+        explanation: "",
+        version: 1,
+        imported: false,
+      };
+      if (item) {
+        trackWordAdded(word, item);
+      }
+      return [...words, newWord];
+    });
+  };
+
+  const handleDeleteWord = (letter: string, word: string) => {
+    updateWordsForLetter(letter, (words) =>
+      words.filter((w) => w.text !== word),
+    );
+  };
+
+  const handleExplanationChange = (
+    letter: string,
+    word: string,
+    explanation: string,
+  ) => {
+    updateWordsForLetter(letter, (words) =>
+      words.map((w) =>
+        w.text === word
+          ? {...w, explanation, version: (w.version || 1) + 1}
+          : w,
+      ),
+    );
+  };
+
+  const handleRatingChange = (letter: string, word: string, rating: number) => {
+    updateWordsForLetter(letter, (words) =>
+      words.map((w) =>
+        w.text === word
+          ? {...w, rating, lastReviewed: new Date().toISOString()}
+          : w,
+      ),
+    );
+  };
+
+  const handleVisualElementsChange = (
+    letter: string,
+    word: string,
+    visualData: {emoji?: string; symbol?: string; imageUrl?: string},
+  ) => {
+    updateWordsForLetter(letter, (words) =>
+      words.map((w) => (w.text === word ? {...w, ...visualData} : w)),
+    );
+  };
 
   // Don't render Letter components until we have a valid item and cacheKey
   if (!item || !cacheKey) {
@@ -440,7 +519,21 @@ export function ListItem() {
         {cacheKey &&
           alphabet.map((char) => (
             <div key={char} className="m-2">
-              <Letter letter={char} cacheKey={cacheKey} />
+              <Letter
+                letter={char}
+                words={allWords[char] || []}
+                onAddWord={(word) => handleAddWord(char, word)}
+                onDeleteWord={(word) => handleDeleteWord(char, word)}
+                onExplanationChange={(word, explanation) =>
+                  handleExplanationChange(char, word, explanation)
+                }
+                onRatingChange={(word, rating) =>
+                  handleRatingChange(char, word, rating)
+                }
+                onVisualElementsChange={(word, visualData) =>
+                  handleVisualElementsChange(char, word, visualData)
+                }
+              />
             </div>
           ))}
       </div>

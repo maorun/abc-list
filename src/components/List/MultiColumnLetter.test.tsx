@@ -1,5 +1,5 @@
 import React from "react";
-import {render, screen, fireEvent} from "@testing-library/react";
+import {render, screen, fireEvent, act} from "@testing-library/react";
 import {vi} from "vitest";
 import {MultiColumnLetter} from "./MultiColumnLetter";
 import {ColumnConfig, getMultiColumnStorageKey} from "./types";
@@ -120,7 +120,7 @@ describe("MultiColumnLetter", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows time limit when column has time restriction", () => {
+  it("shows time limit when column has time restriction", async () => {
     render(
       <MultiColumnLetter
         letter={letter}
@@ -130,7 +130,9 @@ describe("MultiColumnLetter", () => {
     );
 
     const letterButton = screen.getByRole("button", {name: /A/});
-    fireEvent.click(letterButton);
+    await act(async () => {
+      fireEvent.click(letterButton);
+    });
 
     expect(screen.getByText("⏱️ 1:00")).toBeInTheDocument();
   });

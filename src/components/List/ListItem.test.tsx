@@ -53,15 +53,6 @@ Object.defineProperty(window, "localStorage", {
   value: trackedLocalStorage,
 });
 
-// Mock the Letter component for unit tests only
-vi.mock("./Letter", () => ({
-  Letter: ({letter, cacheKey}: {letter: string; cacheKey: string}) => (
-    <div data-testid="letter-component">
-      {letter} - {cacheKey}
-    </div>
-  ),
-}));
-
 describe("ListItem", () => {
   const testItem = "Themen";
 
@@ -104,10 +95,10 @@ describe("ListItem", () => {
   it("should render a Letter component for each letter of the alphabet", async () => {
     renderComponent(testItem);
     await waitFor(() => {
-      const letterComponents = screen.getAllByTestId("letter-component");
+      const letterComponents = screen.getAllByRole("button", {
+        name: /Wort für Buchstabe/i,
+      });
       expect(letterComponents).toHaveLength(26);
-      expect(letterComponents[0]).toHaveTextContent("a - abcList-Themen");
-      expect(letterComponents[25]).toHaveTextContent("z - abcList-Themen");
     });
   });
 });
