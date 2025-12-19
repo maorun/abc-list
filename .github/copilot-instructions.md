@@ -10,7 +10,7 @@ ABC-List is a React/TypeScript/Vite web application implementing Vera F. Birkenb
 
 ```bash
 # MANDATORY after every code change:
-npm run test    # ← MUST pass (613 tests)
+npm run test    # ← MUST pass (618 tests)
 npm run lint    # ← MUST pass (0 errors)
 npm run build   # ← MUST pass (production build)
 ```
@@ -56,7 +56,7 @@ npm run build   # ← MUST pass (production build)
    ```
 
    - Takes approximately 8 seconds. NEVER CANCEL. Set timeout to 30+ seconds.
-   - Runs 613 tests across test files using Vitest
+   - Runs 618 tests across test files using Vitest
    - All tests should pass - uses React Testing Library and Jest DOM
 
 4. **Run test coverage:**
@@ -2606,6 +2606,183 @@ const handleSymbolClick = (symbol) =>
 - Focus management in modal dialogs
 
 The Dual-Coding Support system successfully enhances learning effectiveness through scientifically-backed visual-verbal integration while maintaining ABC-List's technical excellence and mobile-first design principles.
+
+---
+
+## Export System (Multi-Format)
+
+### Overview
+
+The Export System provides comprehensive multi-format export functionality for learning materials, enabling users to export their ABC-Lists and KaWa word associations as PDF, CSV, and Markdown files. This feature supports both digital and physical learning scenarios, aligning with Birkenbihl's multi-sensory learning approach.
+
+### Core Implementation
+
+**Export Utilities (`src/lib/exportUtils.ts`, `src/lib/kawaExportUtils.ts`)**
+
+- Modular export services for different content types
+- Consistent export formats across all content types
+- Type-safe CSV parsing with Zod validation
+- Professional PDF generation with jsPDF
+- Clean Markdown formatting for note-taking apps
+
+**Supported Formats:**
+
+- **PDF**: Print-friendly format with proper pagination and formatting
+- **CSV**: Spreadsheet-compatible for data analysis and bulk editing
+- **Markdown**: Plain-text format for Obsidian, Notion, and other note apps
+- **JSON**: Native format for backup and migration (existing)
+
+### ABC-List Export Features
+
+**PDF Export (`ExportUtils.exportToPDF`):**
+
+- Professional layout with title and export date
+- Organized by letter with hierarchical structure
+- Word explanations with automatic text wrapping
+- Multi-page support with proper pagination
+- File naming: `abc-liste-{listName}-{date}.pdf`
+
+**CSV Export (`ExportUtils.exportToCSV`):**
+
+- Structured data: Letter, Word, Explanation, Imported, Timestamp
+- UTF-8 encoding for German characters
+- Header row for easy spreadsheet import
+- File naming: `abc-liste-{listName}-{date}.csv`
+
+**Markdown Export (`ExportUtils.exportToMarkdown`):**
+
+- Clean heading hierarchy (H1 for title, H2 for letters)
+- Bold formatting for words, italic for metadata
+- Bullet points for readability
+- Compatibility with all Markdown processors
+- File naming: `abc-liste-{listName}-{date}.md`
+
+### KaWa Export Features
+
+**PDF Export (`KawaExportUtils.exportToPDF`):**
+
+- Title with KaWa word prominently displayed
+- Letter-by-letter association breakdown
+- Professional formatting with proper spacing
+- File naming: `kawa-{word}-{date}.pdf`
+
+**CSV Export (`KawaExportUtils.exportToCSV`):**
+
+- Simple two-column structure: Letter, Association
+- Filters out empty associations
+- UTF-8 encoding support
+- File naming: `kawa-{word}-{date}.csv`
+
+**Markdown Export (`KawaExportUtils.exportToMarkdown`):**
+
+- Clean format: `**Letter** - Association`
+- Export metadata included
+- Empty associations automatically filtered
+- File naming: `kawa-{word}-{date}.md`
+
+### Integration Points
+
+**ABC-List Component (`src/components/List/ListItem.tsx`):**
+
+- Export buttons in action bar (PDF, CSV, MD, JSON)
+- Color-coded buttons for easy identification
+- Toast notifications for successful exports
+- Mobile-responsive button layout
+
+**KaWa Component (`src/components/Kawa/KawaItem.tsx`):**
+
+- Consistent export button design
+- Automatic data collection from localStorage
+- Same export formats as ABC-Lists
+- Mobile-first responsive design
+
+### Testing Coverage
+
+**Comprehensive Test Suites:**
+
+- `src/lib/exportUtils.test.ts` (9 tests): ABC-List export validation
+- `src/lib/kawaExportUtils.test.ts` (8 tests): KaWa export validation
+- Mock jsPDF and PapaParse for unit testing
+- CSV parsing validation with Zod schema
+- Edge case handling (empty data, long text, special characters)
+
+### Data Model
+
+```typescript
+// ABC-List Export
+interface ExportedList {
+  name: string;
+  version: number;
+  exportDate: string;
+  words: Record<string, WordWithExplanation[]>;
+}
+
+interface CSVRow {
+  Letter: string;
+  Word: string;
+  Explanation: string;
+  Imported: boolean;
+  Timestamp?: string;
+}
+
+// KaWa Export
+interface KawaCSVRow {
+  Letter: string;
+  Association: string;
+}
+```
+
+### Development Guidelines
+
+**When Working with Export:**
+
+1. Use ExportUtils for ABC-Lists, KawaExportUtils for KaWa
+2. Always include export date for traceability
+3. Test with German characters (ä, ö, ü, ß) for encoding
+4. Verify PDF pagination with large datasets
+5. Follow mobile-first design for export buttons
+6. Add toast notifications for user feedback
+
+**Common Patterns:**
+
+```typescript
+// ABC-List Export
+const words = getWordsData(cacheKey);
+ExportUtils.exportToPDF(listName, words);
+ExportUtils.exportToCSV(listName, words);
+ExportUtils.exportToMarkdown(listName, words);
+
+// KaWa Export
+const associations = getKawaAssociations(kawaKey, letters);
+KawaExportUtils.exportToPDF(kawaWord, associations);
+KawaExportUtils.exportToCSV(kawaWord, associations);
+KawaExportUtils.exportToMarkdown(kawaWord, associations);
+```
+
+**Mobile-First Button Layout:**
+
+```jsx
+<div className="flex gap-2 flex-wrap">
+  <button
+    onClick={exportAsPDF}
+    className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded flex items-center gap-1"
+    title="Als PDF exportieren"
+    aria-label="Als PDF exportieren"
+  >
+    📄 PDF
+  </button>
+  {/* CSV and Markdown buttons follow same pattern */}
+</div>
+```
+
+### Scientific Backing
+
+- **Multi-Format Support**: Accommodates different learning preferences (visual, kinesthetic, digital)
+- **Physical Learning**: PDF export enables printed study materials for tactile learners
+- **Cross-Platform**: Markdown export allows integration with digital note-taking systems
+- **Data Portability**: CSV format enables data analysis and knowledge management
+
+The Export System successfully extends the application's usability beyond the digital interface while maintaining the pedagogical principles of the Birkenbihl methodology.
 
 ---
 

@@ -206,6 +206,12 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 ## 📌 Zusammenfassung der Priorisierung
 
+### Hohe Priorität (3 Features):
+
+1. Offline-First mit Progressive Web App (PWA) Optimierung
+2. Tastatur-Shortcuts und Power-User Features
+3. Auto-Save und Versionierung
+
 ### Mittlere Priorität (5 Features):
 
 5. Browser-Extension
@@ -229,13 +235,19 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 ## 🎯 Empfohlene Umsetzungsreihenfolge
 
-**Phase 1 (Kurzfristig - 3-6 Monate):**
+**Phase 1 (Sofort - 1-3 Monate):**
 
-- Browser-Extension
+- Tastatur-Shortcuts und Power-User Features (schnell umsetzbar, hoher Impact)
+- Auto-Save und Versionierung (kritisch für Datenintegrität)
 
-**Phase 2 (Mittelfristig - 6-12 Monate):**
+**Phase 2 (Kurzfristig - 3-6 Monate):**
 
-- Weitere Features nach Bedarf
+- Export-Formate Erweitert (hoher Nutzen, moderate Komplexität)
+- Offline-First Optimierung (technisch anspruchsvoll, aber hoher Mehrwert)
+
+**Phase 3 (Mittelfristig - 6-12 Monate):**
+
+- Browser-Extension und weitere mittlere Priorität Features
 
 ---
 

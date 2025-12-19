@@ -1228,9 +1228,97 @@ interface InterleavingSession {
 2. Test algorithm effectiveness with realistic topic distributions
 3. Verify mobile responsiveness with touch interaction testing
 4. Ensure settings persistence across browser sessions
-5. Follow function extraction pattern for all event handlers
-6. Add comprehensive test coverage for new algorithm features
-7. Track performance metrics for continuous improvement
+
+---
+
+## 14. Export System (Multi-Format)
+
+### 14.1. Overview
+
+The Export System provides comprehensive multi-format export functionality enabling users to export their ABC-Lists and KaWa word associations as PDF, CSV, and Markdown files. This feature supports both digital and physical learning scenarios, aligning with Birkenbihl's multi-sensory learning approach.
+
+### 14.2. Core Components
+
+**Export Utilities:**
+
+- `src/lib/exportUtils.ts` - ABC-List export (PDF, CSV, Markdown, JSON)
+- `src/lib/kawaExportUtils.ts` - KaWa export (PDF, CSV, Markdown)
+- Uses jsPDF for professional PDF generation
+- Uses PapaParse for robust CSV parsing and generation
+- Type-safe validation with Zod schemas
+
+**Supported Formats:**
+
+- **PDF**: Print-friendly professional layout with pagination
+- **CSV**: Spreadsheet-compatible with UTF-8 encoding
+- **Markdown**: Plain-text for Obsidian/Notion integration
+- **JSON**: Native format for backup and migration
+
+### 14.3. Integration
+
+**ABC-List Component (`src/components/List/ListItem.tsx`):**
+
+```typescript
+// Export handlers extracted outside component
+const handleExportAsPDF = (item: string, cacheKey: string) => {
+  const words = getWordsData(cacheKey);
+  ExportUtils.exportToPDF(item || "Unbekannt", words);
+  toast.success("PDF-Export erfolgreich heruntergeladen!");
+};
+
+// Stable references created inside component
+const exportAsPDF = () => handleExportAsPDF(item, cacheKey);
+```
+
+**KaWa Component (`src/components/Kawa/KawaItem.tsx`):**
+
+```typescript
+// Get associations from localStorage
+const getKawaAssociations = (
+  kawaKey: string,
+  letters: string[],
+): Record<string, string> => {
+  const associations: Record<string, string> = {};
+  letters.forEach((letter, index) => {
+    const storageKey = `${kawaKey}_${index}`;
+    associations[letter] = localStorage.getItem(storageKey) || "";
+  });
+  return associations;
+};
+
+// Export with stable callback
+const exportAsPDF = useCallback(() => {
+  if (item) {
+    handleExportAsPDF(item.text, item.key, item.text.split(""));
+  }
+}, [item]);
+```
+
+### 14.4. Testing Coverage
+
+**Test Files:**
+
+- `src/lib/exportUtils.test.ts` (9 tests) - ABC-List export validation
+- `src/lib/kawaExportUtils.test.ts` (8 tests) - KaWa export validation
+
+**Test Coverage:**
+
+- PDF generation with correct file naming
+- CSV structure and UTF-8 encoding
+- Markdown formatting and metadata
+- Empty data handling
+- Special character support (German umlauts)
+
+### 14.5. Development Guidelines
+
+**When Working with Export:**
+
+1. Use `ExportUtils` for ABC-Lists, `KawaExportUtils` for KaWa
+2. Always test with German characters (ä, ö, ü, ß)
+3. Verify PDF pagination with large datasets
+4. Follow mobile-first design for export buttons
+5. Add toast notifications for user feedback
+6. File naming pattern: `{type}-{name}-{ISO-date}.{ext}`
 
 **Common Patterns:**
 
