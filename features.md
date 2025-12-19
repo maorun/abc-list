@@ -30,66 +30,6 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 ---
 
-## 🌟 Hohe Priorität
-
-### 1. Offline-First mit Progressive Web App (PWA) Optimierung
-
-**Priorität:** HOCH | **Impact:** 9/10 | **Alignment:** 7/10 | **Feasibility:** 8/10
-
-**Beschreibung:** Vollständige Offline-Funktionalität für unterbrechungsfreies Lernen
-
-- **Offline-Vollzugriff:** Alle Funktionen arbeiten ohne Internetverbindung
-- **Intelligentes Caching:** Automatisches Vorabladen häufig genutzter Inhalte
-- **Hintergrund-Sync:** Nahtlose Synchronisation wenn Verbindung wiederhergestellt
-- **Offline-Indikator:** Klare visuelle Rückmeldung über Online/Offline-Status
-- **Lokale Speicher-Optimierung:** Effiziente IndexedDB-Nutzung für große Datenmengen
-
-**Begründung:** Lernen findet überall statt - im Zug, Flugzeug, oder bei schlechter Verbindung. Offline-First ist essentiell für mobile Lernende. PWA-Technologie ist ausgereift und browser-nativ.
-
-### 2. Export-Formate Erweitert (PDF, Markdown, CSV)
-
-**Priorität:** HOCH | **Impact:** 8/10 | **Alignment:** 8/10 | **Feasibility:** 9/10
-
-**Beschreibung:** Flexibler Export für verschiedene Nutzungsszenarien
-
-- **PDF-Export:** Druckfreundliche Formate für ABC-Listen, KaWa, und Mind-Maps
-- **Markdown-Export:** Für Integration mit Obsidian, Notion, etc.
-- **CSV-Export:** Tabellenkalkulation und Datenanalyse
-- **Druck-Optimierung:** Spezielle Layouts für physisches Lernen
-- **Batch-Export:** Mehrere Listen auf einmal exportieren
-
-**Begründung:** Viele Lernende brauchen physische Kopien oder wollen Inhalte in andere Tools übertragen. Export-Funktionalität verstärkt die Birkenbihl-Methode durch Multi-Format-Verfügbarkeit.
-
-### 3. Tastatur-Shortcuts und Power-User Features
-
-**Priorität:** HOCH | **Impact:** 8/10 | **Alignment:** 7/10 | **Feasibility:** 9/10
-
-**Beschreibung:** Effizienzsteigerung für fortgeschrittene Nutzer
-
-- **Globale Shortcuts:** Schnellzugriff auf häufige Aktionen (Strg+N für neue Liste, etc.)
-- **Vim-ähnliche Navigation:** Optional für Power-User (j/k zum Scrollen)
-- **Command Palette:** Schneller Zugriff auf alle Funktionen (Strg+K)
-- **Quick-Add:** Schnelles Hinzufügen ohne Dialoge (Tab → Enter Workflow)
-- **Shortcut-Übersicht:** Hilfe-Dialog mit allen Tastenkombinationen
-
-**Begründung:** Fortgeschrittene Nutzer können mit Tastatur-Shortcuts deutlich schneller arbeiten. Reduziert Reibung beim Erstellen von Listen und steigert Flow-Zustand beim Lernen.
-
-### 4. Auto-Save und Versionierung
-
-**Priorität:** HOCH | **Impact:** 9/10 | **Alignment:** 6/10 | **Feasibility:** 8/10
-
-**Beschreibung:** Automatisches Speichern und Wiederherstellung vorheriger Versionen
-
-- **Auto-Save:** Kontinuierliches Speichern beim Tippen (kein manuelles Speichern nötig)
-- **Versions-Historie:** Zugriff auf frühere Versionen von Listen
-- **Undo/Redo:** Mehrfaches Rückgängig-Machen von Änderungen
-- **Wiederherstellung:** Automatische Recovery nach Browser-Absturz
-- **Version-Vergleich:** Diff-Ansicht zwischen Versionen
-
-**Begründung:** Datenverlust ist frustrierend und demotivierend. Auto-Save eliminiert dieses Risiko komplett. Versionierung ermöglicht Experimentieren ohne Angst vor Fehlern.
-
----
-
 ## ⭐ Mittlere Priorität
 
 ### 5. Browser-Extension
@@ -266,12 +206,11 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 ## 📌 Zusammenfassung der Priorisierung
 
-### Hohe Priorität (4 Features):
+### Hohe Priorität (3 Features):
 
 1. Offline-First mit Progressive Web App (PWA) Optimierung
-2. Export-Formate Erweitert (PDF, Markdown, CSV)
-3. Tastatur-Shortcuts und Power-User Features
-4. Auto-Save und Versionierung
+2. Tastatur-Shortcuts und Power-User Features
+3. Auto-Save und Versionierung
 
 ### Mittlere Priorität (5 Features):
 
