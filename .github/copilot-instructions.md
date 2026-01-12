@@ -3014,6 +3014,126 @@ The Loci-Methode system successfully implements a classical memory technique thr
 
 ---
 
+## Homescreen Widgets System (PWA Integration)
+
+### Overview
+
+The Homescreen Widgets system provides quick access to learning statistics, daily challenges, and quick actions directly from the device homescreen through PWA shortcuts and background data synchronization. This feature enhances user engagement and accessibility.
+
+### Core Implementation
+
+**WidgetService (`src/lib/WidgetService.ts`)**
+
+- Singleton service aggregating data from GamificationService and localStorage
+- Four widget types: Statistics, Quick Actions, Random Quiz, Learning Goals
+- Event-driven updates with service worker integration
+- Optimized caching for offline functionality
+
+**PWA Shortcuts (`public/manifest.json`)**
+
+- Four deep-linking shortcuts for immediate access to key features
+- Wide browser support: Chrome/Edge (Android & Desktop), Safari (iOS 13+)
+- Shortcuts: Neue ABC-Liste, Neues KaWa, Sokrates Check, Stadt-Land-Fluss
+
+**Service Worker Integration (`public/sw.js`)**
+
+- Background sync support for widget data updates
+- Periodic sync for automatic refresh (where supported)
+- Message handling for manual widget updates
+
+### Widget Types
+
+**Statistics Widget:**
+
+- Current/longest streak tracking
+- Total points and level display
+- Experience progress percentage (0-100)
+- Last activity date
+
+**Quick Actions Widget:**
+
+- Deep links to create ABC-List (`/list/neu`)
+- Deep links to create KaWa (`/kawa/neu`)
+- Deep links to Sokrates Check (`/sokrates`)
+- Deep links to Stadt-Land-Fluss (`/stadt-land-fluss/neu`)
+
+**Random Quiz Widget:**
+
+- Daily German educational questions
+- Categories: Grundlagen, Methodik, Lerntechnik, Lernstrategie
+- answeredToday state tracking
+- Automatic daily rotation
+
+**Learning Goals Widget:**
+
+- Weekly goals: Lists created, words added, Sokrates sessions
+- Customizable targets for each goal
+- Overall week progress percentage (0-100)
+- Week start/end dates (Monday-Sunday)
+
+### Testing Coverage
+
+**Comprehensive Test Suite (`src/lib/WidgetService.test.ts` - 28 tests):**
+
+- Singleton pattern validation
+- Widget data generation and caching
+- Statistics integration with GamificationService
+- Quiz rotation and persistence
+- Learning goals tracking and updates
+- Edge cases: corrupted data, missing localStorage
+- Integration with existing services
+
+### Development Guidelines
+
+**When Working with Widgets:**
+
+1. Use `WidgetService.getInstance()` for all widget operations
+2. Call `refreshWidgetData()` after significant user activities
+3. Test with realistic gamification data
+4. Verify persistence across browser sessions
+5. Follow function extraction pattern for all event handlers
+6. Add tests for new widget types or data sources
+
+**Common Patterns:**
+
+```typescript
+// Get complete widget data
+const widgetService = WidgetService.getInstance();
+const widgetData = widgetService.getWidgetData();
+
+// Update weekly goals
+widgetService.updateWeeklyGoals({
+  listsCreated: 10,
+  wordsAdded: 100,
+  sokratesSessions: 14,
+});
+
+// Mark quiz as answered
+widgetService.markQuizAnswered();
+
+// Force refresh
+widgetService.refreshWidgetData();
+```
+
+### Mobile-First Implementation
+
+**Responsive Design:**
+
+- Statistics cards: 2x2 grid mobile, 1x4 desktop
+- Touch-friendly goal customization controls
+- PWA shortcuts adapt to device capabilities
+- Graceful degradation without full PWA support
+
+### Browser Compatibility
+
+**PWA Shortcuts:** Chrome/Edge (Android & Desktop), Safari (iOS 13+), Firefox (limited)
+**Background Sync:** Chrome/Edge (full support), Safari/Firefox (manual refresh fallback)
+**Periodic Sync:** Chrome/Edge Desktop (experimental)
+
+All widget data remains accessible via WidgetService even without full PWA support, ensuring consistent functionality.
+
+---
+
 ## 🚨 FINAL REMINDER: NEVER FORGET THE MANDATORY WORKFLOW 🚨
 
 **Before closing any development session, ALWAYS complete this checklist:**

@@ -45,20 +45,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Begründung:** Nützlich für schnelles Erfassen von Lerninhalten. Standard Web-Extension-Technologie.
 
-### 6. Widgets für Homescreen
-
-**Priorität:** MITTEL | **Impact:** 6/10 | **Alignment:** 7/10 | **Feasibility:** 7/10
-
-**Beschreibung:** Schnellzugriff auf Lernfortschritt vom Startbildschirm
-
-- **Statistik-Widget:** Aktueller Streak und Punktestand
-- **Zufalls-Quiz:** Tägliche Frage als Widget
-- **Schnell-Notiz:** Widget zum sofortigen Erstellen von Einträgen
-- **Lernziele-Übersicht:** Fortschritt zu Wochenzielen
-
-**Begründung:** Erhöht Engagement durch ständige Sichtbarkeit. Mit PWA-API umsetzbar.
-
-### 7. Handschrift-Erkennung
+### 6. Handschrift-Erkennung
 
 **Priorität:** MITTEL | **Impact:** 6/10 | **Alignment:** 7/10 | **Feasibility:** 6/10
 
@@ -70,7 +57,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Begründung:** Nützlich für Tablet-Nutzer. OCR-Libraries verfügbar, keine KI-Training nötig.
 
-### 8. Animierte Lernkarten
+### 7. Animierte Lernkarten
 
 **Priorität:** MITTEL | **Impact:** 6/10 | **Alignment:** 7/10 | **Feasibility:** 7/10
 
@@ -83,7 +70,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Begründung:** Visuelle Verstärkung des Lernens. Mit CSS-Animationen und Canvas realisierbar.
 
-### 9. Lerntyp-Analyse
+### 8. Lerntyp-Analyse
 
 **Priorität:** MITTEL | **Impact:** 7/10 | **Alignment:** 8/10 | **Feasibility:** 7/10
 
@@ -100,7 +87,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 ## 📉 Niedrige Priorität
 
-### 10. API und Webhooks
+### 9. API und Webhooks
 
 **Priorität:** NIEDRIG | **Impact:** 5/10 | **Alignment:** 4/10 | **Feasibility:** 8/10
 
@@ -113,7 +100,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Begründung:** Nützlich für Power-User, aber keine breite Nachfrage erwartet.
 
-### 11. Ende-zu-Ende-Verschlüsselung
+### 10. Ende-zu-Ende-Verschlüsselung
 
 **Priorität:** NIEDRIG | **Impact:** 5/10 | **Alignment:** 3/10 | **Feasibility:** 5/10
 
@@ -126,7 +113,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Begründung:** Für Lerninhalte meist nicht kritisch. Komplexe Implementierung.
 
-### 12. Zwei-Faktor-Authentifizierung (2FA)
+### 11. Zwei-Faktor-Authentifizierung (2FA)
 
 **Priorität:** NIEDRIG | **Impact:** 4/10 | **Alignment:** 3/10 | **Feasibility:** 7/10
 
@@ -138,7 +125,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Begründung:** Sicherheit wichtig, aber für Lern-App weniger kritisch als für Banking.
 
-### 13. Multi-Format-Import
+### 12. Multi-Format-Import
 
 **Priorität:** NIEDRIG | **Impact:** 6/10 | **Alignment:** 5/10 | **Feasibility:** 6/10
 
@@ -151,7 +138,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Begründung:** Nice-to-have, aber JSON-Export/-Import deckt Hauptbedarf ab.
 
-### 14. Print-on-Demand
+### 13. Print-on-Demand
 
 **Priorität:** NIEDRIG | **Impact:** 4/10 | **Alignment:** 6/10 | **Feasibility:** 4/10
 
@@ -164,7 +151,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Begründung:** Digitaler Fokus der App. PDF-Export für Selbstdruck ausreichend.
 
-### 15. Erweiterte Barrierefreiheit
+### 14. Erweiterte Barrierefreiheit
 
 **Priorität:** NIEDRIG | **Impact:** 5/10 | **Alignment:** 6/10 | **Feasibility:** 7/10
 
@@ -176,7 +163,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Begründung:** Grundlegende Accessibility bereits vorhanden. Erweiterungen für spezielle Bedürfnisse.
 
-### 16. Lern-Daten für Forschung
+### 15. Lern-Daten für Forschung
 
 **Priorität:** NIEDRIG | **Impact:** 4/10 | **Alignment:** 5/10 | **Feasibility:** 6/10
 
@@ -189,7 +176,7 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 
 **Begründung:** Interessant für Wissenschaft, aber kein direkter Nutzen für Lernende.
 
-### 17. A/B-Testing für Lernmethoden
+### 16. A/B-Testing für Lernmethoden
 
 **Priorität:** NIEDRIG | **Impact:** 5/10 | **Alignment:** 6/10 | **Feasibility:** 7/10
 
@@ -212,24 +199,23 @@ Die Features sind nach **Priorität** sortiert (Hohe → Mittlere → Niedrige P
 2. Tastatur-Shortcuts und Power-User Features
 3. Auto-Save und Versionierung
 
-### Mittlere Priorität (5 Features):
+### Mittlere Priorität (4 Features):
 
 5. Browser-Extension
-6. Widgets für Homescreen
-7. Handschrift-Erkennung
-8. Animierte Lernkarten
-9. Lerntyp-Analyse
+6. Handschrift-Erkennung
+7. Animierte Lernkarten
+8. Lerntyp-Analyse
 
 ### Niedrige Priorität (8 Features):
 
-10. API und Webhooks
-11. Ende-zu-Ende-Verschlüsselung
-12. Zwei-Faktor-Authentifizierung
-13. Multi-Format-Import
-14. Print-on-Demand
-15. Erweiterte Barrierefreiheit
-16. Lern-Daten für Forschung
-17. A/B-Testing für Lernmethoden
+9. API und Webhooks
+10. Ende-zu-Ende-Verschlüsselung
+11. Zwei-Faktor-Authentifizierung
+12. Multi-Format-Import
+13. Print-on-Demand
+14. Erweiterte Barrierefreiheit
+15. Lern-Daten für Forschung
+16. A/B-Testing für Lernmethoden
 
 ---
 
