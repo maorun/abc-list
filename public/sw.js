@@ -1,5 +1,5 @@
 // ABC-List Service Worker for PWA functionality
-// Provides offline capabilities, caching, background sync, and push notifications
+// Provides offline capabilities, caching, background sync, push notifications, and widget data updates
 
 const CACHE_NAME = "abc-list-v1";
 const DATA_CACHE_NAME = "abc-list-data-v1";
@@ -130,8 +130,21 @@ self.addEventListener("sync", (event) => {
     event.waitUntil(syncABCLists());
   } else if (event.tag === "background-sync-basar") {
     event.waitUntil(syncBasarData());
+  } else if (event.tag === "widget-data-update") {
+    event.waitUntil(updateWidgetData());
   }
 });
+
+// Periodic Background Sync for widget data updates (if supported)
+if ("periodicSync" in self.registration) {
+  self.addEventListener("periodicsync", (event) => {
+    console.log("[ServiceWorker] Periodic sync triggered:", event.tag);
+
+    if (event.tag === "widget-data-update") {
+      event.waitUntil(updateWidgetData());
+    }
+  });
+}
 
 // Push notification handler
 self.addEventListener("push", (event) => {
@@ -253,6 +266,28 @@ async function syncBasarData() {
   }
 }
 
+// Widget data update function
+async function updateWidgetData() {
+  try {
+    console.log("[ServiceWorker] Updating widget data");
+
+    // Get active clients
+    const clients = await self.clients.matchAll();
+    if (clients.length > 0) {
+      // Send message to client to update widget data
+      clients[0].postMessage({
+        type: "WIDGET_UPDATE",
+        action: "REFRESH_WIDGET_DATA",
+      });
+    }
+
+    return Promise.resolve();
+  } catch (error) {
+    console.error("[ServiceWorker] Error updating widget data:", error);
+    return Promise.reject(error);
+  }
+}
+
 // Handle messages from main app
 self.addEventListener("message", (event) => {
   const {data} = event;
@@ -267,5 +302,9 @@ self.addEventListener("message", (event) => {
         return cache.addAll(data.payload);
       }),
     );
+  }
+
+  if (data && data.type === "UPDATE_WIDGET_DATA") {
+    event.waitUntil(updateWidgetData());
   }
 });

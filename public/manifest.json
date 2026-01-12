@@ -44,12 +44,67 @@
       "form_factor": "narrow"
     }
   ],
+  "shortcuts": [
+    {
+      "name": "Neue ABC-Liste",
+      "short_name": "Liste",
+      "description": "Erstelle eine neue ABC-Liste",
+      "url": "./list/neu",
+      "icons": [
+        {
+          "src": "./assets/icon.png",
+          "sizes": "1024x1024",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Neues KaWa",
+      "short_name": "KaWa",
+      "description": "Erstelle ein neues KaWa",
+      "url": "./kawa/neu",
+      "icons": [
+        {
+          "src": "./assets/icon.png",
+          "sizes": "1024x1024",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Sokrates Check",
+      "short_name": "Sokrates",
+      "description": "Starte Spaced Repetition Lernsession",
+      "url": "./sokrates",
+      "icons": [
+        {
+          "src": "./assets/icon.png",
+          "sizes": "1024x1024",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Stadt-Land-Fluss",
+      "short_name": "Spiel",
+      "description": "Neues Stadt-Land-Fluss Spiel",
+      "url": "./stadt-land-fluss/neu",
+      "icons": [
+        {
+          "src": "./assets/icon.png",
+          "sizes": "1024x1024",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
   "prefer_related_applications": false,
   "features": [
     "offline",
     "installable",
     "background-sync",
-    "push-notifications"
+    "push-notifications",
+    "shortcuts"
   ],
   "edge_side_panel": {
     "preferred_width": 480
