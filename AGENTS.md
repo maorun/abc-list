@@ -1354,3 +1354,235 @@ The Interleaved Learning implementation is based on established cognitive scienc
 - Performance tracking enables personalized optimization
 
 The system seamlessly integrates research-backed principles with the existing Sokrates spaced repetition algorithm, creating a comprehensive learning optimization platform aligned with Vera F. Birkenbihl's brain-compatible learning methodology.
+
+## 15. Homescreen Widgets (PWA Integration)
+
+### 15.1. Overview
+
+The Homescreen Widgets system provides quick access to learning statistics, actions, and daily challenges directly from the device homescreen. Implemented using PWA shortcuts and background data synchronization, this feature enhances user engagement and makes learning more accessible.
+
+### 15.2. Core Components
+
+**WidgetService (`src/lib/WidgetService.ts`)**
+
+- Singleton service aggregating data from GamificationService and localStorage
+- Provides four widget types: Statistics, Quick Actions, Random Quiz, Learning Goals
+- Event-driven updates with service worker integration
+- Optimized caching for offline widget functionality
+
+**PWA Shortcuts (`public/manifest.json`)**
+
+- Four deep-linking shortcuts for quick actions:
+  1. Neue ABC-Liste (`/list/neu`)
+  2. Neues KaWa (`/kawa/neu`)
+  3. Sokrates Check (`/sokrates`)
+  4. Stadt-Land-Fluss (`/stadt-land-fluss/neu`)
+- Wide browser support (Chrome/Edge Android & Desktop, Safari iOS 13+)
+
+**Service Worker Integration (`public/sw.js`)**
+
+- Background sync support for widget data updates
+- Periodic sync for automatic refresh (where supported)
+- Message handling for manual widget updates
+
+### 15.3. Widget Types
+
+**Statistics Widget:**
+
+```typescript
+interface WidgetStatistics {
+  currentStreak: number; // User's current daily streak
+  longestStreak: number; // All-time longest streak
+  totalPoints: number; // Gamification points
+  level: number; // Current level
+  experienceProgress: number; // 0-100 percentage to next level
+  lastActivityDate: string; // ISO date of last activity
+}
+```
+
+**Quick Actions Widget:**
+
+```typescript
+interface WidgetQuickActions {
+  createListUrl: string; // Deep link to create ABC-List
+  createKawaUrl: string; // Deep link to create KaWa
+  sokratesCheckUrl: string; // Deep link to Sokrates
+  stadtLandFlussUrl: string; // Deep link to Stadt-Land-Fluss
+}
+```
+
+**Random Quiz Widget:**
+
+```typescript
+interface WidgetRandomQuiz {
+  question: string; // Daily German educational question
+  category: string; // Question category (Grundlagen, Methodik, etc.)
+  timestamp: string; // Date of question
+  answeredToday: boolean; // Whether user answered today
+}
+```
+
+**Learning Goals Widget:**
+
+```typescript
+interface WidgetLearningGoals {
+  weeklyGoals: {
+    listsCreated: {current: number; target: number};
+    wordsAdded: {current: number; target: number};
+    sokratesSessions: {current: number; target: number};
+  };
+  weekProgress: number; // 0-100 overall weekly progress
+  weekStart: string; // Start of current week (Monday)
+  weekEnd: string; // End of current week (Sunday)
+}
+```
+
+### 15.4. Data Flow
+
+**Widget Data Generation:**
+
+1. User interacts with app → GamificationService tracks activity
+2. WidgetService.getWidgetData() aggregates data from multiple sources
+3. Data cached in localStorage for service worker access
+4. Service worker can trigger updates via background sync
+
+**Background Updates:**
+
+- Manual trigger: `WidgetService.refreshWidgetData()`
+- Service worker sync: Triggered by `sync` event with tag `widget-data-update`
+- Periodic sync: Automatic updates when supported by browser
+- Message-based: Main app can request widget updates from service worker
+
+### 15.5. Storage Keys
+
+```typescript
+const WIDGET_STORAGE_KEYS = {
+  DATA: "widget-data", // Complete widget data cache
+  QUIZ_STATE: "widget-quiz-state", // Daily quiz state
+  GOALS: "widget-learning-goals", // User-customized goals
+} as const;
+```
+
+### 15.6. Testing Coverage
+
+**Comprehensive Test Suite (`src/lib/WidgetService.test.ts` - 28 tests):**
+
+- Singleton pattern validation
+- Widget data generation and caching
+- Statistics integration with GamificationService
+- Quiz rotation and persistence
+- Learning goals tracking and updates
+- Edge case handling (corrupted data, missing localStorage)
+- Integration testing with existing services
+
+### 15.7. Mobile-First Implementation
+
+**Responsive Widget Display:**
+
+- Statistics cards: 2x2 grid on mobile, 1x4 on desktop
+- Touch-friendly controls for goal customization
+- PWA shortcuts automatically adapt to device capabilities
+- Graceful degradation on browsers without full PWA support
+
+### 15.8. Development Guidelines
+
+**When Working with Widgets:**
+
+1. Use `WidgetService.getInstance()` for all widget operations
+2. Call `refreshWidgetData()` after significant user activities
+3. Test with realistic gamification data (multiple activities)
+4. Verify widget data persistence across browser sessions
+5. Follow function extraction pattern for event handlers
+6. Add tests for new widget types or data sources
+
+**Common Patterns:**
+
+```typescript
+// Get complete widget data
+const widgetService = WidgetService.getInstance();
+const widgetData = widgetService.getWidgetData();
+
+// Update weekly goals
+widgetService.updateWeeklyGoals({
+  listsCreated: 10,
+  wordsAdded: 100,
+  sokratesSessions: 14,
+});
+
+// Mark quiz as answered
+widgetService.markQuizAnswered();
+
+// Force refresh widget data
+widgetService.refreshWidgetData();
+```
+
+**Integration with Service Worker:**
+
+```typescript
+// Request widget update from main app
+if (navigator.serviceWorker?.controller) {
+  navigator.serviceWorker.controller.postMessage({
+    type: "UPDATE_WIDGET_DATA",
+  });
+}
+
+// Service worker handles update
+self.addEventListener("message", (event) => {
+  if (event.data?.type === "UPDATE_WIDGET_DATA") {
+    event.waitUntil(updateWidgetData());
+  }
+});
+```
+
+### 15.9. Browser Compatibility
+
+**PWA Shortcuts Support:**
+
+- Chrome/Edge: Android & Desktop (full support)
+- Safari: iOS 13+ (full support)
+- Firefox: Limited support (shortcuts visible in browser UI)
+
+**Background Sync:**
+
+- Chrome/Edge: Android & Desktop (full support)
+- Safari/Firefox: Fallback to manual refresh
+
+**Periodic Background Sync:**
+
+- Chrome/Edge: Desktop (experimental flag required)
+- Mobile browsers: Not widely supported yet
+
+**Graceful Degradation:**
+
+- All widget data accessible via WidgetService
+- Statistics displayed in-app via GamificationStatusIndicator
+- Quick actions available through normal navigation
+- Quiz accessible through in-app interface
+
+### 15.10. Usage Instructions for Users
+
+**Installing PWA:**
+
+1. Open ABC-List in Chrome/Edge/Safari
+2. Click browser menu → "Add to Home Screen" or "Install"
+3. Confirm installation
+
+**Accessing Shortcuts:**
+
+- **Android**: Long-press app icon → Select shortcut
+- **iOS**: Long-press app icon → Quick Actions
+- **Desktop**: Right-click app icon → View shortcuts
+
+**Viewing Statistics:**
+
+- Statistics automatically sync from GamificationService
+- Updated in real-time when app is open
+- Cached for offline viewing
+
+**Daily Quiz:**
+
+- New question generated each day
+- Persists across sessions until answered
+- Mark as answered via in-app interface
+
+The Homescreen Widgets system successfully extends the ABC-List learning experience beyond the app itself, providing convenient access to key features and maintaining engagement through persistent homescreen presence.
