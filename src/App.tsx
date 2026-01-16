@@ -40,7 +40,6 @@ import {SokratesCheck} from "./components/SokratesCheck/SokratesCheck";
 import {Basar} from "./components/Basar/Basar";
 import {GamificationDashboard} from "./components/Gamification/GamificationDashboard";
 import {SearchAndFilter} from "./components/Search/SearchAndFilter";
-import {Community} from "./components/Community/Community";
 import {NumberMemory} from "./components/NumberMemory/NumberMemory";
 import {MindMapView} from "./components/MindMap/MindMapView";
 import {StatusIndicators} from "./components/StatusIndicators";
@@ -49,9 +48,20 @@ import {ElaborativeInterrogation} from "./components/ElaborativeInterrogation/El
 import {InterrogationDashboard} from "./components/ElaborativeInterrogation/InterrogationDashboard";
 import {LocusMethode} from "./components/LocusMethode/LocusMethode";
 import {LocusMethodeRoom} from "./components/LocusMethode/LocusMethodeRoom";
+import {isCommunityEnabled} from "./lib/config";
+
+// Conditionally import Community component only if feature is enabled
+const Community = isCommunityEnabled()
+  ? React.lazy(() =>
+      import("./components/Community/Community").then((module) => ({
+        default: module.Community,
+      })),
+    )
+  : null;
 
 // Extract navigation items to prevent recreation on every render
-const navigationItems = [
+// Filter out Community tab if feature is disabled
+const allNavigationItems = [
   {to: "/", label: "Listen", description: "ABC-Listen erstellen und verwalten"},
   {
     to: "/search",
@@ -75,6 +85,7 @@ const navigationItems = [
     to: "/community",
     label: "Community",
     description: "Community Hub und Mentoring",
+    requiresFeature: "community",
   },
   {to: "/sokrates", label: "Sokrates-Check", description: "Lernerfolg prüfen"},
   {
@@ -107,7 +118,16 @@ const navigationItems = [
     label: "Analytics",
     description: "Lernstatistiken anzeigen",
   },
-] as const;
+];
+
+type NavigationItem = (typeof allNavigationItems)[number];
+
+const navigationItems: NavigationItem[] = allNavigationItems.filter((item) => {
+  if ("requiresFeature" in item && item.requiresFeature === "community") {
+    return isCommunityEnabled();
+  }
+  return true;
+});
 
 // Extract NavButton interface outside component
 interface NavButtonProps {
@@ -300,7 +320,18 @@ function AppContent() {
             <Route path="/slf" element={<StadtLandFluss />} />
             <Route path="/slf/:game" element={<StadtLandFlussGame />} />
             <Route path="/basar" element={<Basar />} />
-            <Route path="/community" element={<Community />} />
+            {isCommunityEnabled() && Community && (
+              <Route
+                path="/community"
+                element={
+                  <React.Suspense
+                    fallback={<div className="p-8">Lade Community...</div>}
+                  >
+                    <Community />
+                  </React.Suspense>
+                }
+              />
+            )}
             <Route path="/sokrates" element={<SokratesCheck />} />
             <Route path="/interrogation" element={<InterrogationDashboard />} />
             <Route
