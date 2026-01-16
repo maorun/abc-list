@@ -329,3 +329,79 @@ describe("ListItem Integration Test - Rerender with existing words", () => {
     unmount();
   });
 });
+
+// Timer functionality tests
+describe("ListItem Timer", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    trackedLocalStorage.resetAccessCount();
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    vi.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  const renderComponent = (item: string) => {
+    return render(
+      <MemoryRouter initialEntries={[`/list/${item}`]}>
+        <Routes>
+          <Route path="/list/:item" element={<ListItem />} />
+        </Routes>
+      </MemoryRouter>,
+    );
+  };
+
+  it("should render timer controls", async () => {
+    renderComponent("TestList");
+
+    // Wait for component to render
+    await waitFor(() => {
+      expect(
+        screen.getByRole("heading", {name: /ABC-Liste für TestList/i}),
+      ).toBeInTheDocument();
+    });
+
+    // Check that timer start button exists
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", {name: /Timer starten/i}),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("should have reset button for timer", async () => {
+    renderComponent("TestList");
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("heading", {name: /ABC-Liste für TestList/i}),
+      ).toBeInTheDocument();
+    });
+
+    // Check that reset button exists
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", {name: /Timer zurücksetzen/i}),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("should have timer duration selector", async () => {
+    renderComponent("TestList");
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("heading", {name: /ABC-Liste für TestList/i}),
+      ).toBeInTheDocument();
+    });
+
+    // Check that duration selector exists
+    await waitFor(() => {
+      expect(
+        screen.getByLabelText(/Timer-Dauer auswählen/i),
+      ).toBeInTheDocument();
+    });
+  });
+});

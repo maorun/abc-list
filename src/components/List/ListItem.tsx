@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from "react";
+import React, {useState, useCallback, useEffect, useRef} from "react";
 import {useParams, useNavigate} from "react-router-dom";
 import {toast} from "sonner";
 import {usePrompt} from "@/components/ui/prompt-dialog";
@@ -302,6 +302,13 @@ const handleBackToListsAction = (navigate: ReturnType<typeof useNavigate>) => {
   navigate("/");
 };
 
+// Timer utility function
+const formatTime = (seconds: number): string => {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
+};
+
 export function ListItem() {
   const {item} = useParams<{item: string}>();
   const navigate = useNavigate();
@@ -312,6 +319,13 @@ export function ListItem() {
   const [exportedData, setExportedData] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const {prompt, PromptComponent} = usePrompt();
+
+  // Timer state
+  const [timeLeft, setTimeLeft] = useState(90); // Default 90 seconds
+  const [isTimerActive, setIsTimerActive] = useState(false);
+  const [timerDuration, setTimerDuration] = useState(90);
+  const timerIntervalRef = useRef<number | null>(null);
+  const timeUpNotifiedRef = useRef(false);
 
   // Create stable back navigation handler using useCallback
   const backToLists = useCallback(
@@ -402,6 +416,60 @@ export function ListItem() {
     updateWordsForLetter(letter, (words) =>
       words.map((w) => (w.text === word ? {...w, ...visualData} : w)),
     );
+  };
+
+  // Timer effect - countdown
+  useEffect(() => {
+    if (isTimerActive && timeLeft > 0) {
+      const interval = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            // Time is up
+            if (!timeUpNotifiedRef.current) {
+              timeUpNotifiedRef.current = true;
+              toast.info("⏰ Zeit abgelaufen! Die 90 Sekunden sind um.", {
+                duration: 5000,
+              });
+            }
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      timerIntervalRef.current = interval;
+      return () => clearInterval(interval);
+    }
+  }, [isTimerActive, timeLeft]);
+
+  // Reset notification flag when timer is reset or restarted
+  useEffect(() => {
+    if (timeLeft > 0 || !isTimerActive) {
+      timeUpNotifiedRef.current = false;
+    }
+  }, [timeLeft, isTimerActive]);
+
+  // Timer control handlers
+  const startTimer = () => {
+    setIsTimerActive(true);
+    if (timeLeft === 0) {
+      setTimeLeft(timerDuration);
+    }
+  };
+
+  const pauseTimer = () => {
+    setIsTimerActive(false);
+    if (timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current);
+    }
+  };
+
+  const resetTimer = () => {
+    setIsTimerActive(false);
+    setTimeLeft(timerDuration);
+    timeUpNotifiedRef.current = false;
+    if (timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current);
+    }
   };
 
   // Don't render Letter components until we have a valid item and cacheKey
@@ -513,6 +581,78 @@ export function ListItem() {
             🧠 Mind-Map
           </button>
         </div>
+      </div>
+
+      {/* Timer Section */}
+      <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="text-4xl font-bold text-blue-600 min-w-[100px]">
+              {formatTime(timeLeft)}
+            </div>
+            <div className="flex gap-2">
+              {!isTimerActive ? (
+                <button
+                  onClick={startTimer}
+                  className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                  title="Timer starten"
+                  aria-label="Timer starten"
+                >
+                  ▶️ Start
+                </button>
+              ) : (
+                <button
+                  onClick={pauseTimer}
+                  className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
+                  title="Timer pausieren"
+                  aria-label="Timer pausieren"
+                >
+                  ⏸️ Pause
+                </button>
+              )}
+              <button
+                onClick={resetTimer}
+                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                title="Timer zurücksetzen"
+                aria-label="Timer zurücksetzen"
+              >
+                🔄 Reset
+              </button>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <label htmlFor="timer-duration" className="text-sm font-medium">
+              Dauer:
+            </label>
+            <select
+              id="timer-duration"
+              value={timerDuration}
+              onChange={(e) => {
+                const newDuration = parseInt(e.target.value);
+                setTimerDuration(newDuration);
+                setTimeLeft(newDuration);
+                setIsTimerActive(false);
+                timeUpNotifiedRef.current = false;
+              }}
+              disabled={isTimerActive}
+              className="border rounded px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-200 disabled:cursor-not-allowed"
+              aria-label="Timer-Dauer auswählen"
+            >
+              <option value="60">1 Minute</option>
+              <option value="90">90 Sekunden</option>
+              <option value="120">2 Minuten</option>
+              <option value="180">3 Minuten</option>
+              <option value="300">5 Minuten</option>
+            </select>
+          </div>
+        </div>
+        {timeLeft === 0 && (
+          <div className="mt-3 p-3 bg-yellow-100 border border-yellow-300 rounded text-center">
+            <span className="text-lg font-semibold text-yellow-800">
+              ⏰ Zeit abgelaufen! Sie können weiterarbeiten.
+            </span>
+          </div>
+        )}
       </div>
 
       <div className="flex flex-row flex-wrap justify-around gap-4">
