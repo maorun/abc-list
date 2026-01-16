@@ -17,7 +17,7 @@ ABC-List implements Vera F. Birkenbihl's learning methodology with multiple lear
 - **Loci-Methode (Memory Palace)**: Spatial memory technique with 2D virtual rooms, object placement at specific locations, and memory routes for sequential memorization
 - **Gamification System**: Comprehensive achievement and motivation system with daily streaks, challenges, levels, and leaderboards
 - **Search & Tagging System**: Intelligent full-text search with automated tagging, smart collections, and advanced filtering across all content types
-- **Community Hub**: Collaborative learning platform with user profiles, mentoring system, peer reviews, community challenges, and success stories
+- **Community Hub** *(Optional)*: Collaborative learning platform with user profiles, mentoring system, peer reviews, community challenges, and success stories (requires `VITE_ENABLE_COMMUNITY=true` environment variable)
 - **Template Library**: Pre-configured templates for quick start with educational content across multiple subjects (Mathematik, Sprachen, Geschichte, etc.)
 - **Dual-Coding Support**: Visual learning enhancement with emoji picker, symbol library (48 educational symbols in 9 categories), and external image URL support for stronger memory associations
 
@@ -68,7 +68,7 @@ This workflow is not a recommendation; it is a requirement. Following this seque
 
 2.  **Write New Tests (for new features)**
     - When adding a new feature, practice **Test-Driven Development (TDD)**.
-    - Write a failing test that describes the new functionality _before_ implementing it. This ensures your feature is testable and correctly implemented.
+    - Write a failing test that describes the new functionality *before* implementing it. This ensures your feature is testable and correctly implemented.
 
 3.  **Implement Your Changes**
     - Write the necessary code to either make the new test pass or to fix an existing bug.
@@ -883,6 +883,22 @@ interface StadtLandFlussTemplate {
 ### 12.1. Overview
 
 The Community Hub transforms ABC-List into a collaborative learning platform while maintaining its educational focus. It provides a centralized space for knowledge sharing, mentoring, and peer collaboration through five core features: user profiles, intelligent mentoring system, community challenges, peer review system, and success stories.
+
+**⚠️ IMPORTANT: The Community Hub is an optional feature controlled by an environment variable.**
+
+To enable Community features, set the following environment variable:
+
+```bash
+VITE_ENABLE_COMMUNITY=true
+```
+
+When this variable is not set or set to `false` (default), all Community-related features are completely hidden:
+- Community navigation tab is not shown
+- Community routes are not registered
+- Community components are not loaded (lazy loading prevents unnecessary bundling)
+- Users cannot access `/community` URL
+
+This feature flag is defined in `src/lib/config.ts` and checked throughout the application using `isCommunityEnabled()`.
 
 ### 11.2. Core Components
 

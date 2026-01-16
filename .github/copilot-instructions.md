@@ -1,6 +1,6 @@
 # ABC-List Learning Application
 
-ABC-List is a React/TypeScript/Vite web application implementing Vera F. Birkenbihl's learning methodology with ABC-Lists, KaWa (word associations), KaGa (graphical associations), Mind-Map visualization, Stadt-Land-Fluss (quick knowledge retrieval game), Sokrates spaced repetition system with Interleaved Learning, Zahlen-Merk-System (Major-System for number memorization), Loci-Methode (Memory Palace with spatial memory technique), and Template Library. This application helps users create learning materials using brain-compatible learning techniques with scientifically-backed retention optimization and pre-configured templates for quick start.
+ABC-List is a React/TypeScript/Vite web application implementing Vera F. Birkenbihl's learning methodology with ABC-Lists, KaWa (word associations), KaGa (graphical associations), Mind-Map visualization, Stadt-Land-Fluss (quick knowledge retrieval game), Sokrates spaced repetition system with Interleaved Learning, Zahlen-Merk-System (Major-System for number memorization), Loci-Methode (Memory Palace with spatial memory technique), and Template Library. The Community Hub feature (user profiles, mentoring, peer reviews, challenges) is optional and controlled by the `VITE_ENABLE_COMMUNITY` environment variable. This application helps users create learning materials using brain-compatible learning techniques with scientifically-backed retention optimization and pre-configured templates for quick start.
 
 **ALWAYS reference these instructions first and fallback to search or bash commands only when you encounter unexpected information that does not match the info here.**
 
@@ -2008,6 +2008,22 @@ interface StadtLandFlussTemplate {
 ### Overview
 
 The Community Hub transforms ABC-List into a collaborative learning platform while maintaining its educational focus and technical excellence standards. It provides a centralized space for knowledge sharing, mentoring, and peer collaboration through five core features that seamlessly integrate with existing systems.
+
+**⚠️ IMPORTANT: The Community Hub is an optional feature controlled by an environment variable.**
+
+To enable Community features, set the following environment variable in your `.env.local` file:
+
+```bash
+VITE_ENABLE_COMMUNITY=true
+```
+
+When this variable is not set or set to `false` (default), all Community-related features are completely hidden:
+- Community navigation tab is not shown
+- Community routes are not registered  
+- Community components are not loaded (lazy loading prevents unnecessary bundling)
+- Users cannot access `/community` URL
+
+This feature flag is defined in `src/lib/config.ts` and checked throughout the application using `isCommunityEnabled()`.
 
 ### Core Implementation
 
