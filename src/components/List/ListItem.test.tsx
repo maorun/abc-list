@@ -355,7 +355,7 @@ describe("ListItem Timer", () => {
 
   it("should render timer controls", async () => {
     renderComponent("TestList");
-    
+
     // Wait for component to render
     await waitFor(() => {
       expect(
@@ -373,7 +373,7 @@ describe("ListItem Timer", () => {
 
   it("should have reset button for timer", async () => {
     renderComponent("TestList");
-    
+
     await waitFor(() => {
       expect(
         screen.getByRole("heading", {name: /ABC-Liste für TestList/i}),
@@ -390,7 +390,7 @@ describe("ListItem Timer", () => {
 
   it("should have timer duration selector", async () => {
     renderComponent("TestList");
-    
+
     await waitFor(() => {
       expect(
         screen.getByRole("heading", {name: /ABC-Liste für TestList/i}),
