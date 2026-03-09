@@ -234,7 +234,7 @@ export function evaluateResponse(
   const score = Math.round((criteriaMatched.length / maxScore) * 100);
 
   // Generate feedback based on score
-  let feedback = "";
+  let feedback: string;
   if (score >= 80) {
     feedback =
       "Ausgezeichnete Antwort! Du zeigst ein tiefes Verständnis des Konzepts.";
