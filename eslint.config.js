@@ -5,6 +5,7 @@ import react from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
 import jsxA11y from "eslint-plugin-jsx-a11y";
 import prettierRecommended from "eslint-plugin-prettier/recommended";
+import {fixupPluginRules} from "@eslint/compat";
 
 export default tseslint.config(
   {
@@ -23,9 +24,9 @@ export default tseslint.config(
   {
     files: ["src/**/*.{js,jsx,ts,tsx}"],
     plugins: {
-      react,
-      "react-hooks": reactHooks,
-      "jsx-a11y": jsxA11y,
+      react: fixupPluginRules(react),
+      "react-hooks": fixupPluginRules(reactHooks),
+      "jsx-a11y": fixupPluginRules(jsxA11y),
     },
     languageOptions: {
       parser: tseslint.parser,
