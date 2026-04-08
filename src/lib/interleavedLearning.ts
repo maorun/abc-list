@@ -143,6 +143,10 @@ export function generateInterleavedSequence<T>(
             break;
           }
         }
+        // Ensure we actually switched: fallback if random selection fell through
+        if (selectedTopic.topic === lastTopic) {
+          selectedTopic = otherTopics[0];
+        }
       }
     } else {
       // Weighted selection from all available topics
