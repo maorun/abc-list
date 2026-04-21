@@ -296,7 +296,7 @@ export function KagaItem() {
           width: Math.abs(endPos.x - startPos.x),
           height: Math.abs(endPos.y - startPos.y),
           ...baseProps,
-        } as RectangleShape;
+        };
       }
       case "circle": {
         const radius = Math.sqrt(
@@ -309,7 +309,7 @@ export function KagaItem() {
           y: startPos.y,
           radius,
           ...baseProps,
-        } as CircleShape;
+        };
       }
       case "line":
       case "arrow": {
@@ -320,7 +320,7 @@ export function KagaItem() {
           endX: endPos.x,
           endY: endPos.y,
           ...baseProps,
-        } as LineShape;
+        };
       }
       default: {
         // This should never happen with proper TypeScript typing

@@ -169,7 +169,7 @@ function ProfileForm({
 
   const handleAddExpertise = handleAddExpertiseAction(
     {
-      area: newExpertiseArea as string,
+      area: newExpertiseArea,
       level: newExpertiseLevel,
       verified: false,
       endorsements: 0,
