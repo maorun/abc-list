@@ -69,7 +69,7 @@ export function Analytics() {
           {tabs.map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id as TabType)}
+              onClick={() => setActiveTab(tab.id)}
               className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                 activeTab === tab.id
                   ? "bg-blue-600 text-white"
