@@ -162,6 +162,86 @@ describe("LinkLists", () => {
     expect(screen.getByText("ball")).toBeInTheDocument();
   });
 
+  it("shows words from BOTH lists when two lists are selected", () => {
+    localStorageMock.setItem("abcLists", JSON.stringify(["Tiere", "Pflanzen"]));
+    // Words for the first list
+    localStorageMock.setItem(
+      "abcList-Tiere:a",
+      JSON.stringify([
+        {text: "Affe", explanation: "", version: 1, imported: false},
+      ]),
+    );
+    localStorageMock.setItem(
+      "abcList-Tiere:b",
+      JSON.stringify([
+        {text: "Bär", explanation: "", version: 1, imported: false},
+      ]),
+    );
+    // Words for the second list
+    localStorageMock.setItem(
+      "abcList-Pflanzen:a",
+      JSON.stringify([
+        {text: "Apfel", explanation: "", version: 1, imported: false},
+      ]),
+    );
+    localStorageMock.setItem(
+      "abcList-Pflanzen:b",
+      JSON.stringify([
+        {text: "Birne", explanation: "", version: 1, imported: false},
+      ]),
+    );
+
+    render(<LinkLists />);
+
+    // Select FIRST list
+    fireEvent.click(screen.getByRole("button", {name: "Tiere"}));
+
+    // Verify first list shows correctly
+    expect(screen.getByText("Affe")).toBeInTheDocument();
+    expect(screen.getByText("Bär")).toBeInTheDocument();
+
+    // Select SECOND list
+    fireEvent.click(screen.getByRole("button", {name: "Pflanzen"}));
+
+    // Verify BOTH lists still show their words (this was the bug: first list disappeared)
+    expect(screen.getByText("Affe")).toBeInTheDocument();
+    expect(screen.getByText("Bär")).toBeInTheDocument();
+    expect(screen.getByText("Apfel")).toBeInTheDocument();
+    expect(screen.getByText("Birne")).toBeInTheDocument();
+  });
+
+  it("shows words from first list when selecting second list first", () => {
+    localStorageMock.setItem(
+      "abcLists",
+      JSON.stringify(["Liste 1", "Liste 2"]),
+    );
+    localStorageMock.setItem(
+      "abcList-Liste 1:c",
+      JSON.stringify([
+        {text: "Chaos", explanation: "", version: 1, imported: false},
+      ]),
+    );
+    localStorageMock.setItem(
+      "abcList-Liste 2:c",
+      JSON.stringify([
+        {text: "Computer", explanation: "", version: 1, imported: false},
+      ]),
+    );
+
+    render(<LinkLists />);
+
+    // Select second list first
+    fireEvent.click(screen.getByRole("button", {name: "Liste 2"}));
+    expect(screen.getByText("Computer")).toBeInTheDocument();
+
+    // Then select first list
+    fireEvent.click(screen.getByRole("button", {name: "Liste 1"}));
+
+    // Both words must be visible
+    expect(screen.getByText("Chaos")).toBeInTheDocument();
+    expect(screen.getByText("Computer")).toBeInTheDocument();
+  });
+
   it("shows bi-associative ideas hint when multiple lists are selected", () => {
     localStorageMock.setItem("abcLists", JSON.stringify(["List 1", "List 2"]));
 
@@ -179,5 +259,23 @@ describe("LinkLists", () => {
     // Select second list - hint should appear
     fireEvent.click(listButton2);
     expect(screen.getByText("💡 Bi-assoziative Ideen")).toBeInTheDocument();
+  });
+
+  it("toggles the help section when help button is clicked", () => {
+    render(<LinkLists />);
+
+    expect(
+      screen.queryByText("🔗 So funktioniert die Verknüpfung von ABC-Listen"),
+    ).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", {name: /Wie funktioniert das/}));
+    expect(
+      screen.getByText("🔗 So funktioniert die Verknüpfung von ABC-Listen"),
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", {name: /Hilfe schließen/}));
+    expect(
+      screen.queryByText("🔗 So funktioniert die Verknüpfung von ABC-Listen"),
+    ).not.toBeInTheDocument();
   });
 });

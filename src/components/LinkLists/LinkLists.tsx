@@ -7,30 +7,20 @@ interface LinkedListData {
   words: Record<string, WordWithExplanation[]>;
 }
 
-export function LinkLists() {
-  const [availableLists, setAvailableLists] = useState<string[]>([]);
-  const [selectedLists, setSelectedLists] = useState<string[]>([]);
-  const [linkedListsData, setLinkedListsData] = useState<LinkedListData[]>([]);
+// Extract alphabet outside component to prevent recreation on every render
+const alphabet = Array.from({length: 26}, (_, i) =>
+  String.fromCharCode(97 + i),
+);
 
-  const alphabet = Array.from({length: 26}, (_, i) =>
-    String.fromCharCode(97 + i),
-  );
+// Extract loadListData outside component for stability and to prevent stale closures
+const loadListData = (listName: string): LinkedListData => {
+  const words: Record<string, WordWithExplanation[]> = {};
 
-  useEffect(() => {
-    // Load available lists from localStorage
-    const storedLists = localStorage.getItem(cacheKey);
-    if (storedLists) {
-      setAvailableLists(JSON.parse(storedLists));
-    }
-  }, []);
-
-  const loadListData = (listName: string): LinkedListData => {
-    const words: Record<string, WordWithExplanation[]> = {};
-
-    alphabet.forEach((letter) => {
-      const storageKey = `abcList-${listName}:${letter}`;
-      const storedData = localStorage.getItem(storageKey);
-      if (storedData) {
+  alphabet.forEach((letter) => {
+    const storageKey = `abcList-${listName}:${letter}`;
+    const storedData = localStorage.getItem(storageKey);
+    if (storedData) {
+      try {
         const parsed = JSON.parse(storedData);
         // Handle both old string[] format and new WordWithExplanation[] format
         if (Array.isArray(parsed) && parsed.length > 0) {
@@ -43,37 +33,58 @@ export function LinkLists() {
               imported: false,
             }));
           } else {
-            words[letter] = parsed;
+            words[letter] = parsed as WordWithExplanation[];
           }
         } else {
           words[letter] = [];
         }
-      } else {
+      } catch {
         words[letter] = [];
       }
-    });
+    } else {
+      words[letter] = [];
+    }
+  });
 
-    return {
-      name: listName,
-      words,
-    };
+  return {
+    name: listName,
+    words,
   };
+};
+
+export function LinkLists() {
+  const [availableLists, setAvailableLists] = useState<string[]>([]);
+  const [selectedLists, setSelectedLists] = useState<string[]>([]);
+  const [linkedListsData, setLinkedListsData] = useState<LinkedListData[]>([]);
+  const [showHelp, setShowHelp] = useState(false);
+
+  useEffect(() => {
+    // Load available lists from localStorage on every mount
+    const storedLists = localStorage.getItem(cacheKey);
+    if (storedLists) {
+      try {
+        setAvailableLists(JSON.parse(storedLists) as string[]);
+      } catch {
+        setAvailableLists([]);
+      }
+    }
+  }, []);
 
   const handleListSelection = (listName: string) => {
-    if (selectedLists.includes(listName)) {
-      // Remove from selection
-      const newSelected = selectedLists.filter((name) => name !== listName);
-      setSelectedLists(newSelected);
-      setLinkedListsData(
-        linkedListsData.filter((data) => data.name !== listName),
-      );
-    } else {
-      // Add to selection
-      const newSelected = [...selectedLists, listName];
-      setSelectedLists(newSelected);
-      const listData = loadListData(listName);
-      setLinkedListsData([...linkedListsData, listData]);
-    }
+    setSelectedLists((prevSelected) => {
+      if (prevSelected.includes(listName)) {
+        // Remove from selection
+        setLinkedListsData((prevData) =>
+          prevData.filter((d) => d.name !== listName),
+        );
+        return prevSelected.filter((name) => name !== listName);
+      } else {
+        // Add to selection – load fresh data here and use functional update
+        const listData = loadListData(listName);
+        setLinkedListsData((prevData) => [...prevData, listData]);
+        return [...prevSelected, listName];
+      }
+    });
   };
 
   const clearSelection = () => {
@@ -83,9 +94,59 @@ export function LinkLists() {
 
   return (
     <div className="p-4">
-      <h1 className="text-3xl font-bold text-center mb-6">
-        ABC-Listen verknüpfen
-      </h1>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-6">
+        <h1 className="text-3xl font-bold">ABC-Listen verknüpfen</h1>
+        <button
+          onClick={() => setShowHelp((prev) => !prev)}
+          className="text-sm bg-blue-100 hover:bg-blue-200 text-blue-800 font-medium px-3 py-1 rounded-lg w-full sm:w-auto"
+          aria-expanded={showHelp}
+        >
+          {showHelp ? "❌ Hilfe schließen" : "❓ Wie funktioniert das?"}
+        </button>
+      </div>
+
+      {showHelp && (
+        <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg space-y-3">
+          <h2 className="text-lg font-semibold text-blue-800">
+            🔗 So funktioniert die Verknüpfung von ABC-Listen
+          </h2>
+          <p className="text-blue-700 text-sm">
+            Mit der Verknüpfungsfunktion kannst du mehrere ABC-Listen
+            gleichzeitig nebeneinander betrachten – Buchstabe für Buchstabe. Das
+            hilft dir, neue Verbindungen zwischen verschiedenen Themen zu
+            entdecken.
+          </p>
+          <ol className="text-blue-700 text-sm list-decimal ml-5 space-y-2">
+            <li>
+              <strong>Listen auswählen:</strong> Klicke auf eine oder mehrere
+              ABC-Listen aus deiner Sammlung. Die ausgewählten Listen werden
+              blau markiert.
+            </li>
+            <li>
+              <strong>Verknüpfte Ansicht:</strong> Sobald du mindestens eine
+              Liste ausgewählt hast, erscheinen die Begriffe aller Listen
+              nebeneinander – sortiert nach Buchstaben (A–Z).
+            </li>
+            <li>
+              <strong>Verbindungen entdecken:</strong> Schau dir die Wörter in
+              derselben Zeile (gleicher Buchstabe) über verschiedene Listen an.
+              Welche Begriffe passen zusammen? Welche Kombinationen ergeben neue
+              Ideen?
+            </li>
+            <li>
+              <strong>Bi-assoziative Methode:</strong> Bei zwei oder mehr Listen
+              kannst du die Schnittstellen nutzen, um kreative Lösungsansätze
+              oder unerwartete Zusammenhänge zu finden – eine Kerntechnik der
+              Birkenbihl-Methode.
+            </li>
+          </ol>
+          <p className="text-blue-600 text-xs italic">
+            💡 Tipp: Wähle Listen zu verwandten Themen (z.&nbsp;B.
+            &ldquo;Projekt A&rdquo; und &ldquo;Projekt B&rdquo;), um Synergien
+            zu erkennen.
+          </p>
+        </div>
+      )}
 
       <div className="mb-6">
         <h2 className="text-xl font-semibold mb-3">
