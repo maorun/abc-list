@@ -1,13 +1,14 @@
 import jsPDF from "jspdf";
 import Papa from "papaparse";
 import {z} from "zod";
-import {WordWithExplanation} from "@/components/List/types";
+import {AbcListRound, WordWithExplanation} from "@/components/List/types";
 
 export interface ExportedList {
   name: string;
   version: number;
   exportDate: string;
   words: Record<string, WordWithExplanation[]>;
+  rounds?: AbcListRound[];
 }
 
 export interface CSVRow {

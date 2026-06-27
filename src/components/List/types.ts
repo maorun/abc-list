@@ -6,14 +6,28 @@ export interface WordWithExplanation {
   timestamp?: number; // For statistics tracking
   tags?: string[]; // Tags for categorization
   isFavorite?: boolean; // Favorite flag
+  rating?: number; // 1-5 scale for self assessment
+  lastReviewed?: string; // ISO date string
   repetitionCount?: number; // Spaced repetition data
   easeFactor?: number;
   interval?: number;
   nextReviewDate?: string;
+  createdInRound?: number; // Round where the term first appeared
+  repeatedInRounds?: number[]; // Rounds where the term reappeared
   // Dual-Coding Support: Visual elements for enhanced learning
   emoji?: string; // Unicode emoji for visual association
   symbol?: string; // Symbol ID from symbol library
   imageUrl?: string; // External image URL for visual learning
+}
+
+export interface AbcListRound {
+  roundNumber: number;
+  startedAt: string;
+  durationSeconds: number;
+  status: "active" | "merged" | "cancelled";
+  endedAt?: string;
+  mergedAt?: string;
+  mergedWordCount?: number;
 }
 
 export interface ColumnConfig {

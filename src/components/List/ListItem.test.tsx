@@ -1,4 +1,4 @@
-import {render, screen, waitFor} from "@testing-library/react";
+import {act, fireEvent, render, screen, waitFor} from "@testing-library/react";
 import {describe, it, expect, vi, beforeEach, afterEach} from "vitest";
 import {MemoryRouter, Route, Routes} from "react-router-dom";
 import {ListItem} from "./ListItem";
@@ -366,24 +366,25 @@ describe("ListItem Timer", () => {
     // Check that timer start button exists
     await waitFor(() => {
       expect(
-        screen.getByRole("button", {name: /Timer starten/i}),
+        screen.getByRole("button", {name: /Neue Runde starten/i}),
       ).toBeInTheDocument();
     });
   });
 
-  it("should have reset button for timer", async () => {
+  it("should show discard control after a round starts", async () => {
     renderComponent("TestList");
 
     await waitFor(() => {
       expect(
-        screen.getByRole("heading", {name: /ABC-Liste für TestList/i}),
+        screen.getByRole("button", {name: /Neue Runde starten/i}),
       ).toBeInTheDocument();
     });
 
-    // Check that reset button exists
+    fireEvent.click(screen.getByRole("button", {name: /Neue Runde starten/i}));
+
     await waitFor(() => {
       expect(
-        screen.getByRole("button", {name: /Timer zurücksetzen/i}),
+        screen.getByRole("button", {name: /Runde verwerfen/i}),
       ).toBeInTheDocument();
     });
   });
@@ -403,5 +404,35 @@ describe("ListItem Timer", () => {
         screen.getByLabelText(/Timer-Dauer auswählen/i),
       ).toBeInTheDocument();
     });
+  });
+
+  it("should merge a finished round back into the main list with round metadata", async () => {
+    vi.useFakeTimers();
+    renderComponent("TestList");
+
+    fireEvent.click(screen.getByRole("button", {name: /Neue Runde starten/i}));
+    fireEvent.click(
+      screen.getByRole("button", {name: /Wort für Buchstabe A hinzufügen/i}),
+    );
+    fireEvent.change(screen.getByLabelText(/Neues Wort eingeben/i), {
+      target: {value: "Apfel"},
+    });
+    fireEvent.click(screen.getByRole("button", {name: /Wort speichern/i}));
+
+    expect(screen.getByText("Apfel")).toBeInTheDocument();
+
+    await act(async () => {
+      vi.advanceTimersByTime(90000);
+    });
+
+    expect(screen.getByText("R1")).toBeInTheDocument();
+
+    const storedWords = JSON.parse(
+      localStorage.getItem("abcList-TestList:a") || "[]",
+    );
+    expect(storedWords[0].createdInRound).toBe(1);
+    expect(
+      screen.queryByText(/Leere Arbeitsliste für Runde/i),
+    ).not.toBeInTheDocument();
   });
 });

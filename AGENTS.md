@@ -8,7 +8,7 @@ This is a web application built with **React**, **TypeScript**, and **Vite**. It
 
 ABC-List implements Vera F. Birkenbihl's learning methodology with multiple learning modes:
 
-- **ABC-Lists**: Create association lists for any topic using letters A-Z
+- **ABC-Lists**: Create association lists for any topic using letters A-Z, including timed follow-up rounds that merge back into the main list with per-term round tracking
 - **KaWa (Word Associations)**: Build associations for each letter of a specific word
 - **KaGa (Graphical Associations)**: Visual learning with drawing tools and graphical elements
 - **Stadt-Land-Fluss**: Quick knowledge retrieval game training with customizable categories and timer-based rounds
@@ -17,7 +17,7 @@ ABC-List implements Vera F. Birkenbihl's learning methodology with multiple lear
 - **Loci-Methode (Memory Palace)**: Spatial memory technique with 2D virtual rooms, object placement at specific locations, and memory routes for sequential memorization
 - **Gamification System**: Comprehensive achievement and motivation system with daily streaks, challenges, levels, and leaderboards
 - **Search & Tagging System**: Intelligent full-text search with automated tagging, smart collections, and advanced filtering across all content types
-- **Community Hub** *(Optional)*: Collaborative learning platform with user profiles, mentoring system, peer reviews, community challenges, and success stories (requires `VITE_ENABLE_COMMUNITY=true` environment variable)
+- **Community Hub** _(Optional)_: Collaborative learning platform with user profiles, mentoring system, peer reviews, community challenges, and success stories (requires `VITE_ENABLE_COMMUNITY=true` environment variable)
 - **Template Library**: Pre-configured templates for quick start with educational content across multiple subjects (Mathematik, Sprachen, Geschichte, etc.)
 - **Dual-Coding Support**: Visual learning enhancement with emoji picker, symbol library (48 educational symbols in 9 categories), and external image URL support for stronger memory associations
 
@@ -68,7 +68,7 @@ This workflow is not a recommendation; it is a requirement. Following this seque
 
 2.  **Write New Tests (for new features)**
     - When adding a new feature, practice **Test-Driven Development (TDD)**.
-    - Write a failing test that describes the new functionality *before* implementing it. This ensures your feature is testable and correctly implemented.
+    - Write a failing test that describes the new functionality _before_ implementing it. This ensures your feature is testable and correctly implemented.
 
 3.  **Implement Your Changes**
     - Write the necessary code to either make the new test pass or to fix an existing bug.
@@ -893,6 +893,7 @@ VITE_ENABLE_COMMUNITY=true
 ```
 
 When this variable is not set or set to `false` (default), all Community-related features are completely hidden:
+
 - Community navigation tab is not shown
 - Community routes are not registered
 - Community components are not loaded (lazy loading prevents unnecessary bundling)
