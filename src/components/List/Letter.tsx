@@ -81,6 +81,8 @@ export function Letter({
             emoji={word.emoji}
             symbol={word.symbol}
             imageUrl={word.imageUrl}
+            createdInRound={word.createdInRound}
+            repeatedInRounds={word.repeatedInRounds}
             onDelete={() => onDeleteWord(word.text)}
             onExplanationChange={(explanation) =>
               onExplanationChange(word.text, explanation)

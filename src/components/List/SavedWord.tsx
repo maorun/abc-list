@@ -3,23 +3,7 @@ import {DeleteConfirm} from "../DeleteConfirm";
 import {VisualElementsEditor} from "../DualCoding/VisualElementsEditor";
 import {getSymbolById} from "@/lib/symbolLibrary";
 
-export interface WordWithExplanation {
-  text: string;
-  explanation?: string;
-  version?: number;
-  imported?: boolean;
-  rating?: number; // 1-5 scale for Sokrates-Check self-assessment
-  lastReviewed?: string; // ISO date string
-  // Enhanced spaced repetition fields
-  repetitionCount?: number; // How many times reviewed
-  easeFactor?: number; // Individual ease factor for this term
-  interval?: number; // Current interval in days
-  nextReviewDate?: string; // Calculated next review date (ISO string)
-  // Dual-Coding Support: Visual elements for enhanced learning
-  emoji?: string; // Unicode emoji for visual association
-  symbol?: string; // Symbol ID from symbol library
-  imageUrl?: string; // External image URL for visual learning
-}
+export type {WordWithExplanation} from "./types";
 
 interface SavedWordProps {
   text: string;
@@ -29,6 +13,8 @@ interface SavedWordProps {
   emoji?: string;
   symbol?: string;
   imageUrl?: string;
+  createdInRound?: number;
+  repeatedInRounds?: number[];
   onDelete?: () => void;
   onExplanationChange?: (explanation: string) => void;
   onRatingChange?: (rating: number) => void;
@@ -165,6 +151,8 @@ export function SavedWord({
   emoji,
   symbol,
   imageUrl,
+  createdInRound,
+  repeatedInRounds,
   onDelete,
   onExplanationChange,
   onRatingChange,
@@ -179,6 +167,14 @@ export function SavedWord({
 
   const symbolData = symbol ? getSymbolById(symbol) : undefined;
   const hasVisualElements = !!(emoji || symbol || imageUrl);
+  const roundInfo = [
+    createdInRound ? `R${createdInRound}` : null,
+    repeatedInRounds && repeatedInRounds.length > 0
+      ? `↺ R${repeatedInRounds.join(", R")}`
+      : null,
+  ]
+    .filter((entry): entry is string => entry !== null)
+    .join(" · ");
 
   // Create stable function references inside component
   const handleDelete = handleDeleteAction(setShowDelete, onDelete);
@@ -284,7 +280,14 @@ export function SavedWord({
                 <span className="text-xl">{symbolData.emoji}</span>
               )}
               {imageUrl && <span className="text-sm">🖼️</span>}
-              <span>{text}</span>
+              <div className="flex flex-col">
+                <span>{text}</span>
+                {roundInfo && (
+                  <span className="text-[10px] text-purple-700">
+                    {roundInfo}
+                  </span>
+                )}
+              </div>
             </div>
             <div className="flex gap-1 items-center">
               {imported && <span className="text-blue-600 text-xs">📥</span>}

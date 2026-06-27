@@ -3,8 +3,19 @@ import {useParams, useNavigate} from "react-router-dom";
 import {toast} from "sonner";
 import {usePrompt} from "@/components/ui/prompt-dialog";
 import {Letter} from "./Letter";
-import {WordWithExplanation} from "./SavedWord";
+import {AbcListRound, WordWithExplanation} from "./types";
 import {ExportUtils, ExportedList} from "@/lib/exportUtils";
+import {
+  createAbcListRound,
+  createEmptyLetterMap,
+  discardAbcListRound,
+  getAbcListRoundCacheKey,
+  getActiveAbcListRound,
+  getRemainingRoundTime,
+  loadAbcListRounds,
+  mergeRoundWordsIntoList,
+  saveAbcListRounds,
+} from "@/lib/abcListRounds";
 import {
   Dialog,
   DialogContent,
@@ -72,6 +83,7 @@ const createExportData = (item: string, cacheKey: string): ExportedList => ({
   version: 1,
   exportDate: new Date().toISOString(),
   words: getWordsData(cacheKey),
+  rounds: loadAbcListRounds(item),
 });
 
 const handleExportAsJSON = (
@@ -309,6 +321,62 @@ const formatTime = (seconds: number): string => {
   return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
 };
 
+interface InitialRoundState {
+  roundHistory: AbcListRound[];
+  currentRound: AbcListRound | null;
+  roundWords: Record<string, WordWithExplanation[]>;
+  timeLeft: number;
+  timerDuration: number;
+  isTimerActive: boolean;
+}
+
+const getInitialRoundState = (item: string | undefined): InitialRoundState => {
+  if (!item) {
+    return {
+      roundHistory: [],
+      currentRound: null,
+      roundWords: createEmptyLetterMap(),
+      timeLeft: 90,
+      timerDuration: 90,
+      isTimerActive: false,
+    };
+  }
+
+  const roundHistory = loadAbcListRounds(item);
+  const currentRound = getActiveAbcListRound(roundHistory);
+
+  if (!currentRound) {
+    return {
+      roundHistory,
+      currentRound: null,
+      roundWords: createEmptyLetterMap(),
+      timeLeft: 90,
+      timerDuration: 90,
+      isTimerActive: false,
+    };
+  }
+
+  const timeLeft = getRemainingRoundTime(currentRound);
+
+  return {
+    roundHistory,
+    currentRound,
+    roundWords: getWordsData(
+      getAbcListRoundCacheKey(item, currentRound.roundNumber),
+    ),
+    timeLeft,
+    timerDuration: currentRound.durationSeconds,
+    isTimerActive: timeLeft > 0,
+  };
+};
+
+const getWordCount = (words: Record<string, WordWithExplanation[]>): number => {
+  return alphabet.reduce(
+    (count, letter) => count + (words[letter]?.length ?? 0),
+    0,
+  );
+};
+
 export function ListItem() {
   const {item} = useParams<{item: string}>();
   const navigate = useNavigate();
@@ -320,10 +388,20 @@ export function ListItem() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const {prompt, PromptComponent} = usePrompt();
 
+  const initialRoundStateRef = useRef<InitialRoundState | null>(null);
+  if (initialRoundStateRef.current === null) {
+    initialRoundStateRef.current = getInitialRoundState(item);
+  }
+  const initialRoundState = initialRoundStateRef.current;
+
   // Timer state
-  const [timeLeft, setTimeLeft] = useState(90); // Default 90 seconds
-  const [isTimerActive, setIsTimerActive] = useState(false);
-  const [timerDuration, setTimerDuration] = useState(90);
+  const [timeLeft, setTimeLeft] = useState(initialRoundState.timeLeft);
+  const [isTimerActive, setIsTimerActive] = useState(
+    initialRoundState.isTimerActive,
+  );
+  const [timerDuration, setTimerDuration] = useState(
+    initialRoundState.timerDuration,
+  );
   const timerIntervalRef = useRef<number | null>(null);
   const timeUpNotifiedRef = useRef(false);
 
@@ -343,26 +421,69 @@ export function ListItem() {
 
   const [allWords, setAllWords] = useState<
     Record<string, WordWithExplanation[]>
-  >(() => (cacheKey ? getWordsData(cacheKey) : {}));
+  >(() => (cacheKey ? getWordsData(cacheKey) : createEmptyLetterMap()));
+  const [roundHistory, setRoundHistory] = useState<AbcListRound[]>(
+    initialRoundState.roundHistory,
+  );
+  const [currentRound, setCurrentRound] = useState<AbcListRound | null>(
+    initialRoundState.currentRound,
+  );
+  const [roundWords, setRoundWords] = useState<
+    Record<string, WordWithExplanation[]>
+  >(initialRoundState.roundWords);
+
+  const persistWords = (
+    storageKey: string,
+    wordsByLetter: Record<string, WordWithExplanation[]>,
+  ) => {
+    alphabet.forEach((letter) => {
+      localStorage.setItem(
+        `${storageKey}:${letter}`,
+        JSON.stringify(wordsByLetter[letter] ?? []),
+      );
+    });
+  };
 
   const updateWordsForLetter = (
     letter: string,
     updateFn: (words: WordWithExplanation[]) => WordWithExplanation[],
   ) => {
+    const activeRoundCacheKey =
+      item && currentRound
+        ? getAbcListRoundCacheKey(item, currentRound.roundNumber)
+        : null;
+
+    if (activeRoundCacheKey) {
+      setRoundWords((prev) => {
+        const updatedWords = {...prev};
+        const nextWords = updateFn(updatedWords[letter] || []);
+        updatedWords[letter] = nextWords;
+        localStorage.setItem(
+          `${activeRoundCacheKey}:${letter}`,
+          JSON.stringify(nextWords),
+        );
+        return updatedWords;
+      });
+      return;
+    }
+
     setAllWords((prev) => {
-      const newWords = {...prev};
-      const updated = updateFn(newWords[letter] || []);
-      newWords[letter] = updated;
+      const updatedWords = {...prev};
+      const nextWords = updateFn(updatedWords[letter] || []);
+      updatedWords[letter] = nextWords;
       if (cacheKey) {
-        localStorage.setItem(`${cacheKey}:${letter}`, JSON.stringify(updated));
+        localStorage.setItem(
+          `${cacheKey}:${letter}`,
+          JSON.stringify(nextWords),
+        );
       }
-      return newWords;
+      return updatedWords;
     });
   };
 
   const handleAddWord = (letter: string, word: string) => {
     updateWordsForLetter(letter, (words) => {
-      if (words.some((w) => w.text === word)) {
+      if (words.some((entry) => entry.text === word)) {
         return words;
       }
       const newWord: WordWithExplanation = {
@@ -370,6 +491,7 @@ export function ListItem() {
         explanation: "",
         version: 1,
         imported: false,
+        createdInRound: currentRound?.roundNumber,
       };
       if (item) {
         trackWordAdded(word, item);
@@ -380,7 +502,7 @@ export function ListItem() {
 
   const handleDeleteWord = (letter: string, word: string) => {
     updateWordsForLetter(letter, (words) =>
-      words.filter((w) => w.text !== word),
+      words.filter((entry) => entry.text !== word),
     );
   };
 
@@ -390,20 +512,20 @@ export function ListItem() {
     explanation: string,
   ) => {
     updateWordsForLetter(letter, (words) =>
-      words.map((w) =>
-        w.text === word
-          ? {...w, explanation, version: (w.version || 1) + 1}
-          : w,
+      words.map((entry) =>
+        entry.text === word
+          ? {...entry, explanation, version: (entry.version || 1) + 1}
+          : entry,
       ),
     );
   };
 
   const handleRatingChange = (letter: string, word: string, rating: number) => {
     updateWordsForLetter(letter, (words) =>
-      words.map((w) =>
-        w.text === word
-          ? {...w, rating, lastReviewed: new Date().toISOString()}
-          : w,
+      words.map((entry) =>
+        entry.text === word
+          ? {...entry, rating, lastReviewed: new Date().toISOString()}
+          : entry,
       ),
     );
   };
@@ -414,46 +536,106 @@ export function ListItem() {
     visualData: {emoji?: string; symbol?: string; imageUrl?: string},
   ) => {
     updateWordsForLetter(letter, (words) =>
-      words.map((w) => (w.text === word ? {...w, ...visualData} : w)),
+      words.map((entry) =>
+        entry.text === word ? {...entry, ...visualData} : entry,
+      ),
     );
   };
+
+  const finalizeRound = useCallback(() => {
+    if (!item || !cacheKey || !currentRound) {
+      return;
+    }
+
+    const {mergedWords, summary} = mergeRoundWordsIntoList(
+      allWords,
+      roundWords,
+      currentRound.roundNumber,
+    );
+
+    setAllWords(mergedWords);
+    persistWords(cacheKey, mergedWords);
+
+    const updatedRounds = roundHistory.map((round) => {
+      if (round.roundNumber !== currentRound.roundNumber) {
+        return round;
+      }
+
+      return {
+        ...round,
+        status: "merged",
+        endedAt: new Date().toISOString(),
+        mergedAt: new Date().toISOString(),
+        mergedWordCount: summary.totalTerms,
+      };
+    });
+
+    saveAbcListRounds(item, updatedRounds);
+    setRoundHistory(updatedRounds);
+    setCurrentRound(null);
+    setRoundWords(createEmptyLetterMap());
+    setIsTimerActive(false);
+    setTimeLeft(timerDuration);
+    timeUpNotifiedRef.current = false;
+
+    toast.success(
+      `Runde ${currentRound.roundNumber} zusammengeführt: ${summary.newTerms} neu, ${summary.repeatedTerms} erneut erstellt.`,
+      {duration: 5000},
+    );
+  }, [
+    allWords,
+    cacheKey,
+    currentRound,
+    item,
+    roundHistory,
+    roundWords,
+    timerDuration,
+  ]);
 
   // Timer effect - countdown
   useEffect(() => {
     if (isTimerActive && timeLeft > 0) {
       const interval = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1) {
-            // Time is up
-            if (!timeUpNotifiedRef.current) {
-              timeUpNotifiedRef.current = true;
-              toast.info("⏰ Zeit abgelaufen! Die 90 Sekunden sind um.", {
-                duration: 5000,
-              });
-            }
-            return 0;
-          }
-          return prev - 1;
-        });
+        setTimeLeft((prev) => (prev <= 1 ? 0 : prev - 1));
       }, 1000);
       timerIntervalRef.current = interval;
       return () => clearInterval(interval);
     }
   }, [isTimerActive, timeLeft]);
 
-  // Reset notification flag when timer is reset or restarted
   useEffect(() => {
-    if (timeLeft > 0 || !isTimerActive) {
-      timeUpNotifiedRef.current = false;
+    if (currentRound && timeLeft === 0) {
+      finalizeRound();
     }
-  }, [timeLeft, isTimerActive]);
+  }, [currentRound, finalizeRound, timeLeft]);
 
   // Timer control handlers
-  const startTimer = () => {
-    setIsTimerActive(true);
-    if (timeLeft === 0) {
-      setTimeLeft(timerDuration);
+  const startNewRound = () => {
+    if (!item) {
+      return;
     }
+
+    const {round, rounds} = createAbcListRound(
+      item,
+      roundHistory,
+      timerDuration,
+    );
+    setCurrentRound(round);
+    setRoundHistory(rounds);
+    setRoundWords(createEmptyLetterMap());
+    setTimeLeft(timerDuration);
+    setIsTimerActive(true);
+    timeUpNotifiedRef.current = false;
+    toast.info(`Runde ${round.roundNumber} gestartet.`, {duration: 3000});
+  };
+
+  const startTimer = () => {
+    if (!currentRound) {
+      startNewRound();
+      return;
+    }
+
+    setIsTimerActive(true);
   };
 
   const pauseTimer = () => {
@@ -464,12 +646,25 @@ export function ListItem() {
   };
 
   const resetTimer = () => {
+    if (!item || !currentRound) {
+      setIsTimerActive(false);
+      setTimeLeft(timerDuration);
+      return;
+    }
+
+    const updatedRounds = discardAbcListRound(item, currentRound.roundNumber);
+    setRoundHistory(updatedRounds);
+    setCurrentRound(null);
+    setRoundWords(createEmptyLetterMap());
     setIsTimerActive(false);
     setTimeLeft(timerDuration);
     timeUpNotifiedRef.current = false;
     if (timerIntervalRef.current) {
       clearInterval(timerIntervalRef.current);
     }
+    toast.info(`Runde ${currentRound.roundNumber} verworfen.`, {
+      duration: 3000,
+    });
   };
 
   // Don't render Letter components until we have a valid item and cacheKey
@@ -514,6 +709,12 @@ export function ListItem() {
   const showImportWizard = (
     terms: Array<{letter: string; word: WordWithExplanation}>,
   ) => createImportWizard(terms, cacheKey, prompt);
+
+  const displayedWords = currentRound ? roundWords : allWords;
+  const mergedRounds = roundHistory.filter(
+    (round) => round.status === "merged",
+  );
+  const displayedWordCount = getWordCount(displayedWords);
 
   return (
     <div className="p-4">
@@ -584,21 +785,37 @@ export function ListItem() {
       </div>
 
       {/* Timer Section */}
-      <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 mb-6">
+      <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 mb-6 space-y-4">
+        <div className="flex flex-col gap-2">
+          <h2 className="text-lg font-semibold text-blue-900">
+            {currentRound
+              ? `Runde ${currentRound.roundNumber} aktiv`
+              : "Neue ABC-Runde starten"}
+          </h2>
+          <p className="text-sm text-blue-800">
+            {currentRound
+              ? "Sie füllen gerade eine leere Rundenliste. Nach Ablauf des Timers werden neue und erneut genannte Begriffe automatisch mit der Hauptliste zusammengeführt."
+              : "Starten Sie auf einer vorhandenen Liste eine neue Runde mit leerer Arbeitsliste. Nach Ablauf des Timers wird die Runde automatisch zusammengeführt."}
+          </p>
+        </div>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="text-4xl font-bold text-blue-600 min-w-[100px]">
               {formatTime(timeLeft)}
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               {!isTimerActive ? (
                 <button
                   onClick={startTimer}
                   className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-                  title="Timer starten"
-                  aria-label="Timer starten"
+                  title={
+                    currentRound ? "Runde fortsetzen" : "Neue Runde starten"
+                  }
+                  aria-label={
+                    currentRound ? "Runde fortsetzen" : "Neue Runde starten"
+                  }
                 >
-                  ▶️ Start
+                  {currentRound ? "▶️ Fortsetzen" : "🚀 Neue Runde starten"}
                 </button>
               ) : (
                 <button
@@ -610,14 +827,16 @@ export function ListItem() {
                   ⏸️ Pause
                 </button>
               )}
-              <button
-                onClick={resetTimer}
-                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-                title="Timer zurücksetzen"
-                aria-label="Timer zurücksetzen"
-              >
-                🔄 Reset
-              </button>
+              {currentRound && (
+                <button
+                  onClick={resetTimer}
+                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                  title="Runde verwerfen"
+                  aria-label="Runde verwerfen"
+                >
+                  🗑️ Verwerfen
+                </button>
+              )}
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -634,7 +853,7 @@ export function ListItem() {
                 setIsTimerActive(false);
                 timeUpNotifiedRef.current = false;
               }}
-              disabled={isTimerActive}
+              disabled={!!currentRound}
               className="border rounded px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-200 disabled:cursor-not-allowed"
               aria-label="Timer-Dauer auswählen"
             >
@@ -646,13 +865,48 @@ export function ListItem() {
             </select>
           </div>
         </div>
-        {timeLeft === 0 && (
-          <div className="mt-3 p-3 bg-yellow-100 border border-yellow-300 rounded text-center">
-            <span className="text-lg font-semibold text-yellow-800">
-              ⏰ Zeit abgelaufen! Sie können weiterarbeiten.
-            </span>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="rounded border border-blue-200 bg-white p-3 text-sm text-blue-900">
+            <div className="font-semibold">
+              {currentRound
+                ? `Aktive Rundenbegriffe: ${displayedWordCount}`
+                : `Zusammengeführte Begriffe: ${displayedWordCount}`}
+            </div>
+            <div className="text-blue-700 mt-1">
+              {currentRound
+                ? "Begriffe mit Runden-Label werden nach dem Timer mit der Hauptliste verschmolzen."
+                : "Rundenlabels zeigen die Erstrunde und spätere Wiederholungen je Begriff."}
+            </div>
           </div>
-        )}
+          <div className="rounded border border-blue-200 bg-white p-3 text-sm text-blue-900">
+            <div className="font-semibold">
+              Abgeschlossene Runden: {mergedRounds.length}
+            </div>
+            <div className="text-blue-700 mt-1">
+              {mergedRounds.length > 0
+                ? mergedRounds
+                    .map(
+                      (round) =>
+                        `R${round.roundNumber} (${round.mergedWordCount ?? 0})`,
+                    )
+                    .join(" · ")
+                : "Noch keine abgeschlossenen Runden vorhanden."}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="mb-4 rounded-lg border border-purple-200 bg-purple-50 p-3 text-sm text-purple-900">
+        <div className="font-semibold">
+          {currentRound
+            ? `Leere Arbeitsliste für Runde ${currentRound.roundNumber}`
+            : "Zusammengeführte Hauptliste"}
+        </div>
+        <div className="mt-1 text-purple-700">
+          {currentRound
+            ? "Nur Begriffe aus der laufenden Runde werden hier angezeigt. Bereits bekannte Begriffe bleiben in der Hauptliste und werden beim Zusammenführen als Wiederholung markiert."
+            : "Einträge zeigen ihre Erstrunde als R1, R2, ... und Wiederholungen als ↺ R..."}
+        </div>
       </div>
 
       <div className="flex flex-row flex-wrap justify-around gap-4">
@@ -661,7 +915,7 @@ export function ListItem() {
             <div key={char} className="m-2">
               <Letter
                 letter={char}
-                words={allWords[char] || []}
+                words={displayedWords[char] || []}
                 onAddWord={(word) => handleAddWord(char, word)}
                 onDeleteWord={(word) => handleDeleteWord(char, word)}
                 onExplanationChange={(word, explanation) =>
