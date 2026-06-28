@@ -283,10 +283,7 @@ function ProfileForm({
                     onValueChange={(value) =>
                       setNewExpertiseLevel(
                         value as
-                          | "Beginner"
-                          | "Intermediate"
-                          | "Advanced"
-                          | "Expert",
+                          "Beginner" | "Intermediate" | "Advanced" | "Expert",
                       )
                     }
                   >
