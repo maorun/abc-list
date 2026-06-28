@@ -82,12 +82,10 @@ export function SokratesReview({
 
   // Sort terms by priority (earliest due first, then by rating)
   const sortedTerms = sortTermsByPriority(
-    filteredReviewTerms.map(
-      (term): SortableTermWithData => ({
-        ...term.word,
-        __termData: term, // Keep reference to original data
-      }),
-    ),
+    filteredReviewTerms.map((term): SortableTermWithData => ({
+      ...term.word,
+      __termData: term, // Keep reference to original data
+    })),
   ).map((term: SortableTermWithData) => term.__termData);
 
   // Use only session-sized portion

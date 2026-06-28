@@ -282,14 +282,12 @@ export function SokratesDashboard({
       }
       return acc;
     }, [])
-    .map(
-      (list: ListAccumulator): ListPerformance => ({
-        ...list,
-        averageRating:
-          list.ratedTerms > 0 ? list.totalRating / list.ratedTerms : 0,
-        completionRate: (list.ratedTerms / list.totalTerms) * 100,
-      }),
-    );
+    .map((list: ListAccumulator): ListPerformance => ({
+      ...list,
+      averageRating:
+        list.ratedTerms > 0 ? list.totalRating / list.ratedTerms : 0,
+      completionRate: (list.ratedTerms / list.totalTerms) * 100,
+    }));
 
   // Recommendations
   const getRecommendations = () => {
