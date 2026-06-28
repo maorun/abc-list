@@ -36,16 +36,25 @@ export function List() {
     localStorage.setItem(cacheKey, JSON.stringify(newData));
   };
 
+  const deleteListData = (listName: string) => {
+    const alpha = Array.from({length: 26}, (_, i) =>
+      String.fromCharCode(97 + i),
+    );
+    alpha.forEach((letter) => {
+      localStorage.removeItem(`abcList-${listName}:${letter}`);
+    });
+  };
+
   const deleteItem = (itemToDelete: string) => {
     const newData = data.filter((item) => item !== itemToDelete);
     setData(newData);
     updateStorage(newData);
-    localStorage.removeItem("abcList-" + itemToDelete);
+    deleteListData(itemToDelete);
   };
 
   const clearAll = () => {
     data.forEach((item) => {
-      localStorage.removeItem("abcList-" + item);
+      deleteListData(item);
     });
     setData([]);
     updateStorage([]);

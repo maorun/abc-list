@@ -50,7 +50,9 @@ describe("List", () => {
   it("should delete an item when delete button is clicked", () => {
     const testData = ["Liste 1", "Liste 2"];
     localStorage.setItem(cacheKey, JSON.stringify(testData));
-    localStorage.setItem("abcList-Liste 1", "some-data");
+    // Use the correct per-letter key format
+    localStorage.setItem("abcList-Liste 1:a", JSON.stringify(["Apfel"]));
+    localStorage.setItem("abcList-Liste 1:b", JSON.stringify(["Banane"]));
     render(<List />, {wrapper: MemoryRouter});
 
     const deleteButton = screen.getAllByRole("button", {name: "✕"})[0];
@@ -59,7 +61,9 @@ describe("List", () => {
     expect(screen.queryByText("Liste 1")).not.toBeInTheDocument();
     expect(screen.getByText("Liste 2")).toBeInTheDocument();
     expect(localStorage.getItem(cacheKey)).toBe(JSON.stringify(["Liste 2"]));
-    expect(localStorage.getItem("abcList-Liste 1")).toBeNull();
+    // Verify per-letter word data is cleaned up
+    expect(localStorage.getItem("abcList-Liste 1:a")).toBeNull();
+    expect(localStorage.getItem("abcList-Liste 1:b")).toBeNull();
   });
 
   it("should navigate to the item page on click", () => {
