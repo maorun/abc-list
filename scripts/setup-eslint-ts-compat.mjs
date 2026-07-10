@@ -1,0 +1,99 @@
+/**
+ * Postinstall script: ensure @typescript-eslint packages use TypeScript 6.
+ *
+ * TypeScript 7 is a Go-based rewrite that no longer exports the classic
+ * TypeScript compiler API (ts.Extension, ts.ModuleKind, etc.).
+ * @typescript-eslint depends on that API at load time, so it crashes with TS7.
+ *
+ * This script creates a nested symlink inside each @typescript-eslint package
+ * so that require('typescript') resolves to TypeScript 6 for those packages,
+ * while the root project keeps TypeScript 7.
+ *
+ * The TypeScript 6 copy is installed via the "typescript-eslint-compat" alias
+ * in devDependencies and symlinked into the right locations here.
+ *
+ * Remove this script once @typescript-eslint officially supports TypeScript 7.
+ */
+
+import {existsSync, mkdirSync, rmSync, symlinkSync} from "fs";
+import {join, resolve} from "path";
+import {fileURLToPath} from "url";
+import {readFileSync} from "fs";
+
+const __dirname = fileURLToPath(new URL(".", import.meta.url));
+const rootDir = resolve(__dirname, "..");
+const nodeModules = join(rootDir, "node_modules");
+
+// TypeScript 6 installed under the "typescript-eslint-compat" alias
+const ts6Dir = join(nodeModules, "typescript-eslint-compat");
+
+if (!existsSync(ts6Dir)) {
+  console.log(
+    "ℹ️  typescript-eslint-compat not found, skipping ESLint TS compat setup.",
+  );
+  process.exit(0);
+}
+
+// Check root typescript version
+const rootTsPackageJson = join(nodeModules, "typescript", "package.json");
+if (!existsSync(rootTsPackageJson)) {
+  process.exit(0);
+}
+
+const rootTsVersion = JSON.parse(
+  readFileSync(rootTsPackageJson, "utf8"),
+).version;
+const rootTsMajor = parseInt(rootTsVersion.split(".")[0], 10);
+
+if (rootTsMajor < 7) {
+  // Root TypeScript is already compatible — nothing to do
+  process.exit(0);
+}
+
+console.log(
+  `📦 Root TypeScript v${rootTsVersion} is incompatible with @typescript-eslint. Symlinking TypeScript 6 for ESLint...`,
+);
+
+// All packages that directly require('typescript') and need TypeScript 6
+const packages = [
+  "@typescript-eslint/typescript-estree",
+  "@typescript-eslint/parser",
+  "@typescript-eslint/eslint-plugin",
+  "@typescript-eslint/type-utils",
+  "ts-api-utils",
+];
+
+for (const pkg of packages) {
+  const pkgDir = join(nodeModules, ...pkg.split("/"));
+
+  if (!existsSync(pkgDir)) {
+    continue;
+  }
+
+  const nestedModulesDir = join(pkgDir, "node_modules");
+  const typescriptLink = join(nestedModulesDir, "typescript");
+
+  if (existsSync(typescriptLink)) {
+    // Already set up (or is a real install) — skip
+    try {
+      const existing = JSON.parse(
+        readFileSync(join(typescriptLink, "package.json"), "utf8"),
+      );
+      const existingMajor = parseInt(existing.version.split(".")[0], 10);
+      if (existingMajor < 7) {
+        console.log(`  ✅ ${pkg} already has TypeScript ${existing.version}`);
+        continue;
+      }
+      // It points to TS7 — remove and replace
+      rmSync(typescriptLink, {recursive: true, force: true});
+    } catch {
+      rmSync(typescriptLink, {recursive: true, force: true});
+    }
+  }
+
+  mkdirSync(nestedModulesDir, {recursive: true});
+  symlinkSync(ts6Dir, typescriptLink, "dir");
+  console.log(`  ✅ Symlinked TypeScript 6 for ${pkg}`);
+}
+
+console.log("✅ ESLint TypeScript 6 compatibility setup complete.");

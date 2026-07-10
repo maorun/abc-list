@@ -1,7 +1,7 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
     <title>ABC List</title>
     <script type="text/javascript">
       // Single Page Apps for GitHub Pages
@@ -22,36 +22,55 @@
       var pathSegmentsToKeep = 1;
 
       var l = window.location;
-      
+
       // Check if this is an OAuth callback with access_token or code in hash or search
-      var isOAuthCallback = (l.hash && l.hash.includes('access_token')) || 
-                           (l.hash && l.hash.includes('code=')) ||
-                           (l.search && l.search.includes('code='));
-      
+      var isOAuthCallback =
+        (l.hash && l.hash.includes("access_token")) ||
+        (l.hash && l.hash.includes("code=")) ||
+        (l.search && l.search.includes("code="));
+
       // Check if URL already contains ~and~ to prevent infinite redirects
-      var alreadyProcessed = l.pathname.includes('~and~') || 
-                            (l.search && l.search.includes('~and~'));
-      
+      var alreadyProcessed =
+        l.pathname.includes("~and~") ||
+        (l.search && l.search.includes("~and~"));
+
       if (isOAuthCallback && !alreadyProcessed) {
         // For OAuth callbacks, redirect to root with hash preserved
         l.replace(
-          l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
-          l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + '/' +
-          l.hash
+          l.protocol +
+            "//" +
+            l.hostname +
+            (l.port ? ":" + l.port : "") +
+            l.pathname
+              .split("/")
+              .slice(0, 1 + pathSegmentsToKeep)
+              .join("/") +
+            "/" +
+            l.hash,
         );
       } else if (!alreadyProcessed) {
         // Standard SPA redirect for non-OAuth URLs
         l.replace(
-          l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
-          l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + '/?/' +
-          l.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/').replace(/&/g, '~and~') +
-          (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
-          l.hash
+          l.protocol +
+            "//" +
+            l.hostname +
+            (l.port ? ":" + l.port : "") +
+            l.pathname
+              .split("/")
+              .slice(0, 1 + pathSegmentsToKeep)
+              .join("/") +
+            "/?/" +
+            l.pathname
+              .slice(1)
+              .split("/")
+              .slice(pathSegmentsToKeep)
+              .join("/")
+              .replace(/&/g, "~and~") +
+            (l.search ? "&" + l.search.slice(1).replace(/&/g, "~and~") : "") +
+            l.hash,
         );
       }
-
     </script>
   </head>
-  <body>
-  </body>
+  <body></body>
 </html>

@@ -9,7 +9,14 @@ import {fixupPluginRules} from "@eslint/compat";
 
 export default tseslint.config(
   {
-    ignores: ["dist", "node_modules", "coverage", "debug_test.js", "public"],
+    ignores: [
+      "dist",
+      "node_modules",
+      "coverage",
+      "debug_test.js",
+      "public",
+      "scripts",
+    ],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,

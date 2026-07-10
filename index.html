@@ -1,33 +1,43 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="./icons/icon-48.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ABC-List Lern App</title>
-    
+
     <!-- PWA Manifest -->
     <link rel="manifest" href="./manifest.json" />
-    
+
     <!-- PWA Meta Tags -->
-    <meta name="description" content="Hirngerechte Lernmethoden mit ABC-Listen, KaWa, KaGa und Sokrates Wiederholungssystem" />
-    <meta name="keywords" content="lernen, abc-liste, kawa, kaga, sokrates, spaced repetition, vera birkenbihl" />
+    <meta
+      name="description"
+      content="Hirngerechte Lernmethoden mit ABC-Listen, KaWa, KaGa und Sokrates Wiederholungssystem"
+    />
+    <meta
+      name="keywords"
+      content="lernen, abc-liste, kawa, kaga, sokrates, spaced repetition, vera birkenbihl"
+    />
     <meta name="author" content="ABC-List App" />
-    
+
     <!-- Theme Color -->
     <meta name="theme-color" content="#1e40af" />
     <meta name="msapplication-TileColor" content="#1e40af" />
-    
+
     <!-- Mobile App Capable -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="ABC-List" />
     <meta name="mobile-web-app-capable" content="yes" />
-    
+
     <!-- Apple Touch Icons -->
     <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png" />
-    
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="./icons/apple-touch-icon.png"
+    />
+
     <!-- Microsoft -->
     <meta name="msapplication-config" content="./browserconfig.xml" />
   </head>
@@ -44,16 +54,22 @@
       // When the single page app is loaded further down in this file,
       // the correct url will be waiting in the browser's history for
       // the single page app to route accordingly.
-      (function(l) {
-        if (l.search[1] === '/' ) {
-          var decoded = l.search.slice(1).split('&').map(function(s) { 
-            return s.replace(/~and~/g, '&')
-          }).join('?');
-          window.history.replaceState(null, null,
-              l.pathname.slice(0, -1) + decoded + l.hash
+      (function (l) {
+        if (l.search[1] === "/") {
+          var decoded = l.search
+            .slice(1)
+            .split("&")
+            .map(function (s) {
+              return s.replace(/~and~/g, "&");
+            })
+            .join("?");
+          window.history.replaceState(
+            null,
+            null,
+            l.pathname.slice(0, -1) + decoded + l.hash,
           );
         }
-      }(window.location))
+      })(window.location);
     </script>
     <script type="module" src="./src/index.tsx"></script>
   </body>
