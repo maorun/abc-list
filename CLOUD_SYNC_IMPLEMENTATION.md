@@ -113,8 +113,9 @@ CREATE TABLE user_backups (
 interface CloudSyncConfig {
   autoSync: boolean; // Enable automatic synchronization
   syncInterval: number; // Sync frequency in milliseconds
-  conflictResolution: // Strategy for handling conflicts
-  | "local" // - Prefer local changes
+  conflictResolution:
+    // Strategy for handling conflicts
+    | "local" // - Prefer local changes
     | "remote" // - Prefer remote changes
     | "merge" // - Intelligent merging
     | "ask"; // - Manual resolution

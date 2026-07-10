@@ -133,15 +133,15 @@ Widget data is cached locally, so you can view:
 
 ### Feature Availability
 
-| Feature              | Chrome/Edge | Safari iOS | Firefox |
-| -------------------- | ----------- | ---------- | ------- |
-| PWA Shortcuts        | ✅          | ✅         | ⚠️      |
-| Background Sync      | ✅          | ❌         | ❌      |
-| Periodic Sync        | ⚠️          | ❌         | ❌      |
-| Offline Widget Data  | ✅          | ✅         | ✅      |
-| Statistics Display   | ✅          | ✅         | ✅      |
-| Daily Quiz           | ✅          | ✅         | ✅      |
-| Learning Goals       | ✅          | ✅         | ✅      |
+| Feature             | Chrome/Edge | Safari iOS | Firefox |
+| ------------------- | ----------- | ---------- | ------- |
+| PWA Shortcuts       | ✅          | ✅         | ⚠️      |
+| Background Sync     | ✅          | ❌         | ❌      |
+| Periodic Sync       | ⚠️          | ❌         | ❌      |
+| Offline Widget Data | ✅          | ✅         | ✅      |
+| Statistics Display  | ✅          | ✅         | ✅      |
+| Daily Quiz          | ✅          | ✅         | ✅      |
+| Learning Goals      | ✅          | ✅         | ✅      |
 
 ✅ Full support | ⚠️ Experimental/Limited | ❌ Not supported
 
