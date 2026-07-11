@@ -9,7 +9,7 @@
  * so that require('typescript') resolves to TypeScript 6 for those packages,
  * while the root project keeps TypeScript 7.
  *
- * The TypeScript 6 copy is installed via the "typescript-eslint-compat" alias
+ * The TypeScript 6 copy is installed via the "typescript-eslint-compat-v6" alias
  * in devDependencies and symlinked into the right locations here.
  *
  * Remove this script once @typescript-eslint officially supports TypeScript 7.
@@ -24,12 +24,31 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
 const rootDir = resolve(__dirname, "..");
 const nodeModules = join(rootDir, "node_modules");
 
-// TypeScript 6 installed under the "typescript-eslint-compat" alias
-const ts6Dir = join(nodeModules, "typescript-eslint-compat");
+// TypeScript 6 installed under the "typescript-eslint-compat-v6" alias.
+// Fallback to the legacy alias if it still points to TypeScript 6.
+const ts6Dir = join(nodeModules, "typescript-eslint-compat-v6");
+const legacyTsCompatDir = join(nodeModules, "typescript-eslint-compat");
 
-if (!existsSync(ts6Dir)) {
+let resolvedTs6Dir = ts6Dir;
+if (!existsSync(resolvedTs6Dir)) {
+  if (existsSync(legacyTsCompatDir)) {
+    try {
+      const legacyPackageJson = JSON.parse(
+        readFileSync(join(legacyTsCompatDir, "package.json"), "utf8"),
+      );
+      const legacyMajor = parseInt(legacyPackageJson.version.split(".")[0], 10);
+      if (legacyMajor < 7) {
+        resolvedTs6Dir = legacyTsCompatDir;
+      }
+    } catch {
+      // ignore and fall through to skip setup
+    }
+  }
+}
+
+if (!existsSync(resolvedTs6Dir)) {
   console.log(
-    "ℹ️  typescript-eslint-compat not found, skipping ESLint TS compat setup.",
+    "ℹ️  TypeScript 6 eslint compat package not found, skipping ESLint TS compat setup.",
   );
   process.exit(0);
 }
@@ -92,7 +111,7 @@ for (const pkg of packages) {
   }
 
   mkdirSync(nestedModulesDir, {recursive: true});
-  symlinkSync(ts6Dir, typescriptLink, "dir");
+  symlinkSync(resolvedTs6Dir, typescriptLink, "dir");
   console.log(`  ✅ Symlinked TypeScript 6 for ${pkg}`);
 }
 
