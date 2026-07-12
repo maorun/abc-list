@@ -9,8 +9,11 @@
  * so that require('typescript') resolves to TypeScript 6 for those packages,
  * while the root project keeps TypeScript 7.
  *
- * The TypeScript 6 copy is installed via the "typescript-eslint-compat-v6" alias
- * in devDependencies and symlinked into the right locations here.
+ * The TypeScript 6 copy is installed via the "typescript-6" alias in
+ * devDependencies (pinned to ^6.0.0) and symlinked into the right locations.
+ * Older aliases ("typescript-eslint-compat-v6", "typescript-eslint-compat")
+ * are checked as well for backwards compatibility, but only if they resolve
+ * to a TypeScript 6 version.
  *
  * Remove this script once @typescript-eslint officially supports TypeScript 7.
  */
@@ -24,29 +27,29 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
 const rootDir = resolve(__dirname, "..");
 const nodeModules = join(rootDir, "node_modules");
 
-// TypeScript 6 installed under the "typescript-eslint-compat-v6" alias.
-// Fallback to the legacy alias if it still points to TypeScript 6.
-const ts6Dir = join(nodeModules, "typescript-eslint-compat-v6");
-const legacyTsCompatDir = join(nodeModules, "typescript-eslint-compat");
-
-let resolvedTs6Dir = ts6Dir;
-if (!existsSync(resolvedTs6Dir)) {
-  if (existsSync(legacyTsCompatDir)) {
-    try {
-      const legacyPackageJson = JSON.parse(
-        readFileSync(join(legacyTsCompatDir, "package.json"), "utf8"),
-      );
-      const legacyMajor = parseInt(legacyPackageJson.version.split(".")[0], 10);
-      if (legacyMajor < 7) {
-        resolvedTs6Dir = legacyTsCompatDir;
-      }
-    } catch {
-      // ignore and fall through to skip setup
-    }
+/**
+ * Returns the directory path if the package exists and its major version is < 7,
+ * otherwise returns null.
+ */
+function findTs6Dir(packageName) {
+  const dir = join(nodeModules, ...packageName.split("/"));
+  if (!existsSync(dir)) return null;
+  try {
+    const pkg = JSON.parse(readFileSync(join(dir, "package.json"), "utf8"));
+    const major = parseInt(pkg.version.split(".")[0], 10);
+    return major < 7 ? dir : null;
+  } catch {
+    return null;
   }
 }
 
-if (!existsSync(resolvedTs6Dir)) {
+// Preferred alias for TypeScript 6, then legacy fallbacks (only accepted when <7).
+const resolvedTs6Dir =
+  findTs6Dir("typescript-6") ??
+  findTs6Dir("typescript-eslint-compat-v6") ??
+  findTs6Dir("typescript-eslint-compat");
+
+if (!resolvedTs6Dir) {
   console.log(
     "ℹ️  TypeScript 6 eslint compat package not found, skipping ESLint TS compat setup.",
   );

@@ -13,6 +13,10 @@
       "matchUpdateTypes": ["minor", "patch"],
       "matchDepTypes": ["devDependencies"],
       "automerge": true
+    },
+    {
+      "matchPackageNames": ["typescript-6"],
+      "enabled": false
     }
   ]
 }
