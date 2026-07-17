@@ -5,6 +5,7 @@
     ":disableDependencyDashboard"
   ],
   "labels": ["dependencies"],
+  "ignoreDeps": ["typescript-6"],
   "lockFileMaintenance": {
     "enabled": true
   },
@@ -13,10 +14,6 @@
       "matchUpdateTypes": ["minor", "patch"],
       "matchDepTypes": ["devDependencies"],
       "automerge": true
-    },
-    {
-      "matchPackageNames": ["typescript-6"],
-      "enabled": false
     }
   ]
 }
