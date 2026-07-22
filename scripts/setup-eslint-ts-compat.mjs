@@ -78,6 +78,7 @@ console.log(
 
 // All packages that directly require('typescript') and need TypeScript 6
 const packages = [
+  "typescript-eslint",
   "@typescript-eslint/typescript-estree",
   "@typescript-eslint/parser",
   "@typescript-eslint/eslint-plugin",
