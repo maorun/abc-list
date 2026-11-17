@@ -14,7 +14,7 @@
     "@supabase/auth-ui-shared": "^0.1.8",
     "@supabase/supabase-js": "^2.55.0",
     "@types/uuid": "^11.0.0",
-    "@xyflow/react": "^12.8.6",
+    "@xyflow/react": "^13.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "html-to-image": "^1.11.13",
